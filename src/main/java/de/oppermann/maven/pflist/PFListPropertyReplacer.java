@@ -25,10 +25,18 @@ public class PFListPropertyReplacer {
      *             --property_file=<path to property file>
      *             [--path]=<path where to start the replacement, if not given the current testAll.folder is used>
      *             [--logLevel]=<LogLevel>, defaults to LogLevel.Info
+     *             [--help] print help
      * @see LogLevel
      */
     public static void main(String[] args) {
-        PFListPropertyReplacer pfListPropertyReplacer = new PFListPropertyReplacer(CommandLineUtils.getPropertiesFromParameter(args));
+        EnumMap<CommandLineParameter, Object> commandlineProperties = CommandLineUtils.getPropertiesFromParameter(args);
+
+        if (commandlineProperties.containsKey(CommandLineParameter.Help) || commandlineProperties.isEmpty()) {
+            CommandLineUtils.printHelp();
+            return;
+        }
+
+        PFListPropertyReplacer pfListPropertyReplacer = new PFListPropertyReplacer(commandlineProperties);
         pfListPropertyReplacer.replace();
     }
 

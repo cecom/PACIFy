@@ -8,8 +8,9 @@
     <name>de.oppermann.maven.pflist</name>
     <version>1.0.0</version>
     <properties>
-        <org.apache.ant_ant_version>1.8.2</org.apache.ant_ant_version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <org.apache.ant_ant_version>1.8.2</org.apache.ant_ant_version>
+        <org.simpleframework_simple-xml_version>2.5.2</org.simpleframework_simple-xml_version>
     </properties>
     <developers>
         <developer>
@@ -32,7 +33,7 @@
         <dependency>
             <groupId>org.simpleframework</groupId>
             <artifactId>simple-xml</artifactId>
-            <version>2.5.2</version>
+            <version>${org.simpleframework_simple-xml_version}</version>
         </dependency>
     </dependencies>
     <repositories>
@@ -41,7 +42,7 @@
             <name>repo1.maven.org</name>
             <url>http://repo1.maven.org</url>
             <snapshots>
-                <enabled>true</enabled>
+                <enabled>false</enabled>
             </snapshots>
             <releases>
                 <updatePolicy>never</updatePolicy>
@@ -54,7 +55,7 @@
             <name>repo1.maven.org</name>
             <url>http://repo1.maven.org</url>
             <snapshots>
-                <enabled>true</enabled>
+                <enabled>false</enabled>
             </snapshots>
             <releases>
                 <updatePolicy>never</updatePolicy>
@@ -86,34 +87,26 @@
                         <manifest>
                             <addClasspath>false</addClasspath>
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                            <mainClass>de.oppermann.maven.pflist.CreatePomFromTemplate</mainClass>
+                            <mainClass>de.oppermann.maven.pflist.PFListPropertyReplacer</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.2.1</version>
+                <configuration>
+                    <descriptors>
+                        <descriptor>src/main/assembly/delivery.xml</descriptor>
+                    </descriptors>
+                </configuration>
                 <executions>
                     <execution>
-                        <id>addAntToJar</id>
-                        <phase>prepare-package</phase>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
                         <goals>
-                            <goal>unpack</goal>
+                            <goal>single</goal>
                         </goals>
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>org.apache.ant</groupId>
-                                    <artifactId>ant</artifactId>
-                                    <version>${org.apache.ant_ant_version}</version>
-                                    <type>jar</type>
-                                    <overWrite>false</overWrite>
-                                    <outputDirectory>${project.build.directory}/classes</outputDirectory>
-                                    <!--<includes>**/*.class</includes>-->
-                                </artifactItem>
-                            </artifactItems>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
