@@ -10,15 +10,15 @@ import java.util.EnumMap;
 
 /**
  * User: sop
- * Date: 03.05.11
- * Time: 13:05
+ * Date: 06.05.11
+ * Time: 09:27
  */
-public class PFListReplacementTest {
+public class RecursePropertyReplacementTest {
 
     @Test
     public void testAll() {
-        File startPath = new File("target/test-classes/testAll");
-        File myTestProperty = new File(startPath, "myTest.properties");
+        File startPath = new File("target/test-classes/recursePropertyReplacement");
+        File myTestProperty = new File(startPath, "myProperties.properties");
 
         Assert.assertTrue("StartPath [" + startPath.getPath() + "] doesn't exist!", startPath.exists());
 
@@ -32,4 +32,6 @@ public class PFListReplacementTest {
 
         Util.checkIfResultIsAsExpected(startPath);
     }
+
+
 }
