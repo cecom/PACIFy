@@ -6,6 +6,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.File;
+import java.net.URL;
 import java.util.List;
 
 /**
@@ -20,7 +21,9 @@ public class CheckPropertyExistsTest extends CheckTest {
         File testStartPath = new File("target/test-classes/checkPropertyExistsTest/wrong");
         File propertyFile = new File(testStartPath, "checkForMissingProperty.properties");
 
-        List<Defect> defects = getDefects(new CheckPropertyExists(propertyFile), testStartPath, propertyFile);
+        URL fileUrl = Util.getURLForFile(propertyFile);
+
+        List<Defect> defects = getDefects(new CheckPropertyExists(fileUrl), testStartPath, propertyFile);
 
         Assert.assertEquals(2, defects.size());
     }
@@ -30,7 +33,9 @@ public class CheckPropertyExistsTest extends CheckTest {
         File testStartPath = new File("target/test-classes/checkPropertyExistsTest/correct");
         File propertyFile = new File(testStartPath, "checkForAllCorrect.properties");
 
-        List<Defect> defects = getDefects(new CheckPropertyExists(propertyFile), testStartPath, propertyFile);
+        URL fileUrl = Util.getURLForFile(propertyFile);
+
+        List<Defect> defects = getDefects(new CheckPropertyExists(fileUrl), testStartPath, propertyFile);
 
         Assert.assertEquals(0, defects.size());
     }

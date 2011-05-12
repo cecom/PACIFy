@@ -3,7 +3,7 @@ package de.oppermann.maven.pflist.defect;
 import de.oppermann.maven.pflist.xml.PFList;
 import de.oppermann.maven.pflist.xml.PFProperty;
 
-import java.io.File;
+import java.net.URL;
 
 /**
  * Created by IntelliJ IDEA.
@@ -16,16 +16,16 @@ public class PropertyNotDefinedDefect implements Defect {
 
     private PFList pfList;
     private PFProperty pfProperty;
-    private File propertyFile;
+    private URL propertyFileURL;
 
-    public PropertyNotDefinedDefect(PFList pfList, PFProperty pfProperty, File propertyFile) {
+    public PropertyNotDefinedDefect(PFList pfList, PFProperty pfProperty, URL propertyFileURL) {
         this.pfList = pfList;
         this.pfProperty = pfProperty;
-        this.propertyFile = propertyFile;
+        this.propertyFileURL = propertyFileURL;
     }
 
     public String getDefectMessage() {
-        return "PFProperty [" + pfProperty.getId() + "] which is defined in [" + pfList.getFile().getPath() + "] is not defined in your property file [" + propertyFile.getPath() + "].";
+        return "PFProperty [" + pfProperty.getId() + "] which is defined in [" + pfList.getFile().getPath() + "] is not defined in your property file [" + propertyFileURL.getPath() + "].";
     }
 
 }

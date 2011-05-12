@@ -19,6 +19,8 @@ public class CheckPropertyExistsInTargetFileTest extends CheckTest {
         File testStartPath = new File("target/test-classes/checkPropertyExistsInTargetFileTest/wrong");
         File propertyFile = new File(testStartPath, "myProperties.properties");
 
+
+
         List<Defect> defects = getDefects(new CheckPropertyExistsInTargetFile(), testStartPath, propertyFile);
 
         Assert.assertEquals(2, defects.size());

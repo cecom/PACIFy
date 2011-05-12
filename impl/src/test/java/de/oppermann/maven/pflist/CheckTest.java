@@ -6,6 +6,7 @@ import de.oppermann.maven.pflist.xml.PFList;
 import de.oppermann.maven.pflist.xml.PFManager;
 
 import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +18,8 @@ import java.util.List;
 public abstract class CheckTest {
 
     protected List<Defect> getDefects(PFListCheck checker, File testStartPath, File propertyFile) {
-        PFManager pfManager = new PFManager(testStartPath, propertyFile);
+        URL propertyFileURL = Util.getURLForFile(propertyFile);
+        PFManager pfManager = new PFManager(testStartPath, propertyFileURL);
 
         List<Defect> defects = new ArrayList<Defect>();
         for (PFList pfList : pfManager.getPFLists()) {
@@ -25,4 +27,6 @@ public abstract class CheckTest {
         }
         return defects;
     }
+
+
 }

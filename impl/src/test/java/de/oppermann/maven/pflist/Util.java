@@ -7,6 +7,8 @@ import org.junit.Assert;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -36,6 +38,15 @@ public class Util {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    public static URL getURLForFile(File file) {
+        try {
+            return file.toURI().toURL();
+        } catch (MalformedURLException e) {
+            Assert.fail();
+        }
+        throw new RuntimeException("Shouldnt reach this code!");
     }
 
     private static List<File> getFiles(File folder) {

@@ -1,11 +1,14 @@
 package de.oppermann.maven.pflist.mavenplugin;
 
+import de.oppermann.maven.pflist.property.PropertyFileLoader;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
 
-import java.io.*;
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Properties;
 
 /**
@@ -16,8 +19,6 @@ import java.util.Properties;
  * @goal loadPropertyFile
  */
 public class LoadPropertyFileMojo extends AbstractMojo {
-
-    final String IMPORT_STRING = "#!import";
 
     /**
      * @parameter default-value="${project}"
@@ -35,56 +36,13 @@ public class LoadPropertyFileMojo extends AbstractMojo {
     private String propertyFilePath;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
-        Properties properties = getPropertiesFromFile();
+        PropertyFileLoader pfl = new PropertyFileLoader();
+
+        URL url = this.getClass().getClassLoader().getResource(propertyFilePath);
+
+        Properties properties = pfl.loadProperties(url);
 
         project.getProperties().putAll(properties);
     }
 
-    private Properties getPropertiesFromFile() throws MojoExecutionException {
-        Properties properties = new Properties();
-        try {
-            File resultFile = File.createTempFile("LoadPropertyFileMojo", "tmp");
-            resultFile.deleteOnExit();
-
-            InputStream is = this.getClass().getClassLoader().getResourceAsStream(propertyFilePath);
-            BufferedWriter bw = new BufferedWriter(new FileWriter(resultFile));
-
-            parsePropertyFile(bw, is);
-
-            try {
-                properties.load(new FileReader(resultFile));
-            } finally {
-                if (is != null) {
-                    is.close();
-                }
-                if (bw != null) {
-                    bw.close();
-                }
-            }
-        } catch (IOException e) {
-            throw new MojoExecutionException("Error while reading the PropertyFiles from classpath.", e);
-        }
-        return properties;
-    }
-
-    private void parsePropertyFile(BufferedWriter bw, InputStream parseStream) throws IOException, MojoExecutionException {
-        InputStreamReader isr = new InputStreamReader(parseStream);
-        BufferedReader br = new BufferedReader(isr);
-
-        for (String line; (line = br.readLine()) != null;) {
-            if (line.startsWith(IMPORT_STRING)) {
-                String[] propertyFiles = line.substring(IMPORT_STRING.length()).trim().split(" ");
-                for (String propertyFile : propertyFiles) {
-                    InputStream propertyFileInputStream = this.getClass().getClassLoader().getResourceAsStream(propertyFile);
-                    if (propertyFileInputStream == null)
-                        throw new MojoExecutionException("Couldnt find resource [" + propertyFile + "] in classpath.");
-                    parsePropertyFile(bw, propertyFileInputStream);
-                }
-                continue;
-            }
-            bw.write(line);
-            bw.newLine();
-        }
-        bw.flush();
-    }
 }

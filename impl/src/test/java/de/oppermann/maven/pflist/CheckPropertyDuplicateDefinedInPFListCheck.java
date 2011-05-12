@@ -6,6 +6,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.File;
+import java.net.URL;
 import java.util.List;
 /**
  * User: sop
@@ -17,6 +18,8 @@ public class CheckPropertyDuplicateDefinedInPFListCheck extends CheckTest {
     public void checkForNotCorrect() {
         File testStartPath = new File("target/test-classes/checkPropertyDuplicateDefinedInPfListCheck/wrong");
         File propertyFile = new File(testStartPath, "myProperties.properties");
+
+        URL fileUrl = Util.getURLForFile(propertyFile);
 
         List<Defect> defects = getDefects(new CheckPropertyDuplicateDefinedInPFList(), testStartPath, propertyFile);
 

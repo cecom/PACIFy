@@ -27,5 +27,10 @@
             <version>${org.apache.maven.shared_maven-plugin-testing-harness_version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>de.oppermann.maven.pflist</groupId>
+            <artifactId>pflist.impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>

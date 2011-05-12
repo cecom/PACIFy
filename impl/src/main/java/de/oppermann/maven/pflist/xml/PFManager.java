@@ -10,6 +10,7 @@ import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 
 import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,13 +22,13 @@ import java.util.List;
 public class PFManager {
 
     private File startPath;
-    private File propertyFile;
+    private URL propertyFileUri;
 
     private List<PFList> pfLists;
 
-    public PFManager(File startPath, File propertyFile) {
+    public PFManager(File startPath, URL propertyFileURL) {
         this.startPath = startPath;
-        this.propertyFile = propertyFile;
+        this.propertyFileUri = propertyFileURL;
     }
 
     public int getPFListCount() {
@@ -35,7 +36,7 @@ public class PFManager {
     }
 
     public void checkCorrectnessOfPFListFiles() {
-        PFListChecker pfListChecker = new PFListChecker(propertyFile);
+        PFListChecker pfListChecker = new PFListChecker(propertyFileUri);
 
         List<Defect> defects = new ArrayList<Defect>();
         for (PFList pfList : getPFLists())
@@ -50,7 +51,7 @@ public class PFManager {
     }
 
     public void doReplacement() {
-        PropertyReplacer propertyReplacer = new PropertyReplacer(propertyFile);
+        PropertyReplacer propertyReplacer = new PropertyReplacer(propertyFileUri);
         for (PFList pfList : getPFLists()) {
             Log.log(LogLevel.INFO, "====== Replacing properties configured in file [" + pfList.getFile().getPath() + "] ...");
             propertyReplacer.replace(pfList);

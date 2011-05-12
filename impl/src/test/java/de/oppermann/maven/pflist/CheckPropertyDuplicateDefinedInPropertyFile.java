@@ -6,6 +6,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +21,9 @@ public class CheckPropertyDuplicateDefinedInPropertyFile {
         File testStartPath = new File("target/test-classes/checkPropertyDuplicateDefinedInPropertyFile/wrong");
         File propertyFile = new File(testStartPath, "myProperties.properties");
 
-        CheckPropertyDuplicateInPropertyFile checker = new CheckPropertyDuplicateInPropertyFile(propertyFile);
+        URL fileUrl = Util.getURLForFile(propertyFile);
+
+        CheckPropertyDuplicateInPropertyFile checker = new CheckPropertyDuplicateInPropertyFile(fileUrl);
 
         List<Defect> defects = new ArrayList<Defect>();
         defects.addAll(checker.checkForErrors());
@@ -33,7 +36,9 @@ public class CheckPropertyDuplicateDefinedInPropertyFile {
         File testStartPath = new File("target/test-classes/checkPropertyDuplicateDefinedInPropertyFile/correct");
         File propertyFile = new File(testStartPath, "myProperties.properties");
 
-        CheckPropertyDuplicateInPropertyFile checker = new CheckPropertyDuplicateInPropertyFile(propertyFile);
+        URL fileUrl = Util.getURLForFile(propertyFile);
+
+        CheckPropertyDuplicateInPropertyFile checker = new CheckPropertyDuplicateInPropertyFile(fileUrl);
 
         List<Defect> defects = new ArrayList<Defect>();
         defects.addAll(checker.checkForErrors());

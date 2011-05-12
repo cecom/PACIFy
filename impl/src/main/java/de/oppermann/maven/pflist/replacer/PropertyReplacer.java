@@ -1,5 +1,6 @@
 package de.oppermann.maven.pflist.replacer;
 
+import de.oppermann.maven.pflist.property.PropertyFileLoader;
 import de.oppermann.maven.pflist.xml.PFFile;
 import de.oppermann.maven.pflist.xml.PFList;
 import de.oppermann.maven.pflist.xml.PFProperty;
@@ -8,9 +9,9 @@ import org.apache.tools.ant.types.FilterSetCollection;
 import org.apache.tools.ant.util.FileUtils;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
 import java.util.List;
 import java.util.Properties;
 
@@ -24,12 +25,12 @@ public class PropertyReplacer {
     public static final String BEGIN_TOKEN = "%{";
     public static final String END_TOKEN = "}";
 
-    private File propertyFile;
+    private URL propertyFileURL;
     private Properties properties;
     private FileUtils fileUtils;
 
-    public PropertyReplacer(File propertyFile) {
-        this.propertyFile = propertyFile;
+    public PropertyReplacer(URL propertyFileURL) {
+        this.propertyFileURL = propertyFileURL;
         fileUtils = FileUtils.getFileUtils();
     }
 
@@ -50,17 +51,6 @@ public class PropertyReplacer {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        }
-    }
-
-    private void fillFilterSet(FilterSet filterSet, List<PFProperty> pfProperties) {
-        filterSet.setBeginToken(BEGIN_TOKEN);
-        filterSet.setEndToken(END_TOKEN);
-
-        for (PFProperty pfProperty : pfProperties) {
-            String key = pfProperty.getId();
-            String value = getProperties().getProperty(key);
-            filterSet.addFilter(key, value);
         }
     }
 
@@ -88,14 +78,8 @@ public class PropertyReplacer {
 
     private Properties getProperties() {
         if (properties == null) {
-            properties = new Properties();
-            try {
-                properties.load(new FileInputStream(propertyFile));
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            PropertyFileLoader pfl = new PropertyFileLoader();
+            properties = pfl.loadProperties(propertyFileURL);
         }
         return properties;
     }

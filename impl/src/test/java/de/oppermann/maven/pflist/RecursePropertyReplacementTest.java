@@ -24,7 +24,7 @@ public class RecursePropertyReplacementTest {
 
         EnumMap<CommandLineParameter, Object> commandlineProperties = new EnumMap<CommandLineParameter, Object>(CommandLineParameter.class);
         commandlineProperties.put(CommandLineParameter.StartPath, startPath);
-        commandlineProperties.put(CommandLineParameter.PropertyFile, myTestProperty);
+        commandlineProperties.put(CommandLineParameter.PropertyFileURL,  Util.getURLForFile(myTestProperty));
         commandlineProperties.put(CommandLineParameter.LogLevel, LogLevel.DEBUG);
 
         PFListPropertyReplacer pfListPropertyReplacer = new PFListPropertyReplacer(commandlineProperties);
