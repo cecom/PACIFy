@@ -4,13 +4,13 @@ import de.oppermann.maven.pflist.checker.PFListChecker;
 import de.oppermann.maven.pflist.defect.Defect;
 import de.oppermann.maven.pflist.logger.Log;
 import de.oppermann.maven.pflist.logger.LogLevel;
+import de.oppermann.maven.pflist.property.PropertyFile;
 import de.oppermann.maven.pflist.replacer.PropertyReplacer;
 import de.oppermann.maven.pflist.xml.utils.PFListFilesFinder;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 
 import java.io.File;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,13 +22,13 @@ import java.util.List;
 public class PFManager {
 
     private File startPath;
-    private URL propertyFileUri;
+    private PropertyFile propertyFile;
 
     private List<PFList> pfLists;
 
-    public PFManager(File startPath, URL propertyFileURL) {
+    public PFManager(File startPath, PropertyFile propertyFile) {
         this.startPath = startPath;
-        this.propertyFileUri = propertyFileURL;
+        this.propertyFile = propertyFile;
     }
 
     public int getPFListCount() {
@@ -36,7 +36,7 @@ public class PFManager {
     }
 
     public void checkCorrectnessOfPFListFiles() {
-        PFListChecker pfListChecker = new PFListChecker(propertyFileUri);
+        PFListChecker pfListChecker = new PFListChecker(propertyFile);
 
         List<Defect> defects = new ArrayList<Defect>();
         for (PFList pfList : getPFLists())
@@ -51,9 +51,9 @@ public class PFManager {
     }
 
     public void doReplacement() {
-        PropertyReplacer propertyReplacer = new PropertyReplacer(propertyFileUri);
+        PropertyReplacer propertyReplacer = new PropertyReplacer(propertyFile);
         for (PFList pfList : getPFLists()) {
-            Log.log(LogLevel.INFO, "====== Replacing properties configured in file [" + pfList.getFile().getPath() + "] ...");
+            Log.log(LogLevel.INFO, "====== Replacing propertyFile configured in file [" + pfList.getFile().getPath() + "] ...");
             propertyReplacer.replace(pfList);
         }
     }

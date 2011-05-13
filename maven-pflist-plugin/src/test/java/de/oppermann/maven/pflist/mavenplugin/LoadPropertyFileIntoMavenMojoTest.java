@@ -12,7 +12,7 @@ import java.util.Properties;
  * Date: 10.05.11
  * Time: 10:08
  */
-public class LoadPropertyFileMojoTest extends AbstractMojoTestCase {
+public class LoadPropertyFileIntoMavenMojoTest extends AbstractMojoTestCase {
 
     Properties propertiesShouldLookLike = new Properties();
 
@@ -27,13 +27,13 @@ public class LoadPropertyFileMojoTest extends AbstractMojoTestCase {
     }
 
     public void testLoadPropertyFile() throws Exception {
-        LoadPropertyFileMojo mojo = (LoadPropertyFileMojo) lookupMojo("loadPropertyFile", "target/test-classes/LoadPropertyFile.pom");
+        LoadPropertyFileIntoMavenMojo intoMavenMojo = (LoadPropertyFileIntoMavenMojo) lookupMojo("loadPropertyFileIntoMaven", "target/test-classes/LoadPropertyFile.pom");
 
-        assertNotNull(mojo);
+        assertNotNull(intoMavenMojo);
 
         try {
-            mojo.execute();
-            MavenProject project = (MavenProject) getVariableValueFromObject(mojo, "project");
+            intoMavenMojo.execute();
+            MavenProject project = (MavenProject) getVariableValueFromObject(intoMavenMojo, "project");
             assertEquals(propertiesShouldLookLike, project.getProperties());
         } catch (MojoExecutionException e) {
             fail(e.getMessage());

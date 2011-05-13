@@ -1,6 +1,6 @@
 package de.oppermann.maven.pflist.replacer;
 
-import de.oppermann.maven.pflist.property.PropertyFileLoader;
+import de.oppermann.maven.pflist.property.PropertyFile;
 import de.oppermann.maven.pflist.xml.PFFile;
 import de.oppermann.maven.pflist.xml.PFList;
 import de.oppermann.maven.pflist.xml.PFProperty;
@@ -10,10 +10,7 @@ import org.apache.tools.ant.util.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URL;
 import java.util.List;
-import java.util.Properties;
 
 /**
  * User: sop
@@ -25,12 +22,11 @@ public class PropertyReplacer {
     public static final String BEGIN_TOKEN = "%{";
     public static final String END_TOKEN = "}";
 
-    private URL propertyFileURL;
-    private Properties properties;
+    private PropertyFile propertyFile;
     private FileUtils fileUtils;
 
-    public PropertyReplacer(URL propertyFileURL) {
-        this.propertyFileURL = propertyFileURL;
+    public PropertyReplacer(PropertyFile propertyFile) {
+        this.propertyFile = propertyFile;
         fileUtils = FileUtils.getFileUtils();
     }
 
@@ -70,17 +66,9 @@ public class PropertyReplacer {
 
         for (PFProperty pfProperty : pfProperties) {
             String key = pfProperty.getId();
-            String value = getProperties().getProperty(key);
+            String value = propertyFile.getPropertyValue(key);
             filterSet.addFilter(key, value);
         }
         return filterSet;
-    }
-
-    private Properties getProperties() {
-        if (properties == null) {
-            PropertyFileLoader pfl = new PropertyFileLoader();
-            properties = pfl.loadProperties(propertyFileURL);
-        }
-        return properties;
     }
 }

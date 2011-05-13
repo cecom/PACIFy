@@ -2,16 +2,12 @@ package de.oppermann.maven.pflist.checker;
 
 import de.oppermann.maven.pflist.defect.Defect;
 import de.oppermann.maven.pflist.defect.PropertyNotDefinedDefect;
+import de.oppermann.maven.pflist.property.PropertyFile;
 import de.oppermann.maven.pflist.xml.PFList;
 import de.oppermann.maven.pflist.xml.PFProperty;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 /**
  * User: sop
@@ -20,33 +16,21 @@ import java.util.Properties;
  */
 public class CheckPropertyExists implements PFListCheck {
 
-    private URL propertyFileURL;
+    private PropertyFile propertyFile;
 
-    public CheckPropertyExists(URL propertyFileURL) {
-        this.propertyFileURL = propertyFileURL;
+    public CheckPropertyExists(PropertyFile propertyFile) {
+        this.propertyFile = propertyFile;
     }
 
     public List<Defect> checkForErrors(PFList pfList) {
         List<Defect> defects = new ArrayList<Defect>();
         List<PFProperty> pfProperties = pfList.getPfProperties();
-        Properties properties = getProperties();
         for (PFProperty pfProperty : pfProperties) {
-            if (properties.containsKey(pfProperty.getId()))
+            if (propertyFile.hasProperty(pfProperty.getId()))
                 continue;
-            Defect defect = new PropertyNotDefinedDefect(pfList, pfProperty, propertyFileURL);
+            Defect defect = new PropertyNotDefinedDefect(pfList, pfProperty);
             defects.add(defect);
         }
         return defects;
     }
-
-    private Properties getProperties() {
-        Properties properties = new Properties();
-        try {
-            properties.load(new FileReader(new File(propertyFileURL.getPath())));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return properties;
-    }
-
 }

@@ -2,10 +2,10 @@ package de.oppermann.maven.pflist.checker;
 
 import de.oppermann.maven.pflist.defect.Defect;
 import de.oppermann.maven.pflist.defect.PropertyDuplicateDefinedInPropertyFile;
+import de.oppermann.maven.pflist.property.PropertyFile;
 import de.oppermann.maven.pflist.utils.FileUtils;
 
 import java.io.File;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -18,27 +18,37 @@ import java.util.Set;
  */
 public class CheckPropertyDuplicateInPropertyFile implements Check {
 
-    private URL propertyFileURL;
+    PropertyFile propertyFile;
 
-    public CheckPropertyDuplicateInPropertyFile(URL propertyFileURL) {
-        this.propertyFileURL = propertyFileURL;
+    public CheckPropertyDuplicateInPropertyFile(PropertyFile propertyFile) {
+        this.propertyFile = propertyFile;
     }
 
     public List<Defect> checkForErrors() {
         List<Defect> defects = new ArrayList<Defect>();
 
+        checkPropertyForDuplicateEntry(propertyFile, defects);
+
+        return defects;
+    }
+
+    private void checkPropertyForDuplicateEntry(PropertyFile propertyFile, List<Defect> defects) {
         Set<String> propertyIds = new HashSet<String>();
 
-        for (String line : FileUtils.getFileAsLines(new File(propertyFileURL.getPath()))) {
+        for (String line : FileUtils.getFileAsLines(new File(propertyFile.getPropertyFileURL().getPath()))) {
+            if(line.startsWith("#"))
+                continue;
+
             String[] split = line.split("=");
             String propertyId = split[0];
             boolean couldBeAdded = propertyIds.add(propertyId);
             if (!couldBeAdded) {
-                Defect defect = new PropertyDuplicateDefinedInPropertyFile(propertyId, propertyFileURL);
+                Defect defect = new PropertyDuplicateDefinedInPropertyFile(propertyId, propertyFile);
                 defects.add(defect);
             }
         }
 
-        return defects;
+        for(PropertyFile parentPropertyFile: propertyFile.getParentPropertyFiles())
+            checkPropertyForDuplicateEntry(parentPropertyFile, defects);
     }
 }

@@ -2,6 +2,7 @@ package de.oppermann.maven.pflist;
 
 import de.oppermann.maven.pflist.checker.CheckPropertyDuplicateInPropertyFile;
 import de.oppermann.maven.pflist.defect.Defect;
+import de.oppermann.maven.pflist.property.PropertyFile;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -19,11 +20,12 @@ public class CheckPropertyDuplicateDefinedInPropertyFile {
     @Test
     public void checkForNotCorrect() {
         File testStartPath = new File("target/test-classes/checkPropertyDuplicateDefinedInPropertyFile/wrong");
-        File propertyFile = new File(testStartPath, "myProperties.properties");
+        File file = new File(testStartPath, "myProperties.properties");
 
-        URL fileUrl = Util.getURLForFile(propertyFile);
+        URL fileUrl = Util.getURLForFile(file);
+        PropertyFile propertyFile = new PropertyFile(fileUrl);
 
-        CheckPropertyDuplicateInPropertyFile checker = new CheckPropertyDuplicateInPropertyFile(fileUrl);
+        CheckPropertyDuplicateInPropertyFile checker = new CheckPropertyDuplicateInPropertyFile(propertyFile);
 
         List<Defect> defects = new ArrayList<Defect>();
         defects.addAll(checker.checkForErrors());
@@ -34,11 +36,12 @@ public class CheckPropertyDuplicateDefinedInPropertyFile {
     @Test
     public void checkForCorrect() {
         File testStartPath = new File("target/test-classes/checkPropertyDuplicateDefinedInPropertyFile/correct");
-        File propertyFile = new File(testStartPath, "myProperties.properties");
+        File file = new File(testStartPath, "myProperties.properties");
 
-        URL fileUrl = Util.getURLForFile(propertyFile);
+        URL fileUrl = Util.getURLForFile(file);
+        PropertyFile propertyFile = new PropertyFile(fileUrl);
 
-        CheckPropertyDuplicateInPropertyFile checker = new CheckPropertyDuplicateInPropertyFile(fileUrl);
+        CheckPropertyDuplicateInPropertyFile checker = new CheckPropertyDuplicateInPropertyFile(propertyFile);
 
         List<Defect> defects = new ArrayList<Defect>();
         defects.addAll(checker.checkForErrors());

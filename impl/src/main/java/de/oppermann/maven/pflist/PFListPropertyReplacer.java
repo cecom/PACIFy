@@ -4,6 +4,7 @@ import de.oppermann.maven.pflist.commandline.CommandLineParameter;
 import de.oppermann.maven.pflist.commandline.CommandLineUtils;
 import de.oppermann.maven.pflist.logger.Log;
 import de.oppermann.maven.pflist.logger.LogLevel;
+import de.oppermann.maven.pflist.property.PropertyFile;
 import de.oppermann.maven.pflist.utils.Utils;
 import de.oppermann.maven.pflist.xml.PFManager;
 
@@ -47,11 +48,11 @@ public class PFListPropertyReplacer {
         Log.log(LogLevel.INFO, "== Executing PFListPropertyReplacer [Version=" + Utils.getJarVersion() + "]");
         Log.log(LogLevel.INFO, "     [LogLevel=" + getCommandLineLogLevel() + "]");
         Log.log(LogLevel.INFO, "     [StartPath=" + getCommandLineStartPath().getAbsolutePath() + "]");
-        Log.log(LogLevel.INFO, "     [PropertyFileURL=" + getCommandLinePropertyFileURL().getPath() + "]");
+        Log.log(LogLevel.INFO, "     [PropertyFileURL=" + getCommandLinePropertyFileURL() + "]");
     }
 
     public void replace() {
-        PFManager pfManager = new PFManager(getCommandLineStartPath(), getCommandLinePropertyFileURL());
+        PFManager pfManager = new PFManager(getCommandLineStartPath(), getPropertyFile());
 
         Log.log(LogLevel.INFO, "==== Found [" + pfManager.getPFListCount() + "] PFList Files...");
 
@@ -70,6 +71,10 @@ public class PFListPropertyReplacer {
 
     private LogLevel getCommandLineLogLevel() {
         return (LogLevel) commandlineProperties.get(CommandLineParameter.LogLevel);
+    }
+
+    private PropertyFile getPropertyFile() {
+        return new PropertyFile(getCommandLinePropertyFileURL());
     }
 
     private URL getCommandLinePropertyFileURL() {
