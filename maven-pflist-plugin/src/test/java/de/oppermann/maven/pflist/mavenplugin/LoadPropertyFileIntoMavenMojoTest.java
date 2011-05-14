@@ -26,7 +26,12 @@ public class LoadPropertyFileIntoMavenMojoTest extends AbstractMojoTestCase {
         propertiesShouldLookLike.put("SomeChildOfChildProperty", "SomeChildOfChildPropertyValue");
     }
 
-    public void testLoadPropertyFile() throws Exception {
+    public void testBla() {
+
+    }
+
+
+    public void mpfLoadPropertyFile() throws Exception {
         LoadPropertyFileIntoMavenMojo intoMavenMojo = (LoadPropertyFileIntoMavenMojo) lookupMojo("loadPropertyFileIntoMaven", "target/test-classes/LoadPropertyFile.pom");
 
         assertNotNull(intoMavenMojo);

@@ -59,8 +59,17 @@ public class PropertyFileProperties implements PFProperties {
 
         Set<String> propertyIds = new HashSet<String>();
 
-        for (String line : FileUtils.getFileAsLines(new File(getPropertyFileURL().getPath()))) {
+        InputStream is = null;
+        try {
+            is = getPropertyFileURL().openStream();
+        } catch (IOException e) {
+            throw new RuntimeException("Couldnt open stream for file [" + getPropertyFileURL().getPath() + "].");
+        }
+
+        for (String line : FileUtils.getFileAsLines(getPropertyFileURL())) {
             if (line.startsWith("#"))
+                continue;
+            if (line.trim().isEmpty())
                 continue;
 
             String[] split = line.split("=");

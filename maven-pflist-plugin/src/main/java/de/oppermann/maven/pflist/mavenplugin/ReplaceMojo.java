@@ -24,6 +24,9 @@ public class ReplaceMojo extends BaseMojo {
 
     @Override
     protected void executePFList() throws MojoExecutionException {
+        if (!pfListStartPath.exists())
+            return; //if it is a maven project which doesn't have a target folder, do nothing.
+
         URL propertyFileURL = getPropertyFileURL();
 
         PropertyFileProperties propertyFileProperties = new PropertyFileProperties(propertyFileURL);
@@ -39,7 +42,7 @@ public class ReplaceMojo extends BaseMojo {
         pfManager.checkCorrectnessOfPFListFiles();
 
         getLog().info("Doing Replacement...");
-        // pfManager.doReplacement();
+        pfManager.doReplacement();
     }
 
 }
