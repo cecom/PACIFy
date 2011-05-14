@@ -4,7 +4,7 @@ import de.oppermann.maven.pflist.commandline.CommandLineParameter;
 import de.oppermann.maven.pflist.commandline.CommandLineUtils;
 import de.oppermann.maven.pflist.logger.Log;
 import de.oppermann.maven.pflist.logger.LogLevel;
-import de.oppermann.maven.pflist.property.PropertyFile;
+import de.oppermann.maven.pflist.property.PropertyFileProperties;
 import de.oppermann.maven.pflist.utils.Utils;
 import de.oppermann.maven.pflist.xml.PFManager;
 
@@ -48,7 +48,7 @@ public class PFListPropertyReplacer {
         Log.log(LogLevel.INFO, "== Executing PFListPropertyReplacer [Version=" + Utils.getJarVersion() + "]");
         Log.log(LogLevel.INFO, "     [LogLevel=" + getCommandLineLogLevel() + "]");
         Log.log(LogLevel.INFO, "     [StartPath=" + getCommandLineStartPath().getAbsolutePath() + "]");
-        Log.log(LogLevel.INFO, "     [PropertyFileURL=" + getCommandLinePropertyFileURL() + "]");
+        Log.log(LogLevel.INFO, "     [PropertyFileURL=" + getCommandLinePropertyFileURL().getPath() + "]");
     }
 
     public void replace() {
@@ -73,8 +73,8 @@ public class PFListPropertyReplacer {
         return (LogLevel) commandlineProperties.get(CommandLineParameter.LogLevel);
     }
 
-    private PropertyFile getPropertyFile() {
-        return new PropertyFile(getCommandLinePropertyFileURL());
+    private PropertyFileProperties getPropertyFile() {
+        return new PropertyFileProperties(getCommandLinePropertyFileURL());
     }
 
     private URL getCommandLinePropertyFileURL() {

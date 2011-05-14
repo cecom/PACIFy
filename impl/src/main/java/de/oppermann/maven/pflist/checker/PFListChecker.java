@@ -1,7 +1,7 @@
 package de.oppermann.maven.pflist.checker;
 
 import de.oppermann.maven.pflist.defect.Defect;
-import de.oppermann.maven.pflist.property.PropertyFile;
+import de.oppermann.maven.pflist.property.PFProperties;
 import de.oppermann.maven.pflist.xml.PFList;
 
 import java.util.ArrayList;
@@ -17,11 +17,11 @@ public class PFListChecker {
     List<Check> checks = new ArrayList<Check>();
     List<PFListCheck> pfListChecks = new ArrayList<PFListCheck>();
 
-    public PFListChecker(PropertyFile propertyFile) {
-        checks.add(new CheckPropertyDuplicateInPropertyFile(propertyFile));
+    public PFListChecker(PFProperties pfProperties) {
+        checks.add(new CheckPropertyDuplicateInPropertyFile(pfProperties));
         pfListChecks.add(new CheckTargetFileExist());
         pfListChecks.add(new CheckPropertyDuplicateDefinedInPFList());
-        pfListChecks.add(new CheckPropertyExists(propertyFile));
+        pfListChecks.add(new CheckPropertyExists(pfProperties));
         pfListChecks.add(new CheckPropertyExistsInTargetFile());
     }
 

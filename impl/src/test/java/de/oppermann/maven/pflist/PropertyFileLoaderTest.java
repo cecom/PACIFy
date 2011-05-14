@@ -1,6 +1,6 @@
 package de.oppermann.maven.pflist;
 
-import de.oppermann.maven.pflist.property.PropertyFile;
+import de.oppermann.maven.pflist.property.PropertyFileProperties;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -46,12 +46,12 @@ public class PropertyFileLoaderTest {
     public void testWithClasspath() {
         URL url = this.getClass().getClassLoader().getResource("properties/subfolder/ChildOfChilds.properties");
 
-        PropertyFile propertyFile = new PropertyFile(url);
+        PropertyFileProperties propertyFileProperties = new PropertyFileProperties(url);
 
-        assertEquals(allPropertiesShouldLookLike, propertyFile.getProperties());
-        assertEquals(childOfChildPropertiesShouldLookLike, propertyFile.getLocalProperties());
-        assertEquals(child1PropertiesShouldLookLike, propertyFile.getParentPropertyFiles().get(0).getLocalProperties());
-        assertEquals(child2PropertiesShouldLookLike, propertyFile.getParentPropertyFiles().get(1).getLocalProperties());
-        assertEquals(basePropertiesShouldLookLike, propertyFile.getParentPropertyFiles().get(0).getParentPropertyFiles().get(0).getLocalProperties());
+        assertEquals(allPropertiesShouldLookLike, propertyFileProperties.getProperties());
+        assertEquals(childOfChildPropertiesShouldLookLike, propertyFileProperties.getLocalProperties());
+        assertEquals(child1PropertiesShouldLookLike, propertyFileProperties.getParentPropertyFilePropertieses().get(0).getLocalProperties());
+        assertEquals(child2PropertiesShouldLookLike, propertyFileProperties.getParentPropertyFilePropertieses().get(1).getLocalProperties());
+        assertEquals(basePropertiesShouldLookLike, propertyFileProperties.getParentPropertyFilePropertieses().get(0).getParentPropertyFilePropertieses().get(0).getLocalProperties());
     }
 }

@@ -18,13 +18,13 @@ import java.util.List;
 public class PFList {
 
     @ElementList(name = "property", inline = true)
-    private List<PFProperty> pfProperties;
+    private List<PFListProperty> pfListProperties;
 
     @Transient
     private File file;
 
-    public List<PFProperty> getPfProperties() {
-        return pfProperties;
+    public List<PFListProperty> getPfListProperties() {
+        return pfListProperties;
     }
 
     public void setFile(File file) {
@@ -45,8 +45,8 @@ public class PFList {
 
     public List<PFFile> getPfFiles() {
         List<PFFile> result = new ArrayList<PFFile>();
-        for (PFProperty pfProperty : getPfProperties()) {
-            for (PFFile pfFile : pfProperty.getPFFiles()) {
+        for (PFListProperty pfListProperty : getPfListProperties()) {
+            for (PFFile pfFile : pfListProperty.getPFFiles()) {
                 if (result.contains(pfFile))
                     continue;
                 result.add(pfFile);
@@ -55,11 +55,11 @@ public class PFList {
         return result;
     }
 
-    public List<PFProperty> getPfPropertiesForPfFile(PFFile pfFile) {
-        List<PFProperty> result = new ArrayList<PFProperty>();
-        for (PFProperty pfProperty : getPfProperties())
-            if (pfProperty.getPFFiles().contains(pfFile))
-                result.add(pfProperty);
+    public List<PFListProperty> getPfPropertiesForPfFile(PFFile pfFile) {
+        List<PFListProperty> result = new ArrayList<PFListProperty>();
+        for (PFListProperty pfListProperty : getPfListProperties())
+            if (pfListProperty.getPFFiles().contains(pfFile))
+                result.add(pfListProperty);
         return result;
     }
 }

@@ -1,12 +1,11 @@
 package de.oppermann.maven.pflist.mavenplugin;
 
+import de.oppermann.maven.pflist.property.PropertyFileProperties;
 import de.oppermann.maven.pflist.xml.PFManager;
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.project.MavenProject;
 
 import java.io.File;
+import java.net.URL;
 
 /**
  * User: sop
@@ -15,14 +14,7 @@ import java.io.File;
  *
  * @goal replace
  */
-public class ReplaceMojo extends AbstractMojo {
-
-    /**
-     * @parameter default-value="${project}"
-     * @required
-     * @readonly
-     */
-    private MavenProject project;
+public class ReplaceMojo extends BaseMojo {
 
     /**
      * @parameter default-value="${project.build.outputDirectory}"
@@ -30,29 +22,24 @@ public class ReplaceMojo extends AbstractMojo {
      */
     private File pfListStartPath;
 
-    public void execute() throws MojoExecutionException, MojoFailureException {
-//        PFManager pfManager = new PFManager(pfListStartPath, );
-//
-//        if (pfManager.getPFListCount() == 0) {
-//            getLog().info("No pflist files found. Nothing to do.");
-//            return;
-//        }
-//        getLog().info("Found [" + pfManager.getPFListCount() + "] PFList Files...");
-//
-//        getLog().info("Checking PFListFiles...");
-//        pfManager.checkCorrectnessOfPFListFiles();
-//
-//        getLog().info("Doing Replacement...");
-//        pfManager.doReplacement();
+    @Override
+    protected void executePFList() throws MojoExecutionException {
+        URL propertyFileURL = getPropertyFileURL();
 
-//        URL url = this.getClass().getClassLoader().getResource(propertyFilePath);
-//
-//        if (url == null)
-//            throw new MojoExecutionException("Couldn't find property file [" + propertyFilePath + "] ... Aborting!");
-//
-//        Properties properties = pfl.loadProperties(url);
-//
-//        project.getLocalProperties().putAll(properties);
+        PropertyFileProperties propertyFileProperties = new PropertyFileProperties(propertyFileURL);
+        PFManager pfManager = new PFManager(pfListStartPath, propertyFileProperties);
+
+        if (pfManager.getPFListCount() == 0) {
+            getLog().info("No pflist files found. Nothing to do.");
+            return;
+        }
+        getLog().info("Found [" + pfManager.getPFListCount() + "] PFList Files...");
+
+        getLog().info("Checking PFListFiles...");
+        pfManager.checkCorrectnessOfPFListFiles();
+
+        getLog().info("Doing Replacement...");
+        // pfManager.doReplacement();
     }
 
 }

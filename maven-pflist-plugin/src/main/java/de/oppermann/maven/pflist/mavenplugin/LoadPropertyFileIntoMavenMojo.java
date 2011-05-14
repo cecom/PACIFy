@@ -1,10 +1,8 @@
 package de.oppermann.maven.pflist.mavenplugin;
 
-import de.oppermann.maven.pflist.property.PropertyFile;
-import org.apache.maven.plugin.AbstractMojo;
+import de.oppermann.maven.pflist.property.PropertyFileProperties;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.project.MavenProject;
 
 import java.net.URL;
 import java.util.Properties;
@@ -16,37 +14,14 @@ import java.util.Properties;
  *
  * @goal loadPropertyFileIntoMaven
  */
-public class LoadPropertyFileIntoMavenMojo extends AbstractMojo {
+public class LoadPropertyFileIntoMavenMojo extends BaseMojo {
 
-    /**
-     * @parameter default-value="${project}"
-     * @required
-     * @readonly
-     */
-    private MavenProject project;
+    @Override
+    protected void executePFList() throws MojoExecutionException {
+        URL propertyFileURL = getPropertyFileURL();
 
-    /**
-     * Which property file should be used?
-     *
-     * @parameter
-     */
-    private String propertyFilePath;
-
-    public void execute() throws MojoExecutionException, MojoFailureException {
-        if (propertyFilePath == null) {
-            getLog().info("No pflist property file given. Nothing to do.");
-            return;
-        }
-
-        getLog().info("Loading pflist property from file [" + propertyFilePath + "]... ");
-
-        URL propertyFileURL = this.getClass().getClassLoader().getResource(propertyFilePath);
-
-        if (propertyFileURL == null)
-            throw new MojoExecutionException("Couldn't find property file [" + propertyFilePath + "] ... Aborting!");
-
-        PropertyFile propertyFile = new PropertyFile(propertyFileURL);
-        Properties properties = propertyFile.getProperties();
+        PropertyFileProperties propertyFileProperties = new PropertyFileProperties(propertyFileURL);
+        Properties properties = propertyFileProperties.getProperties();
 
         project.getProperties().putAll(properties);
     }

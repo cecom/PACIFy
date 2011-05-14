@@ -2,7 +2,7 @@ package de.oppermann.maven.pflist;
 
 import de.oppermann.maven.pflist.checker.CheckPropertyDuplicateDefinedInPFList;
 import de.oppermann.maven.pflist.defect.Defect;
-import de.oppermann.maven.pflist.property.PropertyFile;
+import de.oppermann.maven.pflist.property.PropertyFileProperties;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -22,9 +22,9 @@ public class CheckPropertyDuplicateDefinedInPFListCheck extends CheckTest {
         File file = new File(testStartPath, "myProperties.properties");
 
         URL fileUrl = Util.getURLForFile(file);
-        PropertyFile propertyFile = new PropertyFile(fileUrl);
+        PropertyFileProperties propertyFileProperties = new PropertyFileProperties(fileUrl);
 
-        List<Defect> defects = getDefects(new CheckPropertyDuplicateDefinedInPFList(), testStartPath, propertyFile);
+        List<Defect> defects = getDefects(new CheckPropertyDuplicateDefinedInPFList(), testStartPath, propertyFileProperties);
 
         Assert.assertEquals(1, defects.size());
     }
@@ -35,9 +35,9 @@ public class CheckPropertyDuplicateDefinedInPFListCheck extends CheckTest {
         File file = new File(testStartPath, "myProperties.properties");
 
         URL fileUrl = Util.getURLForFile(file);
-        PropertyFile propertyFile = new PropertyFile(fileUrl);
+        PropertyFileProperties propertyFileProperties = new PropertyFileProperties(fileUrl);
 
-        List<Defect> defects = getDefects(new CheckPropertyDuplicateDefinedInPFList(), testStartPath, propertyFile);
+        List<Defect> defects = getDefects(new CheckPropertyDuplicateDefinedInPFList(), testStartPath, propertyFileProperties);
 
         Assert.assertEquals(0, defects.size());
     }

@@ -1,6 +1,6 @@
 package de.oppermann.maven.pflist.defect;
 
-import de.oppermann.maven.pflist.property.PropertyFile;
+import de.oppermann.maven.pflist.property.PropertyFileProperties;
 
 /**
  * User: sop
@@ -9,14 +9,14 @@ import de.oppermann.maven.pflist.property.PropertyFile;
  */
 public class PropertyDuplicateDefinedInPropertyFile implements Defect {
     private String property;
-    private PropertyFile propertyFile;
+    private PropertyFileProperties propertyFileProperties;
 
-    public PropertyDuplicateDefinedInPropertyFile(String property, PropertyFile propertyFile) {
+    public PropertyDuplicateDefinedInPropertyFile(String property, PropertyFileProperties propertyFileProperties) {
         this.property = property;
-        this.propertyFile = propertyFile;
+        this.propertyFileProperties = propertyFileProperties;
     }
 
     public String getDefectMessage() {
-        return "Property [" + property + "] is duplicate defined in [" + propertyFile.getPropertyFileURL().getPath() + "]";
+        return "Property [" + property + "] is duplicate defined in [" + propertyFileProperties.getPropertyFileURL().getPath() + "]";
     }
 }

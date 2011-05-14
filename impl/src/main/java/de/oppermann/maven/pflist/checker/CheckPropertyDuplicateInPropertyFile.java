@@ -1,15 +1,10 @@
 package de.oppermann.maven.pflist.checker;
 
 import de.oppermann.maven.pflist.defect.Defect;
-import de.oppermann.maven.pflist.defect.PropertyDuplicateDefinedInPropertyFile;
-import de.oppermann.maven.pflist.property.PropertyFile;
-import de.oppermann.maven.pflist.utils.FileUtils;
+import de.oppermann.maven.pflist.property.PFProperties;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * User: sop
@@ -18,37 +13,17 @@ import java.util.Set;
  */
 public class CheckPropertyDuplicateInPropertyFile implements Check {
 
-    PropertyFile propertyFile;
+    PFProperties pfProperties;
 
-    public CheckPropertyDuplicateInPropertyFile(PropertyFile propertyFile) {
-        this.propertyFile = propertyFile;
+    public CheckPropertyDuplicateInPropertyFile(PFProperties pfProperties) {
+        this.pfProperties = pfProperties;
     }
 
     public List<Defect> checkForErrors() {
         List<Defect> defects = new ArrayList<Defect>();
 
-        checkPropertyForDuplicateEntry(propertyFile, defects);
+        defects.addAll(pfProperties.checkForDuplicateEntry());
 
         return defects;
-    }
-
-    private void checkPropertyForDuplicateEntry(PropertyFile propertyFile, List<Defect> defects) {
-        Set<String> propertyIds = new HashSet<String>();
-
-        for (String line : FileUtils.getFileAsLines(new File(propertyFile.getPropertyFileURL().getPath()))) {
-            if(line.startsWith("#"))
-                continue;
-
-            String[] split = line.split("=");
-            String propertyId = split[0];
-            boolean couldBeAdded = propertyIds.add(propertyId);
-            if (!couldBeAdded) {
-                Defect defect = new PropertyDuplicateDefinedInPropertyFile(propertyId, propertyFile);
-                defects.add(defect);
-            }
-        }
-
-        for(PropertyFile parentPropertyFile: propertyFile.getParentPropertyFiles())
-            checkPropertyForDuplicateEntry(parentPropertyFile, defects);
     }
 }

@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<property_file_list>
+    <property id="SomeChild1Property">
+        <file relative_path="someConf.txt"/>
+    </property>
+    <property id="SomeChild2Property">
+        <file relative_path="someConf.txt"/>
+    </property>
+    <property id="env.name">
+        <file relative_path="subfolder/someChildConf.txt"/>
+    </property>
+</property_file_list>

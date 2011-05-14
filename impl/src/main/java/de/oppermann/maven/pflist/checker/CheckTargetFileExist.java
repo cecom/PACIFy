@@ -4,7 +4,7 @@ import de.oppermann.maven.pflist.defect.Defect;
 import de.oppermann.maven.pflist.defect.TargetFileDoesNotExistDefect;
 import de.oppermann.maven.pflist.xml.PFFile;
 import de.oppermann.maven.pflist.xml.PFList;
-import de.oppermann.maven.pflist.xml.PFProperty;
+import de.oppermann.maven.pflist.xml.PFListProperty;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -19,12 +19,12 @@ public class CheckTargetFileExist implements PFListCheck {
 
     public List<Defect> checkForErrors(PFList pfList) {
         List<Defect> defects = new ArrayList<Defect>();
-        for (PFProperty pfProperty : pfList.getPfProperties()) {
-            for (PFFile pfFile : pfProperty.getPFFiles()) {
+        for (PFListProperty pfListProperty : pfList.getPfListProperties()) {
+            for (PFFile pfFile : pfListProperty.getPFFiles()) {
                 File file = pfList.getAbsoluteFileFor(pfFile);
                 if (file.exists() && file.isFile())
                     continue;
-                Defect defect = new TargetFileDoesNotExistDefect(pfList, pfProperty, pfFile);
+                Defect defect = new TargetFileDoesNotExistDefect(pfList, pfListProperty, pfFile);
                 defects.add(defect);
             }
         }

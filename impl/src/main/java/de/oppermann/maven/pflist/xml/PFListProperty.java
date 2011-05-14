@@ -12,7 +12,7 @@ import java.util.List;
  * Time: 13:05
  */
 @Root(name = "property", strict = false)
-public class PFProperty {
+public class PFListProperty {
 
     @Attribute
     private String id;

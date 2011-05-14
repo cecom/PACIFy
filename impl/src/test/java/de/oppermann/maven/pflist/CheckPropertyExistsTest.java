@@ -2,7 +2,7 @@ package de.oppermann.maven.pflist;
 
 import de.oppermann.maven.pflist.checker.CheckPropertyExists;
 import de.oppermann.maven.pflist.defect.Defect;
-import de.oppermann.maven.pflist.property.PropertyFile;
+import de.oppermann.maven.pflist.property.PropertyFileProperties;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -23,9 +23,9 @@ public class CheckPropertyExistsTest extends CheckTest {
         File file = new File(testStartPath, "checkForMissingProperty.properties");
 
         URL fileUrl = Util.getURLForFile(file);
-        PropertyFile propertyFile = new PropertyFile(fileUrl);
+        PropertyFileProperties propertyFileProperties = new PropertyFileProperties(fileUrl);
 
-        List<Defect> defects = getDefects(new CheckPropertyExists(propertyFile), testStartPath, propertyFile);
+        List<Defect> defects = getDefects(new CheckPropertyExists(propertyFileProperties), testStartPath, propertyFileProperties);
 
         Assert.assertEquals(2, defects.size());
     }
@@ -36,9 +36,9 @@ public class CheckPropertyExistsTest extends CheckTest {
         File file = new File(testStartPath, "checkForAllCorrect.properties");
 
         URL fileUrl = Util.getURLForFile(file);
-        PropertyFile propertyFile = new PropertyFile(fileUrl);
+        PropertyFileProperties propertyFileProperties = new PropertyFileProperties(fileUrl);
 
-        List<Defect> defects = getDefects(new CheckPropertyExists(propertyFile), testStartPath, propertyFile);
+        List<Defect> defects = getDefects(new CheckPropertyExists(propertyFileProperties), testStartPath, propertyFileProperties);
 
         Assert.assertEquals(0, defects.size());
     }

@@ -5,6 +5,7 @@
         <artifactId>maven-pflist-plugin</artifactId>
         <configuration>
             <propertyFilePath>ChildOfChilds.properties</propertyFilePath>
+            <pfListStartPath>target/test-classes/replace</pfListStartPath>
             <project implementation="de.oppermann.maven.pflist.mavenplugin.stubs.PFListMavenMojoProjectStub"/>
         </configuration>
       </plugin>

@@ -1,0 +1,6 @@
+aasödlfjlajkfjklö340
++#aäsdfasd %{SomeChild1Property} http:///a kjadsfjapsuerq34
+aasödlfjlajkfjklö340
++#aäsdfasd %{SomeChild2Property} http:///a kjadsfjapsuerq34
+aasödlfjlajkfjklö340
++#aäsdfasd %{SomeChild1Property} http:///a kjadsfjapsuerq34

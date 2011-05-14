@@ -9,7 +9,7 @@ import java.util.Properties;
  * Date: 12.05.11
  * Time: 11:21
  */
-public class LoadPropertyFileMojoProjectStub extends MavenProjectStub {
+public class PFListMavenMojoProjectStub extends MavenProjectStub {
 
     Properties properties = new Properties();
 

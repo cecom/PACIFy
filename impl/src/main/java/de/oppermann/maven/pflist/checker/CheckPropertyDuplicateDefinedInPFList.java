@@ -3,7 +3,7 @@ package de.oppermann.maven.pflist.checker;
 import de.oppermann.maven.pflist.defect.Defect;
 import de.oppermann.maven.pflist.defect.PropertyDuplicateDefinedInPFList;
 import de.oppermann.maven.pflist.xml.PFList;
-import de.oppermann.maven.pflist.xml.PFProperty;
+import de.oppermann.maven.pflist.xml.PFListProperty;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,13 +22,13 @@ public class CheckPropertyDuplicateDefinedInPFList implements PFListCheck {
         List<Defect> defects = new ArrayList<Defect>();
         List<String> propertyIds = new ArrayList<String>();
 
-        for (PFProperty pfProperty : pfList.getPfProperties()) {
-            if (propertyIds.contains(pfProperty.getId())) {
-                Defect defect = new PropertyDuplicateDefinedInPFList(pfList, pfProperty);
+        for (PFListProperty pfListProperty : pfList.getPfListProperties()) {
+            if (propertyIds.contains(pfListProperty.getId())) {
+                Defect defect = new PropertyDuplicateDefinedInPFList(pfList, pfListProperty);
                 defects.add(defect);
                 continue;
             }
-            propertyIds.add(pfProperty.getId());
+            propertyIds.add(pfListProperty.getId());
         }
         return defects;
     }

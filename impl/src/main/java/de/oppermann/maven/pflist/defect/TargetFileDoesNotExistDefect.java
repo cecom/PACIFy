@@ -2,7 +2,7 @@ package de.oppermann.maven.pflist.defect;
 
 import de.oppermann.maven.pflist.xml.PFFile;
 import de.oppermann.maven.pflist.xml.PFList;
-import de.oppermann.maven.pflist.xml.PFProperty;
+import de.oppermann.maven.pflist.xml.PFListProperty;
 
 /**
  * User: sop
@@ -12,18 +12,18 @@ import de.oppermann.maven.pflist.xml.PFProperty;
 public class TargetFileDoesNotExistDefect implements Defect {
 
     private PFList pfList;
-    private PFProperty pfProperty;
+    private PFListProperty pfListProperty;
     private PFFile pfFile;
 
-    public TargetFileDoesNotExistDefect(PFList pfList, PFProperty pfProperty, PFFile pfFile) {
+    public TargetFileDoesNotExistDefect(PFList pfList, PFListProperty pfListProperty, PFFile pfFile) {
         this.pfList = pfList;
-        this.pfProperty = pfProperty;
+        this.pfListProperty = pfListProperty;
         this.pfFile = pfFile;
     }
 
     public String getDefectMessage() {
         return "File [" + pfList.getAbsoluteFileFor(pfFile).getPath() + "] which is defined in [" + pfList.getFile().getPath()
-                + "] property [" + pfProperty.getId() + "] " + "does not exist.";
+                + "] property [" + pfListProperty.getId() + "] " + "does not exist.";
     }
 
 }

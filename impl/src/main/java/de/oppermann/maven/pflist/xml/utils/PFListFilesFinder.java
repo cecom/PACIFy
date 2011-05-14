@@ -28,6 +28,8 @@ public class PFListFilesFinder {
     }
 
     private void addPFListFiles(List<File> pfListFiles, File folderToCheck) {
+        if (folderToCheck == null)
+            throw new IllegalArgumentException("Folder is null.... Aborting!");
         if (!folderToCheck.exists())
             throw new IllegalArgumentException("Folder [" + folderToCheck.getAbsolutePath() + "] does not exist... Aborting!");
 

@@ -4,7 +4,7 @@ import de.oppermann.maven.pflist.checker.PFListChecker;
 import de.oppermann.maven.pflist.defect.Defect;
 import de.oppermann.maven.pflist.logger.Log;
 import de.oppermann.maven.pflist.logger.LogLevel;
-import de.oppermann.maven.pflist.property.PropertyFile;
+import de.oppermann.maven.pflist.property.PFProperties;
 import de.oppermann.maven.pflist.replacer.PropertyReplacer;
 import de.oppermann.maven.pflist.xml.utils.PFListFilesFinder;
 import org.simpleframework.xml.Serializer;
@@ -22,13 +22,13 @@ import java.util.List;
 public class PFManager {
 
     private File startPath;
-    private PropertyFile propertyFile;
+    private PFProperties pfProperties;
 
     private List<PFList> pfLists;
 
-    public PFManager(File startPath, PropertyFile propertyFile) {
+    public PFManager(File startPath, PFProperties pfProperties) {
         this.startPath = startPath;
-        this.propertyFile = propertyFile;
+        this.pfProperties = pfProperties;
     }
 
     public int getPFListCount() {
@@ -36,7 +36,7 @@ public class PFManager {
     }
 
     public void checkCorrectnessOfPFListFiles() {
-        PFListChecker pfListChecker = new PFListChecker(propertyFile);
+        PFListChecker pfListChecker = new PFListChecker(pfProperties);
 
         List<Defect> defects = new ArrayList<Defect>();
         for (PFList pfList : getPFLists())
@@ -51,7 +51,7 @@ public class PFManager {
     }
 
     public void doReplacement() {
-        PropertyReplacer propertyReplacer = new PropertyReplacer(propertyFile);
+        PropertyReplacer propertyReplacer = new PropertyReplacer(pfProperties);
         for (PFList pfList : getPFLists()) {
             Log.log(LogLevel.INFO, "====== Replacing propertyFile configured in file [" + pfList.getFile().getPath() + "] ...");
             propertyReplacer.replace(pfList);

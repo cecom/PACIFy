@@ -27,14 +27,14 @@ public class TestXml {
             throw new RuntimeException("Couldnt read xml file.", e);
         }
 
-        Assert.assertEquals(pfList.getPfProperties().size(), 2);
+        Assert.assertEquals(pfList.getPfListProperties().size(), 2);
 
-        Assert.assertEquals("foobar1", pfList.getPfProperties().get(0).getId());
-        Assert.assertEquals("foobar2", pfList.getPfProperties().get(1).getId());
+        Assert.assertEquals("foobar1", pfList.getPfListProperties().get(0).getId());
+        Assert.assertEquals("foobar2", pfList.getPfListProperties().get(1).getId());
 
-        Assert.assertEquals("someConf.conf", pfList.getPfProperties().get(0).getPFFiles().get(0).getRelativePath());
-        Assert.assertEquals("subfolder/someOtherConf.conf", pfList.getPfProperties().get(0).getPFFiles().get(1).getRelativePath());
-        Assert.assertEquals("someParentConf.conf", pfList.getPfProperties().get(1).getPFFiles().get(0).getRelativePath());
+        Assert.assertEquals("someConf.conf", pfList.getPfListProperties().get(0).getPFFiles().get(0).getRelativePath());
+        Assert.assertEquals("subfolder/someOtherConf.conf", pfList.getPfListProperties().get(0).getPFFiles().get(1).getRelativePath());
+        Assert.assertEquals("someParentConf.conf", pfList.getPfListProperties().get(1).getPFFiles().get(0).getRelativePath());
 
     }
 
