@@ -1,6 +1,8 @@
 package de.oppermann.maven.pflist.utils;
 
 import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +45,14 @@ public class FileUtils {
             bufferedReader.close();
             return lines;
         } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static URL getFileUrl(File file) {
+        try {
+            return file.toURI().toURL();
+        } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
     }

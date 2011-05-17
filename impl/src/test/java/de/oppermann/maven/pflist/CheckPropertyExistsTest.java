@@ -3,8 +3,8 @@ package de.oppermann.maven.pflist;
 import de.oppermann.maven.pflist.checker.CheckPropertyExists;
 import de.oppermann.maven.pflist.defect.Defect;
 import de.oppermann.maven.pflist.property.PropertyFileProperties;
-import org.junit.Assert;
-import org.junit.Test;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 import java.io.File;
 import java.net.URL;
@@ -25,7 +25,7 @@ public class CheckPropertyExistsTest extends CheckTest {
         URL fileUrl = Util.getURLForFile(file);
         PropertyFileProperties propertyFileProperties = new PropertyFileProperties(fileUrl);
 
-        List<Defect> defects = getDefects(new CheckPropertyExists(propertyFileProperties), testStartPath, propertyFileProperties);
+        List<Defect> defects = getDefects(new CheckPropertyExists(propertyFileProperties), testStartPath);
 
         Assert.assertEquals(2, defects.size());
     }
@@ -38,7 +38,7 @@ public class CheckPropertyExistsTest extends CheckTest {
         URL fileUrl = Util.getURLForFile(file);
         PropertyFileProperties propertyFileProperties = new PropertyFileProperties(fileUrl);
 
-        List<Defect> defects = getDefects(new CheckPropertyExists(propertyFileProperties), testStartPath, propertyFileProperties);
+        List<Defect> defects = getDefects(new CheckPropertyExists(propertyFileProperties), testStartPath);
 
         Assert.assertEquals(0, defects.size());
     }

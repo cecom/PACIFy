@@ -3,8 +3,8 @@ package de.oppermann.maven.pflist;
 import de.oppermann.maven.pflist.checker.CheckPropertyDuplicateInPropertyFile;
 import de.oppermann.maven.pflist.defect.Defect;
 import de.oppermann.maven.pflist.property.PropertyFileProperties;
-import org.junit.Assert;
-import org.junit.Test;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 import java.io.File;
 import java.net.URL;

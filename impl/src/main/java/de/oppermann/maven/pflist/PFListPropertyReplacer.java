@@ -2,6 +2,7 @@ package de.oppermann.maven.pflist;
 
 import de.oppermann.maven.pflist.commandline.CommandLineParameter;
 import de.oppermann.maven.pflist.commandline.CommandLineUtils;
+import de.oppermann.maven.pflist.defect.Defect;
 import de.oppermann.maven.pflist.logger.Log;
 import de.oppermann.maven.pflist.logger.LogLevel;
 import de.oppermann.maven.pflist.property.PropertyFileProperties;
@@ -11,6 +12,7 @@ import de.oppermann.maven.pflist.xml.PFManager;
 import java.io.File;
 import java.net.URL;
 import java.util.EnumMap;
+import java.util.List;
 
 /**
  * User: sop
@@ -52,15 +54,17 @@ public class PFListPropertyReplacer {
     }
 
     public void replace() {
-        PFManager pfManager = new PFManager(getCommandLineStartPath(), getPropertyFile());
+        PFManager pfManager = new PFManager(getCommandLineStartPath());
 
         Log.log(LogLevel.INFO, "==== Found [" + pfManager.getPFListCount() + "] PFList Files...");
 
         Log.log(LogLevel.INFO, "==== Checking PFListFiles...");
-        pfManager.checkCorrectnessOfPFListFiles();
+        List<Defect> defects = pfManager.checkCorrectnessOfPFListFiles(getPropertyFile());
+        shouldWeAbortIt(defects);
 
         Log.log(LogLevel.INFO, "==== Doing Replacement...");
-        pfManager.doReplacement();
+        defects = pfManager.doReplacement(getPropertyFile());
+        shouldWeAbortIt(defects);
 
         Log.log(LogLevel.INFO, "== Successfully finished...");
     }
@@ -79,5 +83,15 @@ public class PFListPropertyReplacer {
 
     private URL getCommandLinePropertyFileURL() {
         return (URL) commandlineProperties.get(CommandLineParameter.PropertyFileURL);
+    }
+
+    private void shouldWeAbortIt(List<Defect> defects) {
+        if (defects.isEmpty())
+            return;
+
+        Log.log(LogLevel.ERROR, "==== !!!!!! We got Errors !!!!! ...");
+        for (Defect defect : defects)
+            Log.log(LogLevel.ERROR, defect.getDefectMessage());
+        throw new RuntimeException("We got errors... Aborting!");
     }
 }

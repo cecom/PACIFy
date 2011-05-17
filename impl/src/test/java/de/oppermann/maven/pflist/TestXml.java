@@ -1,12 +1,13 @@
 package de.oppermann.maven.pflist;
 
 import de.oppermann.maven.pflist.xml.PFList;
-import org.junit.Assert;
-import org.junit.Test;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
+import org.testng.annotations.Test;
 
 import java.io.File;
+
+import static org.testng.Assert.assertEquals;
 
 /**
  * User: sop
@@ -27,14 +28,14 @@ public class TestXml {
             throw new RuntimeException("Couldnt read xml file.", e);
         }
 
-        Assert.assertEquals(pfList.getPfListProperties().size(), 2);
+        assertEquals(pfList.getPfListProperties().size(), 2);
 
-        Assert.assertEquals("foobar1", pfList.getPfListProperties().get(0).getId());
-        Assert.assertEquals("foobar2", pfList.getPfListProperties().get(1).getId());
+        assertEquals("foobar1", pfList.getPfListProperties().get(0).getId());
+        assertEquals("foobar2", pfList.getPfListProperties().get(1).getId());
 
-        Assert.assertEquals("someConf.conf", pfList.getPfListProperties().get(0).getPFFiles().get(0).getRelativePath());
-        Assert.assertEquals("subfolder/someOtherConf.conf", pfList.getPfListProperties().get(0).getPFFiles().get(1).getRelativePath());
-        Assert.assertEquals("someParentConf.conf", pfList.getPfListProperties().get(1).getPFFiles().get(0).getRelativePath());
+        assertEquals("someConf.conf", pfList.getPfListProperties().get(0).getPFFiles().get(0).getRelativePath());
+        assertEquals("subfolder/someOtherConf.conf", pfList.getPfListProperties().get(0).getPFFiles().get(1).getRelativePath());
+        assertEquals("someParentConf.conf", pfList.getPfListProperties().get(1).getPFFiles().get(0).getRelativePath());
 
     }
 

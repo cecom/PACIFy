@@ -1,5 +1,5 @@
-lajdfgaklösdföasdfas a http://0815:62999/ebbiAllä adflökaösldfjpqwuerq	2394uoiklf,.s
-lajdfgaklösdföasdfas a http://0815 adflökaösldfjpqwuerq	2394uoiklf,.s
 lajdfgaklösdföasdfas a http://0815:62999 adflökaösldfjpqwuerq	2394uoiklf,.s
+lajdfgaklösdföasdfas a http://0815 adflökaösldfjpqwuerq	2394uoiklf,.s
+lajdfgaklösdföasdfas a 62999/http://0815/someProperty adflökaösldfjpqwuerq	2394uoiklf,.s
 lajdfgaklösdföasdfas a 62999 adflökaösldfjpqwuerq	2394uoiklf,.s
-lajdfgaklösdföasdfas a http://0815:62999/ebbiAllä adflökaösldfjpqwuerq	2394uoiklf,.s
+lajdfgaklösdföasdfas a http://0815:62999 adflökaösldfjpqwuerq	2394uoiklf,.s

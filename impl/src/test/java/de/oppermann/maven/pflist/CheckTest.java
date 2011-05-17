@@ -17,8 +17,8 @@ import java.util.List;
  */
 public abstract class CheckTest {
 
-    protected List<Defect> getDefects(PFListCheck checker, File testStartPath, PropertyFileProperties propertyFileProperties) {
-        PFManager pfManager = new PFManager(testStartPath, propertyFileProperties);
+    protected List<Defect> getDefects(PFListCheck checker, File testStartPath) {
+        PFManager pfManager = new PFManager(testStartPath);
 
         List<Defect> defects = new ArrayList<Defect>();
         for (PFList pfList : pfManager.getPFLists()) {

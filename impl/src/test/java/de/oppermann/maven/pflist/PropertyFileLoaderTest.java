@@ -1,13 +1,13 @@
 package de.oppermann.maven.pflist;
 
 import de.oppermann.maven.pflist.property.PropertyFileProperties;
-import org.junit.Before;
-import org.junit.Test;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Test;
 
 import java.net.URL;
 import java.util.Properties;
 
-import static org.junit.Assert.assertEquals;
+import static org.testng.Assert.assertEquals;
 
 /**
  * User: sop
@@ -22,7 +22,7 @@ public class PropertyFileLoaderTest {
     Properties childOfChildPropertiesShouldLookLike = new Properties();
     Properties basePropertiesShouldLookLike = new Properties();
 
-    @Before
+    @BeforeTest
     public void setUp() throws Exception {
         basePropertiesShouldLookLike.put("env.name", "baseEnvName");
         basePropertiesShouldLookLike.put("SomeBaseProperty", "SomeBasePropertyValue");
@@ -50,8 +50,8 @@ public class PropertyFileLoaderTest {
 
         assertEquals(allPropertiesShouldLookLike, propertyFileProperties.getProperties());
         assertEquals(childOfChildPropertiesShouldLookLike, propertyFileProperties.getLocalProperties());
-        assertEquals(child1PropertiesShouldLookLike, propertyFileProperties.getParentPropertyFilePropertieses().get(0).getLocalProperties());
-        assertEquals(child2PropertiesShouldLookLike, propertyFileProperties.getParentPropertyFilePropertieses().get(1).getLocalProperties());
-        assertEquals(basePropertiesShouldLookLike, propertyFileProperties.getParentPropertyFilePropertieses().get(0).getParentPropertyFilePropertieses().get(0).getLocalProperties());
+        assertEquals(child1PropertiesShouldLookLike, propertyFileProperties.getParentPropertyFileProperties().get(0).getLocalProperties());
+        assertEquals(child2PropertiesShouldLookLike, propertyFileProperties.getParentPropertyFileProperties().get(1).getLocalProperties());
+        assertEquals(basePropertiesShouldLookLike, propertyFileProperties.getParentPropertyFileProperties().get(0).getParentPropertyFileProperties().get(0).getLocalProperties());
     }
 }

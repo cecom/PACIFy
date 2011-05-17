@@ -63,7 +63,7 @@ public class CommandLineUtils {
         return commandlineProperties;
     }
 
-    private static URI getPropertyFileUrl(String value) {
+    public static URI getPropertyFileUrl(String value) {
         File file = new File(value);
         if (file.exists() && file.isFile())
             return file.toURI();

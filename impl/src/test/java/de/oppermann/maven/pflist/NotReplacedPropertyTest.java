@@ -1,25 +1,34 @@
 package de.oppermann.maven.pflist;
 
 import de.oppermann.maven.pflist.commandline.CommandLineParameter;
+import de.oppermann.maven.pflist.commandline.CommandLineUtils;
+import de.oppermann.maven.pflist.defect.Defect;
 import de.oppermann.maven.pflist.logger.LogLevel;
+import de.oppermann.maven.pflist.property.PropertyFileProperties;
+import de.oppermann.maven.pflist.utils.FileUtils;
+import de.oppermann.maven.pflist.xml.PFManager;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
+import java.net.URL;
 import java.util.EnumMap;
+import java.util.List;
 
 import static org.testng.AssertJUnit.assertTrue;
 
 /**
  * User: sop
- * Date: 06.05.11
- * Time: 09:27
+ * Date: 17.05.11
+ * Time: 13:17
  */
-public class RecursePropertyReplacementTest {
+public class NotReplacedPropertyTest extends CheckTest {
 
     @Test
-    public void testAll() {
-        File startPath = new File("target/test-classes/recursePropertyReplacement");
+    public void checkForNotCorrect() {
+        File startPath = new File("target/test-classes/notReplacedPropertyTest");
         File myTestProperty = new File(startPath, "myProperties.properties");
+        URL myTestPropertyURL = FileUtils.getFileUrl(myTestProperty);
 
         assertTrue("StartPath [" + startPath.getPath() + "] doesn't exist!", startPath.exists());
 
@@ -28,11 +37,9 @@ public class RecursePropertyReplacementTest {
         commandlineProperties.put(CommandLineParameter.PropertyFileURL, Util.getURLForFile(myTestProperty));
         commandlineProperties.put(CommandLineParameter.LogLevel, LogLevel.DEBUG);
 
-        PFListPropertyReplacer pfListPropertyReplacer = new PFListPropertyReplacer(commandlineProperties);
-        pfListPropertyReplacer.replace();
+        PFManager pfManager = new PFManager(startPath);
+        List<Defect> defects = pfManager.doReplacement(new PropertyFileProperties(myTestPropertyURL));
 
-        Util.checkIfResultIsAsExpected(startPath);
+         Assert.assertEquals(defects.size(), 4);
     }
-
-
 }

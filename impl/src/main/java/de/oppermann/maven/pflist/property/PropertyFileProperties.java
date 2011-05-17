@@ -81,7 +81,7 @@ public class PropertyFileProperties implements PFProperties {
             }
         }
 
-        for (PropertyFileProperties parentPropertyFileProperties : getParentPropertyFilePropertieses())
+        for (PropertyFileProperties parentPropertyFileProperties : getParentPropertyFileProperties())
             defects.addAll(parentPropertyFileProperties.checkForDuplicateEntry());
         return defects;
     }
@@ -91,7 +91,7 @@ public class PropertyFileProperties implements PFProperties {
     }
 
 
-    public List<PropertyFileProperties> getParentPropertyFilePropertieses() {
+    public List<PropertyFileProperties> getParentPropertyFileProperties() {
         return parentPropertyFilePropertieses;
     }
 
@@ -101,7 +101,7 @@ public class PropertyFileProperties implements PFProperties {
         loadPropertyFile(this);
 
         properties = new Properties();
-        for (PropertyFileProperties parentPropertyFileProperties : getParentPropertyFilePropertieses()) {
+        for (PropertyFileProperties parentPropertyFileProperties : getParentPropertyFileProperties()) {
             Properties parentProperties = parentPropertyFileProperties.getProperties();
             properties.putAll(parentProperties);
         }

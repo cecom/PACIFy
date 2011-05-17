@@ -37,11 +37,9 @@ public class CheckPropertyExistsInTargetFile implements PFListCheck {
     }
 
     public boolean doesPropertyExistInFile(PFListProperty pfListProperty, File file) {
-        String searchPattern = PropertyReplacer.BEGIN_TOKEN + pfListProperty.getId() + PropertyReplacer.END_TOKEN;
-
         String fileContent = FileUtils.getFileInOneString(file);
 
-        Pattern pattern = Pattern.compile(Pattern.quote(searchPattern));
+        Pattern pattern = PropertyReplacer.getPattern(pfListProperty.getId(),true);
         Matcher matcher = pattern.matcher(fileContent);
 
         return matcher.find();

@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<property_file_list>
+    <property id="foobar1">
+        <file relative_path="correctConf.txt"/>
+    </property>
+    <property id="foobar2">
+        <file relative_path="correctConf.txt"/>
+    </property>
+</property_file_list>

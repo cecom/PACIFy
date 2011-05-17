@@ -22,40 +22,34 @@ import java.util.List;
 public class PFManager {
 
     private File startPath;
-    private PFProperties pfProperties;
-
     private List<PFList> pfLists;
 
-    public PFManager(File startPath, PFProperties pfProperties) {
+    public PFManager(File startPath) {
         this.startPath = startPath;
-        this.pfProperties = pfProperties;
     }
 
     public int getPFListCount() {
         return getPFLists().size();
     }
 
-    public void checkCorrectnessOfPFListFiles() {
+    public List<Defect> checkCorrectnessOfPFListFiles(PFProperties pfProperties) {
         PFListChecker pfListChecker = new PFListChecker(pfProperties);
 
         List<Defect> defects = new ArrayList<Defect>();
         for (PFList pfList : getPFLists())
             defects.addAll(pfListChecker.check(pfList));
 
-        if (!defects.isEmpty()) {
-            Log.log(LogLevel.ERROR, "==== !!!!!! We got Errors !!!!! ...");
-            for (Defect defect : defects)
-                Log.log(LogLevel.ERROR, defect.getDefectMessage());
-            throw new RuntimeException("We got errors... Aborting!");
-        }
+        return defects;
     }
 
-    public void doReplacement() {
-        PropertyReplacer propertyReplacer = new PropertyReplacer(pfProperties);
+    public List<Defect> doReplacement(PFProperties pfProperties) {
+        List<Defect> defects = new ArrayList<Defect>();
         for (PFList pfList : getPFLists()) {
             Log.log(LogLevel.INFO, "====== Replacing propertyFile configured in file [" + pfList.getFile().getPath() + "] ...");
-            propertyReplacer.replace(pfList);
+            PropertyReplacer propertyReplacer = new PropertyReplacer(pfProperties,pfList);
+            defects.addAll(propertyReplacer.replace());
         }
+        return defects;
     }
 
     public List<PFList> getPFLists() {
@@ -76,3 +70,4 @@ public class PFManager {
         return pfLists;
     }
 }
+

@@ -43,7 +43,7 @@ public abstract class BaseMojo extends AbstractMojo {
     protected String propertyFileArtifact;
 
     /**
-     * Which property file should be used?
+     * Should it be skipped??
      *
      * @parameter expression="${pflist.skip}" default-value="false"
      */
@@ -98,7 +98,7 @@ public abstract class BaseMojo extends AbstractMojo {
             if (propertyFileURL == null)
                 throw new MojoExecutionException("Couldn't find property file [" + propertyFile + "] in [" + propertyFileArtifact + "]... Aborting!");
 
-            getLog().info("Loading pflist property from [" + propertyFileURL.getPath() + "]... ");
+            getLog().info("Loading properties from [" + propertyFileURL.getPath() + "]... ");
 
             return propertyFileURL;
 

@@ -2,7 +2,6 @@ package de.oppermann.maven.pflist;
 
 import de.oppermann.maven.pflist.xml.utils.DirFilter;
 import org.apache.tools.ant.util.FileUtils;
-import org.junit.Assert;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -12,6 +11,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import static org.testng.AssertJUnit.assertTrue;
+import static org.testng.FileAssert.fail;
 
 /**
  * User: sop
@@ -30,7 +32,7 @@ public class Util {
 
             File filteredFile = new File(startPath, relativePath);
             try {
-                Assert.assertTrue("Filtered file does not have the expected result. The content of the File should look like ["
+                assertTrue("Filtered file does not have the expected result. The content of the File should look like ["
                         + resultFile.getPath() + "] but is [" + filteredFile.getPath() + "]."
                         , FileUtils.getFileUtils().contentEquals(resultFile, filteredFile));
 
@@ -44,7 +46,7 @@ public class Util {
         try {
             return file.toURI().toURL();
         } catch (MalformedURLException e) {
-            Assert.fail();
+            fail();
         }
         throw new RuntimeException("Shouldnt reach this code!");
     }
