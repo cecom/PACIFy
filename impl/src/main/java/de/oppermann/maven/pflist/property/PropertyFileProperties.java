@@ -59,13 +59,6 @@ public class PropertyFileProperties implements PFProperties {
 
         Set<String> propertyIds = new HashSet<String>();
 
-        InputStream is = null;
-        try {
-            is = getPropertyFileURL().openStream();
-        } catch (IOException e) {
-            throw new RuntimeException("Couldnt open stream for file [" + getPropertyFileURL().getPath() + "].");
-        }
-
         for (String line : FileUtils.getFileAsLines(getPropertyFileURL())) {
             if (line.startsWith("#"))
                 continue;
@@ -118,10 +111,11 @@ public class PropertyFileProperties implements PFProperties {
     }
 
     public void loadPropertyFile(PropertyFileProperties propertyFileProperties) {
+        InputStream is = null;
         try {
             URL propertyFileURL = propertyFileProperties.getPropertyFileURL();
 
-            InputStream is = getInputStreamFor(propertyFileURL);
+            is = getInputStreamFor(propertyFileURL);
             InputStreamReader isr = new InputStreamReader(is);
             BufferedReader br = new BufferedReader(isr);
 
@@ -148,6 +142,10 @@ public class PropertyFileProperties implements PFProperties {
             propertyFileProperties.setLocalProperties(properties);
         } catch (IOException e) {
             throw new RuntimeException(e);
+        } finally {
+            if (is != null) {
+                try {is.close();} catch (IOException e) {}
+            }
         }
     }
 

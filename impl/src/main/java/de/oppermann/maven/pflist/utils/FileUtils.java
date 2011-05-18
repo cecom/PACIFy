@@ -35,8 +35,10 @@ public class FileUtils {
     }
 
     public static List<String> getFileAsLines(URL fileURL) {
+        InputStream is =null;
         try {
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(fileURL.openStream()));
+            is = fileURL.openStream();
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(is));
             List<String> lines = new ArrayList<String>();
             String line;
             while ((line = bufferedReader.readLine()) != null) {
@@ -46,6 +48,10 @@ public class FileUtils {
             return lines;
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }  finally {
+            if (is != null) {
+                try {is.close();} catch (IOException e) {}
+            }
         }
     }
 

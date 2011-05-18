@@ -81,10 +81,8 @@ public abstract class BaseMojo extends AbstractMojo {
     protected abstract void executePFList() throws MojoExecutionException;
 
     protected URL getPropertyFileURL() throws MojoExecutionException {
-        if (propertyFile == null) {
-            getLog().info("No pflist property file given. Nothing to do.");
-            return null;
-        }
+        if (propertyFile == null)
+            throw new MojoExecutionException("You didn't define the propertyFile... Aborting!");
 
         try {
             Artifact artifact = getArtifact();

@@ -13,18 +13,16 @@ public class PropertyNotReplacedDefect implements Defect {
 
     File file;
     String propertyId;
-    private PFList pfList;
 
 
-    public PropertyNotReplacedDefect(PFList pfList, File file, String propertyId) {
-        this.pfList = pfList;
+    public PropertyNotReplacedDefect(File file, String propertyId) {
         this.file = file;
         this.propertyId = propertyId;
     }
 
     public String getDefectMessage() {
         return "In file [" + file.getAbsolutePath() + "] is a property " +
-                "[" + propertyId + "] which is not replaced. Did you forget it in [" + pfList.getFile().getAbsolutePath() + "] or is it unnecessary?";
+                "[" + propertyId + "] which is not replaced. Did you forget it or is it unnecessary?";
 
     }
 }

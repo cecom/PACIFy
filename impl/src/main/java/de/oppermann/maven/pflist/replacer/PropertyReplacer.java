@@ -1,8 +1,8 @@
 package de.oppermann.maven.pflist.replacer;
 
 import de.oppermann.maven.pflist.defect.Defect;
-import de.oppermann.maven.pflist.defect.PropertyNotReplacedDefect;
 import de.oppermann.maven.pflist.property.PFProperties;
+import de.oppermann.maven.pflist.utils.Utils;
 import de.oppermann.maven.pflist.xml.PFFile;
 import de.oppermann.maven.pflist.xml.PFList;
 import de.oppermann.maven.pflist.xml.PFListProperty;
@@ -12,7 +12,10 @@ import org.apache.tools.ant.util.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -49,26 +52,10 @@ public class PropertyReplacer {
                     throw new RuntimeException("Couldn't delete file [" + file.getPath() + "]... Aborting!");
                 if (!tmpFile.renameTo(file))
                     throw new RuntimeException("Couldn't rename filtered file from [" + tmpFile.getPath() + "] to [" + file.getPath() + "]... Aborting!");
-                defects.addAll(checkFileForNotReplacedStuff(file));
+                defects.addAll(Utils.checkFileForNotReplacedStuff(file));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        }
-        return defects;
-    }
-
-    private List<Defect> checkFileForNotReplacedStuff(File file) {
-        List<Defect> defects = new ArrayList<Defect>();
-
-        String fileContent = de.oppermann.maven.pflist.utils.FileUtils.getFileInOneString(file);
-
-        Pattern pattern = PropertyReplacer.getPattern("([^}]*)", false);
-        Matcher matcher = pattern.matcher(fileContent);
-
-        while (matcher.find()) {
-            String propertyId = matcher.group(1);
-            Defect defect = new PropertyNotReplacedDefect(pfList, file, propertyId);
-            defects.add(defect);
         }
         return defects;
     }
@@ -114,7 +101,7 @@ public class PropertyReplacer {
 
             if (parentPropertyIds.contains(propertyId))
                 throw new RuntimeException("You have a cycle reference in property [" + parentPropertyId + "] which is used in " +
-                        "pflist file ["+pfList.getFile().getAbsolutePath()+"].");
+                        "pflist file [" + pfList.getFile().getAbsolutePath() + "].");
 
             result.add(propertyId);
 

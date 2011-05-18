@@ -45,7 +45,7 @@ public class PFManager {
     public List<Defect> doReplacement(PFProperties pfProperties) {
         List<Defect> defects = new ArrayList<Defect>();
         for (PFList pfList : getPFLists()) {
-            Log.log(LogLevel.INFO, "====== Replacing propertyFile configured in file [" + pfList.getFile().getPath() + "] ...");
+            Log.log(LogLevel.INFO, "====== Replacing stuff which is configured in [" + pfList.getFile().getPath() + "] ...");
             PropertyReplacer propertyReplacer = new PropertyReplacer(pfProperties,pfList);
             defects.addAll(propertyReplacer.replace());
         }
