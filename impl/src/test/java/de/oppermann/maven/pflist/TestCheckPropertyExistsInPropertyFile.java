@@ -15,7 +15,7 @@ import java.util.List;
  * Date: 03.05.11
  * Time: 13:05
  */
-public class CheckPropertyExistsInPropertyFile extends CheckTest {
+public class TestCheckPropertyExistsInPropertyFile extends BaseCheck {
 
     @Test
     public void checkForNotCorrect() {

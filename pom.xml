@@ -11,7 +11,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <org.apache.ant_ant_version>1.8.2</org.apache.ant_ant_version>
         <org.simpleframework_simple-xml_version>2.5.2</org.simpleframework_simple-xml_version>
-        <org.testng_testng_version>5.14.2</org.testng_testng_version>
+        <org.testng_testng_version>5.5</org.testng_testng_version>
         <org.apache.maven_maven-plugin-api_vesion>3.0</org.apache.maven_maven-plugin-api_vesion>
         <org.apache.maven_maven-project_version>2.2.1</org.apache.maven_maven-project_version>
         <org.apache.maven.shared_maven-plugin-testing-harness_version>2.0-alpha-1

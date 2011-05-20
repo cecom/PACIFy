@@ -1,25 +1,33 @@
 package de.oppermann.maven.pflist;
 
 import de.oppermann.maven.pflist.commandline.CommandLineParameter;
+import de.oppermann.maven.pflist.defect.Defect;
 import de.oppermann.maven.pflist.logger.LogLevel;
+import de.oppermann.maven.pflist.model.PFEntityManager;
+import de.oppermann.maven.pflist.property.FilePropertyContainer;
+import de.oppermann.maven.pflist.utils.FileUtils;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
+import java.net.URL;
 import java.util.EnumMap;
+import java.util.List;
 
 import static org.testng.AssertJUnit.assertTrue;
 
 /**
  * User: sop
- * Date: 06.05.11
- * Time: 09:27
+ * Date: 17.05.11
+ * Time: 13:17
  */
-public class RecursePropertyReplacementTest {
+public class TestNotReplacedProperty extends BaseCheck {
 
     @Test
-    public void testAll() {
-        File startPath = new File("target/test-classes/recursePropertyReplacement");
+    public void checkForNotCorrect() {
+        File startPath = new File("target/test-classes/notReplacedPropertyTest");
         File myTestProperty = new File(startPath, "myProperties.properties");
+        URL myTestPropertyURL = FileUtils.getFileUrl(myTestProperty);
 
         assertTrue("StartPath [" + startPath.getPath() + "] doesn't exist!", startPath.exists());
 
@@ -28,11 +36,9 @@ public class RecursePropertyReplacementTest {
         commandlineProperties.put(CommandLineParameter.PropertyFileURL, Util.getURLForFile(myTestProperty));
         commandlineProperties.put(CommandLineParameter.LogLevel, LogLevel.DEBUG);
 
-        PFListPropertyReplacer pfListPropertyReplacer = new PFListPropertyReplacer(commandlineProperties);
-        pfListPropertyReplacer.replace();
+        PFEntityManager pfEntityManager = new PFEntityManager(startPath);
+        List<Defect> defects = pfEntityManager.doReplacement(new FilePropertyContainer(myTestPropertyURL));
 
-        Util.checkIfResultIsAsExpected(startPath);
+        Assert.assertEquals(defects.size(), 4);
     }
-
-
 }

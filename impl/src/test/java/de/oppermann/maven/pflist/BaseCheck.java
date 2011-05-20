@@ -14,7 +14,7 @@ import java.util.List;
  * Date: 03.05.11
  * Time: 13:05
  */
-public abstract class CheckTest {
+public abstract class BaseCheck {
 
     protected List<Defect> getDefects(PFListCheck checker, File testStartPath) {
         PFEntityManager pfEntityManager = new PFEntityManager(testStartPath);

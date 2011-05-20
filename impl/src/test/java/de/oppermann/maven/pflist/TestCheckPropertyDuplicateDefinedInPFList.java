@@ -12,7 +12,8 @@ import java.util.List;
  * Date: 03.05.11
  * Time: 13:05
  */
-public class CheckPropertyDuplicateDefinedInPFList extends CheckTest {
+public class TestCheckPropertyDuplicateDefinedInPFList extends BaseCheck {
+
     @Test
     public void checkForNotCorrect() {
         File testStartPath = new File("target/test-classes/checkPropertyDuplicateDefinedInPfListCheck/wrong");

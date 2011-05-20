@@ -12,7 +12,7 @@ import java.util.List;
  * Date: 03.05.11
  * Time: 13:05
  */
-public class CheckPropertyExistsInTargetFile extends CheckTest {
+public class TestCheckPropertyExistsInTargetFile extends BaseCheck {
     @Test
     public void checkForNotCorrect() {
         File testStartPath = new File("target/test-classes/checkPropertyExistsInTargetFileTest/wrong");

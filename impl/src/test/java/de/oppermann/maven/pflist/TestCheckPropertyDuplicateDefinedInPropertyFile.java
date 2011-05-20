@@ -16,7 +16,7 @@ import java.util.List;
  * Date: 03.05.11
  * Time: 13:05
  */
-public class CheckPropertyDuplicateDefinedInPropertyFile {
+public class TestCheckPropertyDuplicateDefinedInPropertyFile {
     @Test
     public void checkForNotCorrect() {
         File testStartPath = new File("target/test-classes/checkPropertyDuplicateDefinedInPropertyFile/wrong");

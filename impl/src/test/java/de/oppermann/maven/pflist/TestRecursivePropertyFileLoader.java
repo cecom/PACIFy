@@ -14,7 +14,7 @@ import static org.testng.Assert.assertEquals;
  * Date: 12.05.11
  * Time: 15:55
  */
-public class PropertyFileLoaderTest {
+public class TestRecursivePropertyFileLoader {
 
     Properties allPropertiesShouldLookLike = new Properties();
     Properties child1PropertiesShouldLookLike = new Properties();

@@ -12,8 +12,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static org.testng.Assert.fail;
 import static org.testng.AssertJUnit.assertTrue;
-import static org.testng.FileAssert.fail;
 
 /**
  * User: sop
@@ -48,7 +48,7 @@ public class Util {
         } catch (MalformedURLException e) {
             fail();
         }
-        throw new RuntimeException("Shouldnt reach this code!");
+        throw new RuntimeException("Shouldn't reach this code!");
     }
 
     private static List<File> getFiles(File folder) {
