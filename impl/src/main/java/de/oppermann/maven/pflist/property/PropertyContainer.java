@@ -10,13 +10,15 @@ import java.util.Properties;
  * Date: 14.05.11
  * Time: 09:31
  */
-public interface PFProperties {
+public interface PropertyContainer {
 
-    boolean contains(String key);
+    boolean containsKey(String key);
 
     String getPropertyValue(String key);
 
     Properties getProperties();
 
     List<Defect> checkForDuplicateEntry();
+
+    String getPropertyLoadedFrom();
 }

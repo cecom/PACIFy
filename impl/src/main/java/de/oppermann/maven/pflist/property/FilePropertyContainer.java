@@ -13,7 +13,7 @@ import java.util.*;
  * Date: 13.05.11
  * Time: 12:38
  */
-public class PropertyFileProperties implements PFProperties {
+public class FilePropertyContainer implements PropertyContainer {
 
     public static final String IMPORT_STRING = "#!import";
 
@@ -22,13 +22,13 @@ public class PropertyFileProperties implements PFProperties {
     private boolean initialized = false;
     private Properties localProperties;
     private Properties properties;
-    private List<PropertyFileProperties> parentPropertyFilePropertieses = new ArrayList<PropertyFileProperties>();
+    private List<FilePropertyContainer> parentFileProperties = new ArrayList<FilePropertyContainer>();
 
-    public PropertyFileProperties(URL propertyFileURL) {
+    public FilePropertyContainer(URL propertyFileURL) {
         this.propertyFileURL = propertyFileURL;
     }
 
-    public boolean contains(String key) {
+    public boolean containsKey(String key) {
         return getPropertyValue(key) != null;
     }
 
@@ -54,6 +54,10 @@ public class PropertyFileProperties implements PFProperties {
         return properties;
     }
 
+    public String getPropertyLoadedFrom() {
+        return getPropertyFileURL().toString();
+    }
+
     public List<Defect> checkForDuplicateEntry() {
         List<Defect> defects = new ArrayList<Defect>();
 
@@ -74,8 +78,8 @@ public class PropertyFileProperties implements PFProperties {
             }
         }
 
-        for (PropertyFileProperties parentPropertyFileProperties : getParentPropertyFileProperties())
-            defects.addAll(parentPropertyFileProperties.checkForDuplicateEntry());
+        for (FilePropertyContainer parentFilePropertyContainer : getParentPropertyFileProperties())
+            defects.addAll(parentFilePropertyContainer.checkForDuplicateEntry());
         return defects;
     }
 
@@ -84,8 +88,8 @@ public class PropertyFileProperties implements PFProperties {
     }
 
 
-    public List<PropertyFileProperties> getParentPropertyFileProperties() {
-        return parentPropertyFilePropertieses;
+    public List<FilePropertyContainer> getParentPropertyFileProperties() {
+        return parentFileProperties;
     }
 
 
@@ -94,8 +98,8 @@ public class PropertyFileProperties implements PFProperties {
         loadPropertyFile(this);
 
         properties = new Properties();
-        for (PropertyFileProperties parentPropertyFileProperties : getParentPropertyFileProperties()) {
-            Properties parentProperties = parentPropertyFileProperties.getProperties();
+        for (FilePropertyContainer parentFilePropertyContainer : getParentPropertyFileProperties()) {
+            Properties parentProperties = parentFilePropertyContainer.getProperties();
             properties.putAll(parentProperties);
         }
         properties.putAll(localProperties);
@@ -105,15 +109,15 @@ public class PropertyFileProperties implements PFProperties {
         this.localProperties = localProperties;
     }
 
-    protected void addParentPropertyFile(PropertyFileProperties parent) {
+    protected void addParentPropertyFile(FilePropertyContainer parent) {
         parent.initialize();
-        parentPropertyFilePropertieses.add(parent);
+        parentFileProperties.add(parent);
     }
 
-    public void loadPropertyFile(PropertyFileProperties propertyFileProperties) {
+    public void loadPropertyFile(FilePropertyContainer filePropertyContainer) {
         InputStream is = null;
         try {
-            URL propertyFileURL = propertyFileProperties.getPropertyFileURL();
+            URL propertyFileURL = filePropertyContainer.getPropertyFileURL();
 
             is = getInputStreamFor(propertyFileURL);
             InputStreamReader isr = new InputStreamReader(is);
@@ -123,12 +127,12 @@ public class PropertyFileProperties implements PFProperties {
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(byteArray));
 
             for (String line; (line = br.readLine()) != null;) {
-                if (line.startsWith(PropertyFileProperties.IMPORT_STRING)) {
-                    String[] includes = line.substring(PropertyFileProperties.IMPORT_STRING.length()).trim().split(" ");
+                if (line.startsWith(FilePropertyContainer.IMPORT_STRING)) {
+                    String[] includes = line.substring(FilePropertyContainer.IMPORT_STRING.length()).trim().split(" ");
                     for (String include : includes) {
                         URL parentPropertyFileURL = new URL(propertyFileURL, include);
-                        PropertyFileProperties parentPropertyFileProperties = new PropertyFileProperties(parentPropertyFileURL);
-                        propertyFileProperties.addParentPropertyFile(parentPropertyFileProperties);
+                        FilePropertyContainer parentFilePropertyContainer = new FilePropertyContainer(parentPropertyFileURL);
+                        filePropertyContainer.addParentPropertyFile(parentFilePropertyContainer);
                     }
                     continue;
                 }
@@ -139,12 +143,15 @@ public class PropertyFileProperties implements PFProperties {
 
             Properties properties = new Properties();
             properties.load(new ByteArrayInputStream(byteArray.toByteArray()));
-            propertyFileProperties.setLocalProperties(properties);
+            filePropertyContainer.setLocalProperties(properties);
         } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {
             if (is != null) {
-                try {is.close();} catch (IOException e) {}
+                try {
+                    is.close();
+                } catch (IOException ignored) {
+                }
             }
         }
     }

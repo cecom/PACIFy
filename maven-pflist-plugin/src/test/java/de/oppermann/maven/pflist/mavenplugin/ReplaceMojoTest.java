@@ -2,7 +2,6 @@ package de.oppermann.maven.pflist.mavenplugin;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
-import org.apache.maven.project.MavenProject;
 
 import java.util.Properties;
 

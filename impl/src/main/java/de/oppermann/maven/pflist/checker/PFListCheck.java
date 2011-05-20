@@ -1,7 +1,7 @@
 package de.oppermann.maven.pflist.checker;
 
 import de.oppermann.maven.pflist.defect.Defect;
-import de.oppermann.maven.pflist.xml.PFList;
+import de.oppermann.maven.pflist.model.PFListEntity;
 
 import java.util.List;
 
@@ -13,8 +13,8 @@ import java.util.List;
 public interface PFListCheck {
 
     /**
-     * @param pfList which pfList should be checked?
+     * @param pfListEntity which pfList should be checked?
      * @return if there are defects, return a list with the defects.
      */
-    List<Defect> checkForErrors(PFList pfList);
+    List<Defect> checkForErrors(PFListEntity pfListEntity);
 }

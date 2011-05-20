@@ -1,7 +1,8 @@
 package de.oppermann.maven.pflist.defect;
 
-import de.oppermann.maven.pflist.xml.PFList;
-import de.oppermann.maven.pflist.xml.PFListProperty;
+import de.oppermann.maven.pflist.model.PFPropertyEntity;
+import de.oppermann.maven.pflist.property.PropertyContainer;
+import de.oppermann.maven.pflist.model.PFListEntity;
 
 /**
  * Created by IntelliJ IDEA.
@@ -11,16 +12,18 @@ import de.oppermann.maven.pflist.xml.PFListProperty;
  */
 public class PropertyNotDefinedDefect implements Defect {
 
-    private PFList pfList;
-    private PFListProperty pfListProperty;
+    private PFListEntity pfListEntity;
+    private PFPropertyEntity pfPropertyEntity;
+    private PropertyContainer propertyContainer;
 
-    public PropertyNotDefinedDefect(PFList pfList, PFListProperty pfListProperty) {
-        this.pfList = pfList;
-        this.pfListProperty = pfListProperty;
+    public PropertyNotDefinedDefect(PFListEntity pfListEntity, PFPropertyEntity pfPropertyEntity, PropertyContainer propertyContainer) {
+        this.pfListEntity = pfListEntity;
+        this.pfPropertyEntity = pfPropertyEntity;
+        this.propertyContainer = propertyContainer;
     }
 
     public String getDefectMessage() {
-        return "PFProperty [" + pfListProperty.getId() + "] which is defined in [" + pfList.getFile().getPath() + "] is not set.";
+        return "Property [" + pfPropertyEntity.getId() + "] which is defined in [" + pfListEntity.getFile().getPath() + "] is not set in [" + propertyContainer.getPropertyLoadedFrom() + "].";
     }
 
 }

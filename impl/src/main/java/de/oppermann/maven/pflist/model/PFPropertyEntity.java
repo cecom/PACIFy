@@ -1,4 +1,4 @@
-package de.oppermann.maven.pflist.xml;
+package de.oppermann.maven.pflist.model;
 
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.ElementList;
@@ -12,20 +12,20 @@ import java.util.List;
  * Time: 13:05
  */
 @Root(name = "property", strict = false)
-public class PFListProperty {
+public class PFPropertyEntity {
 
     @Attribute
     private String id;
 
     @ElementList(name = "file", inline = true)
-    private List<PFFile> pfFiles;
+    private List<PFFileEntity> pfFileEntities;
 
 
     public String getId() {
         return id;
     }
 
-    public List<PFFile> getPFFiles() {
-        return pfFiles;
+    public List<PFFileEntity> getPFFileEntities() {
+        return pfFileEntities;
     }
 }

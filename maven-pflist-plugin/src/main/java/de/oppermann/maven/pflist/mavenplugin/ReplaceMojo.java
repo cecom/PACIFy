@@ -1,11 +1,12 @@
 package de.oppermann.maven.pflist.mavenplugin;
 
-import de.oppermann.maven.pflist.property.PropertyFileProperties;
-import de.oppermann.maven.pflist.xml.PFManager;
+import de.oppermann.maven.pflist.property.MavenPropertyContainer;
+import de.oppermann.maven.pflist.property.PropertyContainer;
+import de.oppermann.maven.pflist.property.FilePropertyContainer;
+import de.oppermann.maven.pflist.model.PFEntityManager;
 import org.apache.maven.plugin.MojoExecutionException;
 
 import java.io.File;
-import java.net.URL;
 
 /**
  * User: sop
@@ -13,6 +14,7 @@ import java.net.URL;
  * Time: 10:29
  *
  * @goal replace
+ * @phase generate-resources
  */
 public class ReplaceMojo extends BaseMojo {
 
@@ -21,6 +23,28 @@ public class ReplaceMojo extends BaseMojo {
      * @required
      */
     private File pfListStartPath;
+
+    /**
+     * should we use the maven properties instead of a file?
+     *
+     * @parameter default-value="true"
+     * @required
+     */
+    protected boolean useMavenProperties;
+
+    /**
+     * If you defined useMavenProperties with false, you have to define the propertyFile.
+     *
+     * @parameter expression="${pflist.usePropertyFile}"
+     */
+    protected String propertyFile;
+
+    /**
+     * If you defined useMavenProperties with false, you have to define in which jar is the propertyFile contained?
+     *
+     * @parameter
+     */
+    protected String propertyFileArtifact;
 
     @Override
     protected void executePFList() throws MojoExecutionException {
@@ -31,20 +55,26 @@ public class ReplaceMojo extends BaseMojo {
             throw new MojoExecutionException("The folder [" + pfListStartPath.getAbsolutePath() + "] does not exist.");
         }
 
-        PFManager pfManager = new PFManager(pfListStartPath);
-        if (pfManager.getPFListCount() == 0) {
+        PFEntityManager pfEntityManager = new PFEntityManager(pfListStartPath);
+        if (pfEntityManager.getPFListCount() == 0) {
             getLog().info("No pflist files found. Nothing to do.");
             return;
         }
-        getLog().info("Found [" + pfManager.getPFListCount() + "] PFList Files...");
+        getLog().info("Found [" + pfEntityManager.getPFListCount() + "] PFList Files...");
 
-        PropertyFileProperties propertyFileProperties = new PropertyFileProperties(getPropertyFileURL());
+        PropertyContainer propertyContainer;
+        if (useMavenProperties) {
+            propertyContainer = new MavenPropertyContainer(project.getProperties());
+        } else {
+            propertyContainer = new FilePropertyContainer(getPropertyFileURL(propertyFileArtifact, propertyFile));
+        }
 
+        getLog().info("Loading properties from [" + propertyContainer.getPropertyLoadedFrom() + "]... ");
         getLog().info("Checking PFListFiles...");
-        pfManager.checkCorrectnessOfPFListFiles(propertyFileProperties);
+        pfEntityManager.checkCorrectnessOfPFListFiles(propertyContainer);
 
         getLog().info("Doing Replacement...");
-        pfManager.doReplacement(propertyFileProperties);
+        pfEntityManager.doReplacement(propertyContainer);
     }
 
 }

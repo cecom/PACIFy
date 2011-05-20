@@ -13,12 +13,12 @@ import java.util.List;
  * Date: 03.05.11
  * Time: 13:05
  */
-public class CheckPropertyDuplicateDefinedInPFListCheck extends CheckTest {
+public class CheckPropertyDuplicateDefinedInPFList extends CheckTest {
     @Test
     public void checkForNotCorrect() {
         File testStartPath = new File("target/test-classes/checkPropertyDuplicateDefinedInPfListCheck/wrong");
 
-        List<Defect> defects = getDefects(new CheckPropertyDuplicateDefinedInPFList(), testStartPath);
+        List<Defect> defects = getDefects(new de.oppermann.maven.pflist.checker.CheckPropertyDuplicateDefinedInPFList(), testStartPath);
 
         Assert.assertEquals(1, defects.size());
     }
@@ -27,7 +27,7 @@ public class CheckPropertyDuplicateDefinedInPFListCheck extends CheckTest {
     public void checkForCorrect() {
         File testStartPath = new File("target/test-classes/checkPropertyDuplicateDefinedInPfListCheck/correct");
 
-        List<Defect> defects = getDefects(new CheckPropertyDuplicateDefinedInPFList(), testStartPath);
+        List<Defect> defects = getDefects(new de.oppermann.maven.pflist.checker.CheckPropertyDuplicateDefinedInPFList(), testStartPath);
 
         Assert.assertEquals(0, defects.size());
     }

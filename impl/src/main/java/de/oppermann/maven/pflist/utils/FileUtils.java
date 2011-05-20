@@ -2,7 +2,6 @@ package de.oppermann.maven.pflist.utils;
 
 import java.io.*;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +34,7 @@ public class FileUtils {
     }
 
     public static List<String> getFileAsLines(URL fileURL) {
-        InputStream is =null;
+        InputStream is = null;
         try {
             is = fileURL.openStream();
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(is));
@@ -48,9 +47,12 @@ public class FileUtils {
             return lines;
         } catch (IOException e) {
             throw new RuntimeException(e);
-        }  finally {
+        } finally {
             if (is != null) {
-                try {is.close();} catch (IOException e) {}
+                try {
+                    is.close();
+                } catch (IOException ignored) {
+                }
             }
         }
     }

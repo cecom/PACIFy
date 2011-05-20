@@ -1,4 +1,4 @@
-package de.oppermann.maven.pflist.xml.utils;
+package de.oppermann.maven.pflist.model.utils;
 
 import java.io.File;
 import java.util.ArrayList;

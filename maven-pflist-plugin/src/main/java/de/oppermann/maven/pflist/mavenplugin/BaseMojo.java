@@ -1,5 +1,7 @@
 package de.oppermann.maven.pflist.mavenplugin;
 
+import de.oppermann.maven.pflist.logger.Log;
+import de.oppermann.maven.pflist.logger.LogLevel;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
 import org.apache.maven.artifact.resolver.ArtifactResolutionException;
@@ -8,7 +10,6 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
 
-import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -28,24 +29,9 @@ public abstract class BaseMojo extends AbstractMojo {
     protected MavenProject project;
 
     /**
-     * Which property file should be used?
-     *
-     * @parameter expression="${pflist.usePropertyFile}"
-     */
-    protected String propertyFile;
-
-    /**
-     * In which jar is the propertyFile contained?
-     *
-     * @parameter
-     * @required
-     */
-    protected String propertyFileArtifact;
-
-    /**
      * Should it be skipped??
      *
-     * @parameter expression="${pflist.skip}" default-value="false"
+     * @parameter expression="${skipPFList}" default-value="false"
      */
     protected boolean skip;
 
@@ -75,17 +61,18 @@ public abstract class BaseMojo extends AbstractMojo {
             getLog().info("PFList is skipped. Nothing to do.");
             return;
         }
+        Log.getInstance().setLogLevel(LogLevel.ERROR);
         executePFList();
     }
 
     protected abstract void executePFList() throws MojoExecutionException;
 
-    protected URL getPropertyFileURL() throws MojoExecutionException {
+    protected URL getPropertyFileURL(String propertyFileArtifact,String propertyFile) throws MojoExecutionException {
         if (propertyFile == null)
             throw new MojoExecutionException("You didn't define the propertyFile... Aborting!");
 
         try {
-            Artifact artifact = getArtifact();
+            Artifact artifact = getArtifact(propertyFileArtifact);
 
             artifactResolver.resolve(artifact, remoteRepositories, localRepository);
 
@@ -95,8 +82,6 @@ public abstract class BaseMojo extends AbstractMojo {
 
             if (propertyFileURL == null)
                 throw new MojoExecutionException("Couldn't find property file [" + propertyFile + "] in [" + propertyFileArtifact + "]... Aborting!");
-
-            getLog().info("Loading properties from [" + propertyFileURL.getPath() + "]... ");
 
             return propertyFileURL;
 
@@ -109,7 +94,7 @@ public abstract class BaseMojo extends AbstractMojo {
         }
     }
 
-    private Artifact getArtifact() throws MojoExecutionException {
+    private Artifact getArtifact(String propertyFileArtifact) throws MojoExecutionException {
         String[] artifactParts = propertyFileArtifact.split(":");
 
         String groupId;

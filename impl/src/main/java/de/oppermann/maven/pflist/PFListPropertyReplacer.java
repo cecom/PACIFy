@@ -5,9 +5,9 @@ import de.oppermann.maven.pflist.commandline.CommandLineUtils;
 import de.oppermann.maven.pflist.defect.Defect;
 import de.oppermann.maven.pflist.logger.Log;
 import de.oppermann.maven.pflist.logger.LogLevel;
-import de.oppermann.maven.pflist.property.PropertyFileProperties;
+import de.oppermann.maven.pflist.property.FilePropertyContainer;
 import de.oppermann.maven.pflist.utils.Utils;
-import de.oppermann.maven.pflist.xml.PFManager;
+import de.oppermann.maven.pflist.model.PFEntityManager;
 
 import java.io.File;
 import java.net.URL;
@@ -54,16 +54,16 @@ public class PFListPropertyReplacer {
     }
 
     public void replace() {
-        PFManager pfManager = new PFManager(getCommandLineStartPath());
+        PFEntityManager pfEntityManager = new PFEntityManager(getCommandLineStartPath());
 
-        Log.log(LogLevel.INFO, "==== Found [" + pfManager.getPFListCount() + "] PFList Files...");
+        Log.log(LogLevel.INFO, "==== Found [" + pfEntityManager.getPFListCount() + "] PFList Files...");
 
         Log.log(LogLevel.INFO, "==== Checking PFListFiles...");
-        List<Defect> defects = pfManager.checkCorrectnessOfPFListFiles(getPropertyFile());
+        List<Defect> defects = pfEntityManager.checkCorrectnessOfPFListFiles(getPropertyFile());
         shouldWeAbortIt(defects);
 
         Log.log(LogLevel.INFO, "==== Doing Replacement...");
-        defects = pfManager.doReplacement(getPropertyFile());
+        defects = pfEntityManager.doReplacement(getPropertyFile());
         shouldWeAbortIt(defects);
 
         Log.log(LogLevel.INFO, "== Successfully finished...");
@@ -77,8 +77,8 @@ public class PFListPropertyReplacer {
         return (LogLevel) commandlineProperties.get(CommandLineParameter.LogLevel);
     }
 
-    private PropertyFileProperties getPropertyFile() {
-        return new PropertyFileProperties(getCommandLinePropertyFileURL());
+    private FilePropertyContainer getPropertyFile() {
+        return new FilePropertyContainer(getCommandLinePropertyFileURL());
     }
 
     private URL getCommandLinePropertyFileURL() {

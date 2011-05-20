@@ -1,12 +1,11 @@
 package de.oppermann.maven.pflist;
 
 import de.oppermann.maven.pflist.commandline.CommandLineParameter;
-import de.oppermann.maven.pflist.commandline.CommandLineUtils;
 import de.oppermann.maven.pflist.defect.Defect;
 import de.oppermann.maven.pflist.logger.LogLevel;
-import de.oppermann.maven.pflist.property.PropertyFileProperties;
+import de.oppermann.maven.pflist.property.FilePropertyContainer;
 import de.oppermann.maven.pflist.utils.FileUtils;
-import de.oppermann.maven.pflist.xml.PFManager;
+import de.oppermann.maven.pflist.model.PFEntityManager;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -37,8 +36,8 @@ public class NotReplacedPropertyTest extends CheckTest {
         commandlineProperties.put(CommandLineParameter.PropertyFileURL, Util.getURLForFile(myTestProperty));
         commandlineProperties.put(CommandLineParameter.LogLevel, LogLevel.DEBUG);
 
-        PFManager pfManager = new PFManager(startPath);
-        List<Defect> defects = pfManager.doReplacement(new PropertyFileProperties(myTestPropertyURL));
+        PFEntityManager pfEntityManager = new PFEntityManager(startPath);
+        List<Defect> defects = pfEntityManager.doReplacement(new FilePropertyContainer(myTestPropertyURL));
 
          Assert.assertEquals(defects.size(), 4);
     }

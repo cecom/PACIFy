@@ -1,7 +1,7 @@
 package de.oppermann.maven.pflist.defect;
 
-import de.oppermann.maven.pflist.xml.PFList;
-import de.oppermann.maven.pflist.xml.PFListProperty;
+import de.oppermann.maven.pflist.model.PFListEntity;
+import de.oppermann.maven.pflist.model.PFPropertyEntity;
 
 /**
  * User: sop
@@ -10,15 +10,15 @@ import de.oppermann.maven.pflist.xml.PFListProperty;
  */
 public class PropertyDuplicateDefinedInPFList implements Defect {
 
-    private PFList pfList;
-    private PFListProperty pfListProperty;
+    private PFListEntity pfListEntity;
+    private PFPropertyEntity pfPropertyEntity;
 
-    public PropertyDuplicateDefinedInPFList(PFList pfList, PFListProperty pfListProperty) {
-        this.pfList = pfList;
-        this.pfListProperty = pfListProperty;
+    public PropertyDuplicateDefinedInPFList(PFListEntity pfListEntity, PFPropertyEntity pfPropertyEntity) {
+        this.pfListEntity = pfListEntity;
+        this.pfPropertyEntity = pfPropertyEntity;
     }
 
     public String getDefectMessage() {
-        return "PFProperty [" + pfListProperty.getId() + "] is duplicate defined in [" + pfList.getFile().getPath() + "]";
+        return "Property [" + pfPropertyEntity.getId() + "] is duplicate defined in pflist descriptor [" + pfListEntity.getFile().getPath() + "]";
     }
 }

@@ -2,7 +2,7 @@ package de.oppermann.maven.pflist;
 
 import de.oppermann.maven.pflist.checker.CheckPropertyDuplicateInPropertyFile;
 import de.oppermann.maven.pflist.defect.Defect;
-import de.oppermann.maven.pflist.property.PropertyFileProperties;
+import de.oppermann.maven.pflist.property.FilePropertyContainer;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -23,9 +23,9 @@ public class CheckPropertyDuplicateDefinedInPropertyFile {
         File file = new File(testStartPath, "myProperties.properties");
 
         URL fileUrl = Util.getURLForFile(file);
-        PropertyFileProperties propertyFileProperties = new PropertyFileProperties(fileUrl);
+        FilePropertyContainer filePropertyContainer = new FilePropertyContainer(fileUrl);
 
-        CheckPropertyDuplicateInPropertyFile checker = new CheckPropertyDuplicateInPropertyFile(propertyFileProperties);
+        CheckPropertyDuplicateInPropertyFile checker = new CheckPropertyDuplicateInPropertyFile(filePropertyContainer);
 
         List<Defect> defects = new ArrayList<Defect>();
         defects.addAll(checker.checkForErrors());
@@ -39,9 +39,9 @@ public class CheckPropertyDuplicateDefinedInPropertyFile {
         File file = new File(testStartPath, "myProperties.properties");
 
         URL fileUrl = Util.getURLForFile(file);
-        PropertyFileProperties propertyFileProperties = new PropertyFileProperties(fileUrl);
+        FilePropertyContainer filePropertyContainer = new FilePropertyContainer(fileUrl);
 
-        CheckPropertyDuplicateInPropertyFile checker = new CheckPropertyDuplicateInPropertyFile(propertyFileProperties);
+        CheckPropertyDuplicateInPropertyFile checker = new CheckPropertyDuplicateInPropertyFile(filePropertyContainer);
 
         List<Defect> defects = new ArrayList<Defect>();
         defects.addAll(checker.checkForErrors());

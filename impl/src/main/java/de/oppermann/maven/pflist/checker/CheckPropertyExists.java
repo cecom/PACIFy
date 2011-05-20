@@ -2,9 +2,9 @@ package de.oppermann.maven.pflist.checker;
 
 import de.oppermann.maven.pflist.defect.Defect;
 import de.oppermann.maven.pflist.defect.PropertyNotDefinedDefect;
-import de.oppermann.maven.pflist.property.PFProperties;
-import de.oppermann.maven.pflist.xml.PFList;
-import de.oppermann.maven.pflist.xml.PFListProperty;
+import de.oppermann.maven.pflist.model.PFPropertyEntity;
+import de.oppermann.maven.pflist.property.PropertyContainer;
+import de.oppermann.maven.pflist.model.PFListEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,21 +16,23 @@ import java.util.List;
  */
 public class CheckPropertyExists implements PFListCheck {
 
-    private PFProperties pfProperties;
+    private PropertyContainer propertyContainer;
 
-    public CheckPropertyExists(PFProperties pfProperties) {
-        this.pfProperties = pfProperties;
+    public CheckPropertyExists(PropertyContainer propertyContainer) {
+        this.propertyContainer = propertyContainer;
     }
 
-    public List<Defect> checkForErrors(PFList pfList) {
+    public List<Defect> checkForErrors(PFListEntity pfListEntity) {
         List<Defect> defects = new ArrayList<Defect>();
-        List<PFListProperty> pfListProperties = pfList.getPfListProperties();
-        for (PFListProperty pfListListProperty : pfListProperties) {
-            if (pfProperties.contains(pfListListProperty.getId()))
+
+        List<PFPropertyEntity> pfPropertyEntities = pfListEntity.getPfPropertyEntities();
+        for (PFPropertyEntity pfPropertyEntity : pfPropertyEntities) {
+            if (propertyContainer.containsKey(pfPropertyEntity.getId()))
                 continue;
-            Defect defect = new PropertyNotDefinedDefect(pfList, pfListListProperty);
+            Defect defect = new PropertyNotDefinedDefect(pfListEntity, pfPropertyEntity, propertyContainer);
             defects.add(defect);
         }
+
         return defects;
     }
 }

@@ -1,7 +1,5 @@
 package de.oppermann.maven.pflist.defect;
 
-import de.oppermann.maven.pflist.xml.PFList;
-
 import java.io.File;
 
 /**

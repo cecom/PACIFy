@@ -2,8 +2,8 @@ package de.oppermann.maven.pflist.checker;
 
 import de.oppermann.maven.pflist.defect.Defect;
 import de.oppermann.maven.pflist.defect.PropertyDuplicateDefinedInPFList;
-import de.oppermann.maven.pflist.xml.PFList;
-import de.oppermann.maven.pflist.xml.PFListProperty;
+import de.oppermann.maven.pflist.model.PFListEntity;
+import de.oppermann.maven.pflist.model.PFPropertyEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,20 +15,18 @@ import java.util.List;
  */
 public class CheckPropertyDuplicateDefinedInPFList implements PFListCheck {
 
-    public CheckPropertyDuplicateDefinedInPFList() {
-    }
-
-    public List<Defect> checkForErrors(PFList pfList) {
+    public List<Defect> checkForErrors(PFListEntity pfListEntity) {
         List<Defect> defects = new ArrayList<Defect>();
+
         List<String> propertyIds = new ArrayList<String>();
 
-        for (PFListProperty pfListProperty : pfList.getPfListProperties()) {
-            if (propertyIds.contains(pfListProperty.getId())) {
-                Defect defect = new PropertyDuplicateDefinedInPFList(pfList, pfListProperty);
+        for (PFPropertyEntity pfPropertyEntity : pfListEntity.getPfPropertyEntities()) {
+            if (propertyIds.contains(pfPropertyEntity.getId())) {
+                Defect defect = new PropertyDuplicateDefinedInPFList(pfListEntity, pfPropertyEntity);
                 defects.add(defect);
                 continue;
             }
-            propertyIds.add(pfListProperty.getId());
+            propertyIds.add(pfPropertyEntity.getId());
         }
         return defects;
     }

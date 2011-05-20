@@ -1,8 +1,8 @@
 package de.oppermann.maven.pflist.defect;
 
-import de.oppermann.maven.pflist.xml.PFFile;
-import de.oppermann.maven.pflist.xml.PFList;
-import de.oppermann.maven.pflist.xml.PFListProperty;
+import de.oppermann.maven.pflist.model.PFFileEntity;
+import de.oppermann.maven.pflist.model.PFListEntity;
+import de.oppermann.maven.pflist.model.PFPropertyEntity;
 
 /**
  * User: sop
@@ -11,18 +11,18 @@ import de.oppermann.maven.pflist.xml.PFListProperty;
  */
 public class PropertyDoesNotExistInTargetFile implements Defect {
 
-    private PFList pfList;
-    private PFListProperty pfListProperty;
-    private PFFile pfFile;
+    private PFListEntity pfListEntity;
+    private PFPropertyEntity pfPropertyEntity;
+    private PFFileEntity pfFileEntity;
 
-    public PropertyDoesNotExistInTargetFile(PFList pfList, PFListProperty pfListProperty, PFFile pfFile) {
-        this.pfList = pfList;
-        this.pfListProperty = pfListProperty;
-        this.pfFile = pfFile;
+    public PropertyDoesNotExistInTargetFile(PFListEntity pfListEntity, PFPropertyEntity pfPropertyEntity, PFFileEntity pfFileEntity) {
+        this.pfListEntity = pfListEntity;
+        this.pfPropertyEntity = pfPropertyEntity;
+        this.pfFileEntity = pfFileEntity;
     }
 
     public String getDefectMessage() {
-        return "Property [" + pfListProperty.getId() + "] which is defined in [" + pfList.getFile().getPath()
-                + "] couldn't be found in file [" + pfList.getAbsoluteFileFor(pfFile).getPath() + "]";
+        return "Property [" + pfPropertyEntity.getId() + "] which is defined in [" + pfListEntity.getFile().getPath()
+                + "] couldn't be found in file [" + pfListEntity.getAbsoluteFileFor(pfFileEntity).getPath() + "]";
     }
 }

@@ -1,4 +1,4 @@
-package de.oppermann.maven.pflist.xml;
+package de.oppermann.maven.pflist.model;
 
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Root;
@@ -10,7 +10,7 @@ import org.simpleframework.xml.Root;
  */
 
 @Root(name = "file")
-public class PFFile {
+public class PFFileEntity {
 
     @Attribute(name = "relative_path")
     private String relativePath;
@@ -24,9 +24,9 @@ public class PFFile {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        PFFile pfFile = (PFFile) o;
+        PFFileEntity pfFileEntity = (PFFileEntity) o;
 
-        if (relativePath != null ? !relativePath.equals(pfFile.relativePath) : pfFile.relativePath != null)
+        if (relativePath != null ? !relativePath.equals(pfFileEntity.relativePath) : pfFileEntity.relativePath != null)
             return false;
 
         return true;

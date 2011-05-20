@@ -80,9 +80,9 @@ public class CommandLineUtils {
         throw new RuntimeException("Couldn't find property File [" + value + "] in Classpath nor absolute... Aborting!");
     }
 
-    public static final void printHelp() {
+    public static void printHelp() {
         System.out.println("Parameters:");
-        System.out.println(" --propertyFile=<path>   -> Which property file should be used for filtering. Have to be within classpath.");
+        System.out.println(" --propertyFile=<path>   -> Which property file should be used for filtering. Has to be within classpath or a absolute path.");
         System.out.println(" [--startPath]=<path>    -> The folder where we are looking recursively for *-PFList.xml files. If not set, using current folder.");
         System.out.println(" [--logLevel]=<level>    -> The logLevel (DEBUG, INFO, ERROR). Default is INFO");
         System.out.println(" [--help]                -> This info.");

@@ -1,6 +1,6 @@
 package de.oppermann.maven.pflist;
 
-import de.oppermann.maven.pflist.xml.PFList;
+import de.oppermann.maven.pflist.model.PFListEntity;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 import org.testng.annotations.Test;
@@ -21,21 +21,21 @@ public class TestXml {
         Serializer serializer = new Persister();
         File source = new File("target/test-classes/testXml/example-PFList.xml");
 
-        PFList pfList = null;
+        PFListEntity pfListEntity = null;
         try {
-            pfList = serializer.read(PFList.class, source);
+            pfListEntity = serializer.read(PFListEntity.class, source);
         } catch (Exception e) {
             throw new RuntimeException("Couldnt read xml file.", e);
         }
 
-        assertEquals(pfList.getPfListProperties().size(), 2);
+        assertEquals(pfListEntity.getPfPropertyEntities().size(), 2);
 
-        assertEquals("foobar1", pfList.getPfListProperties().get(0).getId());
-        assertEquals("foobar2", pfList.getPfListProperties().get(1).getId());
+        assertEquals("foobar1", pfListEntity.getPfPropertyEntities().get(0).getId());
+        assertEquals("foobar2", pfListEntity.getPfPropertyEntities().get(1).getId());
 
-        assertEquals("someConf.conf", pfList.getPfListProperties().get(0).getPFFiles().get(0).getRelativePath());
-        assertEquals("subfolder/someOtherConf.conf", pfList.getPfListProperties().get(0).getPFFiles().get(1).getRelativePath());
-        assertEquals("someParentConf.conf", pfList.getPfListProperties().get(1).getPFFiles().get(0).getRelativePath());
+        assertEquals("someConf.conf", pfListEntity.getPfPropertyEntities().get(0).getPFFileEntities().get(0).getRelativePath());
+        assertEquals("subfolder/someOtherConf.conf", pfListEntity.getPfPropertyEntities().get(0).getPFFileEntities().get(1).getRelativePath());
+        assertEquals("someParentConf.conf", pfListEntity.getPfPropertyEntities().get(1).getPFFileEntities().get(0).getRelativePath());
 
     }
 

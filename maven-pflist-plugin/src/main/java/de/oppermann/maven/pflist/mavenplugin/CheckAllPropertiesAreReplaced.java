@@ -1,10 +1,12 @@
 package de.oppermann.maven.pflist.mavenplugin;
 
 import de.oppermann.maven.pflist.defect.Defect;
+import de.oppermann.maven.pflist.logger.Log;
+import de.oppermann.maven.pflist.logger.LogLevel;
 import de.oppermann.maven.pflist.utils.Utils;
-import de.oppermann.maven.pflist.xml.PFFile;
-import de.oppermann.maven.pflist.xml.PFList;
-import de.oppermann.maven.pflist.xml.PFManager;
+import de.oppermann.maven.pflist.model.PFEntityManager;
+import de.oppermann.maven.pflist.model.PFFileEntity;
+import de.oppermann.maven.pflist.model.PFListEntity;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
@@ -18,9 +20,10 @@ import java.util.List;
  * Date: 18.05.11
  * Time: 12:52
  *
- * @goal check
+ * @goal checkAllPropertiesAreReplaced
+ * @phase install
  */
-public class CheckMojo extends AbstractMojo {
+public class CheckAllPropertiesAreReplaced extends AbstractMojo {
 
     /**
      * @parameter default-value="${project}"
@@ -43,7 +46,7 @@ public class CheckMojo extends AbstractMojo {
     protected boolean skip;
 
     public void execute() throws MojoExecutionException {
-         if (skip) {
+        if (skip) {
             getLog().info("PFList is skipped. Nothing to do.");
             return;
         }
@@ -55,18 +58,20 @@ public class CheckMojo extends AbstractMojo {
             throw new MojoExecutionException("The folder [" + pfListStartPath.getAbsolutePath() + "] does not exist.");
         }
 
-        PFManager pfManager = new PFManager(pfListStartPath);
-        if (pfManager.getPFListCount() == 0) {
+        Log.getInstance().setLogLevel(LogLevel.ERROR);
+
+        PFEntityManager pfEntityManager = new PFEntityManager(pfListStartPath);
+        if (pfEntityManager.getPFListCount() == 0) {
             getLog().info("No pflist files found. Nothing to check.");
             return;
         }
-        getLog().info("Found [" + pfManager.getPFListCount() + "] PFList Files...");
+        getLog().info("Found [" + pfEntityManager.getPFListCount() + "] PFList Files...");
 
-
+         getLog().info("Checking files...");
         List<Defect> defects = new ArrayList<Defect>();
-        for (PFList pfList : pfManager.getPFLists()) {
-            for (PFFile pfFile : pfList.getPfFiles()) {
-                File file = pfList.getAbsoluteFileFor(pfFile);
+        for (PFListEntity pfListEntity : pfEntityManager.getPFLists()) {
+            for (PFFileEntity pfFileEntity : pfListEntity.getPfFileEntities()) {
+                File file = pfListEntity.getAbsoluteFileFor(pfFileEntity);
                 defects.addAll(Utils.checkFileForNotReplacedStuff(file));
             }
         }

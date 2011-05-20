@@ -1,6 +1,6 @@
 package de.oppermann.maven.pflist;
 
-import de.oppermann.maven.pflist.xml.utils.DirFilter;
+import de.oppermann.maven.pflist.model.utils.DirFilter;
 import org.apache.tools.ant.util.FileUtils;
 
 import java.io.File;

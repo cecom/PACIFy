@@ -1,21 +1,18 @@
 package de.oppermann.maven.pflist.replacer;
 
 import de.oppermann.maven.pflist.defect.Defect;
-import de.oppermann.maven.pflist.property.PFProperties;
+import de.oppermann.maven.pflist.model.PFFileEntity;
+import de.oppermann.maven.pflist.model.PFListEntity;
+import de.oppermann.maven.pflist.model.PFPropertyEntity;
+import de.oppermann.maven.pflist.property.PropertyContainer;
 import de.oppermann.maven.pflist.utils.Utils;
-import de.oppermann.maven.pflist.xml.PFFile;
-import de.oppermann.maven.pflist.xml.PFList;
-import de.oppermann.maven.pflist.xml.PFListProperty;
 import org.apache.tools.ant.types.FilterSet;
 import org.apache.tools.ant.types.FilterSetCollection;
 import org.apache.tools.ant.util.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,21 +26,20 @@ public class PropertyReplacer {
     public static final String BEGIN_TOKEN = "%{";
     public static final String END_TOKEN = "}";
 
-    private PFProperties pfProperties;
-    private PFList pfList;
+    private PropertyContainer propertyContainer;
+    private PFListEntity pfListEntity;
 
-    public PropertyReplacer(PFProperties pfProperties, PFList pfList) {
-        this.pfProperties = pfProperties;
-        this.pfList = pfList;
+    public PropertyReplacer(PropertyContainer propertyContainer, PFListEntity pfListEntity) {
+        this.propertyContainer = propertyContainer;
+        this.pfListEntity = pfListEntity;
     }
 
     public List<Defect> replace() {
         List<Defect> defects = new ArrayList<Defect>();
-        for (PFFile pfFile : pfList.getPfFiles()) {
-            List<PFListProperty> pfListProperties = pfList.getPfPropertiesForPfFile(pfFile);
-            FilterSetCollection filterSetCollection = getFilterSetCollection(pfListProperties);
+        for (PFFileEntity pfFileEntity : pfListEntity.getPfFileEntities()) {
+            FilterSetCollection filterSetCollection = getFilterSetCollection(pfFileEntity);
 
-            File file = pfList.getAbsoluteFileFor(pfFile);
+            File file = pfListEntity.getAbsoluteFileFor(pfFileEntity);
             File tmpFile = new File(file.getParentFile(), file.getName() + "_tmp");
 
             try {
@@ -60,55 +56,63 @@ public class PropertyReplacer {
         return defects;
     }
 
-    private FilterSetCollection getFilterSetCollection(List<PFListProperty> pfListProperties) {
-        FilterSet filterSet = getFilterSet(pfListProperties);
+    private FilterSetCollection getFilterSetCollection(PFFileEntity pfFileEntity) {
+        FilterSet filterSet = getFilterSet(pfFileEntity);
 
         FilterSetCollection executionFilters = new FilterSetCollection();
         executionFilters.addFilterSet(filterSet);
+
         return executionFilters;
     }
 
-    private FilterSet getFilterSet(List<PFListProperty> pfListProperties) {
+    private FilterSet getFilterSet(PFFileEntity pfFileEntity) {
         FilterSet filterSet = new FilterSet();
 
         filterSet.setBeginToken(BEGIN_TOKEN);
         filterSet.setEndToken(END_TOKEN);
 
-        for (PFListProperty pfListProperty : pfListProperties) {
-            String propertyId = pfListProperty.getId();
-            String propertyValue = pfProperties.getPropertyValue(propertyId);
+        List<PFPropertyEntity> pfPropertyEntities = pfListEntity.getPfPropertyEntitiesForPFFileEntity(pfFileEntity);
+
+        for (PFPropertyEntity pfPropertyEntity : pfPropertyEntities) {
+            String propertyId = pfPropertyEntity.getId();
+            String propertyValue = propertyContainer.getPropertyValue(propertyId);
 
             filterSet.addFilter(propertyId, propertyValue);
 
-            Set<String> stackOverflowCheck = new TreeSet<String>();
-            stackOverflowCheck.add(propertyId);
+            //needed for checking that we don't have a property which references another property, which references this property (cycle)
+            Set<String> propertyResolvePath = new TreeSet<String>();
+            propertyResolvePath.add(propertyId);
 
             //if a property contains another property which is not in the pflist.xml file, we have to add the other property too.
-            for (String referencedPropertyId : getAllReferencedPropertyIds(stackOverflowCheck, propertyId, propertyValue)) {
-                String referencedValue = pfProperties.getPropertyValue(referencedPropertyId);
+            for (String referencedPropertyId : getAllReferencedPropertyIds(propertyResolvePath, propertyId, propertyValue)) {
+                String referencedValue = propertyContainer.getPropertyValue(referencedPropertyId);
                 filterSet.addFilter(referencedPropertyId, referencedValue);
             }
         }
         return filterSet;
     }
 
-    private Set<String> getAllReferencedPropertyIds(Set<String> parentPropertyIds, String parentPropertyId, String parentPropertyValue) {
+    private Set<String> getAllReferencedPropertyIds(Set<String> parentPropertyResolvePath, String parentPropertyId, String parentPropertyValue) {
+        if (parentPropertyValue == null)
+            return Collections.emptySet();
+
         Set<String> result = new TreeSet<String>();
 
         Matcher matcher = getPattern("([^}]*)", false).matcher(parentPropertyValue);
         while (matcher.find()) {
             String propertyId = matcher.group(1);
 
-            if (parentPropertyIds.contains(propertyId))
+            if (parentPropertyResolvePath.contains(propertyId))
                 throw new RuntimeException("You have a cycle reference in property [" + parentPropertyId + "] which is used in " +
-                        "pflist file [" + pfList.getFile().getAbsolutePath() + "].");
+                        "pflist file [" + pfListEntity.getFile().getAbsolutePath() + "]. Property values loaded from [" + propertyContainer.getPropertyLoadedFrom() + "]");
 
             result.add(propertyId);
 
-            String propertyValue = pfProperties.getPropertyValue(propertyId);
-            Set<String> childStackOverflowCheck = new TreeSet<String>(parentPropertyIds);
-            childStackOverflowCheck.add(propertyId);
-            result.addAll(getAllReferencedPropertyIds(childStackOverflowCheck, propertyId, propertyValue));
+            Set<String> propertyResolvePath = new TreeSet<String>(parentPropertyResolvePath);
+            propertyResolvePath.add(propertyId);
+
+            String propertyValue = propertyContainer.getPropertyValue(propertyId);
+            result.addAll(getAllReferencedPropertyIds(propertyResolvePath, propertyId, propertyValue));
         }
         return result;
     }
