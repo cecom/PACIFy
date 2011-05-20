@@ -1,6 +1,5 @@
 package de.oppermann.maven.pflist;
 
-import de.oppermann.maven.pflist.checker.CheckPropertyExistsInTargetFile;
 import de.oppermann.maven.pflist.defect.Defect;
 import org.testng.Assert;
 import org.testng.annotations.Test;
