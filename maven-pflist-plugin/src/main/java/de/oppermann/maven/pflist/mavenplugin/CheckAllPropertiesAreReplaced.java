@@ -41,13 +41,13 @@ public class CheckAllPropertiesAreReplaced extends AbstractMojo {
     /**
      * Should it be skipped??
      *
-     * @parameter expression="${pflist.skip}" default-value="false"
+     * @parameter expression="${skipPFList}" default-value="false"
      */
     protected boolean skip;
 
     public void execute() throws MojoExecutionException {
         if (skip) {
-            getLog().info("PFList is skipped. Nothing to do.");
+            getLog().info("PFList is skipped.");
             return;
         }
 

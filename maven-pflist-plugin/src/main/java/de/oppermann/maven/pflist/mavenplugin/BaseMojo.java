@@ -58,7 +58,7 @@ public abstract class BaseMojo extends AbstractMojo {
 
     public void execute() throws MojoExecutionException, MojoFailureException {
         if (skip) {
-            getLog().info("PFList is skipped. Nothing to do.");
+            getLog().info("PFList is skipped.");
             return;
         }
         Log.getInstance().setLogLevel(LogLevel.ERROR);
