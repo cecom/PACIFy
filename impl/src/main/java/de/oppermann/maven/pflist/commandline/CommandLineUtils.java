@@ -3,6 +3,7 @@ package de.oppermann.maven.pflist.commandline;
 import de.oppermann.maven.pflist.logger.LogLevel;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -16,17 +17,17 @@ import java.util.EnumMap;
 
 public class CommandLineUtils {
 
-    public static EnumMap<CommandLineParameter, Object> getPropertiesFromParameter(String[] args) {
+    public static EnumMap<CommandLineParameter, Object> getPropertiesForReplacerFromParameter(String[] args) {
         EnumMap<CommandLineParameter, Object> commandlineProperties = new EnumMap<CommandLineParameter, Object>(CommandLineParameter.class);
         for (String string : args) {
             String[] split = string.split("=");
             String key = split[0];
             String value = split.length > 1 ? split[1] : null;
-            if (key.equals("--propertyFile")) {
-                URI propertyFileUrl = getPropertyFileUrl(value);
+            if (key.equals("--propertyFile") && value != null) {
+                URL propertyFileUrl = getPropertyFileUrl(value);
                 commandlineProperties.put(CommandLineParameter.PropertyFileURL, propertyFileUrl);
             }
-            if (key.equals("--startPath")) {
+            if (key.equals("--startPath") && value != null) {
                 File file = new File(value);
                 if (!file.exists())
                     throw new IllegalArgumentException("StartPath [" + value + "] does not exist... Aborting!");
@@ -34,7 +35,7 @@ public class CommandLineUtils {
                     throw new IllegalArgumentException("StartPath [" + value + "] is not a directory... Aborting!");
                 commandlineProperties.put(CommandLineParameter.StartPath, file);
             }
-            if (key.equals("--logLevel")) {
+            if (key.equals("--logLevel") && value != null) {
                 LogLevel logLevel = LogLevel.valueOf(value);
                 commandlineProperties.put(CommandLineParameter.LogLevel, logLevel);
             }
@@ -48,7 +49,7 @@ public class CommandLineUtils {
             return commandlineProperties;
 
         if (!commandlineProperties.containsKey(CommandLineParameter.PropertyFileURL)) {
-            printHelp();
+            printPropertyReplacerHelp();
             throw new IllegalArgumentException("[--propertyFile] is missing as parameter... Aborting!");
         }
 
@@ -63,27 +64,77 @@ public class CommandLineUtils {
         return commandlineProperties;
     }
 
-    public static URI getPropertyFileUrl(String value) {
+    public static EnumMap<CommandLineParameter, Object> getPropertiesForCreateResultFromParameter(String[] args) {
+        EnumMap<CommandLineParameter, Object> commandlineProperties = new EnumMap<CommandLineParameter, Object>(CommandLineParameter.class);
+        for (String string : args) {
+            String[] split = string.split("=");
+            String key = split[0];
+            String value = split.length > 1 ? split[1] : null;
+            if (key.equals("--propertyFile") && value != null) {
+                URL propertyFileUrl = getPropertyFileUrl(value);
+                commandlineProperties.put(CommandLineParameter.PropertyFileURL, propertyFileUrl);
+            }
+            if (key.equals("--targetFile") && value != null) {
+                File file = new File(value);
+                commandlineProperties.put(CommandLineParameter.TargetFile, file);
+            }
+            if (key.equals("--logLevel") && value != null ) {
+                LogLevel logLevel = LogLevel.valueOf(value);
+                commandlineProperties.put(CommandLineParameter.LogLevel, logLevel);
+            }
+
+            if (key.equals("--help")) {
+                commandlineProperties.put(CommandLineParameter.Help, true);
+            }
+        }
+
+        if (commandlineProperties.containsKey(CommandLineParameter.Help) || commandlineProperties.isEmpty())
+            return commandlineProperties;
+
+        if (!commandlineProperties.containsKey(CommandLineParameter.PropertyFileURL)) {
+            printCreateResultPropertyFileHelp();
+            throw new IllegalArgumentException("[--propertyFile] is missing as parameter... Aborting!");
+        }
+
+        if (!commandlineProperties.containsKey(CommandLineParameter.TargetFile)) {
+            printCreateResultPropertyFileHelp();
+            throw new IllegalArgumentException("[--targetFile] is missing as parameter... Aborting!");
+        }
+
+        if (!commandlineProperties.containsKey(CommandLineParameter.LogLevel))
+            commandlineProperties.put(CommandLineParameter.LogLevel, LogLevel.INFO);
+
+        return commandlineProperties;
+    }
+
+    public static URL getPropertyFileUrl(String value) {
         File file = new File(value);
         if (file.exists() && file.isFile())
-            return file.toURI();
-
-        URL url = CommandLineUtils.class.getClassLoader().getResource(value);
-        if (url != null)
             try {
-                return url.toURI();
-            } catch (URISyntaxException e) {
+                return file.toURI().toURL();
+            } catch (MalformedURLException e) {
                 throw new RuntimeException(e);
             }
 
+        URL url = CommandLineUtils.class.getClassLoader().getResource(value);
+        if (url != null)
+            return url;
 
         throw new RuntimeException("Couldn't find property File [" + value + "] in Classpath nor absolute... Aborting!");
     }
 
-    public static void printHelp() {
+    public static void printPropertyReplacerHelp() {
         System.out.println("Parameters:");
         System.out.println(" --propertyFile=<path>   -> Which property file should be used for filtering. Has to be within classpath or a absolute path.");
         System.out.println(" [--startPath]=<path>    -> The folder where we are looking recursively for *-PFList.xml files. If not set, using current folder.");
+        System.out.println(" [--logLevel]=<level>    -> The logLevel (DEBUG, INFO, ERROR). Default is INFO");
+        System.out.println(" [--help]                -> This info.");
+    }
+
+    public static void printCreateResultPropertyFileHelp() {
+        System.out.println("Parameters:");
+        System.out.println(" --propertyFile=<path>   -> Which property file should be used.");
+        System.out.println(" --targetFile=<path>     -> If your property file contains imports, they will be resolved and the result will be written to this file.");
         System.out.println(" [--logLevel]=<level>    -> The logLevel (DEBUG, INFO, ERROR). Default is INFO");
         System.out.println(" [--help]                -> This info.");
     }

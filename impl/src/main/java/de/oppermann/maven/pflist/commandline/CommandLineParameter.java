@@ -6,5 +6,5 @@ package de.oppermann.maven.pflist.commandline;
  * Time: 13:05
  */
 public enum CommandLineParameter {
-    PropertyFileURL, LogLevel, StartPath, Help
+    PropertyFileURL, LogLevel, StartPath, TargetFile, Help
 }

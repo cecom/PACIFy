@@ -3,7 +3,7 @@ package de.oppermann.maven.pflist.checker;
 import de.oppermann.maven.pflist.defect.Defect;
 import de.oppermann.maven.pflist.defect.PropertyDoesNotExistInTargetFile;
 import de.oppermann.maven.pflist.model.PFPropertyEntity;
-import de.oppermann.maven.pflist.replacer.PropertyReplacer;
+import de.oppermann.maven.pflist.replacer.PropertyFileReplacer;
 import de.oppermann.maven.pflist.utils.FileUtils;
 import de.oppermann.maven.pflist.model.PFFileEntity;
 import de.oppermann.maven.pflist.model.PFListEntity;
@@ -41,7 +41,7 @@ public class CheckPropertyExistsInTargetFile implements PFListCheck {
     public boolean doesPropertyExistInFile(PFPropertyEntity pfPropertyEntity, File file) {
         String fileContent = FileUtils.getFileInOneString(file);
 
-        Pattern pattern = PropertyReplacer.getPattern(pfPropertyEntity.getId(),true);
+        Pattern pattern = PropertyFileReplacer.getPattern(pfPropertyEntity.getId(), true);
         Matcher matcher = pattern.matcher(fileContent);
 
         return matcher.find();

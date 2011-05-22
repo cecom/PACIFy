@@ -14,22 +14,18 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * User: sop
  * Date: 03.05.11
  * Time: 13:05
  */
-public class PropertyReplacer {
-
-    public static final String BEGIN_TOKEN = "%{";
-    public static final String END_TOKEN = "}";
+public class PropertyPFReplacer {
 
     private PropertyContainer propertyContainer;
     private PFListEntity pfListEntity;
 
-    public PropertyReplacer(PropertyContainer propertyContainer, PFListEntity pfListEntity) {
+    public PropertyPFReplacer(PropertyContainer propertyContainer, PFListEntity pfListEntity) {
         this.propertyContainer = propertyContainer;
         this.pfListEntity = pfListEntity;
     }
@@ -37,6 +33,7 @@ public class PropertyReplacer {
     public List<Defect> replace() {
         List<Defect> defects = new ArrayList<Defect>();
         for (PFFileEntity pfFileEntity : pfListEntity.getPfFileEntities()) {
+
             FilterSetCollection filterSetCollection = getFilterSetCollection(pfFileEntity);
 
             File file = pfListEntity.getAbsoluteFileFor(pfFileEntity);
@@ -68,8 +65,8 @@ public class PropertyReplacer {
     private FilterSet getFilterSet(PFFileEntity pfFileEntity) {
         FilterSet filterSet = new FilterSet();
 
-        filterSet.setBeginToken(BEGIN_TOKEN);
-        filterSet.setEndToken(END_TOKEN);
+        filterSet.setBeginToken(PropertyFileReplacer.BEGIN_TOKEN);
+        filterSet.setEndToken(PropertyFileReplacer.END_TOKEN);
 
         List<PFPropertyEntity> pfPropertyEntities = pfListEntity.getPfPropertyEntitiesForPFFileEntity(pfFileEntity);
 
@@ -98,7 +95,7 @@ public class PropertyReplacer {
 
         Set<String> result = new TreeSet<String>();
 
-        Matcher matcher = getPattern("([^}]*)", false).matcher(parentPropertyValue);
+        Matcher matcher = PropertyFileReplacer.getPattern("([^}]*)", false).matcher(parentPropertyValue);
         while (matcher.find()) {
             String propertyId = matcher.group(1);
 
@@ -115,11 +112,5 @@ public class PropertyReplacer {
             result.addAll(getAllReferencedPropertyIds(propertyResolvePath, propertyId, propertyValue));
         }
         return result;
-    }
-
-    public static Pattern getPattern(String match, boolean quoteIt) {
-        String searchPattern = Pattern.quote(PropertyReplacer.BEGIN_TOKEN) + (quoteIt ? Pattern.quote(match) : match) + Pattern.quote(PropertyReplacer.END_TOKEN);
-
-        return Pattern.compile(searchPattern);
     }
 }

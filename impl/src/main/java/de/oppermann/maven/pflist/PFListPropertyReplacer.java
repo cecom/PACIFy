@@ -6,6 +6,7 @@ import de.oppermann.maven.pflist.defect.Defect;
 import de.oppermann.maven.pflist.logger.Log;
 import de.oppermann.maven.pflist.logger.LogLevel;
 import de.oppermann.maven.pflist.property.FilePropertyContainer;
+import de.oppermann.maven.pflist.property.PropertyContainer;
 import de.oppermann.maven.pflist.utils.Utils;
 import de.oppermann.maven.pflist.model.PFEntityManager;
 
@@ -33,10 +34,10 @@ public class PFListPropertyReplacer {
      * @see LogLevel
      */
     public static void main(String[] args) {
-        EnumMap<CommandLineParameter, Object> commandlineProperties = CommandLineUtils.getPropertiesFromParameter(args);
+        EnumMap<CommandLineParameter, Object> commandlineProperties = CommandLineUtils.getPropertiesForReplacerFromParameter(args);
 
         if (commandlineProperties.containsKey(CommandLineParameter.Help) || commandlineProperties.isEmpty()) {
-            CommandLineUtils.printHelp();
+            CommandLineUtils.printPropertyReplacerHelp();
             return;
         }
 
@@ -77,7 +78,7 @@ public class PFListPropertyReplacer {
         return (LogLevel) commandlineProperties.get(CommandLineParameter.LogLevel);
     }
 
-    private FilePropertyContainer getPropertyFile() {
+    private PropertyContainer getPropertyFile() {
         return new FilePropertyContainer(getCommandLinePropertyFileURL());
     }
 

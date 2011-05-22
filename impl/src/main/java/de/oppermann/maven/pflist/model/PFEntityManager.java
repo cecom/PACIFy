@@ -5,7 +5,7 @@ import de.oppermann.maven.pflist.defect.Defect;
 import de.oppermann.maven.pflist.logger.Log;
 import de.oppermann.maven.pflist.logger.LogLevel;
 import de.oppermann.maven.pflist.property.PropertyContainer;
-import de.oppermann.maven.pflist.replacer.PropertyReplacer;
+import de.oppermann.maven.pflist.replacer.PropertyPFReplacer;
 import de.oppermann.maven.pflist.model.utils.PFListFilesFinder;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
@@ -46,7 +46,7 @@ public class PFEntityManager {
         List<Defect> defects = new ArrayList<Defect>();
         for (PFListEntity pfListEntity : getPFLists()) {
             Log.log(LogLevel.INFO, "====== Replacing stuff which is configured in [" + pfListEntity.getFile().getPath() + "] ...");
-            PropertyReplacer propertyReplacer = new PropertyReplacer(propertyContainer, pfListEntity);
+            PropertyPFReplacer propertyReplacer = new PropertyPFReplacer(propertyContainer, pfListEntity);
             defects.addAll(propertyReplacer.replace());
         }
         return defects;

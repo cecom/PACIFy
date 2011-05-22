@@ -2,7 +2,8 @@ package de.oppermann.maven.pflist.utils;
 
 import de.oppermann.maven.pflist.defect.Defect;
 import de.oppermann.maven.pflist.defect.PropertyNotReplacedDefect;
-import de.oppermann.maven.pflist.replacer.PropertyReplacer;
+import de.oppermann.maven.pflist.replacer.PropertyFileReplacer;
+import de.oppermann.maven.pflist.replacer.PropertyPFReplacer;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,7 +47,7 @@ public class Utils {
 
         String fileContent = de.oppermann.maven.pflist.utils.FileUtils.getFileInOneString(file);
 
-        Pattern pattern = PropertyReplacer.getPattern("([^}]*)", false);
+        Pattern pattern = PropertyFileReplacer.getPattern("([^}]*)", false);
         Matcher matcher = pattern.matcher(fileContent);
 
         while (matcher.find()) {
