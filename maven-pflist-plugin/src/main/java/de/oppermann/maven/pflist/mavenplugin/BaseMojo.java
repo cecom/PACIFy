@@ -56,12 +56,20 @@ public abstract class BaseMojo extends AbstractMojo {
     private java.util.List remoteRepositories;
 
 
+    /**
+     * @parameter expression="${logLevel}" default-value="ERROR"
+     * @required
+     */
+    private String logLevel;
+
+
     public void execute() throws MojoExecutionException, MojoFailureException {
         if (skip) {
             getLog().info("PFList is skipped.");
             return;
         }
-        Log.getInstance().setLogLevel(LogLevel.ERROR);
+
+        Log.getInstance().setLogLevel(LogLevel.valueOf(logLevel.toUpperCase()));
         executePFList();
     }
 

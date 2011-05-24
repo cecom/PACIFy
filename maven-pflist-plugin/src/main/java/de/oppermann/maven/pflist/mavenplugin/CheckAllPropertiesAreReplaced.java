@@ -3,10 +3,10 @@ package de.oppermann.maven.pflist.mavenplugin;
 import de.oppermann.maven.pflist.defect.Defect;
 import de.oppermann.maven.pflist.logger.Log;
 import de.oppermann.maven.pflist.logger.LogLevel;
-import de.oppermann.maven.pflist.utils.Utils;
 import de.oppermann.maven.pflist.model.PFEntityManager;
 import de.oppermann.maven.pflist.model.PFFileEntity;
 import de.oppermann.maven.pflist.model.PFListEntity;
+import de.oppermann.maven.pflist.utils.Utils;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
@@ -45,6 +45,12 @@ public class CheckAllPropertiesAreReplaced extends AbstractMojo {
      */
     protected boolean skip;
 
+    /**
+     * @parameter expression="${logLevel}" default-value="ERROR"
+     * @required
+     */
+    private String logLevel;
+
     public void execute() throws MojoExecutionException {
         if (skip) {
             getLog().info("PFList is skipped.");
@@ -53,12 +59,14 @@ public class CheckAllPropertiesAreReplaced extends AbstractMojo {
 
         if (!pfListStartPath.exists()) {
             File outputDirectory = new File(project.getModel().getBuild().getOutputDirectory());
-            if (pfListStartPath.equals(outputDirectory))
+            if (pfListStartPath.equals(outputDirectory)) {
+                getLog().debug("Directory [" + pfListStartPath.getAbsolutePath() + "] does  not exists. Nothing to do.");
                 return; //if it is a maven project which doesn't have a target folder, do nothing.
+            }
             throw new MojoExecutionException("The folder [" + pfListStartPath.getAbsolutePath() + "] does not exist.");
         }
 
-        Log.getInstance().setLogLevel(LogLevel.ERROR);
+        Log.getInstance().setLogLevel(LogLevel.valueOf(logLevel.toUpperCase()));
 
         PFEntityManager pfEntityManager = new PFEntityManager(pfListStartPath);
         if (pfEntityManager.getPFListCount() == 0) {
@@ -67,7 +75,7 @@ public class CheckAllPropertiesAreReplaced extends AbstractMojo {
         }
         getLog().info("Found [" + pfEntityManager.getPFListCount() + "] PFList Files...");
 
-         getLog().info("Checking files...");
+        getLog().info("Checking files...");
         List<Defect> defects = new ArrayList<Defect>();
         for (PFListEntity pfListEntity : pfEntityManager.getPFLists()) {
             for (PFFileEntity pfFileEntity : pfListEntity.getPfFileEntities()) {

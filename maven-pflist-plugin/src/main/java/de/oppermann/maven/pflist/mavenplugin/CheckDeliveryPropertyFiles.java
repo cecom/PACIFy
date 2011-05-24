@@ -3,10 +3,10 @@ package de.oppermann.maven.pflist.mavenplugin;
 import de.oppermann.maven.pflist.checker.CheckPropertyDuplicateInPropertyFile;
 import de.oppermann.maven.pflist.checker.CheckPropertyExists;
 import de.oppermann.maven.pflist.defect.Defect;
-import de.oppermann.maven.pflist.property.PropertyContainer;
-import de.oppermann.maven.pflist.property.FilePropertyContainer;
 import de.oppermann.maven.pflist.model.PFEntityManager;
 import de.oppermann.maven.pflist.model.PFListEntity;
+import de.oppermann.maven.pflist.property.FilePropertyContainer;
+import de.oppermann.maven.pflist.property.PropertyContainer;
 import org.apache.maven.plugin.MojoExecutionException;
 
 import java.io.File;
@@ -30,12 +30,12 @@ public class CheckDeliveryPropertyFiles extends BaseMojo {
     private File pfListStartPath;
 
     /**
-     * which files should be checked?
+     * which files should be checked? its a comma separated list
      *
      * @parameter
      * @required
      */
-    private String[] properyFiles;
+    private String propertyFiles;
 
     /**
      * In which jar is the propertyFile contained?
@@ -49,8 +49,10 @@ public class CheckDeliveryPropertyFiles extends BaseMojo {
     protected void executePFList() throws MojoExecutionException {
         if (!pfListStartPath.exists()) {
             File outputDirectory = new File(project.getModel().getBuild().getOutputDirectory());
-            if (pfListStartPath.equals(outputDirectory))
+            if (pfListStartPath.equals(outputDirectory)) {
+                getLog().debug("Directory [" + pfListStartPath.getAbsolutePath() + "] does  not exists. Nothing to do.");
                 return; //if it is a maven project which doesn't have a target folder, do nothing.
+            }
             throw new MojoExecutionException("The folder [" + pfListStartPath.getAbsolutePath() + "] does not exist.");
         }
 
@@ -63,7 +65,7 @@ public class CheckDeliveryPropertyFiles extends BaseMojo {
         getLog().info("Found [" + pfEntityManager.getPFListCount() + "] PFList Files...");
 
         List<Defect> defects = new ArrayList<Defect>();
-        for (String propertyFile : properyFiles) {
+        for (String propertyFile : propertyFiles.split(",")) {
             getLog().info("Checking property file [" + propertyFile + "] ...");
             defects.addAll(checkPropertyFile(pfEntityManager, propertyFile));
         }
