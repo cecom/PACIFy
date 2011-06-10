@@ -20,6 +20,8 @@ public class PFPropertyEntity {
     @ElementList(name = "file", inline = true)
     private List<PFFileEntity> pfFileEntities;
 
+    @Attribute(name = "isPath", required = false, empty = "false")
+    private String isPath;
 
     public String getId() {
         return id;
@@ -28,4 +30,9 @@ public class PFPropertyEntity {
     public List<PFFileEntity> getPFFileEntities() {
         return pfFileEntities;
     }
+
+    public Boolean isPath() {
+        return Boolean.parseBoolean(isPath);
+    }
+
 }

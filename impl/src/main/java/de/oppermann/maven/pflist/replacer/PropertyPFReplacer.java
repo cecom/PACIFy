@@ -1,6 +1,8 @@
 package de.oppermann.maven.pflist.replacer;
 
 import de.oppermann.maven.pflist.defect.Defect;
+import de.oppermann.maven.pflist.logger.Log;
+import de.oppermann.maven.pflist.logger.LogLevel;
 import de.oppermann.maven.pflist.model.PFFileEntity;
 import de.oppermann.maven.pflist.model.PFListEntity;
 import de.oppermann.maven.pflist.model.PFPropertyEntity;
@@ -73,6 +75,13 @@ public class PropertyPFReplacer {
         for (PFPropertyEntity pfPropertyEntity : pfPropertyEntities) {
             String propertyId = pfPropertyEntity.getId();
             String propertyValue = propertyContainer.getPropertyValue(propertyId);
+
+            if (pfPropertyEntity.isPath()) {
+                String convertedString = propertyValue;
+                convertedString = convertedString.replace("\\", "/");
+                Log.log(LogLevel.INFO, " Converting path [" + propertyValue + "] to path [" + convertedString + "]");
+                propertyValue = convertedString;
+            }
 
             filterSet.addFilter(propertyId, propertyValue);
 
