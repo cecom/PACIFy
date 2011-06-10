@@ -20,8 +20,8 @@ public class PFPropertyEntity {
     @ElementList(name = "file", inline = true)
     private List<PFFileEntity> pfFileEntities;
 
-    @Attribute(name = "isPath", required = false, empty = "false")
-    private String isPath;
+    @Attribute(name = "convertBackslashToSlash", required = false, empty = "false")
+    private String convertBackslashToSlash;
 
     public String getId() {
         return id;
@@ -31,8 +31,8 @@ public class PFPropertyEntity {
         return pfFileEntities;
     }
 
-    public Boolean isPath() {
-        return Boolean.parseBoolean(isPath);
+    public Boolean convertBackslashToSlash() {
+        return Boolean.parseBoolean(convertBackslashToSlash);
     }
 
 }

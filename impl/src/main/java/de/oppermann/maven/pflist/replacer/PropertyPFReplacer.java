@@ -76,10 +76,10 @@ public class PropertyPFReplacer {
             String propertyId = pfPropertyEntity.getId();
             String propertyValue = propertyContainer.getPropertyValue(propertyId);
 
-            if (pfPropertyEntity.isPath()) {
+            if (pfPropertyEntity.convertBackslashToSlash()) {
                 String convertedString = propertyValue;
-                convertedString = convertedString.replace("\\", "/");
-                Log.log(LogLevel.INFO, " Converting path [" + propertyValue + "] to path [" + convertedString + "]");
+                convertedString = propertyValue.replace('\\', '/');
+                Log.log(LogLevel.INFO, " Converting backslashes [" + propertyValue + "] to slashes [" + convertedString + "]");
                 propertyValue = convertedString;
             }
 

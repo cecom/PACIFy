@@ -12,7 +12,7 @@
     <property id="foobar4">
         <file relative_path="correctConf.txt"/>
     </property>
-    <property id="path" isPath="true">
+    <property id="path" convertBackslashToSlash="true">
         <file relative_path="correctConf.txt"/>
     </property>
 </property_file_list>
