@@ -1,5 +1,6 @@
 package de.oppermann.maven.pflist.mavenplugin;
 
+import de.oppermann.maven.pflist.defect.Defect;
 import de.oppermann.maven.pflist.model.PFEntityManager;
 import de.oppermann.maven.pflist.property.FilePropertyContainer;
 import de.oppermann.maven.pflist.property.MavenPropertyContainer;
@@ -7,6 +8,7 @@ import de.oppermann.maven.pflist.property.PropertyContainer;
 import org.apache.maven.plugin.MojoExecutionException;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * User: sop
@@ -73,10 +75,21 @@ public class ReplaceMojo extends BaseMojo {
 
         getLog().info("Loading properties from [" + propertyContainer.getPropertyLoadedFrom() + "]... ");
         getLog().info("Checking PFListFiles...");
-        pfEntityManager.checkCorrectnessOfPFListFiles(propertyContainer);
+        List<Defect> defects = pfEntityManager.checkCorrectnessOfPFListFiles(propertyContainer);
+        checkDefects(defects);
 
         getLog().info("Doing Replacement...");
-        pfEntityManager.doReplacement(propertyContainer);
+        defects = pfEntityManager.doReplacement(propertyContainer);
+        checkDefects(defects);
+    }
+
+    private void checkDefects(List<Defect> defects) throws MojoExecutionException {
+        if (defects.isEmpty())
+            return;
+        getLog().error("==== !!!!!! We got Errors !!!!! ...");
+        for (Defect defect : defects)
+            getLog().error(defect.getDefectMessage());
+        throw new MojoExecutionException("We got errors... Aborting!");
     }
 
 }
