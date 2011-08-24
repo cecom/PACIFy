@@ -1,18 +1,16 @@
 package de.oppermann.maven.pflist.mavenplugin;
 
-
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
-import org.apache.maven.project.MavenProject;
 
 import java.util.Properties;
 
 /**
  * User: sop
- * Date: 10.05.11
- * Time: 10:08
+ * Date: 24.08.11
+ * Time: 14:42
  */
-public class LoadPropertyFileIntoMavenMojoTest extends AbstractMojoTestCase {
+public class GenerateFinalPropertyFileMojoTest extends AbstractMojoTestCase {
 
     Properties propertiesShouldLookLike = new Properties();
 
@@ -26,19 +24,20 @@ public class LoadPropertyFileIntoMavenMojoTest extends AbstractMojoTestCase {
         propertiesShouldLookLike.put("SomeChildOfChildProperty", "SomeChildOfChildPropertyValue");
     }
 
-    public void testPseudo(){
+
+    public void testPseudo() {
 
     }
 
-    public void doesNotWorkLoadPropertyFile() throws Exception {
-        LoadPropertyFileIntoMavenMojo intoMavenMojo = (LoadPropertyFileIntoMavenMojo) lookupMojo("loadPropertyFileIntoMaven", "target/test-classes/LoadPropertyFile.pom");
+    public void doesNotWorkGeneratePropertyFile() throws Exception {
+        GenerateFinalPropertyFile mavenMojo = (GenerateFinalPropertyFile) lookupMojo("generateFinalPropertyFile", "target/test-classes/GenerateFinalPropertyFile.pom");
 
-        assertNotNull(intoMavenMojo);
+        assertNotNull(mavenMojo);
 
         try {
-            intoMavenMojo.execute();
-            MavenProject project = (MavenProject) getVariableValueFromObject(intoMavenMojo, "project");
-            assertEquals(propertiesShouldLookLike, project.getProperties());
+            mavenMojo.execute();
+//            MavenProject project = (MavenProject) getVariableValueFromObject(mavenMojo, "project");
+//            assertEquals(propertiesShouldLookLike, project.getProperties());
         } catch (MojoExecutionException e) {
             fail(e.getMessage());
         }

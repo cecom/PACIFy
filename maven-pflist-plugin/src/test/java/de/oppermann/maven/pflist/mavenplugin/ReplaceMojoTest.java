@@ -18,11 +18,12 @@ public class ReplaceMojoTest extends AbstractMojoTestCase {
         super.setUp();
     }
 
-    public void testBla() {
+
+    public void testPseudo(){
 
     }
 
-    public void mpfLoadPropertyFile() throws Exception {
+    public void doesNotWorkLoadPropertyFile() throws Exception {
         ReplaceMojo replaceMojo = (ReplaceMojo) lookupMojo("replace", "target/test-classes/Replace.pom");
 
         assertNotNull(replaceMojo);
