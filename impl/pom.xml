@@ -5,7 +5,7 @@
     <parent>
         <groupId>de.oppermann.maven.pflist</groupId>
         <artifactId>pflist</artifactId>
-        <version>1.0.7</version>
+        <version>1.0.8</version>
     </parent>
     <artifactId>pflist.impl</artifactId>
     <name>de.oppermann.maven.pflist.impl</name>
@@ -27,6 +27,11 @@
             <groupId>org.simpleframework</groupId>
             <artifactId>simple-xml</artifactId>
             <version>${org.simpleframework_simple-xml_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>juniversalchardet</groupId>
+            <artifactId>juniversalchardet</artifactId>
+            <version>${juniversalchardet_juniversalchardet_version}</version>
         </dependency>
     </dependencies>
     <build>

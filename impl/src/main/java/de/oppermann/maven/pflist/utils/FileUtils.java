@@ -1,5 +1,7 @@
 package de.oppermann.maven.pflist.utils;
 
+import org.mozilla.universalchardet.UniversalDetector;
+
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -61,6 +63,29 @@ public class FileUtils {
         try {
             return file.toURI().toURL();
         } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static String getEncoding(File file) {
+        try {
+            FileInputStream fis = new FileInputStream(file);
+
+            UniversalDetector detector = new UniversalDetector(null);
+            int nread;
+            byte[] buf = new byte[4096];
+
+            while ((nread = fis.read(buf)) > 0 && !detector.isDone()) {
+                detector.handleData(buf, 0, nread);
+            }
+            detector.dataEnd();
+
+            fis.close();
+
+            return detector.getDetectedCharset();
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }

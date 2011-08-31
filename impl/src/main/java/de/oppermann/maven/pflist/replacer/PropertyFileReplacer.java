@@ -1,6 +1,8 @@
 package de.oppermann.maven.pflist.replacer;
 
 import de.oppermann.maven.pflist.defect.Defect;
+import de.oppermann.maven.pflist.logger.Log;
+import de.oppermann.maven.pflist.logger.LogLevel;
 import de.oppermann.maven.pflist.property.PropertyContainer;
 import de.oppermann.maven.pflist.utils.Utils;
 import org.apache.tools.ant.types.FilterSet;
@@ -36,7 +38,9 @@ public class PropertyFileReplacer {
         File tmpFile = new File(file.getParentFile(), file.getName() + "_tmp");
 
         try {
-            FileUtils.getFileUtils().copyFile(file, tmpFile, getFilterSetCollection(propertyContainer), true, true);
+            String encoding = de.oppermann.maven.pflist.utils.FileUtils.getEncoding(file);
+            FileUtils.getFileUtils().copyFile(file, tmpFile, getFilterSetCollection(propertyContainer), true, true, encoding);
+            Log.log(LogLevel.INFO, "Using  encoding [" + encoding + "] for  File  [" + file.getAbsolutePath() + "]");
             if (!file.delete())
                 throw new RuntimeException("Couldn't delete file [" + file.getPath() + "]... Aborting!");
             if (!tmpFile.renameTo(file))
@@ -64,7 +68,7 @@ public class PropertyFileReplacer {
         filterSet.setBeginToken(BEGIN_TOKEN);
         filterSet.setEndToken(END_TOKEN);
 
-        for (Enumeration e = propertyContainer.getProperties().propertyNames(); e.hasMoreElements();) {
+        for (Enumeration e = propertyContainer.getProperties().propertyNames(); e.hasMoreElements(); ) {
             String propertyId = (String) e.nextElement();
             String propertyValue = propertyContainer.getPropertyValue(propertyId);
 

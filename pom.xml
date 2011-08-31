@@ -6,7 +6,7 @@
     <artifactId>pflist</artifactId>
     <packaging>pom</packaging>
     <name>de.oppermann.maven.pflist</name>
-    <version>1.0.7</version>
+    <version>1.0.8</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <org.apache.ant_ant_version>1.8.2</org.apache.ant_ant_version>
@@ -16,6 +16,7 @@
         <org.apache.maven_maven-project_version>2.2.1</org.apache.maven_maven-project_version>
         <org.apache.maven.shared_maven-plugin-testing-harness_version>2.0-alpha-1
         </org.apache.maven.shared_maven-plugin-testing-harness_version>
+        <juniversalchardet_juniversalchardet_version>1.0.3</juniversalchardet_juniversalchardet_version>
     </properties>
     <modules>
         <module>impl</module>
