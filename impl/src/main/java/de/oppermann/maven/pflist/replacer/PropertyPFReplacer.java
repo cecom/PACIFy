@@ -42,7 +42,7 @@ public class PropertyPFReplacer {
             File tmpFile = new File(file.getParentFile(), file.getName() + "_tmp");
 
             try {
-                String encoding = de.oppermann.maven.pflist.utils.FileUtils.getEncoding(file);
+                String encoding = Utils.getEncoding(file);
                 Log.log(LogLevel.INFO, "Using  encoding [" + encoding + "] for  File  [" + file.getAbsolutePath() + "]");
                 FileUtils.getFileUtils().copyFile(file, tmpFile, filterSetCollection, true, true, encoding);
                 if (!file.delete())

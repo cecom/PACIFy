@@ -3,12 +3,12 @@ package de.oppermann.maven.pflist.utils;
 import de.oppermann.maven.pflist.defect.Defect;
 import de.oppermann.maven.pflist.defect.PropertyNotReplacedDefect;
 import de.oppermann.maven.pflist.replacer.PropertyFileReplacer;
-import de.oppermann.maven.pflist.replacer.PropertyPFReplacer;
+import org.mozilla.universalchardet.UniversalDetector;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.JarURLConnection;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.Attributes;
@@ -56,5 +56,42 @@ public class Utils {
             defects.add(defect);
         }
         return defects;
+    }
+
+    public static String getEncoding(URL fileUrl) {
+        return getEncoding(new File(fileUrl.getFile()));
+    }
+
+    public static String getEncoding(File file) {
+        try {
+            InputStream is = new FileInputStream(file);
+            return getEncoding(is);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static String getEncoding(InputStream inputStream) {
+        try {
+            UniversalDetector detector = new UniversalDetector(null);
+            int nread;
+            byte[] buf = new byte[4096];
+
+            while ((nread = inputStream.read(buf)) > 0 && !detector.isDone()) {
+                detector.handleData(buf, 0, nread);
+            }
+            detector.dataEnd();
+
+            inputStream.close();
+
+            if (detector.getDetectedCharset() != null)
+                return detector.getDetectedCharset();
+            else
+                return Charset.defaultCharset().name();
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

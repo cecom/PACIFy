@@ -4,8 +4,6 @@ import de.oppermann.maven.pflist.logger.LogLevel;
 
 import java.io.File;
 import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.EnumMap;
 
@@ -78,7 +76,7 @@ public class CommandLineUtils {
                 File file = new File(value);
                 commandlineProperties.put(CommandLineParameter.TargetFile, file);
             }
-            if (key.equals("--logLevel") && value != null ) {
+            if (key.equals("--logLevel") && value != null) {
                 LogLevel logLevel = LogLevel.valueOf(value);
                 commandlineProperties.put(CommandLineParameter.LogLevel, logLevel);
             }

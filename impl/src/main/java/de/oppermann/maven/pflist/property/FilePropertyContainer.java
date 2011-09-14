@@ -3,6 +3,7 @@ package de.oppermann.maven.pflist.property;
 import de.oppermann.maven.pflist.defect.Defect;
 import de.oppermann.maven.pflist.defect.PropertyDuplicateDefinedInPropertyFile;
 import de.oppermann.maven.pflist.utils.FileUtils;
+import de.oppermann.maven.pflist.utils.Utils;
 
 import java.io.*;
 import java.net.URL;
@@ -115,18 +116,19 @@ public class FilePropertyContainer implements PropertyContainer {
     }
 
     public void loadPropertyFile(FilePropertyContainer filePropertyContainer) {
-        InputStream is = null;
+        InputStreamReader isr = null;
         try {
             URL propertyFileURL = filePropertyContainer.getPropertyFileURL();
 
-            is = getInputStreamFor(propertyFileURL);
-            InputStreamReader isr = new InputStreamReader(is);
+            String encoding = Utils.getEncoding(propertyFileURL);
+
+            isr = getInputStreamReaderFor(propertyFileURL, encoding);
             BufferedReader br = new BufferedReader(isr);
 
             ByteArrayOutputStream byteArray = new ByteArrayOutputStream();
-            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(byteArray));
+            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(byteArray, encoding));
 
-            for (String line; (line = br.readLine()) != null;) {
+            for (String line; (line = br.readLine()) != null; ) {
                 if (line.startsWith(FilePropertyContainer.IMPORT_STRING)) {
                     String[] includes = line.substring(FilePropertyContainer.IMPORT_STRING.length()).trim().split(" ");
                     for (String include : includes) {
@@ -142,24 +144,24 @@ public class FilePropertyContainer implements PropertyContainer {
             bw.flush();
 
             Properties properties = new Properties();
-            properties.load(new ByteArrayInputStream(byteArray.toByteArray()));
+            properties.load(new StringReader(byteArray.toString(encoding)));
             filePropertyContainer.setLocalProperties(properties);
         } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {
-            if (is != null) {
+            if (isr != null) {
                 try {
-                    is.close();
+                    isr.close();
                 } catch (IOException ignored) {
                 }
             }
         }
     }
 
-    private InputStream getInputStreamFor(URL propertyFilePathURL) {
-        InputStream result;
+    private InputStreamReader getInputStreamReaderFor(URL propertyFilePathURL, String encoding) {
+        InputStreamReader result;
         try {
-            result = propertyFilePathURL.openStream();
+            result = new InputStreamReader(propertyFilePathURL.openStream(), encoding);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -167,5 +169,4 @@ public class FilePropertyContainer implements PropertyContainer {
             throw new RuntimeException("Couldn't find resource [" + propertyFilePathURL + "] in classpath.");
         return result;
     }
-
 }

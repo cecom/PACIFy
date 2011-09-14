@@ -1,6 +1,6 @@
-lajdfgaklösdföasdfas a %{foobar3} adflökaösldfjpqwuerq	2394uoiklf,.s
-lajdfgaklösdföasdfas a %{foobar1} adflökaösldfjpqwuerq	2394uoiklf,.s
-lajdfgaklösdföasdfas a %{foobar4} adflökaösldfjpqwuerq	2394uoiklf,.s
-lajdfgaklösdföasdfas a %{foobar2} adflökaösldfjpqwuerq	2394uoiklf,.s
-lajdfgaklösdföasdfas a %{foobar3} adflökaösldfjpqwuerq	2394uoiklf,.s
-lajdfgaklösdföasdfas a %{path} adflökaösldfjpqwuerq	2394uoiklf,.s
+lajdfgaklÃ¶sdfÃ¶asdfas a %{foobar3} adflÃ¶kaÃ¶sldfjpqwuerq	2394uoiklf,.s
+lajdfgaklÃ¶sdfÃ¶asdfas a %{foobar1} adflÃ¶kaÃ¶sldfjpqwuerq	2394uoiklf,.s
+lajdfgaklÃ¶sdfÃ¶asdfas a %{foobar4} adflÃ¶kaÃ¶sldfjpqwuerq	2394uoiklf,.s
+lajdfgaklÃ¶sdfÃ¶asdfas a %{foobar2} adflÃ¶kaÃ¶sldfjpqwuerq	2394uoiklf,.s
+lajdfgaklÃ¶sdfÃ¶asdfas a %{foobar3} adflÃ¶kaÃ¶sldfjpqwuerq	2394uoiklf,.s
+lajdfgaklÃ¶sdfÃ¶asdfas a %{path} adflÃ¶kaÃ¶sldfjpqwuerq	2394uoiklf,.s

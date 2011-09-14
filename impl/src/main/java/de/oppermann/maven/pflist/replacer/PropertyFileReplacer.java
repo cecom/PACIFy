@@ -11,6 +11,7 @@ import org.apache.tools.ant.util.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -38,8 +39,8 @@ public class PropertyFileReplacer {
         File tmpFile = new File(file.getParentFile(), file.getName() + "_tmp");
 
         try {
-            String encoding = de.oppermann.maven.pflist.utils.FileUtils.getEncoding(file);
-            FileUtils.getFileUtils().copyFile(file, tmpFile, getFilterSetCollection(propertyContainer), true, true, encoding);
+            String encoding = Utils.getEncoding(file);
+            FileUtils.getFileUtils().copyFile(file, tmpFile, getFilterSetCollection(propertyContainer, encoding), true, true, encoding);
             Log.log(LogLevel.INFO, "Using  encoding [" + encoding + "] for  File  [" + file.getAbsolutePath() + "]");
             if (!file.delete())
                 throw new RuntimeException("Couldn't delete file [" + file.getPath() + "]... Aborting!");
@@ -53,8 +54,8 @@ public class PropertyFileReplacer {
         return defects;
     }
 
-    private FilterSetCollection getFilterSetCollection(PropertyContainer propertyContainer) {
-        FilterSet filterSet = getFilterSet(propertyContainer);
+    private FilterSetCollection getFilterSetCollection(PropertyContainer propertyContainer, String encoding) {
+        FilterSet filterSet = getFilterSet(propertyContainer, encoding);
 
         FilterSetCollection executionFilters = new FilterSetCollection();
         executionFilters.addFilterSet(filterSet);
@@ -62,7 +63,7 @@ public class PropertyFileReplacer {
         return executionFilters;
     }
 
-    private FilterSet getFilterSet(PropertyContainer propertyContainer) {
+    private FilterSet getFilterSet(PropertyContainer propertyContainer, String encoding) {
         FilterSet filterSet = new FilterSet();
 
         filterSet.setBeginToken(BEGIN_TOKEN);
@@ -72,7 +73,15 @@ public class PropertyFileReplacer {
             String propertyId = (String) e.nextElement();
             String propertyValue = propertyContainer.getPropertyValue(propertyId);
 
-            filterSet.addFilter(propertyId, propertyValue);
+            String propertyValueWithResultFileEncoding = null;
+
+            try {
+                propertyValueWithResultFileEncoding = new String(propertyValue.getBytes(), encoding);
+            } catch (UnsupportedEncodingException ex) {
+                throw new RuntimeException(ex);
+            }
+
+            filterSet.addFilter(propertyId, propertyValueWithResultFileEncoding);
         }
 
         return filterSet;
