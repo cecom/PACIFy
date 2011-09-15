@@ -9,10 +9,7 @@ import de.oppermann.maven.pflist.property.PropertyContainer;
 import de.oppermann.maven.pflist.replacer.PropertyFileReplacer;
 import de.oppermann.maven.pflist.utils.Utils;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.URL;
 import java.util.EnumMap;
 import java.util.Enumeration;
@@ -59,8 +56,8 @@ public class CreateResultPropertyFile {
         //first, lets write all property to the target file
         PrintWriter out = null;
         try {
-            out = new PrintWriter(new FileWriter(getTargetFile()), false);
-            for (Enumeration e = propertyContainer.getProperties().propertyNames(); e.hasMoreElements();) {
+            out = new PrintWriter(new OutputStreamWriter(new FileOutputStream(getTargetFile()), propertyContainer.getEncoding()), false);
+            for (Enumeration e = propertyContainer.getProperties().propertyNames(); e.hasMoreElements(); ) {
                 String propertyId = (String) e.nextElement();
                 String propertyValue = propertyContainer.getPropertyValue(propertyId);
 

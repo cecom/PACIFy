@@ -68,7 +68,7 @@ public class ReplaceMojo extends BaseMojo {
 
         PropertyContainer propertyContainer;
         if (useMavenProperties) {
-            propertyContainer = new MavenPropertyContainer(project.getProperties());
+            propertyContainer = new MavenPropertyContainer(project.getProperties(), project.getModel().getModelEncoding());
         } else {
             propertyContainer = new FilePropertyContainer(getPropertyFileURL(propertyFileArtifact, propertyFile));
         }

@@ -21,4 +21,6 @@ public interface PropertyContainer {
     List<Defect> checkForDuplicateEntry();
 
     String getPropertyLoadedFrom();
+
+    String getEncoding();
 }

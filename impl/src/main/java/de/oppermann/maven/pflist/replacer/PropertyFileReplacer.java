@@ -40,7 +40,7 @@ public class PropertyFileReplacer {
 
         try {
             String encoding = Utils.getEncoding(file);
-            FileUtils.getFileUtils().copyFile(file, tmpFile, getFilterSetCollection(propertyContainer, encoding), true, true, encoding);
+            FileUtils.getFileUtils().copyFile(file, tmpFile, getFilterSetCollection(propertyContainer), true, true, encoding);
             Log.log(LogLevel.INFO, "Using  encoding [" + encoding + "] for  File  [" + file.getAbsolutePath() + "]");
             if (!file.delete())
                 throw new RuntimeException("Couldn't delete file [" + file.getPath() + "]... Aborting!");
@@ -54,8 +54,8 @@ public class PropertyFileReplacer {
         return defects;
     }
 
-    private FilterSetCollection getFilterSetCollection(PropertyContainer propertyContainer, String encoding) {
-        FilterSet filterSet = getFilterSet(propertyContainer, encoding);
+    private FilterSetCollection getFilterSetCollection(PropertyContainer propertyContainer) {
+        FilterSet filterSet = getFilterSet(propertyContainer);
 
         FilterSetCollection executionFilters = new FilterSetCollection();
         executionFilters.addFilterSet(filterSet);
@@ -63,7 +63,7 @@ public class PropertyFileReplacer {
         return executionFilters;
     }
 
-    private FilterSet getFilterSet(PropertyContainer propertyContainer, String encoding) {
+    private FilterSet getFilterSet(PropertyContainer propertyContainer) {
         FilterSet filterSet = new FilterSet();
 
         filterSet.setBeginToken(BEGIN_TOKEN);
@@ -73,15 +73,7 @@ public class PropertyFileReplacer {
             String propertyId = (String) e.nextElement();
             String propertyValue = propertyContainer.getPropertyValue(propertyId);
 
-            String propertyValueWithResultFileEncoding = null;
-
-            try {
-                propertyValueWithResultFileEncoding = new String(propertyValue.getBytes(), encoding);
-            } catch (UnsupportedEncodingException ex) {
-                throw new RuntimeException(ex);
-            }
-
-            filterSet.addFilter(propertyId, propertyValueWithResultFileEncoding);
+            filterSet.addFilter(propertyId, propertyValue);
         }
 
         return filterSet;

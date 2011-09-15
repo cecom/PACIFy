@@ -1,7 +1,5 @@
 package de.oppermann.maven.pflist.utils;
 
-import org.mozilla.universalchardet.UniversalDetector;
-
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -32,14 +30,20 @@ public class FileUtils {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return new String(buffer);
+        String encoding = Utils.getEncoding(file);
+        try {
+            return new String(buffer, encoding);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static List<String> getFileAsLines(URL fileURL) {
         InputStream is = null;
         try {
             is = fileURL.openStream();
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(is));
+            String encoding = Utils.getEncoding(fileURL);
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(is, encoding));
             List<String> lines = new ArrayList<String>();
             String line;
             while ((line = bufferedReader.readLine()) != null) {
@@ -66,7 +70,6 @@ public class FileUtils {
             throw new RuntimeException(e);
         }
     }
-
 
 
 }

@@ -5,6 +5,7 @@ import de.oppermann.maven.pflist.defect.PropertyDuplicateDefinedInPropertyFile;
 import de.oppermann.maven.pflist.utils.FileUtils;
 import de.oppermann.maven.pflist.utils.Utils;
 
+import javax.sound.sampled.AudioFormat;
 import java.io.*;
 import java.net.URL;
 import java.util.*;
@@ -23,10 +24,13 @@ public class FilePropertyContainer implements PropertyContainer {
     private boolean initialized = false;
     private Properties localProperties;
     private Properties properties;
+    private String fileEncoding;
     private List<FilePropertyContainer> parentFileProperties = new ArrayList<FilePropertyContainer>();
+
 
     public FilePropertyContainer(URL propertyFileURL) {
         this.propertyFileURL = propertyFileURL;
+        this.fileEncoding = Utils.getEncoding(propertyFileURL);
     }
 
     public boolean containsKey(String key) {
@@ -120,13 +124,11 @@ public class FilePropertyContainer implements PropertyContainer {
         try {
             URL propertyFileURL = filePropertyContainer.getPropertyFileURL();
 
-            String encoding = Utils.getEncoding(propertyFileURL);
-
-            isr = getInputStreamReaderFor(propertyFileURL, encoding);
+            isr = getInputStreamReaderFor(propertyFileURL);
             BufferedReader br = new BufferedReader(isr);
 
             ByteArrayOutputStream byteArray = new ByteArrayOutputStream();
-            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(byteArray, encoding));
+            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(byteArray, getEncoding()));
 
             for (String line; (line = br.readLine()) != null; ) {
                 if (line.startsWith(FilePropertyContainer.IMPORT_STRING)) {
@@ -144,7 +146,7 @@ public class FilePropertyContainer implements PropertyContainer {
             bw.flush();
 
             Properties properties = new Properties();
-            properties.load(new StringReader(byteArray.toString(encoding)));
+            properties.load(new StringReader(byteArray.toString(getEncoding())));
             filePropertyContainer.setLocalProperties(properties);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -158,15 +160,19 @@ public class FilePropertyContainer implements PropertyContainer {
         }
     }
 
-    private InputStreamReader getInputStreamReaderFor(URL propertyFilePathURL, String encoding) {
+    private InputStreamReader getInputStreamReaderFor(URL propertyFilePathURL) {
         InputStreamReader result;
         try {
-            result = new InputStreamReader(propertyFilePathURL.openStream(), encoding);
+            result = new InputStreamReader(propertyFilePathURL.openStream(), getEncoding());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         if (result == null)
             throw new RuntimeException("Couldn't find resource [" + propertyFilePathURL + "] in classpath.");
         return result;
+    }
+
+    public String getEncoding() {
+        return fileEncoding;
     }
 }

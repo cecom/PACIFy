@@ -14,9 +14,11 @@ import java.util.Properties;
 public class MavenPropertyContainer implements PropertyContainer {
 
     Properties properties;
+    String encoding;
 
-    public MavenPropertyContainer(Properties properties) {
+    public MavenPropertyContainer(Properties properties, String encoding) {
         this.properties = properties;
+        this.encoding = encoding;
     }
 
     public boolean containsKey(String key) {
@@ -39,5 +41,9 @@ public class MavenPropertyContainer implements PropertyContainer {
 
     public String getPropertyLoadedFrom() {
         return "maven";
+    }
+
+    public String getEncoding() {
+        return encoding;
     }
 }
