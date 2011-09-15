@@ -1,6 +1,7 @@
 package de.oppermann.maven.pflist;
 
 import de.oppermann.maven.pflist.commandline.CommandLineParameter;
+import de.oppermann.maven.pflist.commandline.OutputType;
 import de.oppermann.maven.pflist.defect.Defect;
 import de.oppermann.maven.pflist.logger.LogLevel;
 import de.oppermann.maven.pflist.model.PFEntityManager;
@@ -36,6 +37,7 @@ public class TestCreateResultPropertyFile {
         EnumMap<CommandLineParameter, Object> commandlineProperties = new EnumMap<CommandLineParameter, Object>(CommandLineParameter.class);
         commandlineProperties.put(CommandLineParameter.PropertyFileURL, Util.getURLForFile(myTestProperty));
         commandlineProperties.put(CommandLineParameter.LogLevel, LogLevel.DEBUG);
+        commandlineProperties.put(CommandLineParameter.OutputType, OutputType.File);
         commandlineProperties.put(CommandLineParameter.TargetFile, targetFile);
 
         CreateResultPropertyFile createResultPropertyFile = new CreateResultPropertyFile(commandlineProperties);

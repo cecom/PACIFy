@@ -34,7 +34,7 @@ public class PFListPropertyReplacer {
      * @see LogLevel
      */
     public static void main(String[] args) {
-        EnumMap<CommandLineParameter, Object> commandlineProperties = CommandLineUtils.getPropertiesForReplacerFromParameter(args);
+        EnumMap<CommandLineParameter, Object> commandlineProperties = CommandLineUtils.getCommandLinePropertiesForPropertyReplacer(args);
 
         if (commandlineProperties.containsKey(CommandLineParameter.Help) || commandlineProperties.isEmpty()) {
             CommandLineUtils.printPropertyReplacerHelp();

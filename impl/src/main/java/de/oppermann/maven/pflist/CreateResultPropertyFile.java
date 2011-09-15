@@ -2,6 +2,7 @@ package de.oppermann.maven.pflist;
 
 import de.oppermann.maven.pflist.commandline.CommandLineParameter;
 import de.oppermann.maven.pflist.commandline.CommandLineUtils;
+import de.oppermann.maven.pflist.commandline.OutputType;
 import de.oppermann.maven.pflist.logger.Log;
 import de.oppermann.maven.pflist.logger.LogLevel;
 import de.oppermann.maven.pflist.property.FilePropertyContainer;
@@ -30,7 +31,7 @@ public class CreateResultPropertyFile {
      * @see de.oppermann.maven.pflist.logger.LogLevel
      */
     public static void main(String[] args) {
-        EnumMap<CommandLineParameter, Object> commandlineProperties = CommandLineUtils.getPropertiesForCreateResultFromParameter(args);
+        EnumMap<CommandLineParameter, Object> commandlineProperties = CommandLineUtils.getCommandLinePropertiesForCreateResultPropertyFile(args);
 
         if (commandlineProperties.containsKey(CommandLineParameter.Help) || commandlineProperties.isEmpty()) {
             CommandLineUtils.printCreateResultPropertyFileHelp();
@@ -47,16 +48,19 @@ public class CreateResultPropertyFile {
         Log.log(LogLevel.INFO, "== Executing CreateResultPropertyFile [Version=" + Utils.getJarVersion() + "]");
         Log.log(LogLevel.INFO, "     [LogLevel=" + getCommandLineLogLevel() + "]");
         Log.log(LogLevel.INFO, "     [PropertyFileURL=" + getPropertyFileURL().getPath() + "]");
-        Log.log(LogLevel.INFO, "     [TargetFile=" + getTargetFile().getPath() + "]");
+        if (getOutputType() == OutputType.File)
+            Log.log(LogLevel.INFO, "     [TargetFile=" + getTargetFile().getPath() + "]");
     }
 
     public void create() {
         PropertyContainer propertyContainer = new FilePropertyContainer(getPropertyFileURL());
 
+        File tmpFile = createTempFile();
+
         //first, lets write all property to the target file
         PrintWriter out = null;
         try {
-            out = new PrintWriter(new OutputStreamWriter(new FileOutputStream(getTargetFile()), propertyContainer.getEncoding()), false);
+            out = new PrintWriter(new OutputStreamWriter(new FileOutputStream(tmpFile), propertyContainer.getEncoding()), false);
             for (Enumeration e = propertyContainer.getProperties().propertyNames(); e.hasMoreElements(); ) {
                 String propertyId = (String) e.nextElement();
                 String propertyValue = propertyContainer.getPropertyValue(propertyId);
@@ -74,7 +78,47 @@ public class CreateResultPropertyFile {
 
         //second, replace all in place used variables e.g. bla=%{foo}%{bar}
         PropertyFileReplacer replacer = new PropertyFileReplacer(propertyContainer);
-        replacer.replace(getTargetFile());
+        replacer.replace(tmpFile);
+
+        if (getOutputType() == OutputType.File)
+            tmpFile.renameTo(getTargetFile());
+        else if (getOutputType() == OutputType.Stdout)
+            writeToStdout(tmpFile, propertyContainer.getEncoding());
+        else
+            throw new IllegalArgumentException("OutputType not implemented! [" + getOutputType() + "]");
+    }
+
+    private void writeToStdout(File tmpFile, String encoding) {
+        BufferedWriter bw = null;
+        BufferedReader br = null;
+        try {
+            bw = new BufferedWriter(new OutputStreamWriter(System.out, encoding));
+            br = new BufferedReader(new FileReader(tmpFile));
+
+            for (String line; (line = br.readLine()) != null; ) {
+                bw.write(line);
+                bw.newLine();
+            }
+            bw.flush();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                br.close();
+                //you should not close bw because you close the maven stdout too
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+    }
+
+    private File createTempFile() {
+        try {
+            return File.createTempFile("pftmp", "properties");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private File getTargetFile() {
@@ -87,6 +131,10 @@ public class CreateResultPropertyFile {
 
     private LogLevel getCommandLineLogLevel() {
         return (LogLevel) commandlineProperties.get(CommandLineParameter.LogLevel);
+    }
+
+    private OutputType getOutputType() {
+        return (OutputType) commandlineProperties.get(CommandLineParameter.OutputType);
     }
 
 }

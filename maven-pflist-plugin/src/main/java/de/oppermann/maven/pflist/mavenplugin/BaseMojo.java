@@ -125,4 +125,8 @@ public abstract class BaseMojo extends AbstractMojo {
         }
         return artifactFactory.createArtifactWithClassifier(groupId, artifactId, version, type, classifier);
     }
+
+    protected LogLevel getLogLevel(){
+        return LogLevel.valueOf(logLevel.toUpperCase());
+    }
 }

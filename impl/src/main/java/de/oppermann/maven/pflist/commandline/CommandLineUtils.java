@@ -15,7 +15,7 @@ import java.util.EnumMap;
 
 public class CommandLineUtils {
 
-    public static EnumMap<CommandLineParameter, Object> getPropertiesForReplacerFromParameter(String[] args) {
+    public static EnumMap<CommandLineParameter, Object> getCommandLinePropertiesForPropertyReplacer(String[] args) {
         EnumMap<CommandLineParameter, Object> commandlineProperties = new EnumMap<CommandLineParameter, Object>(CommandLineParameter.class);
         for (String string : args) {
             String[] split = string.split("=");
@@ -62,7 +62,7 @@ public class CommandLineUtils {
         return commandlineProperties;
     }
 
-    public static EnumMap<CommandLineParameter, Object> getPropertiesForCreateResultFromParameter(String[] args) {
+    public static EnumMap<CommandLineParameter, Object> getCommandLinePropertiesForCreateResultPropertyFile(String[] args) {
         EnumMap<CommandLineParameter, Object> commandlineProperties = new EnumMap<CommandLineParameter, Object>(CommandLineParameter.class);
         for (String string : args) {
             String[] split = string.split("=");
@@ -74,6 +74,7 @@ public class CommandLineUtils {
             }
             if (key.equals("--targetFile") && value != null) {
                 File file = new File(value);
+                commandlineProperties.put(CommandLineParameter.OutputType, OutputType.File);
                 commandlineProperties.put(CommandLineParameter.TargetFile, file);
             }
             if (key.equals("--logLevel") && value != null) {
@@ -95,8 +96,7 @@ public class CommandLineUtils {
         }
 
         if (!commandlineProperties.containsKey(CommandLineParameter.TargetFile)) {
-            printCreateResultPropertyFileHelp();
-            throw new IllegalArgumentException("[--targetFile] is missing as parameter... Aborting!");
+            commandlineProperties.put(CommandLineParameter.OutputType, OutputType.Stdout);
         }
 
         if (!commandlineProperties.containsKey(CommandLineParameter.LogLevel))

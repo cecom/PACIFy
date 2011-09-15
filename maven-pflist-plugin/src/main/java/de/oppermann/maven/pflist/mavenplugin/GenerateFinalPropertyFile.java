@@ -2,6 +2,7 @@ package de.oppermann.maven.pflist.mavenplugin;
 
 import de.oppermann.maven.pflist.CreateResultPropertyFile;
 import de.oppermann.maven.pflist.commandline.CommandLineParameter;
+import de.oppermann.maven.pflist.commandline.OutputType;
 import de.oppermann.maven.pflist.logger.LogLevel;
 import org.apache.maven.plugin.MojoExecutionException;
 
@@ -15,11 +16,10 @@ import java.util.EnumMap;
 public class GenerateFinalPropertyFile extends BaseMojo {
 
     /**
-     * @parameter default-value="${project.build.outputDirectory}"
-     * @required
+     * if given, the property files will be written to this directory. if not given it will be written to stdout
+     * @parameter"
      */
     private File outputDirectory;
-
 
     /**
      * which files should be generated? its a comma separated list
@@ -40,18 +40,23 @@ public class GenerateFinalPropertyFile extends BaseMojo {
 
     @Override
     protected void executePFList() throws MojoExecutionException {
-        if (!outputDirectory.exists()) {
-            outputDirectory.mkdirs();
-        }
-
         for (String propertyFile : propertyFiles.split(",")) {
-            File targetFile = new File(outputDirectory, propertyFile);
-            getLog().info("Creating final property file [" + targetFile.getPath() + "] ...");
-
             EnumMap<CommandLineParameter, Object> commandlineProperties = new EnumMap<CommandLineParameter, Object>(CommandLineParameter.class);
             commandlineProperties.put(CommandLineParameter.PropertyFileURL, getPropertyFileURL(propertyFileArtifact, propertyFile));
-            commandlineProperties.put(CommandLineParameter.LogLevel, LogLevel.ERROR);
-            commandlineProperties.put(CommandLineParameter.TargetFile, targetFile);
+            commandlineProperties.put(CommandLineParameter.LogLevel, getLogLevel());
+
+            if (outputDirectory != null) {
+                if (!outputDirectory.exists()) {
+                    outputDirectory.mkdirs();
+                }
+                File targetFile = new File(outputDirectory, propertyFile);
+                getLog().info("Creating final property file [" + targetFile.getPath() + "] ...");
+                commandlineProperties.put(CommandLineParameter.OutputType, OutputType.File);
+                commandlineProperties.put(CommandLineParameter.TargetFile, targetFile);
+            } else {
+                getLog().info("Creating final property file [" + propertyFile + "] ...");
+                commandlineProperties.put(CommandLineParameter.OutputType, OutputType.Stdout);
+            }
 
             CreateResultPropertyFile createResultPropertyFile = new CreateResultPropertyFile(commandlineProperties);
             createResultPropertyFile.create();
