@@ -59,13 +59,16 @@ public class Utils {
     }
 
     public static String getEncoding(URL fileUrl) {
-        return getEncoding(new File(fileUrl.getFile()));
+        try {
+            return getEncoding(fileUrl.openStream());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static String getEncoding(File file) {
         try {
-            InputStream is = new FileInputStream(file);
-            return getEncoding(is);
+            return getEncoding(new FileInputStream(file));
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
