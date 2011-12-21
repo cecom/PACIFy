@@ -29,7 +29,7 @@
             <version>${org.simpleframework_simple-xml_version}</version>
         </dependency>
         <dependency>
-            <groupId>juniversalchardet</groupId>
+            <groupId>com.googlecode.juniversalchardet</groupId>
             <artifactId>juniversalchardet</artifactId>
             <version>${juniversalchardet_juniversalchardet_version}</version>
         </dependency>
