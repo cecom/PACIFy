@@ -1,5 +1,23 @@
 package com.geewhiz.pacify;
 
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 
 import java.io.File;
 import java.net.URL;
@@ -16,26 +34,21 @@ import com.geewhiz.pacify.property.FilePropertyContainer;
 import com.geewhiz.pacify.property.PropertyContainer;
 import com.geewhiz.pacify.utils.Utils;
 
-/**
- * User: sop
- * Date: 03.05.11
- * Time: 13:05
- */
-
 public class PFListPropertyReplacer {
 
     EnumMap<CommandLineParameter, Object> commandlineProperties;
 
     /**
      * @param args the PFProperty PFFile which will be used for replacement
-     *             --property_file=<path to property file>
-     *             [--path]=<path where to start the replacement, if not given the current testAll.folder is used>
-     *             [--logLevel]=<LogLevel>, defaults to LogLevel.Info
-     *             [--help] print help
+     *            --property_file=<path to property file>
+     *            [--path]=<path where to start the replacement, if not given the current testAll.folder is used>
+     *            [--logLevel]=<LogLevel>, defaults to LogLevel.Info
+     *            [--help] print help
      * @see LogLevel
      */
     public static void main(String[] args) {
-        EnumMap<CommandLineParameter, Object> commandlineProperties = CommandLineUtils.getCommandLinePropertiesForPropertyReplacer(args);
+        EnumMap<CommandLineParameter, Object> commandlineProperties = CommandLineUtils
+                .getCommandLinePropertiesForPropertyReplacer(args);
 
         if (commandlineProperties.containsKey(CommandLineParameter.Help) || commandlineProperties.isEmpty()) {
             CommandLineUtils.printPropertyReplacerHelp();
@@ -88,12 +101,14 @@ public class PFListPropertyReplacer {
     }
 
     private void shouldWeAbortIt(List<Defect> defects) {
-        if (defects.isEmpty())
+        if (defects.isEmpty()) {
             return;
+        }
 
         Log.log(LogLevel.ERROR, "==== !!!!!! We got Errors !!!!! ...");
-        for (Defect defect : defects)
+        for (Defect defect : defects) {
             Log.log(LogLevel.ERROR, defect.getDefectMessage());
+        }
         throw new RuntimeException("We got errors... Aborting!");
     }
 }

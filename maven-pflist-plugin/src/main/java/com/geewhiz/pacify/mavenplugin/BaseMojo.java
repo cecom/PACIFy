@@ -1,5 +1,28 @@
 package com.geewhiz.pacify.mavenplugin;
 
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
 import org.apache.maven.artifact.resolver.ArtifactResolutionException;
@@ -11,15 +34,6 @@ import org.apache.maven.project.MavenProject;
 import com.geewhiz.pacify.logger.Log;
 import com.geewhiz.pacify.logger.LogLevel;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
-
-/**
- * User: sop
- * Date: 14.05.11
- * Time: 11:07
- */
 public abstract class BaseMojo extends AbstractMojo {
 
     /**
@@ -31,7 +45,7 @@ public abstract class BaseMojo extends AbstractMojo {
 
     /**
      * Should it be skipped??
-     *
+     * 
      * @parameter expression="${skipPFList}" default-value="false"
      */
     protected boolean skip;
@@ -56,13 +70,11 @@ public abstract class BaseMojo extends AbstractMojo {
      */
     private java.util.List remoteRepositories;
 
-
     /**
      * @parameter expression="${logLevel}" default-value="ERROR"
      * @required
      */
     private String logLevel;
-
 
     public void execute() throws MojoExecutionException, MojoFailureException {
         if (skip) {
@@ -76,21 +88,24 @@ public abstract class BaseMojo extends AbstractMojo {
 
     protected abstract void executePFList() throws MojoExecutionException;
 
-    protected URL getPropertyFileURL(String propertyFileArtifact,String propertyFile) throws MojoExecutionException {
-        if (propertyFile == null)
+    protected URL getPropertyFileURL(String propertyFileArtifact, String propertyFile) throws MojoExecutionException {
+        if (propertyFile == null) {
             throw new MojoExecutionException("You didn't define the propertyFile... Aborting!");
+        }
 
         try {
             Artifact artifact = getArtifact(propertyFileArtifact);
 
             artifactResolver.resolve(artifact, remoteRepositories, localRepository);
 
-            ClassLoader cl = new URLClassLoader(new URL[]{artifact.getFile().toURI().toURL()});
+            ClassLoader cl = new URLClassLoader(new URL[] { artifact.getFile().toURI().toURL() });
 
             URL propertyFileURL = cl.getResource(propertyFile);
 
-            if (propertyFileURL == null)
-                throw new MojoExecutionException("Couldn't find property file [" + propertyFile + "] in [" + propertyFileArtifact + "]... Aborting!");
+            if (propertyFileURL == null) {
+                throw new MojoExecutionException("Couldn't find property file [" + propertyFile + "] in ["
+                        + propertyFileArtifact + "]... Aborting!");
+            }
 
             return propertyFileURL;
 
@@ -122,12 +137,13 @@ public abstract class BaseMojo extends AbstractMojo {
                 version = artifactParts[3];
                 break;
             default:
-                throw new MojoExecutionException("Couldn't parse propertyFileArtifact [" + propertyFileArtifact + "] string.");
+                throw new MojoExecutionException("Couldn't parse propertyFileArtifact [" + propertyFileArtifact
+                        + "] string.");
         }
         return artifactFactory.createArtifactWithClassifier(groupId, artifactId, version, type, classifier);
     }
 
-    protected LogLevel getLogLevel(){
+    protected LogLevel getLogLevel() {
         return LogLevel.valueOf(logLevel.toUpperCase());
     }
 }

@@ -1,5 +1,28 @@
 package com.geewhiz.pacify.mavenplugin;
 
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.maven.plugin.MojoExecutionException;
 
 import com.geewhiz.pacify.checker.CheckPropertyDuplicateInPropertyFile;
@@ -10,15 +33,7 @@ import com.geewhiz.pacify.model.PFListEntity;
 import com.geewhiz.pacify.property.FilePropertyContainer;
 import com.geewhiz.pacify.property.PropertyContainer;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
 /**
- * User: sop
- * Date: 19.05.11
- * Time: 09:13
- *
  * @goal checkDeliveryProperties
  * @phase install
  */
@@ -32,7 +47,7 @@ public class CheckDeliveryPropertyFiles extends BaseMojo {
 
     /**
      * which files should be checked? its a comma separated list
-     *
+     * 
      * @parameter
      * @required
      */
@@ -40,7 +55,7 @@ public class CheckDeliveryPropertyFiles extends BaseMojo {
 
     /**
      * In which jar is the propertyFile contained?
-     *
+     * 
      * @parameter
      * @required
      */
@@ -52,7 +67,7 @@ public class CheckDeliveryPropertyFiles extends BaseMojo {
             File outputDirectory = new File(project.getModel().getBuild().getOutputDirectory());
             if (pfListStartPath.equals(outputDirectory)) {
                 getLog().debug("Directory [" + pfListStartPath.getAbsolutePath() + "] does  not exists. Nothing to do.");
-                return; //if it is a maven project which doesn't have a target folder, do nothing.
+                return; // if it is a maven project which doesn't have a target folder, do nothing.
             }
             throw new MojoExecutionException("The folder [" + pfListStartPath.getAbsolutePath() + "] does not exist.");
         }
@@ -71,26 +86,32 @@ public class CheckDeliveryPropertyFiles extends BaseMojo {
             defects.addAll(checkPropertyFile(pfEntityManager, propertyFile));
         }
 
-        if (defects.isEmpty())
+        if (defects.isEmpty()) {
             return;
+        }
 
         getLog().error("==== !!!!!! We got Errors !!!!! ...");
-        for (Defect defect : defects)
+        for (Defect defect : defects) {
             getLog().error(defect.getDefectMessage());
+        }
         throw new MojoExecutionException("We got errors... Aborting!");
     }
 
-    private List<Defect> checkPropertyFile(PFEntityManager pfEntityManager, String propertyFile) throws MojoExecutionException {
-        PropertyContainer propertyContainer = new FilePropertyContainer(getPropertyFileURL(propertyFileArtifact, propertyFile));
+    private List<Defect> checkPropertyFile(PFEntityManager pfEntityManager, String propertyFile)
+            throws MojoExecutionException {
+        PropertyContainer propertyContainer = new FilePropertyContainer(getPropertyFileURL(propertyFileArtifact,
+                propertyFile));
 
-        CheckPropertyDuplicateInPropertyFile duplicateChecker = new CheckPropertyDuplicateInPropertyFile(propertyContainer);
+        CheckPropertyDuplicateInPropertyFile duplicateChecker = new CheckPropertyDuplicateInPropertyFile(
+                propertyContainer);
         CheckPropertyExists propertyExistsChecker = new CheckPropertyExists(propertyContainer);
 
         List<Defect> defects = new ArrayList<Defect>();
         defects.addAll(duplicateChecker.checkForErrors());
 
-        for (PFListEntity pfListEntity : pfEntityManager.getPFLists())
+        for (PFListEntity pfListEntity : pfEntityManager.getPFLists()) {
             defects.addAll(propertyExistsChecker.checkForErrors(pfListEntity));
+        }
 
         return defects;
     }

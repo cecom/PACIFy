@@ -1,22 +1,43 @@
 package com.geewhiz.pacify.property;
 
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 
-import javax.sound.sampled.AudioFormat;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.StringReader;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Properties;
+import java.util.Set;
 
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.PropertyDuplicateDefinedInPropertyFile;
 import com.geewhiz.pacify.utils.FileUtils;
 import com.geewhiz.pacify.utils.Utils;
 
-import java.io.*;
-import java.net.URL;
-import java.util.*;
-
-/**
- * User: sop
- * Date: 13.05.11
- * Time: 12:38
- */
 public class FilePropertyContainer implements PropertyContainer {
 
     public static final String IMPORT_STRING = "#!import";
@@ -28,7 +49,6 @@ public class FilePropertyContainer implements PropertyContainer {
     private Properties properties;
     private String fileEncoding;
     private List<FilePropertyContainer> parentFileProperties = new ArrayList<FilePropertyContainer>();
-
 
     public FilePropertyContainer(URL propertyFileURL) {
         this.propertyFileURL = propertyFileURL;
@@ -47,8 +67,9 @@ public class FilePropertyContainer implements PropertyContainer {
      * @return the localProperties for this instance
      */
     public Properties getLocalProperties() {
-        if (!initialized)
+        if (!initialized) {
             initialize();
+        }
         return localProperties;
     }
 
@@ -56,8 +77,9 @@ public class FilePropertyContainer implements PropertyContainer {
      * @return the localProperties for this instance and its parents.
      */
     public Properties getProperties() {
-        if (!initialized)
+        if (!initialized) {
             initialize();
+        }
         return properties;
     }
 
@@ -71,10 +93,12 @@ public class FilePropertyContainer implements PropertyContainer {
         Set<String> propertyIds = new HashSet<String>();
 
         for (String line : FileUtils.getFileAsLines(getPropertyFileURL())) {
-            if (line.startsWith("#"))
+            if (line.startsWith("#")) {
                 continue;
-            if (line.trim().isEmpty())
+            }
+            if (line.trim().isEmpty()) {
                 continue;
+            }
 
             String[] split = line.split("=");
             String propertyId = split[0];
@@ -85,8 +109,9 @@ public class FilePropertyContainer implements PropertyContainer {
             }
         }
 
-        for (FilePropertyContainer parentFilePropertyContainer : getParentPropertyFileProperties())
+        for (FilePropertyContainer parentFilePropertyContainer : getParentPropertyFileProperties()) {
             defects.addAll(parentFilePropertyContainer.checkForDuplicateEntry());
+        }
         return defects;
     }
 
@@ -94,11 +119,9 @@ public class FilePropertyContainer implements PropertyContainer {
         return propertyFileURL;
     }
 
-
     public List<FilePropertyContainer> getParentPropertyFileProperties() {
         return parentFileProperties;
     }
-
 
     private void initialize() {
         initialized = true;
@@ -132,12 +155,13 @@ public class FilePropertyContainer implements PropertyContainer {
             ByteArrayOutputStream byteArray = new ByteArrayOutputStream();
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(byteArray, getEncoding()));
 
-            for (String line; (line = br.readLine()) != null; ) {
+            for (String line; (line = br.readLine()) != null;) {
                 if (line.startsWith(FilePropertyContainer.IMPORT_STRING)) {
                     String[] includes = line.substring(FilePropertyContainer.IMPORT_STRING.length()).trim().split(" ");
                     for (String include : includes) {
                         URL parentPropertyFileURL = new URL(propertyFileURL, include);
-                        FilePropertyContainer parentFilePropertyContainer = new FilePropertyContainer(parentPropertyFileURL);
+                        FilePropertyContainer parentFilePropertyContainer = new FilePropertyContainer(
+                                parentPropertyFileURL);
                         filePropertyContainer.addParentPropertyFile(parentFilePropertyContainer);
                     }
                     continue;
@@ -152,7 +176,8 @@ public class FilePropertyContainer implements PropertyContainer {
             filePropertyContainer.setLocalProperties(properties);
         } catch (IOException e) {
             throw new RuntimeException(e);
-        } finally {
+        }
+        finally {
             if (isr != null) {
                 try {
                     isr.close();
@@ -169,8 +194,9 @@ public class FilePropertyContainer implements PropertyContainer {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        if (result == null)
+        if (result == null) {
             throw new RuntimeException("Couldn't find resource [" + propertyFilePathURL + "] in classpath.");
+        }
         return result;
     }
 
