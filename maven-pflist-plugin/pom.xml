@@ -3,11 +3,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>de.oppermann.maven.pflist</groupId>
-        <artifactId>pflist</artifactId>
+        <groupId>com.geewhiz.pacify</groupId>
+        <artifactId>pacify</artifactId>
         <version>develop</version>
     </parent>
-    <artifactId>maven-pflist-plugin</artifactId>
+    <artifactId>maven-pacify-plugin</artifactId>
     <name>de.oppermann.maven.pflist.maven-pflist-plugin</name>
     <packaging>maven-plugin</packaging>
     <dependencies>
@@ -28,8 +28,8 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>de.oppermann.maven.pflist</groupId>
-            <artifactId>pflist.impl</artifactId>
+            <groupId>com.geewhiz.pacify</groupId>
+            <artifactId>pacify.impl</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
