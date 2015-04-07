@@ -8,7 +8,7 @@
         <version>develop</version>
     </parent>
     <artifactId>pacify.impl</artifactId>
-    <name>de.oppermann.maven.pflist.impl</name>
+    <name>com.geewhiz.pacify.impl</name>
     <packaging>jar</packaging>
     <dependencies>
         <dependency>

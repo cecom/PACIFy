@@ -8,7 +8,7 @@
         <version>develop</version>
     </parent>
     <artifactId>maven-pacify-plugin</artifactId>
-    <name>de.oppermann.maven.pflist.maven-pflist-plugin</name>
+    <name>com.geewhiz.pacify.maven-pacify-plugin</name>
     <packaging>maven-plugin</packaging>
     <dependencies>
         <dependency>
