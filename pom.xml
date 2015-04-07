@@ -1,12 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.geewhiz.pacify</groupId>
     <artifactId>pacify</artifactId>
     <packaging>pom</packaging>
     <name>com.geewhiz.pacify</name>
     <version>develop</version>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Sven Oppermann</name>
+            <email>sven.oppermann@gmail.com</email>
+            <roles>
+                <role>Lead Developer</role>
+            </roles>
+            <timezone>+1</timezone>
+        </developer>
+    </developers>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <org.apache.ant_ant_version>1.8.2</org.apache.ant_ant_version>
@@ -18,16 +36,12 @@
         </org.apache.maven.shared_maven-plugin-testing-harness_version>
         <juniversalchardet_juniversalchardet_version>1.0.3</juniversalchardet_juniversalchardet_version>
     </properties>
+
     <modules>
         <module>impl</module>
         <module>maven-pflist-plugin</module>
     </modules>
-    <developers>
-        <developer>
-            <name>Sven Oppermann</name>
-            <email>sven.oppermann@gmail.com</email>
-        </developer>
-    </developers>
+
     <repositories>
         <repository>
             <id>repo1.maven.org</id>
