@@ -19,6 +19,7 @@ package com.geewhiz.pacify.mavenplugin;
  * under the License.
  */
 
+import java.io.File;
 import java.util.Properties;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -27,35 +28,39 @@ import org.apache.maven.project.MavenProject;
 
 public class LoadPropertyFileIntoMavenMojoTest extends AbstractMojoTestCase {
 
-    Properties propertiesShouldLookLike = new Properties();
+	Properties propertiesShouldLookLike = new Properties();
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+	@Override
+	protected void setUp() throws Exception {
+		super.setUp();
 
-        propertiesShouldLookLike.put("env.name", "ChildOfChildEnv");
-        propertiesShouldLookLike.put("SomeBaseProperty", "SomeBasePropertyValue");
-        propertiesShouldLookLike.put("SomeChild1Property", "SomeChild1PropertyValue");
-        propertiesShouldLookLike.put("SomeChild2Property", "SomeChild2PropertyValue");
-        propertiesShouldLookLike.put("SomeChildOfChildProperty", "SomeChildOfChildPropertyValue");
-    }
+		propertiesShouldLookLike.put("env.name", "ChildOfChildEnv");
+		propertiesShouldLookLike.put("SomeBaseProperty", "SomeBasePropertyValue");
+		propertiesShouldLookLike.put("SomeChild1Property", "SomeChild1PropertyValue");
+		propertiesShouldLookLike.put("SomeChild2Property", "SomeChild2PropertyValue");
+		propertiesShouldLookLike.put("SomeChildOfChildProperty", "SomeChildOfChildPropertyValue");
+	}
 
-    public void testPseudo() {
+	public void testPseudo() {
 
-    }
+	}
 
-    public void doesNotWorkLoadPropertyFile() throws Exception {
-        LoadPropertyFileIntoMavenMojo intoMavenMojo = (LoadPropertyFileIntoMavenMojo) lookupMojo(
-                "loadPropertyFileIntoMaven", "target/test-classes/LoadPropertyFile.pom");
+	public void doesNotWorkLoadPropertyFile() throws Exception {
+		File pom = getTestFile("target/test-classes/LoadPropertyFile.pom");
+		assertNotNull(pom);
+		assertTrue(pom.exists());
 
-        assertNotNull(intoMavenMojo);
+		LoadPropertyFileIntoMavenMojo intoMavenMojo = (LoadPropertyFileIntoMavenMojo) lookupMojo(
+		        "loadPropertyFileIntoMaven", pom);
 
-        try {
-            intoMavenMojo.execute();
-            MavenProject project = (MavenProject) getVariableValueFromObject(intoMavenMojo, "project");
-            assertEquals(propertiesShouldLookLike, project.getProperties());
-        } catch (MojoExecutionException e) {
-            fail(e.getMessage());
-        }
-    }
+		assertNotNull(intoMavenMojo);
+
+		try {
+			intoMavenMojo.execute();
+			MavenProject project = (MavenProject) getVariableValueFromObject(intoMavenMojo, "project");
+			assertEquals(propertiesShouldLookLike, project.getProperties());
+		} catch (MojoExecutionException e) {
+			fail(e.getMessage());
+		}
+	}
 }

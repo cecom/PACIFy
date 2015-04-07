@@ -19,6 +19,7 @@ package com.geewhiz.pacify.mavenplugin;
  * under the License.
  */
 
+import java.io.File;
 import java.util.Properties;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -26,26 +27,30 @@ import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 
 public class ReplaceMojoTest extends AbstractMojoTestCase {
 
-    Properties propertiesShouldLookLike = new Properties();
+	Properties propertiesShouldLookLike = new Properties();
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
+	@Override
+	protected void setUp() throws Exception {
+		super.setUp();
+	}
 
-    public void testPseudo() {
+	public void testPseudo() {
 
-    }
+	}
 
-    public void doesNotWorkLoadPropertyFile() throws Exception {
-        ReplaceMojo replaceMojo = (ReplaceMojo) lookupMojo("replace", "target/test-classes/Replace.pom");
+	public void doesNotWorkLoadPropertyFile() throws Exception {
+		File pom = getTestFile("target/test-classes/Replace.pom");
+		assertNotNull(pom);
+		assertTrue(pom.exists());
 
-        assertNotNull(replaceMojo);
+		ReplaceMojo replaceMojo = (ReplaceMojo) lookupMojo("replace", pom);
 
-        try {
-            replaceMojo.execute();
-        } catch (MojoExecutionException e) {
-            fail(e.getMessage());
-        }
-    }
+		assertNotNull(replaceMojo);
+
+		try {
+			replaceMojo.execute();
+		} catch (MojoExecutionException e) {
+			fail(e.getMessage());
+		}
+	}
 }

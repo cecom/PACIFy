@@ -23,16 +23,16 @@ import java.util.Properties;
 
 import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
 
-public class PFListMavenMojoProjectStub extends MavenProjectStub {
+public class PacifyMavenMojoProjectStub extends MavenProjectStub {
 
-    Properties properties = new Properties();
+	Properties properties = new Properties();
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Properties getProperties() {
-        return properties;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Properties getProperties() {
+		return properties;
+	}
 
 }
