@@ -23,55 +23,51 @@ import static org.testng.Assert.assertEquals;
 
 import java.io.File;
 
-import org.simpleframework.xml.Serializer;
-import org.simpleframework.xml.core.Persister;
 import org.testng.annotations.Test;
 
-import com.geewhiz.pacify.model.PFListEntity;
+import com.geewhiz.pacify.TODO.PFEntityManager;
+import com.geewhiz.pacify.model.Pacify;
 
 public class TestXml {
 
-    @Test
-    public void testAll() {
-        Serializer serializer = new Persister();
-        File source = new File("target/test-classes/testXml/example-PFList.xml");
+	@Test
+	public void testAll() {
+		File source = new File("target/test-classes/testXml");
 
-        PFListEntity pfListEntity = null;
-        try {
-            pfListEntity = serializer.read(PFListEntity.class, source);
-        } catch (Exception e) {
-            throw new RuntimeException("Couldnt read xml file.", e);
-        }
+		/**
+		 * JAXBContext jaxbContext;
+		 * 
+		 * try {
+		 * jaxbContext = JAXBContext.newInstance(Pacify.class);
+		 * } catch (JAXBException e) {
+		 * throw new RuntimeException("Couldn't create jaxbContext", e);
+		 * }
+		 * 
+		 * Pacify pfListEntity = null;
+		 * try {
+		 * Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+		 * pfListEntity = (Pacify) jaxbUnmarshaller.unmarshal(source);
+		 * pfListEntity.setFile(source);
+		 * } catch (Exception e) {
+		 * throw new RuntimeException("Couldnt read xml file.", e);
+		 * }
+		 */
 
-        assertEquals(pfListEntity.getPfPropertyEntities().size(), 2);
+		PFEntityManager pfEntityManager = new PFEntityManager(source);
 
-        assertEquals("foobar1", pfListEntity.getPfPropertyEntities().get(0).getId());
-        assertEquals("foobar2", pfListEntity.getPfPropertyEntities().get(1).getId());
+		Pacify pfListEntity = pfEntityManager.getPacifyFiles().get(0);
 
-        assertEquals("someConf.conf", pfListEntity.getPfPropertyEntities().get(0).getPFFileEntities().get(0)
-                .getRelativePath());
-        assertEquals("subfolder/someOtherConf.conf", pfListEntity.getPfPropertyEntities().get(0).getPFFileEntities()
-                .get(1).getRelativePath());
-        assertEquals("someParentConf.conf", pfListEntity.getPfPropertyEntities().get(1).getPFFileEntities().get(0)
-                .getRelativePath());
+		assertEquals(pfListEntity.getProperties().size(), 2);
 
-    }
+		assertEquals("foobar1", pfListEntity.getProperties().get(0).getName());
+		assertEquals("foobar2", pfListEntity.getProperties().get(1).getName());
 
-    // public void writeExampleFile() {
-    // Serializer serializer = new Persister();
-    // File targetFile = new File("target/example-PFList.xml");
-    //
-    // ArrayList<PFProperty> array = new ArrayList<PFProperty>();
-    // array.add(new PFProperty("foobar1"));
-    // array.add(new PFProperty("foobar2"));
-    //
-    // PFList pfList = new PFList(array);
-    //
-    // try {
-    // serializer.write(pfList, targetFile);
-    // } catch (Exception e) {
-    // throw new RuntimeException("Exception.", e);
-    // }
-    //
-    // }
+		assertEquals("someConf.conf", pfListEntity.getProperties().get(0).getFiles().get(0)
+		        .getPath());
+		assertEquals("subfolder/someOtherConf.conf", pfListEntity.getProperties().get(0).getFiles()
+		        .get(1).getPath());
+		assertEquals("someParentConf.conf", pfListEntity.getProperties().get(1).getFiles().get(0)
+		        .getPath());
+
+	}
 }

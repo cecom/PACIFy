@@ -19,25 +19,25 @@ package com.geewhiz.pacify.defect;
  * under the License.
  */
 
-import com.geewhiz.pacify.model.PFFileEntity;
-import com.geewhiz.pacify.model.PFListEntity;
-import com.geewhiz.pacify.model.PFPropertyEntity;
+import com.geewhiz.pacify.model.PFile;
+import com.geewhiz.pacify.model.PProperty;
+import com.geewhiz.pacify.model.Pacify;
 
 public class PropertyDoesNotExistInTargetFile implements Defect {
 
-    private PFListEntity pfListEntity;
-    private PFPropertyEntity pfPropertyEntity;
-    private PFFileEntity pfFileEntity;
+	private Pacify pacify;
+	private PProperty pproperty;
+	private PFile pfile;
 
-    public PropertyDoesNotExistInTargetFile(PFListEntity pfListEntity, PFPropertyEntity pfPropertyEntity,
-        PFFileEntity pfFileEntity) {
-        this.pfListEntity = pfListEntity;
-        this.pfPropertyEntity = pfPropertyEntity;
-        this.pfFileEntity = pfFileEntity;
-    }
+	public PropertyDoesNotExistInTargetFile(Pacify pacify, PProperty pproperty,
+	    PFile pfile) {
+		this.pacify = pacify;
+		this.pproperty = pproperty;
+		this.pfile = pfile;
+	}
 
-    public String getDefectMessage() {
-        return "Property [" + pfPropertyEntity.getId() + "] which is defined in [" + pfListEntity.getFile().getPath()
-                + "] couldn't be found in file [" + pfListEntity.getAbsoluteFileFor(pfFileEntity).getPath() + "]";
-    }
+	public String getDefectMessage() {
+		return "Property [" + pproperty.getName() + "] which is defined in [TODO] couldn't be found in file ["
+		        + pacify.getAbsoluteFileFor(pfile).getPath() + "]";
+	}
 }

@@ -19,26 +19,26 @@ package com.geewhiz.pacify.defect;
  * under the License.
  */
 
-import com.geewhiz.pacify.model.PFListEntity;
-import com.geewhiz.pacify.model.PFPropertyEntity;
+import com.geewhiz.pacify.model.PProperty;
+import com.geewhiz.pacify.model.Pacify;
 import com.geewhiz.pacify.property.PropertyContainer;
 
 public class PropertyNotDefinedDefect implements Defect {
 
-    private PFListEntity pfListEntity;
-    private PFPropertyEntity pfPropertyEntity;
-    private PropertyContainer propertyContainer;
+	private Pacify pacify;
+	private PProperty pproperty;
+	private PropertyContainer propertyContainer;
 
-    public PropertyNotDefinedDefect(PFListEntity pfListEntity, PFPropertyEntity pfPropertyEntity,
-        PropertyContainer propertyContainer) {
-        this.pfListEntity = pfListEntity;
-        this.pfPropertyEntity = pfPropertyEntity;
-        this.propertyContainer = propertyContainer;
-    }
+	public PropertyNotDefinedDefect(Pacify pacify, PProperty pproperty,
+	    PropertyContainer propertyContainer) {
+		this.pacify = pacify;
+		this.pproperty = pproperty;
+		this.propertyContainer = propertyContainer;
+	}
 
-    public String getDefectMessage() {
-        return "Property [" + pfPropertyEntity.getId() + "] which is defined in [" + pfListEntity.getFile().getPath()
-                + "] is not set in [" + propertyContainer.getPropertyLoadedFrom() + "].";
-    }
+	public String getDefectMessage() {
+		return "Property [" + pproperty.getName() + "] which is defined in [" + pacify.getFile().getPath()
+		        + "] is not set in [" + propertyContainer.getPropertyLoadedFrom() + "].";
+	}
 
 }

@@ -1,5 +1,8 @@
 package com.geewhiz.pacify.defect;
 
+import com.geewhiz.pacify.model.PProperty;
+import com.geewhiz.pacify.model.Pacify;
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
@@ -19,21 +22,17 @@ package com.geewhiz.pacify.defect;
  * under the License.
  */
 
-import com.geewhiz.pacify.model.PFListEntity;
-import com.geewhiz.pacify.model.PFPropertyEntity;
-
 public class PropertyDuplicateDefinedInPFList implements Defect {
 
-    private PFListEntity pfListEntity;
-    private PFPropertyEntity pfPropertyEntity;
+	private Pacify pacify;
+	private PProperty pproperty;
 
-    public PropertyDuplicateDefinedInPFList(PFListEntity pfListEntity, PFPropertyEntity pfPropertyEntity) {
-        this.pfListEntity = pfListEntity;
-        this.pfPropertyEntity = pfPropertyEntity;
-    }
+	public PropertyDuplicateDefinedInPFList(Pacify pacify, PProperty pproperty) {
+		this.pacify = pacify;
+		this.pproperty = pproperty;
+	}
 
-    public String getDefectMessage() {
-        return "Property [" + pfPropertyEntity.getId() + "] is duplicate defined in pflist descriptor ["
-                + pfListEntity.getFile().getPath() + "]";
-    }
+	public String getDefectMessage() {
+		return "Property [" + pproperty.getName() + "] is duplicate defined in pflist descriptor [TODO]";
+	}
 }

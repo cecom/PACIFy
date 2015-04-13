@@ -24,30 +24,30 @@ import java.util.List;
 
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.PropertyNotDefinedDefect;
-import com.geewhiz.pacify.model.PFListEntity;
-import com.geewhiz.pacify.model.PFPropertyEntity;
+import com.geewhiz.pacify.model.PProperty;
+import com.geewhiz.pacify.model.Pacify;
 import com.geewhiz.pacify.property.PropertyContainer;
 
 public class CheckPropertyExists implements PFListCheck {
 
-    private PropertyContainer propertyContainer;
+	private PropertyContainer propertyContainer;
 
-    public CheckPropertyExists(PropertyContainer propertyContainer) {
-        this.propertyContainer = propertyContainer;
-    }
+	public CheckPropertyExists(PropertyContainer propertyContainer) {
+		this.propertyContainer = propertyContainer;
+	}
 
-    public List<Defect> checkForErrors(PFListEntity pfListEntity) {
-        List<Defect> defects = new ArrayList<Defect>();
+	public List<Defect> checkForErrors(Pacify pfListEntity) {
+		List<Defect> defects = new ArrayList<Defect>();
 
-        List<PFPropertyEntity> pfPropertyEntities = pfListEntity.getPfPropertyEntities();
-        for (PFPropertyEntity pfPropertyEntity : pfPropertyEntities) {
-            if (propertyContainer.containsKey(pfPropertyEntity.getId())) {
-                continue;
-            }
-            Defect defect = new PropertyNotDefinedDefect(pfListEntity, pfPropertyEntity, propertyContainer);
-            defects.add(defect);
-        }
+		List<PProperty> pfPropertyEntities = pfListEntity.getProperties();
+		for (PProperty pfPropertyEntity : pfPropertyEntities) {
+			if (propertyContainer.containsKey(pfPropertyEntity.getName())) {
+				continue;
+			}
+			Defect defect = new PropertyNotDefinedDefect(pfListEntity, pfPropertyEntity, propertyContainer);
+			defects.add(defect);
+		}
 
-        return defects;
-    }
+		return defects;
+	}
 }

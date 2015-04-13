@@ -24,17 +24,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class PFListFilesFinder {
-    private static PFListFilenameFilter pfListFilenameFilter = new PFListFilenameFilter();
+public class PacifyFilesFinder {
+    private static CMFileFileFilter pfListFilenameFilter = new CMFileFileFilter();
     private static DirFilter dirFilter = new DirFilter();
 
     private File folderToCheck;
 
-    public PFListFilesFinder(File folderToCheck) {
+    public PacifyFilesFinder(File folderToCheck) {
         this.folderToCheck = folderToCheck;
     }
 
-    public List<File> getPFListFiles() {
+    public List<File> getPacifyFiles() {
         List<File> pfListFiles = new ArrayList<File>();
         addPFListFiles(pfListFiles, folderToCheck);
         return pfListFiles;

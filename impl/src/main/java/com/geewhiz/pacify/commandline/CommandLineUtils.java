@@ -8,9 +8,9 @@ package com.geewhiz.pacify.commandline;
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -150,7 +150,7 @@ public class CommandLineUtils {
         System.out
                 .println(" --propertyFile=<path>   -> Which property file should be used for filtering. Has to be within classpath or a absolute path.");
         System.out
-                .println(" [--startPath]=<path>    -> The folder where we are looking recursively for *-PFList.xml files. If not set, using current folder.");
+                .println(" [--startPath]=<path>    -> The folder where we are looking recursively for *-CMFile.pacify files. If not set, using current folder.");
         System.out.println(" [--logLevel]=<level>    -> The logLevel (DEBUG, INFO, ERROR). Default is INFO");
         System.out.println(" [--help]                -> This info.");
     }

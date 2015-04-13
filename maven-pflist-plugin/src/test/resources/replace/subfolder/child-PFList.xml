@@ -1,9 +1,0 @@
-<?xml version="1.0"?>
-<property_file_list>
-    <property id="env.name">
-        <file relative_path="someOtherConf.txt"/>
-    </property>
-    <property id="SomeChildOfChildProperty">
-        <file relative_path="someOtherConf.txt"/>
-    </property>
-</property_file_list>

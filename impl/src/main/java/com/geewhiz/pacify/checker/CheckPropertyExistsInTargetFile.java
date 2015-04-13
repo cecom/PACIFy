@@ -19,7 +19,6 @@ package com.geewhiz.pacify.checker;
  * under the License.
  */
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -27,38 +26,38 @@ import java.util.regex.Pattern;
 
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.PropertyDoesNotExistInTargetFile;
-import com.geewhiz.pacify.model.PFFileEntity;
-import com.geewhiz.pacify.model.PFListEntity;
-import com.geewhiz.pacify.model.PFPropertyEntity;
+import com.geewhiz.pacify.model.PFile;
+import com.geewhiz.pacify.model.PProperty;
+import com.geewhiz.pacify.model.Pacify;
 import com.geewhiz.pacify.replacer.PropertyFileReplacer;
 import com.geewhiz.pacify.utils.FileUtils;
 
 public class CheckPropertyExistsInTargetFile implements PFListCheck {
 
-    public List<Defect> checkForErrors(PFListEntity pfListEntity) {
-        List<Defect> defects = new ArrayList<Defect>();
+	public List<Defect> checkForErrors(Pacify pacify) {
+		List<Defect> defects = new ArrayList<Defect>();
 
-        for (PFPropertyEntity pfPropertyEntity : pfListEntity.getPfPropertyEntities()) {
-            for (PFFileEntity pfFileEntity : pfPropertyEntity.getPFFileEntities()) {
-                File file = pfListEntity.getAbsoluteFileFor(pfFileEntity);
-                boolean exists = doesPropertyExistInFile(pfPropertyEntity, file);
-                if (exists) {
-                    continue;
-                }
-                Defect defect = new PropertyDoesNotExistInTargetFile(pfListEntity, pfPropertyEntity, pfFileEntity);
-                defects.add(defect);
-            }
-        }
+		for (PProperty pproperty : pacify.getProperties()) {
+			for (PFile pfile : pproperty.getFiles()) {
+				java.io.File file = pacify.getAbsoluteFileFor(pfile);
+				boolean exists = doesPropertyExistInFile(pproperty, file);
+				if (exists) {
+					continue;
+				}
+				Defect defect = new PropertyDoesNotExistInTargetFile(pacify, pproperty, pfile);
+				defects.add(defect);
+			}
+		}
 
-        return defects;
-    }
+		return defects;
+	}
 
-    public boolean doesPropertyExistInFile(PFPropertyEntity pfPropertyEntity, File file) {
-        String fileContent = FileUtils.getFileInOneString(file);
+	public boolean doesPropertyExistInFile(PProperty pproperty, java.io.File file) {
+		String fileContent = FileUtils.getFileInOneString(file);
 
-        Pattern pattern = PropertyFileReplacer.getPattern(pfPropertyEntity.getId(), true);
-        Matcher matcher = pattern.matcher(fileContent);
+		Pattern pattern = PropertyFileReplacer.getPattern(pproperty.getName(), true);
+		Matcher matcher = pattern.matcher(fileContent);
 
-        return matcher.find();
-    }
+		return matcher.find();
+	}
 }

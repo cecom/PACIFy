@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<Pacify xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="..\..\..\..\..\..\model\src\main\resources\pacify.xsd">
+    <Property Name="env.name">
+        <File Path="someOtherConf.txt"/>
+    </Property>
+    <Property Name="SomeChildOfChildProperty">
+        <File Path="someOtherConf.txt"/>
+    </Property>
+</Pacify>

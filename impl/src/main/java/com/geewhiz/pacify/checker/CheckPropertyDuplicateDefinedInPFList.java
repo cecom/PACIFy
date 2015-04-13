@@ -24,24 +24,24 @@ import java.util.List;
 
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.PropertyDuplicateDefinedInPFList;
-import com.geewhiz.pacify.model.PFListEntity;
-import com.geewhiz.pacify.model.PFPropertyEntity;
+import com.geewhiz.pacify.model.PProperty;
+import com.geewhiz.pacify.model.Pacify;
 
 public class CheckPropertyDuplicateDefinedInPFList implements PFListCheck {
 
-    public List<Defect> checkForErrors(PFListEntity pfListEntity) {
-        List<Defect> defects = new ArrayList<Defect>();
+	public List<Defect> checkForErrors(Pacify pacify) {
+		List<Defect> defects = new ArrayList<Defect>();
 
-        List<String> propertyIds = new ArrayList<String>();
+		List<String> properties = new ArrayList<String>();
 
-        for (PFPropertyEntity pfPropertyEntity : pfListEntity.getPfPropertyEntities()) {
-            if (propertyIds.contains(pfPropertyEntity.getId())) {
-                Defect defect = new PropertyDuplicateDefinedInPFList(pfListEntity, pfPropertyEntity);
-                defects.add(defect);
-                continue;
-            }
-            propertyIds.add(pfPropertyEntity.getId());
-        }
-        return defects;
-    }
+		for (PProperty property : pacify.getProperties()) {
+			if (properties.contains(property.getName())) {
+				Defect defect = new PropertyDuplicateDefinedInPFList(pacify, property);
+				defects.add(defect);
+				continue;
+			}
+			properties.add(property.getName());
+		}
+		return defects;
+	}
 }

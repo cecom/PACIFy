@@ -19,27 +19,27 @@ package com.geewhiz.pacify.defect;
  * under the License.
  */
 
-import com.geewhiz.pacify.model.PFFileEntity;
-import com.geewhiz.pacify.model.PFListEntity;
-import com.geewhiz.pacify.model.PFPropertyEntity;
+import com.geewhiz.pacify.model.PFile;
+import com.geewhiz.pacify.model.PProperty;
+import com.geewhiz.pacify.model.Pacify;
 
 public class TargetFileDoesNotExistDefect implements Defect {
 
-    private PFListEntity pfListEntity;
-    private PFPropertyEntity pfPropertyEntity;
-    private PFFileEntity pfFileEntity;
+	private Pacify pacify;
+	private PProperty pproperty;
+	private PFile pfile;
 
-    public TargetFileDoesNotExistDefect(PFListEntity pfListEntity, PFPropertyEntity pfPropertyEntity,
-        PFFileEntity pfFileEntity) {
-        this.pfListEntity = pfListEntity;
-        this.pfPropertyEntity = pfPropertyEntity;
-        this.pfFileEntity = pfFileEntity;
-    }
+	public TargetFileDoesNotExistDefect(Pacify pacify, PProperty pproperty,
+	    PFile pfile) {
+		this.pacify = pacify;
+		this.pproperty = pproperty;
+		this.pfile = pfile;
+	}
 
-    public String getDefectMessage() {
-        return "File [" + pfListEntity.getAbsoluteFileFor(pfFileEntity).getPath() + "] which is defined in ["
-                + pfListEntity.getFile().getPath()
-                + "] property [" + pfPropertyEntity.getId() + "] " + "does not exist.";
-    }
+	public String getDefectMessage() {
+		return "File [" + pacify.getAbsoluteFileFor(pfile).getPath() + "] which is defined in ["
+		        + pacify.getFile().getPath()
+		        + "] property [" + pproperty.getName() + "] " + "does not exist.";
+	}
 
 }

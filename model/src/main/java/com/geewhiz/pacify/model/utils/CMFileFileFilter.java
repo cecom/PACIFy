@@ -1,4 +1,4 @@
-package com.geewhiz.pacify.model;
+package com.geewhiz.pacify.model.utils;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,34 +19,15 @@ package com.geewhiz.pacify.model;
  * under the License.
  */
 
-import java.util.List;
+import java.io.File;
+import java.io.FilenameFilter;
 
-import org.simpleframework.xml.Attribute;
-import org.simpleframework.xml.ElementList;
-import org.simpleframework.xml.Root;
+public class CMFileFileFilter implements FilenameFilter {
 
-@Root(name = "property", strict = false)
-public class PFPropertyEntity {
-
-    @Attribute
-    private String id;
-
-    @ElementList(name = "file", inline = true)
-    private List<PFFileEntity> pfFileEntities;
-
-    @Attribute(name = "convertBackslashToSlash", required = false, empty = "false")
-    private String convertBackslashToSlash;
-
-    public String getId() {
-        return id;
-    }
-
-    public List<PFFileEntity> getPFFileEntities() {
-        return pfFileEntities;
-    }
-
-    public Boolean convertBackslashToSlash() {
-        return Boolean.parseBoolean(convertBackslashToSlash);
-    }
-
+	/**
+	 * Only accept CMFile.pacify Files
+	 */
+	public boolean accept(File dir, String name) {
+		return name.endsWith("-CMFile.pacify");
+	}
 }

@@ -19,32 +19,31 @@ package com.geewhiz.pacify.checker;
  * under the License.
  */
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.TargetFileDoesNotExistDefect;
-import com.geewhiz.pacify.model.PFFileEntity;
-import com.geewhiz.pacify.model.PFListEntity;
-import com.geewhiz.pacify.model.PFPropertyEntity;
+import com.geewhiz.pacify.model.PFile;
+import com.geewhiz.pacify.model.PProperty;
+import com.geewhiz.pacify.model.Pacify;
 
 public class CheckTargetFileExist implements PFListCheck {
 
-    public List<Defect> checkForErrors(PFListEntity pfListEntity) {
-        List<Defect> defects = new ArrayList<Defect>();
+	public List<Defect> checkForErrors(Pacify pfListEntity) {
+		List<Defect> defects = new ArrayList<Defect>();
 
-        for (PFPropertyEntity pfPropertyEntity : pfListEntity.getPfPropertyEntities()) {
-            for (PFFileEntity pfFileEntity : pfPropertyEntity.getPFFileEntities()) {
-                File file = pfListEntity.getAbsoluteFileFor(pfFileEntity);
-                if (file.exists() && file.isFile()) {
-                    continue;
-                }
-                Defect defect = new TargetFileDoesNotExistDefect(pfListEntity, pfPropertyEntity, pfFileEntity);
-                defects.add(defect);
-            }
-        }
+		for (PProperty pproperty : pfListEntity.getProperties()) {
+			for (PFile pfile : pproperty.getFiles()) {
+				java.io.File file = pfListEntity.getAbsoluteFileFor(pfile);
+				if (file.exists() && file.isFile()) {
+					continue;
+				}
+				Defect defect = new TargetFileDoesNotExistDefect(pfListEntity, pproperty, pfile);
+				defects.add(defect);
+			}
+		}
 
-        return defects;
-    }
+		return defects;
+	}
 }

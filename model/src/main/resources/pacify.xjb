@@ -1,0 +1,17 @@
+<jaxb:bindings
+    xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+    xmlns:inheritance="http://jaxb2-commons.dev.java.net/basic/inheritance"
+    jaxb:extensionBindingPrefixes="inheritance"
+    jaxb:version="2.1">
+>
+    <jaxb:bindings schemaLocation="pacify.xsd" node="/xsd:schema">
+        <jaxb:globalBindings>
+            <xjc:simple/>
+        </jaxb:globalBindings>
+        <jaxb:bindings node="xsd:complexType[@name='Pacify']">
+             <inheritance:extends>PacifyBase</inheritance:extends>
+        </jaxb:bindings>
+    </jaxb:bindings>
+</jaxb:bindings>

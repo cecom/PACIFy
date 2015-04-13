@@ -1,6 +1,0 @@
-<?xml version="1.0"?>
-<property_file_list>
-    <property id="bar">
-        <file relative_path="anotherFolderConf.conf"/>
-    </property>
-</property_file_list>

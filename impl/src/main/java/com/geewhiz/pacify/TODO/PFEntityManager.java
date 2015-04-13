@@ -23,36 +23,37 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.simpleframework.xml.Serializer;
-import org.simpleframework.xml.core.Persister;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 
 import com.geewhiz.pacify.checker.PFListChecker;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.logger.Log;
 import com.geewhiz.pacify.logger.LogLevel;
-import com.geewhiz.pacify.model.PFListEntity;
-import com.geewhiz.pacify.model.utils.PFListFilesFinder;
+import com.geewhiz.pacify.model.Pacify;
+import com.geewhiz.pacify.model.utils.PacifyFilesFinder;
 import com.geewhiz.pacify.property.PropertyContainer;
 import com.geewhiz.pacify.replacer.PropertyPFReplacer;
 
 public class PFEntityManager {
 
 	private File startPath;
-	private List<PFListEntity> pfListEntities;
+	private List<Pacify> pacifyList;
 
 	public PFEntityManager(File startPath) {
 		this.startPath = startPath;
 	}
 
 	public int getPFListCount() {
-		return getPFLists().size();
+		return getPacifyFiles().size();
 	}
 
 	public List<Defect> checkCorrectnessOfPFListFiles(PropertyContainer propertyContainer) {
 		PFListChecker pfListChecker = new PFListChecker(propertyContainer);
 
 		List<Defect> defects = new ArrayList<Defect>();
-		for (PFListEntity pfListEntity : getPFLists()) {
+		for (Pacify pfListEntity : getPacifyFiles()) {
 			defects.addAll(pfListChecker.check(pfListEntity));
 		}
 
@@ -61,30 +62,42 @@ public class PFEntityManager {
 
 	public List<Defect> doReplacement(PropertyContainer propertyContainer) {
 		List<Defect> defects = new ArrayList<Defect>();
-		for (PFListEntity pfListEntity : getPFLists()) {
-			Log.log(LogLevel.INFO, "====== Replacing stuff which is configured in [" + pfListEntity.getFile().getPath()
+		for (Pacify pacify : getPacifyFiles()) {
+			Log.log(LogLevel.INFO, "====== Replacing stuff which is configured in [" + pacify.getFile().getPath()
 			        + "] ...");
-			PropertyPFReplacer propertyReplacer = new PropertyPFReplacer(propertyContainer, pfListEntity);
+			PropertyPFReplacer propertyReplacer = new PropertyPFReplacer(propertyContainer, pacify);
 			defects.addAll(propertyReplacer.replace());
 		}
 		return defects;
 	}
 
-	public List<PFListEntity> getPFLists() {
-		if (pfListEntities == null) {
-			pfListEntities = new ArrayList<PFListEntity>();
-			List<File> pfListFiles = new PFListFilesFinder(startPath).getPFListFiles();
-			Serializer serializer = new Persister();
-			for (File file : pfListFiles) {
-				try {
-					PFListEntity pfListEntity = serializer.read(PFListEntity.class, file);
-					pfListEntity.setFile(file);
-					pfListEntities.add(pfListEntity);
-				} catch (Exception e) {
-					throw new RuntimeException("Couldn't read xml file [" + file.getPath() + "].", e);
-				}
+	public List<Pacify> getPacifyFiles() {
+		if (pacifyList != null) {
+			return pacifyList;
+		}
+
+		pacifyList = new ArrayList<Pacify>();
+
+		List<File> pacifyFiles = new PacifyFilesFinder(startPath).getPacifyFiles();
+
+		JAXBContext jaxbContext;
+		try {
+			jaxbContext = JAXBContext.newInstance(Pacify.class);
+		} catch (JAXBException e) {
+			throw new RuntimeException("Couldn't create jaxbContext", e);
+		}
+
+		for (File file : pacifyFiles) {
+			try {
+				Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+				Pacify pacify = (Pacify) jaxbUnmarshaller.unmarshal(file);
+				pacify.setFile(file);
+				pacifyList.add(pacify);
+			} catch (Exception e) {
+				throw new RuntimeException("Couldn't read xml file [" + file.getPath() + "].", e);
 			}
 		}
-		return pfListEntities;
+
+		return pacifyList;
 	}
 }
