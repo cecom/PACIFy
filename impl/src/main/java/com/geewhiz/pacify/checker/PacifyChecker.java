@@ -26,12 +26,12 @@ import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.model.Pacify;
 import com.geewhiz.pacify.property.PropertyContainer;
 
-public class PFListChecker {
+public class PacifyChecker {
 
     List<Check> checks = new ArrayList<Check>();
-    List<PFListCheck> pfListChecks = new ArrayList<PFListCheck>();
+    List<PacifyCheck> pfListChecks = new ArrayList<PacifyCheck>();
 
-    public PFListChecker(PropertyContainer propertyContainer) {
+    public PacifyChecker(PropertyContainer propertyContainer) {
         checks.add(new CheckPropertyDuplicateInPropertyFile(propertyContainer));
         pfListChecks.add(new CheckTargetFileExist());
         pfListChecks.add(new CheckPropertyDuplicateDefinedInPFList());
@@ -44,7 +44,7 @@ public class PFListChecker {
         for (Check check : checks) {
             defects.addAll(check.checkForErrors());
         }
-        for (PFListCheck pfListCheck : pfListChecks) {
+        for (PacifyCheck pfListCheck : pfListChecks) {
             defects.addAll(pfListCheck.checkForErrors(pfListEntity));
         }
         return defects;

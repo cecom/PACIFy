@@ -28,29 +28,28 @@ import org.testng.annotations.Test;
 
 import com.geewhiz.pacify.commandline.CommandLineParameter;
 import com.geewhiz.pacify.commandline.OutputType;
-import com.geewhiz.pacify.logger.LogLevel;
 
 public class TestCreateResultPropertyFile {
 
-    @Test
-    public void checkForNotCorrect() {
-        File startPath = new File("target/test-classes/TestCreateResultPropertyFile");
+	@Test
+	public void checkForNotCorrect() {
+		File startPath = new File("target/test-classes/TestCreateResultPropertyFile");
 
-        File myTestProperty = new File(startPath, "subfolder/ChildOfChilds.properties");
-        File targetFile = new File(startPath, "result.properties");
+		File myTestProperty = new File(startPath, "subfolder/ChildOfChilds.properties");
+		File targetFile = new File(startPath, "result.properties");
 
-        assertTrue("StartPath [" + startPath.getPath() + "] doesn't exist!", startPath.exists());
+		assertTrue("StartPath [" + startPath.getPath() + "] doesn't exist!", startPath.exists());
 
-        EnumMap<CommandLineParameter, Object> commandlineProperties = new EnumMap<CommandLineParameter, Object>(
-                CommandLineParameter.class);
-        commandlineProperties.put(CommandLineParameter.PropertyFileURL, Util.getURLForFile(myTestProperty));
-        commandlineProperties.put(CommandLineParameter.LogLevel, LogLevel.DEBUG);
-        commandlineProperties.put(CommandLineParameter.OutputType, OutputType.File);
-        commandlineProperties.put(CommandLineParameter.TargetFile, targetFile);
+		EnumMap<CommandLineParameter, Object> commandlineProperties = new EnumMap<CommandLineParameter, Object>(
+		        CommandLineParameter.class);
+		commandlineProperties.put(CommandLineParameter.PropertyFileURL, Util.getURLForFile(myTestProperty));
+		commandlineProperties.put(CommandLineParameter.LogLevel, "debug");
+		commandlineProperties.put(CommandLineParameter.OutputType, OutputType.File);
+		commandlineProperties.put(CommandLineParameter.TargetFile, targetFile);
 
-        CreateResultPropertyFile createResultPropertyFile = new CreateResultPropertyFile(commandlineProperties);
-        createResultPropertyFile.create();
+		CreateResultPropertyFile createResultPropertyFile = new CreateResultPropertyFile(commandlineProperties);
+		createResultPropertyFile.create();
 
-        Util.checkIfResultIsAsExpected(startPath);
-    }
+		Util.checkIfResultIsAsExpected(startPath);
+	}
 }

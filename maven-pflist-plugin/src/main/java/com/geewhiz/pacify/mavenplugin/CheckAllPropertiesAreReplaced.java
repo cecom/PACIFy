@@ -26,10 +26,8 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 
-import com.geewhiz.pacify.TODO.PFEntityManager;
+import com.geewhiz.pacify.TODO.EntityManager;
 import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.logger.Log;
-import com.geewhiz.pacify.logger.LogLevel;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.Pacify;
 import com.geewhiz.pacify.utils.Utils;
@@ -82,9 +80,7 @@ public class CheckAllPropertiesAreReplaced extends AbstractMojo {
 			throw new MojoExecutionException("The folder [" + pfListStartPath.getAbsolutePath() + "] does not exist.");
 		}
 
-		Log.getInstance().setLogLevel(LogLevel.valueOf(logLevel.toUpperCase()));
-
-		PFEntityManager pfEntityManager = new PFEntityManager(pfListStartPath);
+		EntityManager pfEntityManager = new EntityManager(pfListStartPath);
 		if (pfEntityManager.getPFListCount() == 0) {
 			getLog().info("No pflist files found. Nothing to check.");
 			return;

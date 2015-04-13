@@ -24,7 +24,7 @@ import java.util.List;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.model.Pacify;
 
-public interface PFListCheck {
+public interface PacifyCheck {
 
     /**
      * @param pfListEntity which pfList should be checked?

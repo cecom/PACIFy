@@ -30,10 +30,10 @@ import java.util.regex.Matcher;
 import org.apache.tools.ant.types.FilterSet;
 import org.apache.tools.ant.types.FilterSetCollection;
 import org.apache.tools.ant.util.FileUtils;
+import org.slf4j.Logger;
 
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.logger.Log;
-import com.geewhiz.pacify.logger.LogLevel;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PProperty;
 import com.geewhiz.pacify.model.Pacify;
@@ -44,6 +44,8 @@ public class PropertyPFReplacer {
 
 	private PropertyContainer propertyContainer;
 	private Pacify pacify;
+
+	Logger logger = Log.getInstance();
 
 	public PropertyPFReplacer(PropertyContainer propertyContainer, Pacify pfListEntity) {
 		this.propertyContainer = propertyContainer;
@@ -61,7 +63,7 @@ public class PropertyPFReplacer {
 
 			try {
 				String encoding = Utils.getEncoding(file);
-				Log.log(LogLevel.INFO, "Using  encoding [" + encoding + "] for  File  [" + file.getAbsolutePath() + "]");
+				logger.info("Using  encoding [" + encoding + "] for  File  [" + file.getAbsolutePath() + "]");
 				FileUtils.getFileUtils().copyFile(file, tmpFile, filterSetCollection, true, true, encoding);
 				if (!file.delete()) {
 					throw new RuntimeException("Couldn't delete file [" + file.getPath() + "]... Aborting!");
@@ -102,8 +104,7 @@ public class PropertyPFReplacer {
 			if (pproperty.isConvertBackslashToSlash()) {
 				String convertedString = propertyValue;
 				convertedString = propertyValue.replace('\\', '/');
-				Log.log(LogLevel.INFO, " Converting backslashes [" + propertyValue + "] to slashes [" + convertedString
-				        + "]");
+				logger.info(" Converting backslashes [" + propertyValue + "] to slashes [" + convertedString + "]");
 				propertyValue = convertedString;
 			}
 

@@ -24,7 +24,7 @@ import java.util.List;
 
 import org.apache.maven.plugin.MojoExecutionException;
 
-import com.geewhiz.pacify.TODO.PFEntityManager;
+import com.geewhiz.pacify.TODO.EntityManager;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.property.FilePropertyContainer;
 import com.geewhiz.pacify.property.MavenPropertyContainer;
@@ -75,7 +75,7 @@ public class ReplaceMojo extends BaseMojo {
             throw new MojoExecutionException("The folder [" + pfListStartPath.getAbsolutePath() + "] does not exist.");
         }
 
-        PFEntityManager pfEntityManager = new PFEntityManager(pfListStartPath);
+        EntityManager pfEntityManager = new EntityManager(pfListStartPath);
         if (pfEntityManager.getPFListCount() == 0) {
             getLog().info("No pflist files found. Nothing to do.");
             return;

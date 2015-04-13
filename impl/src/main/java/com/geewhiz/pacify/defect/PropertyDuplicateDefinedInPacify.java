@@ -22,12 +22,12 @@ import com.geewhiz.pacify.model.Pacify;
  * under the License.
  */
 
-public class PropertyDuplicateDefinedInPFList implements Defect {
+public class PropertyDuplicateDefinedInPacify implements Defect {
 
 	private Pacify pacify;
 	private PProperty pproperty;
 
-	public PropertyDuplicateDefinedInPFList(Pacify pacify, PProperty pproperty) {
+	public PropertyDuplicateDefinedInPacify(Pacify pacify, PProperty pproperty) {
 		this.pacify = pacify;
 		this.pproperty = pproperty;
 	}

@@ -32,7 +32,7 @@ import com.geewhiz.pacify.model.Pacify;
 import com.geewhiz.pacify.replacer.PropertyFileReplacer;
 import com.geewhiz.pacify.utils.FileUtils;
 
-public class CheckPropertyExistsInTargetFile implements PFListCheck {
+public class CheckPropertyExistsInTargetFile implements PacifyCheck {
 
 	public List<Defect> checkForErrors(Pacify pacify) {
 		List<Defect> defects = new ArrayList<Defect>();

@@ -30,120 +30,117 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
-
-import com.geewhiz.pacify.logger.Log;
-import com.geewhiz.pacify.logger.LogLevel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class BaseMojo extends AbstractMojo {
 
-    /**
-     * @parameter default-value="${project}"
-     * @required
-     * @readonly
-     */
-    protected MavenProject project;
+	/**
+	 * @parameter default-value="${project}"
+	 * @required
+	 * @readonly
+	 */
+	protected MavenProject project;
 
-    /**
-     * Should it be skipped??
-     * 
-     * @parameter expression="${skipPFList}" default-value="false"
-     */
-    protected boolean skip;
+	/**
+	 * Should it be skipped??
+	 * 
+	 * @parameter expression="${skipPacify}" default-value="false"
+	 */
+	protected boolean skip;
 
-    /**
-     * @component
-     */
-    private org.apache.maven.artifact.factory.ArtifactFactory artifactFactory;
+	/**
+	 * @component
+	 */
+	private org.apache.maven.artifact.factory.ArtifactFactory artifactFactory;
 
-    /**
-     * @component
-     */
-    private org.apache.maven.artifact.resolver.ArtifactResolver artifactResolver;
+	/**
+	 * @component
+	 */
+	private org.apache.maven.artifact.resolver.ArtifactResolver artifactResolver;
 
-    /**
-     * @parameter default-value="${localRepository}"
-     */
-    private org.apache.maven.artifact.repository.ArtifactRepository localRepository;
+	/**
+	 * @parameter default-value="${localRepository}"
+	 */
+	private org.apache.maven.artifact.repository.ArtifactRepository localRepository;
 
-    /**
-     * @parameter default-value="${project.remoteArtifactRepositories}"
-     */
-    private java.util.List remoteRepositories;
+	/**
+	 * @parameter default-value="${project.remoteArtifactRepositories}"
+	 */
+	private java.util.List remoteRepositories;
 
-    /**
-     * @parameter expression="${logLevel}" default-value="ERROR"
-     * @required
-     */
-    private String logLevel;
+	/**
+	 * @parameter expression="${logLevel}" default-value="ERROR"
+	 * @required
+	 */
+	private String logLevel;
 
-    public void execute() throws MojoExecutionException, MojoFailureException {
-        if (skip) {
-            getLog().info("PFList is skipped.");
-            return;
-        }
+	protected Logger logger = LoggerFactory.getLogger(BaseMojo.class);
 
-        Log.getInstance().setLogLevel(LogLevel.valueOf(logLevel.toUpperCase()));
-        executePFList();
-    }
+	public void execute() throws MojoExecutionException, MojoFailureException {
+		if (skip) {
+			getLog().info("PFList is skipped.");
+			return;
+		}
 
-    protected abstract void executePFList() throws MojoExecutionException;
+		executePFList();
+	}
 
-    protected URL getPropertyFileURL(String propertyFileArtifact, String propertyFile) throws MojoExecutionException {
-        if (propertyFile == null) {
-            throw new MojoExecutionException("You didn't define the propertyFile... Aborting!");
-        }
+	protected abstract void executePFList() throws MojoExecutionException;
 
-        try {
-            Artifact artifact = getArtifact(propertyFileArtifact);
+	protected URL getPropertyFileURL(String propertyFileArtifact, String propertyFile) throws MojoExecutionException {
+		if (propertyFile == null) {
+			throw new MojoExecutionException("You didn't define the propertyFile... Aborting!");
+		}
 
-            artifactResolver.resolve(artifact, remoteRepositories, localRepository);
+		try {
+			Artifact artifact = getArtifact(propertyFileArtifact);
 
-            ClassLoader cl = new URLClassLoader(new URL[] { artifact.getFile().toURI().toURL() });
+			artifactResolver.resolve(artifact, remoteRepositories, localRepository);
 
-            URL propertyFileURL = cl.getResource(propertyFile);
+			ClassLoader cl = new URLClassLoader(new URL[] { artifact.getFile().toURI().toURL() });
 
-            if (propertyFileURL == null) {
-                throw new MojoExecutionException("Couldn't find property file [" + propertyFile + "] in ["
-                        + propertyFileArtifact + "]... Aborting!");
-            }
+			URL propertyFileURL = cl.getResource(propertyFile);
 
-            return propertyFileURL;
+			if (propertyFileURL == null) {
+				throw new MojoExecutionException("Couldn't find property file [" + propertyFile + "] in ["
+				        + propertyFileArtifact + "]... Aborting!");
+			}
 
-        } catch (ArtifactResolutionException e) {
-            throw new MojoExecutionException("Couldn't resolve artifact [" + propertyFileArtifact + "].", e);
-        } catch (ArtifactNotFoundException e) {
-            throw new MojoExecutionException("Couldn't find artifact [" + propertyFileArtifact + "].", e);
-        } catch (MalformedURLException e) {
-            throw new MojoExecutionException("Couldn't find artifact [" + propertyFileArtifact + "].", e);
-        }
-    }
+			return propertyFileURL;
 
-    private Artifact getArtifact(String propertyFileArtifact) throws MojoExecutionException {
-        String[] artifactParts = propertyFileArtifact.split(":");
+		} catch (ArtifactResolutionException e) {
+			throw new MojoExecutionException("Couldn't resolve artifact [" + propertyFileArtifact + "].", e);
+		} catch (ArtifactNotFoundException e) {
+			throw new MojoExecutionException("Couldn't find artifact [" + propertyFileArtifact + "].", e);
+		} catch (MalformedURLException e) {
+			throw new MojoExecutionException("Couldn't find artifact [" + propertyFileArtifact + "].", e);
+		}
+	}
 
-        String groupId;
-        String artifactId;
-        String type;
-        String version;
-        String classifier = null;
+	private Artifact getArtifact(String propertyFileArtifact) throws MojoExecutionException {
+		String[] artifactParts = propertyFileArtifact.split(":");
 
-        switch (artifactParts.length) {
-            case 5:
-                classifier = artifactParts[4];
-            case 4:
-                groupId = artifactParts[0];
-                artifactId = artifactParts[1];
-                type = artifactParts[2];
-                version = artifactParts[3];
-                break;
-            default:
-                throw new MojoExecutionException("Couldn't parse propertyFileArtifact [" + propertyFileArtifact
-                        + "] string.");
-        }
-        return artifactFactory.createArtifactWithClassifier(groupId, artifactId, version, type, classifier);
-    }
+		String groupId;
+		String artifactId;
+		String type;
+		String version;
+		String classifier = null;
 
-    protected LogLevel getLogLevel() {
-        return LogLevel.valueOf(logLevel.toUpperCase());
-    }
+		switch (artifactParts.length) {
+			case 5:
+				classifier = artifactParts[4];
+			case 4:
+				groupId = artifactParts[0];
+				artifactId = artifactParts[1];
+				type = artifactParts[2];
+				version = artifactParts[3];
+				break;
+			default:
+				throw new MojoExecutionException("Couldn't parse propertyFileArtifact [" + propertyFileArtifact
+				        + "] string.");
+		}
+		return artifactFactory.createArtifactWithClassifier(groupId, artifactId, version, type, classifier);
+	}
+
 }

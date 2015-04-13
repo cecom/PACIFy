@@ -24,19 +24,22 @@ import java.net.URL;
 import java.util.EnumMap;
 import java.util.List;
 
-import com.geewhiz.pacify.TODO.PFEntityManager;
+import org.apache.tools.ant.types.LogLevel;
+import org.slf4j.Logger;
+
+import com.geewhiz.pacify.TODO.EntityManager;
 import com.geewhiz.pacify.commandline.CommandLineParameter;
 import com.geewhiz.pacify.commandline.CommandLineUtils;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.logger.Log;
-import com.geewhiz.pacify.logger.LogLevel;
 import com.geewhiz.pacify.property.FilePropertyContainer;
 import com.geewhiz.pacify.property.PropertyContainer;
 import com.geewhiz.pacify.utils.Utils;
 
-public class PFListPropertyReplacer {
+public class Pacifier {
 
 	EnumMap<CommandLineParameter, Object> commandlineProperties;
+	Logger logger = Log.getInstance();
 
 	/**
 	 * @param args the PFProperty PFFile which will be used for replacement
@@ -55,41 +58,35 @@ public class PFListPropertyReplacer {
 			return;
 		}
 
-		PFListPropertyReplacer pfListPropertyReplacer = new PFListPropertyReplacer(commandlineProperties);
-		pfListPropertyReplacer.replace();
+		Pacifier pacifier = new Pacifier(commandlineProperties);
+		pacifier.replace();
 	}
 
-	public PFListPropertyReplacer(EnumMap<CommandLineParameter, Object> commandlineProperties) {
+	public Pacifier(EnumMap<CommandLineParameter, Object> commandlineProperties) {
 		this.commandlineProperties = commandlineProperties;
-		Log.getInstance().setLogLevel(getCommandLineLogLevel());
-		Log.log(LogLevel.INFO, "== Executing PFListPropertyReplacer [Version=" + Utils.getJarVersion() + "]");
-		Log.log(LogLevel.INFO, "     [LogLevel=" + getCommandLineLogLevel() + "]");
-		Log.log(LogLevel.INFO, "     [StartPath=" + getCommandLineStartPath().getAbsolutePath() + "]");
-		Log.log(LogLevel.INFO, "     [PropertyFileURL=" + getCommandLinePropertyFileURL().getPath() + "]");
+		logger.info("== Executing PFListPropertyReplacer [Version=" + Utils.getJarVersion() + "]");
+		logger.info("     [StartPath=" + getCommandLineStartPath().getAbsolutePath() + "]");
+		logger.info("     [PropertyFileURL=" + getCommandLinePropertyFileURL().getPath() + "]");
 	}
 
 	public void replace() {
-		PFEntityManager pfEntityManager = new PFEntityManager(getCommandLineStartPath());
+		EntityManager entityManager = new EntityManager(getCommandLineStartPath());
 
-		Log.log(LogLevel.INFO, "==== Found [" + pfEntityManager.getPFListCount() + "] PFList Files...");
+		logger.info("==== Found [" + entityManager.getPFListCount() + "] PFList Files...");
 
-		Log.log(LogLevel.INFO, "==== Checking PFListFiles...");
-		List<Defect> defects = pfEntityManager.checkCorrectnessOfPFListFiles(getPropertyFile());
+		logger.info("==== Checking PFListFiles...");
+		List<Defect> defects = entityManager.checkCorrectnessOfPFListFiles(getPropertyFile());
 		shouldWeAbortIt(defects);
 
-		Log.log(LogLevel.INFO, "==== Doing Replacement...");
-		defects = pfEntityManager.doReplacement(getPropertyFile());
+		logger.info("==== Doing Replacement...");
+		defects = entityManager.doReplacement(getPropertyFile());
 		shouldWeAbortIt(defects);
 
-		Log.log(LogLevel.INFO, "== Successfully finished...");
+		logger.info("== Successfully finished...");
 	}
 
 	private File getCommandLineStartPath() {
 		return (File) commandlineProperties.get(CommandLineParameter.StartPath);
-	}
-
-	private LogLevel getCommandLineLogLevel() {
-		return (LogLevel) commandlineProperties.get(CommandLineParameter.LogLevel);
 	}
 
 	private PropertyContainer getPropertyFile() {
@@ -105,9 +102,9 @@ public class PFListPropertyReplacer {
 			return;
 		}
 
-		Log.log(LogLevel.ERROR, "==== !!!!!! We got Errors !!!!! ...");
+		logger.error("==== !!!!!! We got Errors !!!!! ...");
 		for (Defect defect : defects) {
-			Log.log(LogLevel.ERROR, defect.getDefectMessage());
+			logger.error(defect.getDefectMessage());
 		}
 		throw new RuntimeException("We got errors... Aborting!");
 	}

@@ -29,78 +29,80 @@ import java.util.regex.Pattern;
 import org.apache.tools.ant.types.FilterSet;
 import org.apache.tools.ant.types.FilterSetCollection;
 import org.apache.tools.ant.util.FileUtils;
+import org.slf4j.Logger;
 
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.logger.Log;
-import com.geewhiz.pacify.logger.LogLevel;
 import com.geewhiz.pacify.property.PropertyContainer;
 import com.geewhiz.pacify.utils.Utils;
 
 public class PropertyFileReplacer {
 
-    public static final String BEGIN_TOKEN = "%{";
-    public static final String END_TOKEN = "}";
+	public static final String BEGIN_TOKEN = "%{";
+	public static final String END_TOKEN = "}";
 
-    protected PropertyContainer propertyContainer;
+	Logger logger = Log.getInstance();
 
-    public PropertyFileReplacer(PropertyContainer propertyContainer) {
-        this.propertyContainer = propertyContainer;
-    }
+	protected PropertyContainer propertyContainer;
 
-    public List<Defect> replace(File file) {
-        List<Defect> defects = new ArrayList<Defect>();
+	public PropertyFileReplacer(PropertyContainer propertyContainer) {
+		this.propertyContainer = propertyContainer;
+	}
 
-        File tmpFile = new File(file.getParentFile(), file.getName() + "_tmp");
+	public List<Defect> replace(File file) {
+		List<Defect> defects = new ArrayList<Defect>();
 
-        try {
-            String encoding = Utils.getEncoding(file);
-            FileUtils.getFileUtils().copyFile(file, tmpFile, getFilterSetCollection(propertyContainer), true, true,
-                    encoding);
-            Log.log(LogLevel.INFO, "Using  encoding [" + encoding + "] for  File  [" + file.getAbsolutePath() + "]");
-            if (!file.delete()) {
-                throw new RuntimeException("Couldn't delete file [" + file.getPath() + "]... Aborting!");
-            }
-            if (!tmpFile.renameTo(file)) {
-                throw new RuntimeException("Couldn't rename filtered file from [" + tmpFile.getPath() + "] to ["
-                        + file.getPath() + "]... Aborting!");
-            }
-            defects.addAll(Utils.checkFileForNotReplacedStuff(file));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+		File tmpFile = new File(file.getParentFile(), file.getName() + "_tmp");
 
-        return defects;
-    }
+		try {
+			String encoding = Utils.getEncoding(file);
+			FileUtils.getFileUtils().copyFile(file, tmpFile, getFilterSetCollection(propertyContainer), true, true,
+			        encoding);
+			logger.info("Using  encoding [" + encoding + "] for  File  [" + file.getAbsolutePath() + "]");
+			if (!file.delete()) {
+				throw new RuntimeException("Couldn't delete file [" + file.getPath() + "]... Aborting!");
+			}
+			if (!tmpFile.renameTo(file)) {
+				throw new RuntimeException("Couldn't rename filtered file from [" + tmpFile.getPath() + "] to ["
+				        + file.getPath() + "]... Aborting!");
+			}
+			defects.addAll(Utils.checkFileForNotReplacedStuff(file));
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 
-    private FilterSetCollection getFilterSetCollection(PropertyContainer propertyContainer) {
-        FilterSet filterSet = getFilterSet(propertyContainer);
+		return defects;
+	}
 
-        FilterSetCollection executionFilters = new FilterSetCollection();
-        executionFilters.addFilterSet(filterSet);
+	private FilterSetCollection getFilterSetCollection(PropertyContainer propertyContainer) {
+		FilterSet filterSet = getFilterSet(propertyContainer);
 
-        return executionFilters;
-    }
+		FilterSetCollection executionFilters = new FilterSetCollection();
+		executionFilters.addFilterSet(filterSet);
 
-    private FilterSet getFilterSet(PropertyContainer propertyContainer) {
-        FilterSet filterSet = new FilterSet();
+		return executionFilters;
+	}
 
-        filterSet.setBeginToken(BEGIN_TOKEN);
-        filterSet.setEndToken(END_TOKEN);
+	private FilterSet getFilterSet(PropertyContainer propertyContainer) {
+		FilterSet filterSet = new FilterSet();
 
-        for (Enumeration e = propertyContainer.getProperties().propertyNames(); e.hasMoreElements();) {
-            String propertyId = (String) e.nextElement();
-            String propertyValue = propertyContainer.getPropertyValue(propertyId);
+		filterSet.setBeginToken(BEGIN_TOKEN);
+		filterSet.setEndToken(END_TOKEN);
 
-            filterSet.addFilter(propertyId, propertyValue);
-        }
+		for (Enumeration e = propertyContainer.getProperties().propertyNames(); e.hasMoreElements();) {
+			String propertyId = (String) e.nextElement();
+			String propertyValue = propertyContainer.getPropertyValue(propertyId);
 
-        return filterSet;
-    }
+			filterSet.addFilter(propertyId, propertyValue);
+		}
 
-    public static Pattern getPattern(String match, boolean quoteIt) {
-        String searchPattern = Pattern.quote(PropertyFileReplacer.BEGIN_TOKEN)
-                + (quoteIt ? Pattern.quote(match) : match) + Pattern.quote(PropertyFileReplacer.END_TOKEN);
+		return filterSet;
+	}
 
-        return Pattern.compile(searchPattern);
-    }
+	public static Pattern getPattern(String match, boolean quoteIt) {
+		String searchPattern = Pattern.quote(PropertyFileReplacer.BEGIN_TOKEN)
+		        + (quoteIt ? Pattern.quote(match) : match) + Pattern.quote(PropertyFileReplacer.END_TOKEN);
+
+		return Pattern.compile(searchPattern);
+	}
 }

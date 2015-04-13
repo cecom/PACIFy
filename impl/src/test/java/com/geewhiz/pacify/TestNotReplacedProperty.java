@@ -29,32 +29,31 @@ import java.util.List;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import com.geewhiz.pacify.TODO.PFEntityManager;
+import com.geewhiz.pacify.TODO.EntityManager;
 import com.geewhiz.pacify.commandline.CommandLineParameter;
 import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.logger.LogLevel;
 import com.geewhiz.pacify.property.FilePropertyContainer;
 import com.geewhiz.pacify.utils.FileUtils;
 
 public class TestNotReplacedProperty extends BaseCheck {
 
-    @Test
-    public void checkForNotCorrect() {
-        File startPath = new File("target/test-classes/notReplacedPropertyTest");
-        File myTestProperty = new File(startPath, "myProperties.properties");
-        URL myTestPropertyURL = FileUtils.getFileUrl(myTestProperty);
+	@Test
+	public void checkForNotCorrect() {
+		File startPath = new File("target/test-classes/notReplacedPropertyTest");
+		File myTestProperty = new File(startPath, "myProperties.properties");
+		URL myTestPropertyURL = FileUtils.getFileUrl(myTestProperty);
 
-        assertTrue("StartPath [" + startPath.getPath() + "] doesn't exist!", startPath.exists());
+		assertTrue("StartPath [" + startPath.getPath() + "] doesn't exist!", startPath.exists());
 
-        EnumMap<CommandLineParameter, Object> commandlineProperties = new EnumMap<CommandLineParameter, Object>(
-                CommandLineParameter.class);
-        commandlineProperties.put(CommandLineParameter.StartPath, startPath);
-        commandlineProperties.put(CommandLineParameter.PropertyFileURL, Util.getURLForFile(myTestProperty));
-        commandlineProperties.put(CommandLineParameter.LogLevel, LogLevel.DEBUG);
+		EnumMap<CommandLineParameter, Object> commandlineProperties = new EnumMap<CommandLineParameter, Object>(
+		        CommandLineParameter.class);
+		commandlineProperties.put(CommandLineParameter.StartPath, startPath);
+		commandlineProperties.put(CommandLineParameter.PropertyFileURL, Util.getURLForFile(myTestProperty));
+		commandlineProperties.put(CommandLineParameter.LogLevel, "debug");
 
-        PFEntityManager pfEntityManager = new PFEntityManager(startPath);
-        List<Defect> defects = pfEntityManager.doReplacement(new FilePropertyContainer(myTestPropertyURL));
+		EntityManager pfEntityManager = new EntityManager(startPath);
+		List<Defect> defects = pfEntityManager.doReplacement(new FilePropertyContainer(myTestPropertyURL));
 
-        Assert.assertEquals(defects.size(), 4);
-    }
+		Assert.assertEquals(defects.size(), 4);
+	}
 }

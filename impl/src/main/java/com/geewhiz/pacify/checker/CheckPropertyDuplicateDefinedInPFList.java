@@ -8,9 +8,9 @@ package com.geewhiz.pacify.checker;
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -23,11 +23,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.defect.PropertyDuplicateDefinedInPFList;
+import com.geewhiz.pacify.defect.PropertyDuplicateDefinedInPacify;
 import com.geewhiz.pacify.model.PProperty;
 import com.geewhiz.pacify.model.Pacify;
 
-public class CheckPropertyDuplicateDefinedInPFList implements PFListCheck {
+public class CheckPropertyDuplicateDefinedInPFList implements PacifyCheck {
 
 	public List<Defect> checkForErrors(Pacify pacify) {
 		List<Defect> defects = new ArrayList<Defect>();
@@ -36,7 +36,7 @@ public class CheckPropertyDuplicateDefinedInPFList implements PFListCheck {
 
 		for (PProperty property : pacify.getProperties()) {
 			if (properties.contains(property.getName())) {
-				Defect defect = new PropertyDuplicateDefinedInPFList(pacify, property);
+				Defect defect = new PropertyDuplicateDefinedInPacify(pacify, property);
 				defects.add(defect);
 				continue;
 			}

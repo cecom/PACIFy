@@ -28,7 +28,7 @@ import com.geewhiz.pacify.model.PProperty;
 import com.geewhiz.pacify.model.Pacify;
 import com.geewhiz.pacify.property.PropertyContainer;
 
-public class CheckPropertyExists implements PFListCheck {
+public class CheckPropertyExists implements PacifyCheck {
 
 	private PropertyContainer propertyContainer;
 

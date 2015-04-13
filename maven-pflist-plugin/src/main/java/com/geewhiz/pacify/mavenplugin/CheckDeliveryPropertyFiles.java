@@ -25,7 +25,7 @@ import java.util.List;
 
 import org.apache.maven.plugin.MojoExecutionException;
 
-import com.geewhiz.pacify.TODO.PFEntityManager;
+import com.geewhiz.pacify.TODO.EntityManager;
 import com.geewhiz.pacify.checker.CheckPropertyDuplicateInPropertyFile;
 import com.geewhiz.pacify.checker.CheckPropertyExists;
 import com.geewhiz.pacify.defect.Defect;
@@ -72,7 +72,7 @@ public class CheckDeliveryPropertyFiles extends BaseMojo {
             throw new MojoExecutionException("The folder [" + pfListStartPath.getAbsolutePath() + "] does not exist.");
         }
 
-        PFEntityManager pfEntityManager = new PFEntityManager(pfListStartPath);
+        EntityManager pfEntityManager = new EntityManager(pfListStartPath);
         if (pfEntityManager.getPFListCount() == 0) {
             getLog().info("No pflist files found. Nothing to check.");
             return;
@@ -97,7 +97,7 @@ public class CheckDeliveryPropertyFiles extends BaseMojo {
         throw new MojoExecutionException("We got errors... Aborting!");
     }
 
-    private List<Defect> checkPropertyFile(PFEntityManager pfEntityManager, String propertyFile)
+    private List<Defect> checkPropertyFile(EntityManager pfEntityManager, String propertyFile)
             throws MojoExecutionException {
         PropertyContainer propertyContainer = new FilePropertyContainer(getPropertyFileURL(propertyFileArtifact,
                 propertyFile));

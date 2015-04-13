@@ -27,26 +27,25 @@ import java.util.EnumMap;
 import org.testng.annotations.Test;
 
 import com.geewhiz.pacify.commandline.CommandLineParameter;
-import com.geewhiz.pacify.logger.LogLevel;
 
 public class TestCommandlineCall extends BaseCheck {
 
-    @Test
-    public void testAll() {
-        File startPath = new File("target/test-classes/testAll");
-        File myTestProperty = new File(startPath, "myTest.properties");
+	@Test
+	public void testAll() {
+		File startPath = new File("target/test-classes/testAll");
+		File myTestProperty = new File(startPath, "myTest.properties");
 
-        assertTrue("StartPath [" + startPath.getPath() + "] doesn't exist!", startPath.exists());
+		assertTrue("StartPath [" + startPath.getPath() + "] doesn't exist!", startPath.exists());
 
-        EnumMap<CommandLineParameter, Object> commandlineProperties = new EnumMap<CommandLineParameter, Object>(
-                CommandLineParameter.class);
-        commandlineProperties.put(CommandLineParameter.StartPath, startPath);
-        commandlineProperties.put(CommandLineParameter.PropertyFileURL, Util.getURLForFile(myTestProperty));
-        commandlineProperties.put(CommandLineParameter.LogLevel, LogLevel.DEBUG);
+		EnumMap<CommandLineParameter, Object> commandlineProperties = new EnumMap<CommandLineParameter, Object>(
+		        CommandLineParameter.class);
+		commandlineProperties.put(CommandLineParameter.StartPath, startPath);
+		commandlineProperties.put(CommandLineParameter.PropertyFileURL, Util.getURLForFile(myTestProperty));
+		commandlineProperties.put(CommandLineParameter.LogLevel, "debug");
 
-        PFListPropertyReplacer pfListPropertyReplacer = new PFListPropertyReplacer(commandlineProperties);
-        pfListPropertyReplacer.replace();
+		Pacifier pfListPropertyReplacer = new Pacifier(commandlineProperties);
+		pfListPropertyReplacer.replace();
 
-        Util.checkIfResultIsAsExpected(startPath);
-    }
+		Util.checkIfResultIsAsExpected(startPath);
+	}
 }

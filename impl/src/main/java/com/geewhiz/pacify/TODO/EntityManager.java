@@ -27,21 +27,24 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
-import com.geewhiz.pacify.checker.PFListChecker;
+import org.slf4j.Logger;
+
+import com.geewhiz.pacify.checker.PacifyChecker;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.logger.Log;
-import com.geewhiz.pacify.logger.LogLevel;
 import com.geewhiz.pacify.model.Pacify;
 import com.geewhiz.pacify.model.utils.PacifyFilesFinder;
 import com.geewhiz.pacify.property.PropertyContainer;
 import com.geewhiz.pacify.replacer.PropertyPFReplacer;
 
-public class PFEntityManager {
+public class EntityManager {
 
 	private File startPath;
 	private List<Pacify> pacifyList;
 
-	public PFEntityManager(File startPath) {
+	Logger logger = Log.getInstance();
+
+	public EntityManager(File startPath) {
 		this.startPath = startPath;
 	}
 
@@ -50,11 +53,11 @@ public class PFEntityManager {
 	}
 
 	public List<Defect> checkCorrectnessOfPFListFiles(PropertyContainer propertyContainer) {
-		PFListChecker pfListChecker = new PFListChecker(propertyContainer);
+		PacifyChecker pacifyChecker = new PacifyChecker(propertyContainer);
 
 		List<Defect> defects = new ArrayList<Defect>();
 		for (Pacify pfListEntity : getPacifyFiles()) {
-			defects.addAll(pfListChecker.check(pfListEntity));
+			defects.addAll(pacifyChecker.check(pfListEntity));
 		}
 
 		return defects;
@@ -63,7 +66,7 @@ public class PFEntityManager {
 	public List<Defect> doReplacement(PropertyContainer propertyContainer) {
 		List<Defect> defects = new ArrayList<Defect>();
 		for (Pacify pacify : getPacifyFiles()) {
-			Log.log(LogLevel.INFO, "====== Replacing stuff which is configured in [" + pacify.getFile().getPath()
+			logger.info("====== Replacing stuff which is configured in [" + pacify.getFile().getPath()
 			        + "] ...");
 			PropertyPFReplacer propertyReplacer = new PropertyPFReplacer(propertyContainer, pacify);
 			defects.addAll(propertyReplacer.replace());

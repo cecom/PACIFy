@@ -28,7 +28,7 @@ import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PProperty;
 import com.geewhiz.pacify.model.Pacify;
 
-public class CheckTargetFileExist implements PFListCheck {
+public class CheckTargetFileExist implements PacifyCheck {
 
 	public List<Defect> checkForErrors(Pacify pfListEntity) {
 		List<Defect> defects = new ArrayList<Defect>();
