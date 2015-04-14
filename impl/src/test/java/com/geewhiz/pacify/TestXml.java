@@ -55,7 +55,7 @@ public class TestXml {
 
 		EntityManager pfEntityManager = new EntityManager(source);
 
-		PMarker pfListEntity = pfEntityManager.getPacifyFiles().get(0);
+		PMarker pfListEntity = pfEntityManager.getPMarkers().get(0);
 
 		assertEquals(pfListEntity.getProperties().size(), 2);
 

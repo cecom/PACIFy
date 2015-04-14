@@ -21,21 +21,16 @@ package com.geewhiz.pacify;
 
 import java.io.File;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 
 import com.geewhiz.pacify.common.logger.Log;
 import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.defect.PropertyNotReplacedDefect;
 import com.geewhiz.pacify.model.EntityManager;
 import com.geewhiz.pacify.property.FilePropertyContainer;
 import com.geewhiz.pacify.property.PropertyContainer;
-import com.geewhiz.pacify.replacer.PropertyFileReplacer;
 import com.geewhiz.pacify.utils.Utils;
 
 public class Replacer {
@@ -57,7 +52,7 @@ public class Replacer {
 	public void replace() {
 		EntityManager entityManager = new EntityManager(getPackagePath());
 
-		logger.info("==== Found [" + entityManager.getPFListCount() + "] pacify Files...");
+		logger.info("==== Found [" + entityManager.getPMarkerCount() + "] pacify Files...");
 
 		logger.info("==== Checking pacify files...");
 		List<Defect> defects = entityManager.checkCorrectnessOfPFListFiles(getPropertyFile());
@@ -92,21 +87,5 @@ public class Replacer {
 			logger.error(defect.getDefectMessage());
 		}
 		throw new RuntimeException("We got errors... Aborting!");
-	}
-
-	public static List<Defect> checkFileForNotReplacedStuff(File file) {
-		List<Defect> defects = new ArrayList<Defect>();
-
-		String fileContent = com.geewhiz.pacify.utils.FileUtils.getFileInOneString(file);
-
-		Pattern pattern = PropertyFileReplacer.getPattern("([^}]*)", false);
-		Matcher matcher = pattern.matcher(fileContent);
-
-		while (matcher.find()) {
-			String propertyId = matcher.group(1);
-			Defect defect = new PropertyNotReplacedDefect(file, propertyId);
-			defects.add(defect);
-		}
-		return defects;
 	}
 }

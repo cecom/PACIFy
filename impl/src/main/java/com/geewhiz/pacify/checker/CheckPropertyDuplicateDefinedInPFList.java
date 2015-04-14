@@ -23,11 +23,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.defect.PropertyDuplicateDefinedInPacify;
+import com.geewhiz.pacify.defect.PropertyDuplicateDefinedInPMarkerDefect;
 import com.geewhiz.pacify.model.PProperty;
 import com.geewhiz.pacify.model.PMarker;
 
-public class CheckPropertyDuplicateDefinedInPFList implements PacifyCheck {
+public class CheckPropertyDuplicateDefinedInPFList implements PMarkerCheck {
 
 	public List<Defect> checkForErrors(PMarker pMarker) {
 		List<Defect> defects = new ArrayList<Defect>();
@@ -36,7 +36,7 @@ public class CheckPropertyDuplicateDefinedInPFList implements PacifyCheck {
 
 		for (PProperty property : pMarker.getProperties()) {
 			if (properties.contains(property.getName())) {
-				Defect defect = new PropertyDuplicateDefinedInPacify(pMarker, property);
+				Defect defect = new PropertyDuplicateDefinedInPMarkerDefect(pMarker, property);
 				defects.add(defect);
 				continue;
 			}

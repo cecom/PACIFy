@@ -22,6 +22,8 @@ package com.geewhiz.pacify.model;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -32,8 +34,10 @@ import org.slf4j.Logger;
 import com.geewhiz.pacify.checker.PacifyChecker;
 import com.geewhiz.pacify.common.logger.Log;
 import com.geewhiz.pacify.defect.Defect;
+import com.geewhiz.pacify.defect.PropertyNotReplacedDefect;
 import com.geewhiz.pacify.model.utils.PacifyFilesFinder;
 import com.geewhiz.pacify.property.PropertyContainer;
+import com.geewhiz.pacify.replacer.PropertyFileReplacer;
 import com.geewhiz.pacify.replacer.PropertyPFReplacer;
 
 public class EntityManager {
@@ -47,15 +51,15 @@ public class EntityManager {
 		this.startPath = startPath;
 	}
 
-	public int getPFListCount() {
-		return getPacifyFiles().size();
+	public int getPMarkerCount() {
+		return getPMarkers().size();
 	}
 
 	public List<Defect> checkCorrectnessOfPFListFiles(PropertyContainer propertyContainer) {
 		PacifyChecker pacifyChecker = new PacifyChecker(propertyContainer);
 
 		List<Defect> defects = new ArrayList<Defect>();
-		for (PMarker pfListEntity : getPacifyFiles()) {
+		for (PMarker pfListEntity : getPMarkers()) {
 			defects.addAll(pacifyChecker.check(pfListEntity));
 		}
 
@@ -64,7 +68,7 @@ public class EntityManager {
 
 	public List<Defect> doReplacement(PropertyContainer propertyContainer) {
 		List<Defect> defects = new ArrayList<Defect>();
-		for (PMarker pMarker : getPacifyFiles()) {
+		for (PMarker pMarker : getPMarkers()) {
 			logger.info("====== Replacing stuff which is configured in [" + pMarker.getFile().getPath()
 			        + "] ...");
 			PropertyPFReplacer propertyReplacer = new PropertyPFReplacer(propertyContainer, pMarker);
@@ -73,7 +77,7 @@ public class EntityManager {
 		return defects;
 	}
 
-	public List<PMarker> getPacifyFiles() {
+	public List<PMarker> getPMarkers() {
 		if (pacifyList != null) {
 			return pacifyList;
 		}
@@ -102,4 +106,21 @@ public class EntityManager {
 
 		return pacifyList;
 	}
+
+	public static List<Defect> checkFileForNotReplacedStuff(File file) {
+		List<Defect> defects = new ArrayList<Defect>();
+
+		String fileContent = com.geewhiz.pacify.utils.FileUtils.getFileInOneString(file);
+
+		Pattern pattern = PropertyFileReplacer.getPattern("([^}]*)", false);
+		Matcher matcher = pattern.matcher(fileContent);
+
+		while (matcher.find()) {
+			String propertyId = matcher.group(1);
+			Defect defect = new PropertyNotReplacedDefect(file, propertyId);
+			defects.add(defect);
+		}
+		return defects;
+	}
+
 }

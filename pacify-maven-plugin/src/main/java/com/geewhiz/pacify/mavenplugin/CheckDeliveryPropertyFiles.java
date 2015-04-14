@@ -73,12 +73,12 @@ public class CheckDeliveryPropertyFiles extends BaseMojo {
         }
 
         EntityManager pfEntityManager = new EntityManager(pfListStartPath);
-        if (pfEntityManager.getPFListCount() == 0) {
+        if (pfEntityManager.getPMarkerCount() == 0) {
             getLog().info("No pflist files found. Nothing to check.");
             return;
         }
 
-        getLog().info("Found [" + pfEntityManager.getPFListCount() + "] PFList Files...");
+        getLog().info("Found [" + pfEntityManager.getPMarkerCount() + "] PFList Files...");
 
         List<Defect> defects = new ArrayList<Defect>();
         for (String propertyFile : propertyFiles.split(",")) {
@@ -109,7 +109,7 @@ public class CheckDeliveryPropertyFiles extends BaseMojo {
         List<Defect> defects = new ArrayList<Defect>();
         defects.addAll(duplicateChecker.checkForErrors());
 
-        for (PMarker pfListEntity : pfEntityManager.getPacifyFiles()) {
+        for (PMarker pfListEntity : pfEntityManager.getPMarkers()) {
             defects.addAll(propertyExistsChecker.checkForErrors(pfListEntity));
         }
 

@@ -25,14 +25,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.defect.PropertyDoesNotExistInTargetFile;
+import com.geewhiz.pacify.defect.PropertyDoesNotExistInTargetFileDefect;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PProperty;
 import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.replacer.PropertyFileReplacer;
 import com.geewhiz.pacify.utils.FileUtils;
 
-public class CheckPropertyExistsInTargetFile implements PacifyCheck {
+public class CheckPropertyExistsInTargetFile implements PMarkerCheck {
 
 	public List<Defect> checkForErrors(PMarker pMarker) {
 		List<Defect> defects = new ArrayList<Defect>();
@@ -44,7 +44,7 @@ public class CheckPropertyExistsInTargetFile implements PacifyCheck {
 				if (exists) {
 					continue;
 				}
-				Defect defect = new PropertyDoesNotExistInTargetFile(pMarker, pproperty, pfile);
+				Defect defect = new PropertyDoesNotExistInTargetFileDefect(pMarker, pproperty, pfile);
 				defects.add(defect);
 			}
 		}

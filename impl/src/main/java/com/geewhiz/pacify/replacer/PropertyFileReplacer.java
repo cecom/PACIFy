@@ -31,7 +31,7 @@ import org.apache.tools.ant.types.FilterSetCollection;
 import org.apache.tools.ant.util.FileUtils;
 import org.slf4j.Logger;
 
-import com.geewhiz.pacify.Replacer;
+import com.geewhiz.pacify.checker.CheckForNotReplacedTokens;
 import com.geewhiz.pacify.common.logger.Log;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.property.PropertyContainer;
@@ -67,7 +67,8 @@ public class PropertyFileReplacer {
 				throw new RuntimeException("Couldn't rename filtered file from [" + tmpFile.getPath() + "] to ["
 				        + file.getPath() + "]... Aborting!");
 			}
-			defects.addAll(Replacer.checkFileForNotReplacedStuff(file));
+			CheckForNotReplacedTokens checker = new CheckForNotReplacedTokens();
+			defects.addAll(checker.checkForErrors(file));
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

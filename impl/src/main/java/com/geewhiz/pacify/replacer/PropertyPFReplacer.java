@@ -19,6 +19,7 @@ package com.geewhiz.pacify.replacer;
  * under the License.
  */
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,18 +27,20 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.tools.ant.types.FilterSet;
 import org.apache.tools.ant.types.FilterSetCollection;
 import org.apache.tools.ant.util.FileUtils;
 import org.slf4j.Logger;
 
-import com.geewhiz.pacify.Replacer;
+import com.geewhiz.pacify.checker.CheckForNotReplacedTokens;
 import com.geewhiz.pacify.common.logger.Log;
 import com.geewhiz.pacify.defect.Defect;
+import com.geewhiz.pacify.defect.PropertyNotReplacedDefect;
 import com.geewhiz.pacify.model.PFile;
-import com.geewhiz.pacify.model.PProperty;
 import com.geewhiz.pacify.model.PMarker;
+import com.geewhiz.pacify.model.PProperty;
 import com.geewhiz.pacify.property.PropertyContainer;
 import com.geewhiz.pacify.utils.Utils;
 
@@ -73,10 +76,27 @@ public class PropertyPFReplacer {
 					throw new RuntimeException("Couldn't rename filtered file from [" + tmpFile.getPath() + "] to ["
 					        + file.getPath() + "]... Aborting!");
 				}
-				defects.addAll(Replacer.checkFileForNotReplacedStuff(file));
+				CheckForNotReplacedTokens checker = new CheckForNotReplacedTokens();
+				defects.addAll(checker.checkForErrors(file));
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
+		}
+		return defects;
+	}
+
+	public static List<Defect> checkFileForNotReplacedStuff(File file) {
+		List<Defect> defects = new ArrayList<Defect>();
+
+		String fileContent = com.geewhiz.pacify.utils.FileUtils.getFileInOneString(file);
+
+		Pattern pattern = PropertyFileReplacer.getPattern("([^}]*)", false);
+		Matcher matcher = pattern.matcher(fileContent);
+
+		while (matcher.find()) {
+			String propertyId = matcher.group(1);
+			Defect defect = new PropertyNotReplacedDefect(file, propertyId);
+			defects.add(defect);
 		}
 		return defects;
 	}

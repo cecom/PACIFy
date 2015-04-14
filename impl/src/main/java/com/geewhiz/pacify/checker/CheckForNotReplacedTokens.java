@@ -1,4 +1,14 @@
-package com.geewhiz.pacify;
+package com.geewhiz.pacify.checker;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import com.geewhiz.pacify.defect.Defect;
+import com.geewhiz.pacify.defect.PropertyNotReplacedDefect;
+import com.geewhiz.pacify.replacer.PropertyFileReplacer;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,23 +29,20 @@ package com.geewhiz.pacify;
  * under the License.
  */
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+public class CheckForNotReplacedTokens {
 
-import com.geewhiz.pacify.checker.PMarkerCheck;
-import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.model.EntityManager;
-import com.geewhiz.pacify.model.PMarker;
-
-public abstract class BaseCheck {
-
-	protected List<Defect> getDefects(PMarkerCheck checker, File testStartPath) {
-		EntityManager entityManager = new EntityManager(testStartPath);
-
+	public List<Defect> checkForErrors(File file) {
 		List<Defect> defects = new ArrayList<Defect>();
-		for (PMarker pfListEntity : entityManager.getPMarkers()) {
-			defects.addAll(checker.checkForErrors(pfListEntity));
+
+		String fileContent = com.geewhiz.pacify.utils.FileUtils.getFileInOneString(file);
+
+		Pattern pattern = PropertyFileReplacer.getPattern("([^}]*)", false);
+		Matcher matcher = pattern.matcher(fileContent);
+
+		while (matcher.find()) {
+			String propertyId = matcher.group(1);
+			Defect defect = new PropertyNotReplacedDefect(file, propertyId);
+			defects.add(defect);
 		}
 		return defects;
 	}

@@ -28,7 +28,7 @@ import com.geewhiz.pacify.model.PProperty;
 import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.property.PropertyContainer;
 
-public class CheckPropertyExists implements PacifyCheck {
+public class CheckPropertyExists implements PMarkerCheck {
 
 	private PropertyContainer propertyContainer;
 

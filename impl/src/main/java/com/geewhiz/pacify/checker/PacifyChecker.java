@@ -29,7 +29,7 @@ import com.geewhiz.pacify.property.PropertyContainer;
 public class PacifyChecker {
 
     List<Check> checks = new ArrayList<Check>();
-    List<PacifyCheck> pfListChecks = new ArrayList<PacifyCheck>();
+    List<PMarkerCheck> pfListChecks = new ArrayList<PMarkerCheck>();
 
     public PacifyChecker(PropertyContainer propertyContainer) {
         checks.add(new CheckPropertyDuplicateInPropertyFile(propertyContainer));
@@ -44,7 +44,7 @@ public class PacifyChecker {
         for (Check check : checks) {
             defects.addAll(check.checkForErrors());
         }
-        for (PacifyCheck pfListCheck : pfListChecks) {
+        for (PMarkerCheck pfListCheck : pfListChecks) {
             defects.addAll(pfListCheck.checkForErrors(pfListEntity));
         }
         return defects;

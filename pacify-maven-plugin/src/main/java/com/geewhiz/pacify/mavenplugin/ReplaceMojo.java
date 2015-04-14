@@ -76,11 +76,11 @@ public class ReplaceMojo extends BaseMojo {
         }
 
         EntityManager pfEntityManager = new EntityManager(pfListStartPath);
-        if (pfEntityManager.getPFListCount() == 0) {
+        if (pfEntityManager.getPMarkerCount() == 0) {
             getLog().info("No pflist files found. Nothing to do.");
             return;
         }
-        getLog().info("Found [" + pfEntityManager.getPFListCount() + "] PFList Files...");
+        getLog().info("Found [" + pfEntityManager.getPMarkerCount() + "] PFList Files...");
 
         PropertyContainer propertyContainer;
         if (useMavenProperties) {

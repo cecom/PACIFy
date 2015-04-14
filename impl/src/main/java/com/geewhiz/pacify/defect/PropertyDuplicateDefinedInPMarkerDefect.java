@@ -1,4 +1,7 @@
-package com.geewhiz.pacify.checker;
+package com.geewhiz.pacify.defect;
+
+import com.geewhiz.pacify.model.PMarker;
+import com.geewhiz.pacify.model.PProperty;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,16 +22,17 @@ package com.geewhiz.pacify.checker;
  * under the License.
  */
 
-import java.util.List;
+public class PropertyDuplicateDefinedInPMarkerDefect implements Defect {
 
-import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.model.PMarker;
+	private PMarker pMarker;
+	private PProperty pproperty;
 
-public interface PacifyCheck {
+	public PropertyDuplicateDefinedInPMarkerDefect(PMarker pMarker, PProperty pproperty) {
+		this.pMarker = pMarker;
+		this.pproperty = pproperty;
+	}
 
-    /**
-     * @param pfListEntity which pfList should be checked?
-     * @return if there are defects, return a list with the defects.
-     */
-    List<Defect> checkForErrors(PMarker pfListEntity);
+	public String getDefectMessage() {
+		return "Property [" + pproperty.getName() + "] is duplicate defined in pflist descriptor [TODO]";
+	}
 }

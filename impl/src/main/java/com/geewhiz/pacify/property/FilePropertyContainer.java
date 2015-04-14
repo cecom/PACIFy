@@ -34,7 +34,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.defect.PropertyDuplicateDefinedInPropertyFile;
+import com.geewhiz.pacify.defect.PropertyDuplicateDefinedInPropertyFileDefect;
 import com.geewhiz.pacify.utils.FileUtils;
 import com.geewhiz.pacify.utils.Utils;
 
@@ -104,7 +104,7 @@ public class FilePropertyContainer implements PropertyContainer {
             String propertyId = split[0];
             boolean couldBeAdded = propertyIds.add(propertyId);
             if (!couldBeAdded) {
-                Defect defect = new PropertyDuplicateDefinedInPropertyFile(propertyId, this);
+                Defect defect = new PropertyDuplicateDefinedInPropertyFileDefect(propertyId, this);
                 defects.add(defect);
             }
         }

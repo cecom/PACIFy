@@ -18,26 +18,19 @@ package com.geewhiz.pacify.defect;
  * specific language governing permissions and limitations
  * under the License.
  */
+import com.geewhiz.pacify.property.PropertyContainer;
 
-import com.geewhiz.pacify.model.PFile;
-import com.geewhiz.pacify.model.PProperty;
-import com.geewhiz.pacify.model.PMarker;
+public class PropertyDuplicateDefinedInPropertyFileDefect implements Defect {
+    private String property;
+    private PropertyContainer propertyContainer;
 
-public class PropertyDoesNotExistInTargetFile implements Defect {
+    public PropertyDuplicateDefinedInPropertyFileDefect(String property, PropertyContainer propertyContainer) {
+        this.property = property;
+        this.propertyContainer = propertyContainer;
+    }
 
-	private PMarker pMarker;
-	private PProperty pproperty;
-	private PFile pfile;
-
-	public PropertyDoesNotExistInTargetFile(PMarker pMarker, PProperty pproperty,
-	    PFile pfile) {
-		this.pMarker = pMarker;
-		this.pproperty = pproperty;
-		this.pfile = pfile;
-	}
-
-	public String getDefectMessage() {
-		return "Property [" + pproperty.getName() + "] which is defined in [TODO] couldn't be found in file ["
-		        + pMarker.getAbsoluteFileFor(pfile).getPath() + "]";
-	}
+    public String getDefectMessage() {
+        return "Property [" + property + "] is duplicate defined in property file ["
+                + propertyContainer.getPropertyLoadedFrom() + "]";
+    }
 }

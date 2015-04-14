@@ -27,7 +27,7 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 
-import com.geewhiz.pacify.Replacer;
+import com.geewhiz.pacify.checker.CheckForNotReplacedTokens;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.model.EntityManager;
 import com.geewhiz.pacify.model.PFile;
@@ -76,18 +76,19 @@ public class CheckAllPropertiesAreReplaced extends AbstractMojo {
 		}
 
 		EntityManager entityManager = new EntityManager(pfListStartPath);
-		if (entityManager.getPFListCount() == 0) {
+		if (entityManager.getPMarkerCount() == 0) {
 			getLog().info("No pflist files found. Nothing to check.");
 			return;
 		}
-		getLog().info("Found [" + entityManager.getPFListCount() + "] PFList Files...");
+		getLog().info("Found [" + entityManager.getPMarkerCount() + "] pacify files...");
 
 		getLog().info("Checking files...");
+		CheckForNotReplacedTokens checker = new CheckForNotReplacedTokens();
 		List<Defect> defects = new ArrayList<Defect>();
-		for (PMarker pMarker : entityManager.getPacifyFiles()) {
+		for (PMarker pMarker : entityManager.getPMarkers()) {
 			for (PFile pfile : pMarker.getPFiles()) {
 				File file = pMarker.getAbsoluteFileFor(pfile);
-				defects.addAll(Replacer.checkFileForNotReplacedStuff(file));
+				defects.addAll(checker.checkForErrors(file));
 			}
 		}
 
