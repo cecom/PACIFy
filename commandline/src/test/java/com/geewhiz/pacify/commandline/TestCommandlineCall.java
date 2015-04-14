@@ -40,18 +40,6 @@ public class TestCommandlineCall {
 
 		Assert.assertEquals(result, 0, "Configuration returned with errors.");
 
-		// File myTestProperty = new File(startPath, "myTest.properties");
-		//
-		// assertTrue("StartPath [" + startPath.getPath() + "] doesn't exist!", startPath.exists());
-		//
-		// EnumMap<Replacer.Parameter, Object> commandlineProperties = new EnumMap<Replacer.Parameter, Object>(
-		// Replacer.Parameter.class);
-		// commandlineProperties.put(Replacer.Parameter.PackagePath, startPath);
-		// commandlineProperties.put(Replacer.Parameter.PropertyFileURL, Util.getURLForFile(myTestProperty));
-		//
-		// Replacer pfListPropertyReplacer = new Replacer(commandlineProperties);
-		// pfListPropertyReplacer.replace();
-		//
 		TestUtil.checkIfResultIsAsExpected(new File(startPath));
 	}
 }
