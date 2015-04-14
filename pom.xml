@@ -165,6 +165,11 @@
                     <artifactId>jaxb2-basics</artifactId>
                     <version>${org.jvnet.jaxb2_commons_jaxb2-basics_version}</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.jvnet.jaxb2.maven2</groupId>
+                    <artifactId>maven-jaxb2-plugin</artifactId>
+                    <version>0.12.3</version>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>
