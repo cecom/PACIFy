@@ -33,9 +33,9 @@ import java.util.Enumeration;
 
 import org.slf4j.Logger;
 
-import com.geewhiz.pacify.commandline.CommandLineParameter;
 import com.geewhiz.pacify.commandline.CommandLineUtils;
 import com.geewhiz.pacify.commandline.OutputType;
+import com.geewhiz.pacify.configuration.CommandLineParameter;
 import com.geewhiz.pacify.logger.Log;
 import com.geewhiz.pacify.property.FilePropertyContainer;
 import com.geewhiz.pacify.property.PropertyContainer;

@@ -26,8 +26,8 @@ import java.util.EnumMap;
 
 import org.testng.annotations.Test;
 
-import com.geewhiz.pacify.commandline.CommandLineParameter;
 import com.geewhiz.pacify.commandline.OutputType;
+import com.geewhiz.pacify.configuration.CommandLineParameter;
 
 public class TestCreateResultPropertyFile {
 

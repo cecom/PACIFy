@@ -29,9 +29,9 @@ import java.util.List;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import com.geewhiz.pacify.TODO.EntityManager;
-import com.geewhiz.pacify.commandline.CommandLineParameter;
+import com.geewhiz.pacify.configuration.CommandLineParameter;
 import com.geewhiz.pacify.defect.Defect;
+import com.geewhiz.pacify.model.EntityManager;
 import com.geewhiz.pacify.property.FilePropertyContainer;
 import com.geewhiz.pacify.utils.FileUtils;
 

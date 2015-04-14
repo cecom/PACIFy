@@ -27,11 +27,11 @@ import java.util.List;
 import org.apache.tools.ant.types.LogLevel;
 import org.slf4j.Logger;
 
-import com.geewhiz.pacify.TODO.EntityManager;
-import com.geewhiz.pacify.commandline.CommandLineParameter;
 import com.geewhiz.pacify.commandline.CommandLineUtils;
+import com.geewhiz.pacify.configuration.CommandLineParameter;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.logger.Log;
+import com.geewhiz.pacify.model.EntityManager;
 import com.geewhiz.pacify.property.FilePropertyContainer;
 import com.geewhiz.pacify.property.PropertyContainer;
 import com.geewhiz.pacify.utils.Utils;

@@ -1,4 +1,4 @@
-package com.geewhiz.pacify.commandline;
+package com.geewhiz.pacify.configuration;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one

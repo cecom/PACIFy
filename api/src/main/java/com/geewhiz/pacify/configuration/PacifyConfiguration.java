@@ -1,4 +1,6 @@
-package com.geewhiz.pacify;
+package com.geewhiz.pacify.configuration;
+
+import java.util.EnumMap;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,25 +21,10 @@ package com.geewhiz.pacify;
  * under the License.
  */
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+public interface PacifyConfiguration {
 
-import com.geewhiz.pacify.checker.PacifyCheck;
-import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.model.EntityManager;
-import com.geewhiz.pacify.model.Pacify;
+	EnumMap<CommandLineParameter, String> getCommandLineParamerters();
 
-public abstract class BaseCheck {
-
-	protected List<Defect> getDefects(PacifyCheck checker, File testStartPath) {
-		EntityManager entityManager = new EntityManager(testStartPath);
-
-		List<Defect> defects = new ArrayList<Defect>();
-		for (Pacify pfListEntity : entityManager.getPacifyFiles()) {
-			defects.addAll(checker.checkForErrors(pfListEntity));
-		}
-		return defects;
-	}
+	String getCommandLineParameter(CommandLineParameter parameter);
 
 }

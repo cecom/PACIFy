@@ -25,8 +25,8 @@ import java.util.EnumMap;
 import org.apache.maven.plugin.MojoExecutionException;
 
 import com.geewhiz.pacify.CreateResultPropertyFile;
-import com.geewhiz.pacify.commandline.CommandLineParameter;
 import com.geewhiz.pacify.commandline.OutputType;
+import com.geewhiz.pacify.configuration.CommandLineParameter;
 
 /**
  * @goal generateFinalPropertyFile

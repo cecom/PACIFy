@@ -31,7 +31,9 @@
     </properties>
 
     <modules>
+        <module>api</module>
         <module>model</module>
+        <module>commandline</module>
         <module>impl</module>
         <module>maven-pflist-plugin</module>
     </modules>

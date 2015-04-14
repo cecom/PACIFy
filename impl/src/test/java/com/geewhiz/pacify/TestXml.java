@@ -25,7 +25,7 @@ import java.io.File;
 
 import org.testng.annotations.Test;
 
-import com.geewhiz.pacify.TODO.EntityManager;
+import com.geewhiz.pacify.model.EntityManager;
 import com.geewhiz.pacify.model.Pacify;
 
 public class TestXml {

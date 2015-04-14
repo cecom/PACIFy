@@ -1,4 +1,4 @@
-package com.geewhiz.pacify.TODO;
+package com.geewhiz.pacify.model;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one

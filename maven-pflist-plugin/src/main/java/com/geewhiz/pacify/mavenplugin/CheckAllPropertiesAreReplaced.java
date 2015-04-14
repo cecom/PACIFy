@@ -26,8 +26,8 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 
-import com.geewhiz.pacify.TODO.EntityManager;
 import com.geewhiz.pacify.defect.Defect;
+import com.geewhiz.pacify.model.EntityManager;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.Pacify;
 import com.geewhiz.pacify.utils.Utils;

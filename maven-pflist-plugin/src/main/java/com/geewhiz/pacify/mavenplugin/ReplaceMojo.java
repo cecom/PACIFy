@@ -24,8 +24,8 @@ import java.util.List;
 
 import org.apache.maven.plugin.MojoExecutionException;
 
-import com.geewhiz.pacify.TODO.EntityManager;
 import com.geewhiz.pacify.defect.Defect;
+import com.geewhiz.pacify.model.EntityManager;
 import com.geewhiz.pacify.property.FilePropertyContainer;
 import com.geewhiz.pacify.property.MavenPropertyContainer;
 import com.geewhiz.pacify.property.PropertyContainer;

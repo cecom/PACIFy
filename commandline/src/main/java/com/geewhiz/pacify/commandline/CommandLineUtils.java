@@ -26,6 +26,8 @@ import java.util.EnumMap;
 
 import org.apache.tools.ant.types.LogLevel;
 
+import com.geewhiz.pacify.configuration.CommandLineParameter;
+
 public class CommandLineUtils {
 
 	public static EnumMap<CommandLineParameter, Object> getCommandLinePropertiesForPropertyReplacer(String[] args) {
