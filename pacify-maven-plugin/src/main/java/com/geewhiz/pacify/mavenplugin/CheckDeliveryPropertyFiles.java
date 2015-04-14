@@ -29,7 +29,7 @@ import com.geewhiz.pacify.checker.CheckPropertyDuplicateInPropertyFile;
 import com.geewhiz.pacify.checker.CheckPropertyExists;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.model.EntityManager;
-import com.geewhiz.pacify.model.Pacify;
+import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.property.FilePropertyContainer;
 import com.geewhiz.pacify.property.PropertyContainer;
 
@@ -109,7 +109,7 @@ public class CheckDeliveryPropertyFiles extends BaseMojo {
         List<Defect> defects = new ArrayList<Defect>();
         defects.addAll(duplicateChecker.checkForErrors());
 
-        for (Pacify pfListEntity : pfEntityManager.getPacifyFiles()) {
+        for (PMarker pfListEntity : pfEntityManager.getPacifyFiles()) {
             defects.addAll(propertyExistsChecker.checkForErrors(pfListEntity));
         }
 

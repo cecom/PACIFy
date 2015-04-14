@@ -22,7 +22,7 @@ package com.geewhiz.pacify.checker;
 import java.util.List;
 
 import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.model.Pacify;
+import com.geewhiz.pacify.model.PMarker;
 
 public interface PacifyCheck {
 
@@ -30,5 +30,5 @@ public interface PacifyCheck {
      * @param pfListEntity which pfList should be checked?
      * @return if there are defects, return a list with the defects.
      */
-    List<Defect> checkForErrors(Pacify pfListEntity);
+    List<Defect> checkForErrors(PMarker pfListEntity);
 }

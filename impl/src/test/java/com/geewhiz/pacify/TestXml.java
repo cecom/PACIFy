@@ -26,7 +26,7 @@ import java.io.File;
 import org.testng.annotations.Test;
 
 import com.geewhiz.pacify.model.EntityManager;
-import com.geewhiz.pacify.model.Pacify;
+import com.geewhiz.pacify.model.PMarker;
 
 public class TestXml {
 
@@ -55,7 +55,7 @@ public class TestXml {
 
 		EntityManager pfEntityManager = new EntityManager(source);
 
-		Pacify pfListEntity = pfEntityManager.getPacifyFiles().get(0);
+		PMarker pfListEntity = pfEntityManager.getPacifyFiles().get(0);
 
 		assertEquals(pfListEntity.getProperties().size(), 2);
 

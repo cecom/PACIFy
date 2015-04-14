@@ -19,6 +19,7 @@ package com.geewhiz.pacify.mavenplugin;
  * under the License.
  */
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +31,7 @@ import com.geewhiz.pacify.Replacer;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.model.EntityManager;
 import com.geewhiz.pacify.model.PFile;
-import com.geewhiz.pacify.model.Pacify;
+import com.geewhiz.pacify.model.PMarker;
 
 /**
  * 
@@ -59,12 +60,6 @@ public class CheckAllPropertiesAreReplaced extends AbstractMojo {
 	 */
 	protected boolean skip;
 
-	/**
-	 * @parameter expression="${logLevel}" default-value="ERROR"
-	 * @required
-	 */
-	private String logLevel;
-
 	public void execute() throws MojoExecutionException {
 		if (skip) {
 			getLog().info("PFList is skipped.");
@@ -80,18 +75,18 @@ public class CheckAllPropertiesAreReplaced extends AbstractMojo {
 			throw new MojoExecutionException("The folder [" + pfListStartPath.getAbsolutePath() + "] does not exist.");
 		}
 
-		EntityManager pfEntityManager = new EntityManager(pfListStartPath);
-		if (pfEntityManager.getPFListCount() == 0) {
+		EntityManager entityManager = new EntityManager(pfListStartPath);
+		if (entityManager.getPFListCount() == 0) {
 			getLog().info("No pflist files found. Nothing to check.");
 			return;
 		}
-		getLog().info("Found [" + pfEntityManager.getPFListCount() + "] PFList Files...");
+		getLog().info("Found [" + entityManager.getPFListCount() + "] PFList Files...");
 
 		getLog().info("Checking files...");
 		List<Defect> defects = new ArrayList<Defect>();
-		for (Pacify pfListEntity : pfEntityManager.getPacifyFiles()) {
-			for (PFile pfile : pfListEntity.getPfFileEntities()) {
-				java.io.File file = pfListEntity.getAbsoluteFileFor(pfile);
+		for (PMarker pMarker : entityManager.getPacifyFiles()) {
+			for (PFile pfile : pMarker.getPFiles()) {
+				File file = pMarker.getAbsoluteFileFor(pfile);
 				defects.addAll(Replacer.checkFileForNotReplacedStuff(file));
 			}
 		}

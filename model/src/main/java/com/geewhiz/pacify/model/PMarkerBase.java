@@ -28,7 +28,7 @@ import org.jvnet.jaxb2_commons.lang.HashCodeStrategy;
 import org.jvnet.jaxb2_commons.lang.ToStringStrategy;
 import org.jvnet.jaxb2_commons.locator.ObjectLocator;
 
-public abstract class PacifyBase {
+public abstract class PMarkerBase {
 
 	private File file;
 
@@ -50,7 +50,7 @@ public abstract class PacifyBase {
 
 	public abstract List<PProperty> getProperties();
 
-	public List<PFile> getPfFileEntities() {
+	public List<PFile> getPFiles() {
 		List<PFile> result = new ArrayList<PFile>();
 		for (PProperty pproperty : getProperties()) {
 			for (PFile pfile : pproperty.getFiles()) {
@@ -74,7 +74,7 @@ public abstract class PacifyBase {
 	}
 
 	public boolean equals(ObjectLocator thisLocator, ObjectLocator thatLocator, Object object, EqualsStrategy strategy) {
-		return file.equals(((Pacify) object).getFile());
+		return file.equals(((PMarker) object).getFile());
 	}
 
 	public int hashCode(ObjectLocator locator, HashCodeStrategy strategy) {

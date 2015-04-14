@@ -20,24 +20,24 @@ package com.geewhiz.pacify.defect;
  */
 
 import com.geewhiz.pacify.model.PProperty;
-import com.geewhiz.pacify.model.Pacify;
+import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.property.PropertyContainer;
 
 public class PropertyNotDefinedDefect implements Defect {
 
-	private Pacify pacify;
+	private PMarker pMarker;
 	private PProperty pproperty;
 	private PropertyContainer propertyContainer;
 
-	public PropertyNotDefinedDefect(Pacify pacify, PProperty pproperty,
+	public PropertyNotDefinedDefect(PMarker pMarker, PProperty pproperty,
 	    PropertyContainer propertyContainer) {
-		this.pacify = pacify;
+		this.pMarker = pMarker;
 		this.pproperty = pproperty;
 		this.propertyContainer = propertyContainer;
 	}
 
 	public String getDefectMessage() {
-		return "Property [" + pproperty.getName() + "] which is defined in [" + pacify.getFile().getPath()
+		return "Property [" + pproperty.getName() + "] which is defined in [" + pMarker.getFile().getPath()
 		        + "] is not set in [" + propertyContainer.getPropertyLoadedFrom() + "].";
 	}
 

@@ -1,7 +1,7 @@
 package com.geewhiz.pacify.defect;
 
 import com.geewhiz.pacify.model.PProperty;
-import com.geewhiz.pacify.model.Pacify;
+import com.geewhiz.pacify.model.PMarker;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -24,11 +24,11 @@ import com.geewhiz.pacify.model.Pacify;
 
 public class PropertyDuplicateDefinedInPacify implements Defect {
 
-	private Pacify pacify;
+	private PMarker pMarker;
 	private PProperty pproperty;
 
-	public PropertyDuplicateDefinedInPacify(Pacify pacify, PProperty pproperty) {
-		this.pacify = pacify;
+	public PropertyDuplicateDefinedInPacify(PMarker pMarker, PProperty pproperty) {
+		this.pMarker = pMarker;
 		this.pproperty = pproperty;
 	}
 

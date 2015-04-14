@@ -25,7 +25,7 @@ import java.util.List;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.PropertyNotDefinedDefect;
 import com.geewhiz.pacify.model.PProperty;
-import com.geewhiz.pacify.model.Pacify;
+import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.property.PropertyContainer;
 
 public class CheckPropertyExists implements PacifyCheck {
@@ -36,7 +36,7 @@ public class CheckPropertyExists implements PacifyCheck {
 		this.propertyContainer = propertyContainer;
 	}
 
-	public List<Defect> checkForErrors(Pacify pfListEntity) {
+	public List<Defect> checkForErrors(PMarker pfListEntity) {
 		List<Defect> defects = new ArrayList<Defect>();
 
 		List<PProperty> pfPropertyEntities = pfListEntity.getProperties();

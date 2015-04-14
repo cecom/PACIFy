@@ -25,18 +25,18 @@ import java.util.List;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.PropertyDuplicateDefinedInPacify;
 import com.geewhiz.pacify.model.PProperty;
-import com.geewhiz.pacify.model.Pacify;
+import com.geewhiz.pacify.model.PMarker;
 
 public class CheckPropertyDuplicateDefinedInPFList implements PacifyCheck {
 
-	public List<Defect> checkForErrors(Pacify pacify) {
+	public List<Defect> checkForErrors(PMarker pMarker) {
 		List<Defect> defects = new ArrayList<Defect>();
 
 		List<String> properties = new ArrayList<String>();
 
-		for (PProperty property : pacify.getProperties()) {
+		for (PProperty property : pMarker.getProperties()) {
 			if (properties.contains(property.getName())) {
-				Defect defect = new PropertyDuplicateDefinedInPacify(pacify, property);
+				Defect defect = new PropertyDuplicateDefinedInPacify(pMarker, property);
 				defects.add(defect);
 				continue;
 			}

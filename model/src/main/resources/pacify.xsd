@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
-    <xs:element name="Pacify" type="Pacify"/>
-    <xs:complexType name="Pacify">
+    <xs:element name="Pacify" type="PMarker"/>
+    <xs:complexType name="PMarker">
         <xs:annotation>
             <xs:documentation>Configuration File for PACIFy</xs:documentation>
         </xs:annotation>

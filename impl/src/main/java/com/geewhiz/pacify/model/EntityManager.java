@@ -39,7 +39,7 @@ import com.geewhiz.pacify.replacer.PropertyPFReplacer;
 public class EntityManager {
 
 	private File startPath;
-	private List<Pacify> pacifyList;
+	private List<PMarker> pacifyList;
 
 	Logger logger = Log.getInstance();
 
@@ -55,7 +55,7 @@ public class EntityManager {
 		PacifyChecker pacifyChecker = new PacifyChecker(propertyContainer);
 
 		List<Defect> defects = new ArrayList<Defect>();
-		for (Pacify pfListEntity : getPacifyFiles()) {
+		for (PMarker pfListEntity : getPacifyFiles()) {
 			defects.addAll(pacifyChecker.check(pfListEntity));
 		}
 
@@ -64,27 +64,27 @@ public class EntityManager {
 
 	public List<Defect> doReplacement(PropertyContainer propertyContainer) {
 		List<Defect> defects = new ArrayList<Defect>();
-		for (Pacify pacify : getPacifyFiles()) {
-			logger.info("====== Replacing stuff which is configured in [" + pacify.getFile().getPath()
+		for (PMarker pMarker : getPacifyFiles()) {
+			logger.info("====== Replacing stuff which is configured in [" + pMarker.getFile().getPath()
 			        + "] ...");
-			PropertyPFReplacer propertyReplacer = new PropertyPFReplacer(propertyContainer, pacify);
+			PropertyPFReplacer propertyReplacer = new PropertyPFReplacer(propertyContainer, pMarker);
 			defects.addAll(propertyReplacer.replace());
 		}
 		return defects;
 	}
 
-	public List<Pacify> getPacifyFiles() {
+	public List<PMarker> getPacifyFiles() {
 		if (pacifyList != null) {
 			return pacifyList;
 		}
 
-		pacifyList = new ArrayList<Pacify>();
+		pacifyList = new ArrayList<PMarker>();
 
 		List<File> pacifyFiles = new PacifyFilesFinder(startPath).getPacifyFiles();
 
 		JAXBContext jaxbContext;
 		try {
-			jaxbContext = JAXBContext.newInstance(Pacify.class);
+			jaxbContext = JAXBContext.newInstance(ObjectFactory.class);
 		} catch (JAXBException e) {
 			throw new RuntimeException("Couldn't create jaxbContext", e);
 		}
@@ -92,9 +92,9 @@ public class EntityManager {
 		for (File file : pacifyFiles) {
 			try {
 				Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-				Pacify pacify = (Pacify) jaxbUnmarshaller.unmarshal(file);
-				pacify.setFile(file);
-				pacifyList.add(pacify);
+				PMarker pMarker = (PMarker) jaxbUnmarshaller.unmarshal(file);
+				pMarker.setFile(file);
+				pacifyList.add(pMarker);
 			} catch (Exception e) {
 				throw new RuntimeException("Couldn't read xml file [" + file.getPath() + "].", e);
 			}

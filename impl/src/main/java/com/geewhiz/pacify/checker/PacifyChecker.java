@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.model.Pacify;
+import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.property.PropertyContainer;
 
 public class PacifyChecker {
@@ -39,7 +39,7 @@ public class PacifyChecker {
         pfListChecks.add(new CheckPropertyExistsInTargetFile());
     }
 
-    public List<Defect> check(Pacify pfListEntity) {
+    public List<Defect> check(PMarker pfListEntity) {
         List<Defect> defects = new ArrayList<Defect>();
         for (Check check : checks) {
             defects.addAll(check.checkForErrors());

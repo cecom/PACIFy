@@ -21,23 +21,23 @@ package com.geewhiz.pacify.defect;
 
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PProperty;
-import com.geewhiz.pacify.model.Pacify;
+import com.geewhiz.pacify.model.PMarker;
 
 public class PropertyDoesNotExistInTargetFile implements Defect {
 
-	private Pacify pacify;
+	private PMarker pMarker;
 	private PProperty pproperty;
 	private PFile pfile;
 
-	public PropertyDoesNotExistInTargetFile(Pacify pacify, PProperty pproperty,
+	public PropertyDoesNotExistInTargetFile(PMarker pMarker, PProperty pproperty,
 	    PFile pfile) {
-		this.pacify = pacify;
+		this.pMarker = pMarker;
 		this.pproperty = pproperty;
 		this.pfile = pfile;
 	}
 
 	public String getDefectMessage() {
 		return "Property [" + pproperty.getName() + "] which is defined in [TODO] couldn't be found in file ["
-		        + pacify.getAbsoluteFileFor(pfile).getPath() + "]";
+		        + pMarker.getAbsoluteFileFor(pfile).getPath() + "]";
 	}
 }

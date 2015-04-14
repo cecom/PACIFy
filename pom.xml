@@ -28,6 +28,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <org.jvnet.jaxb2_commons_jaxb2-basics_version>0.9.3</org.jvnet.jaxb2_commons_jaxb2-basics_version>
+        <org.jvnet.jaxb2_commons_jaxb2-basics-annotate_version>1.0.1</org.jvnet.jaxb2_commons_jaxb2-basics-annotate_version>
     </properties>
 
     <modules>

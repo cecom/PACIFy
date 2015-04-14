@@ -28,23 +28,23 @@ import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.PropertyDoesNotExistInTargetFile;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PProperty;
-import com.geewhiz.pacify.model.Pacify;
+import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.replacer.PropertyFileReplacer;
 import com.geewhiz.pacify.utils.FileUtils;
 
 public class CheckPropertyExistsInTargetFile implements PacifyCheck {
 
-	public List<Defect> checkForErrors(Pacify pacify) {
+	public List<Defect> checkForErrors(PMarker pMarker) {
 		List<Defect> defects = new ArrayList<Defect>();
 
-		for (PProperty pproperty : pacify.getProperties()) {
+		for (PProperty pproperty : pMarker.getProperties()) {
 			for (PFile pfile : pproperty.getFiles()) {
-				java.io.File file = pacify.getAbsoluteFileFor(pfile);
+				java.io.File file = pMarker.getAbsoluteFileFor(pfile);
 				boolean exists = doesPropertyExistInFile(pproperty, file);
 				if (exists) {
 					continue;
 				}
-				Defect defect = new PropertyDoesNotExistInTargetFile(pacify, pproperty, pfile);
+				Defect defect = new PropertyDoesNotExistInTargetFile(pMarker, pproperty, pfile);
 				defects.add(defect);
 			}
 		}

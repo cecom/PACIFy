@@ -26,7 +26,7 @@ import java.util.List;
 import com.geewhiz.pacify.checker.PacifyCheck;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.model.EntityManager;
-import com.geewhiz.pacify.model.Pacify;
+import com.geewhiz.pacify.model.PMarker;
 
 public abstract class BaseCheck {
 
@@ -34,7 +34,7 @@ public abstract class BaseCheck {
 		EntityManager entityManager = new EntityManager(testStartPath);
 
 		List<Defect> defects = new ArrayList<Defect>();
-		for (Pacify pfListEntity : entityManager.getPacifyFiles()) {
+		for (PMarker pfListEntity : entityManager.getPacifyFiles()) {
 			defects.addAll(checker.checkForErrors(pfListEntity));
 		}
 		return defects;

@@ -30,6 +30,7 @@
                         <arg>-Xequals</arg>
                         <arg>-XhashCode</arg>
                         <arg>-XtoString</arg>
+                        <arg>-Xannotate</arg>
                     </args>
                 </configuration>
                 <executions>
@@ -44,6 +45,11 @@
                         <groupId>org.jvnet.jaxb2_commons</groupId>
                         <artifactId>jaxb2-basics</artifactId>
                         <version>${org.jvnet.jaxb2_commons_jaxb2-basics_version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.jvnet.jaxb2_commons</groupId>
+                        <artifactId>jaxb2-basics-annotate</artifactId>
+                        <version>${org.jvnet.jaxb2_commons_jaxb2-basics-annotate_version}</version>
                     </dependency>
                 </dependencies>
             </plugin>

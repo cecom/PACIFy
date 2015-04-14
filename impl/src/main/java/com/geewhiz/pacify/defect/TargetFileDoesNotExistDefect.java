@@ -21,24 +21,24 @@ package com.geewhiz.pacify.defect;
 
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PProperty;
-import com.geewhiz.pacify.model.Pacify;
+import com.geewhiz.pacify.model.PMarker;
 
 public class TargetFileDoesNotExistDefect implements Defect {
 
-	private Pacify pacify;
+	private PMarker pMarker;
 	private PProperty pproperty;
 	private PFile pfile;
 
-	public TargetFileDoesNotExistDefect(Pacify pacify, PProperty pproperty,
+	public TargetFileDoesNotExistDefect(PMarker pMarker, PProperty pproperty,
 	    PFile pfile) {
-		this.pacify = pacify;
+		this.pMarker = pMarker;
 		this.pproperty = pproperty;
 		this.pfile = pfile;
 	}
 
 	public String getDefectMessage() {
-		return "File [" + pacify.getAbsoluteFileFor(pfile).getPath() + "] which is defined in ["
-		        + pacify.getFile().getPath()
+		return "File [" + pMarker.getAbsoluteFileFor(pfile).getPath() + "] which is defined in ["
+		        + pMarker.getFile().getPath()
 		        + "] property [" + pproperty.getName() + "] " + "does not exist.";
 	}
 

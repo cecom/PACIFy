@@ -37,29 +37,29 @@ import com.geewhiz.pacify.common.logger.Log;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PProperty;
-import com.geewhiz.pacify.model.Pacify;
+import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.property.PropertyContainer;
 import com.geewhiz.pacify.utils.Utils;
 
 public class PropertyPFReplacer {
 
 	private PropertyContainer propertyContainer;
-	private Pacify pacify;
+	private PMarker pMarker;
 
 	Logger logger = Log.getInstance();
 
-	public PropertyPFReplacer(PropertyContainer propertyContainer, Pacify pfListEntity) {
+	public PropertyPFReplacer(PropertyContainer propertyContainer, PMarker pfListEntity) {
 		this.propertyContainer = propertyContainer;
-		this.pacify = pfListEntity;
+		this.pMarker = pfListEntity;
 	}
 
 	public List<Defect> replace() {
 		List<Defect> defects = new ArrayList<Defect>();
-		for (PFile pfile : pacify.getPfFileEntities()) {
+		for (PFile pfile : pMarker.getPFiles()) {
 
 			FilterSetCollection filterSetCollection = getFilterSetCollection(pfile);
 
-			java.io.File file = pacify.getAbsoluteFileFor(pfile);
+			java.io.File file = pMarker.getAbsoluteFileFor(pfile);
 			java.io.File tmpFile = new java.io.File(file.getParentFile(), file.getName() + "_tmp");
 
 			try {
@@ -96,7 +96,7 @@ public class PropertyPFReplacer {
 		filterSet.setBeginToken(PropertyFileReplacer.BEGIN_TOKEN);
 		filterSet.setEndToken(PropertyFileReplacer.END_TOKEN);
 
-		List<PProperty> pproperties = pacify.getPfPropertyEntitiesForPFFileEntity(pfile);
+		List<PProperty> pproperties = pMarker.getPfPropertyEntitiesForPFFileEntity(pfile);
 
 		for (PProperty pproperty : pproperties) {
 			String propertyName = pproperty.getName();
@@ -142,7 +142,7 @@ public class PropertyPFReplacer {
 			if (parentPropertyResolvePath.contains(propertyId)) {
 				throw new RuntimeException("You have a cycle reference in property [" + parentPropertyId
 				        + "] which is used in " +
-				        "pflist file [" + pacify.getFile().getAbsolutePath() + "]. Property values loaded from ["
+				        "pflist file [" + pMarker.getFile().getAbsolutePath() + "]. Property values loaded from ["
 				        + propertyContainer.getPropertyLoadedFrom() + "]");
 			}
 

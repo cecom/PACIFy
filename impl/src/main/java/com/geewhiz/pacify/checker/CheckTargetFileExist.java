@@ -26,11 +26,11 @@ import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.TargetFileDoesNotExistDefect;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PProperty;
-import com.geewhiz.pacify.model.Pacify;
+import com.geewhiz.pacify.model.PMarker;
 
 public class CheckTargetFileExist implements PacifyCheck {
 
-	public List<Defect> checkForErrors(Pacify pfListEntity) {
+	public List<Defect> checkForErrors(PMarker pfListEntity) {
 		List<Defect> defects = new ArrayList<Defect>();
 
 		for (PProperty pproperty : pfListEntity.getProperties()) {
