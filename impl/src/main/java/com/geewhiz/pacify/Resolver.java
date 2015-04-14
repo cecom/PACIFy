@@ -36,7 +36,6 @@ import org.slf4j.Logger;
 import com.geewhiz.pacify.common.logger.Log;
 import com.geewhiz.pacify.property.FilePropertyContainer;
 import com.geewhiz.pacify.property.PropertyContainer;
-import com.geewhiz.pacify.replacer.OutputType;
 import com.geewhiz.pacify.replacer.PropertyFileReplacer;
 import com.geewhiz.pacify.utils.Utils;
 
@@ -44,6 +43,10 @@ public class Resolver {
 
 	public enum Parameter {
 		PropertyFileURL, TargetFile, OutputType
+	}
+
+	public enum OutputType {
+		Stdout, File
 	}
 
 	private Logger logger = Log.getInstance();

@@ -26,8 +26,6 @@ import java.util.EnumMap;
 
 import org.testng.annotations.Test;
 
-import com.geewhiz.pacify.replacer.OutputType;
-
 public class TestCreateResultPropertyFile {
 
 	@Test
@@ -42,7 +40,7 @@ public class TestCreateResultPropertyFile {
 		EnumMap<Resolver.Parameter, Object> commandlineProperties = new EnumMap<Resolver.Parameter, Object>(
 		        Resolver.Parameter.class);
 		commandlineProperties.put(Resolver.Parameter.PropertyFileURL, TestUtil.getURLForFile(myTestProperty));
-		commandlineProperties.put(Resolver.Parameter.OutputType, OutputType.File);
+		commandlineProperties.put(Resolver.Parameter.OutputType, Resolver.OutputType.File);
 		commandlineProperties.put(Resolver.Parameter.TargetFile, targetFile);
 
 		Resolver createResultPropertyFile = new Resolver(commandlineProperties);

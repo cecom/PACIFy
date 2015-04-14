@@ -25,7 +25,6 @@ import java.util.EnumMap;
 import org.apache.maven.plugin.MojoExecutionException;
 
 import com.geewhiz.pacify.Resolver;
-import com.geewhiz.pacify.replacer.OutputType;
 
 /**
  * @goal generateFinalPropertyFile
@@ -69,11 +68,11 @@ public class GenerateFinalPropertyFile extends BaseMojo {
 				}
 				File targetFile = new File(outputDirectory, propertyFile);
 				getLog().info("Creating final property file [" + targetFile.getPath() + "] ...");
-				commandlineProperties.put(Resolver.Parameter.OutputType, OutputType.File);
+				commandlineProperties.put(Resolver.Parameter.OutputType, Resolver.OutputType.File);
 				commandlineProperties.put(Resolver.Parameter.TargetFile, targetFile);
 			} else {
 				getLog().info("Creating final property file [" + propertyFile + "] ...");
-				commandlineProperties.put(Resolver.Parameter.OutputType, OutputType.Stdout);
+				commandlineProperties.put(Resolver.Parameter.OutputType, Resolver.OutputType.Stdout);
 			}
 
 			Resolver createResultPropertyFile = new Resolver(commandlineProperties);

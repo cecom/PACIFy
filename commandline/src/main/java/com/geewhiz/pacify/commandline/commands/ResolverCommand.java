@@ -7,7 +7,6 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import com.geewhiz.pacify.Resolver;
 import com.geewhiz.pacify.common.file.FileUtils;
-import com.geewhiz.pacify.replacer.OutputType;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -49,10 +48,10 @@ public class ResolverCommand {
 		EnumMap<Resolver.Parameter, Object> result = new EnumMap<Resolver.Parameter, Object>(Resolver.Parameter.class);
 		result.put(Resolver.Parameter.PropertyFileURL, FileUtils.getFileUrl(getPropertyFile()));
 		if (getTargetFile() != null) {
-			result.put(Resolver.Parameter.OutputType, OutputType.File);
+			result.put(Resolver.Parameter.OutputType, Resolver.OutputType.File);
 			result.put(Resolver.Parameter.TargetFile, getTargetFile());
 		} else {
-			result.put(Resolver.Parameter.OutputType, OutputType.Stdout);
+			result.put(Resolver.Parameter.OutputType, Resolver.OutputType.Stdout);
 		}
 		return result;
 	}
