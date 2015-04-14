@@ -30,9 +30,8 @@ import javax.xml.bind.Unmarshaller;
 import org.slf4j.Logger;
 
 import com.geewhiz.pacify.checker.PacifyChecker;
+import com.geewhiz.pacify.common.logger.Log;
 import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.logger.Log;
-import com.geewhiz.pacify.model.Pacify;
 import com.geewhiz.pacify.model.utils.PacifyFilesFinder;
 import com.geewhiz.pacify.property.PropertyContainer;
 import com.geewhiz.pacify.replacer.PropertyPFReplacer;

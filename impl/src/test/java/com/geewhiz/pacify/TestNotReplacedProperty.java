@@ -29,7 +29,6 @@ import java.util.List;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import com.geewhiz.pacify.configuration.CommandLineParameter;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.model.EntityManager;
 import com.geewhiz.pacify.property.FilePropertyContainer;
@@ -45,11 +44,10 @@ public class TestNotReplacedProperty extends BaseCheck {
 
 		assertTrue("StartPath [" + startPath.getPath() + "] doesn't exist!", startPath.exists());
 
-		EnumMap<CommandLineParameter, Object> commandlineProperties = new EnumMap<CommandLineParameter, Object>(
-		        CommandLineParameter.class);
-		commandlineProperties.put(CommandLineParameter.StartPath, startPath);
-		commandlineProperties.put(CommandLineParameter.PropertyFileURL, Util.getURLForFile(myTestProperty));
-		commandlineProperties.put(CommandLineParameter.LogLevel, "debug");
+		EnumMap<Replacer.Parameter, Object> commandlineProperties = new EnumMap<Replacer.Parameter, Object>(
+		        Replacer.Parameter.class);
+		commandlineProperties.put(Replacer.Parameter.PackagePath, startPath);
+		commandlineProperties.put(Replacer.Parameter.PropertyFileURL, TestUtil.getURLForFile(myTestProperty));
 
 		EntityManager pfEntityManager = new EntityManager(startPath);
 		List<Defect> defects = pfEntityManager.doReplacement(new FilePropertyContainer(myTestPropertyURL));

@@ -26,8 +26,7 @@ import java.util.EnumMap;
 
 import org.testng.annotations.Test;
 
-import com.geewhiz.pacify.commandline.OutputType;
-import com.geewhiz.pacify.configuration.CommandLineParameter;
+import com.geewhiz.pacify.replacer.OutputType;
 
 public class TestCreateResultPropertyFile {
 
@@ -40,16 +39,15 @@ public class TestCreateResultPropertyFile {
 
 		assertTrue("StartPath [" + startPath.getPath() + "] doesn't exist!", startPath.exists());
 
-		EnumMap<CommandLineParameter, Object> commandlineProperties = new EnumMap<CommandLineParameter, Object>(
-		        CommandLineParameter.class);
-		commandlineProperties.put(CommandLineParameter.PropertyFileURL, Util.getURLForFile(myTestProperty));
-		commandlineProperties.put(CommandLineParameter.LogLevel, "debug");
-		commandlineProperties.put(CommandLineParameter.OutputType, OutputType.File);
-		commandlineProperties.put(CommandLineParameter.TargetFile, targetFile);
+		EnumMap<Resolver.Parameter, Object> commandlineProperties = new EnumMap<Resolver.Parameter, Object>(
+		        Resolver.Parameter.class);
+		commandlineProperties.put(Resolver.Parameter.PropertyFileURL, TestUtil.getURLForFile(myTestProperty));
+		commandlineProperties.put(Resolver.Parameter.OutputType, OutputType.File);
+		commandlineProperties.put(Resolver.Parameter.TargetFile, targetFile);
 
-		CreateResultPropertyFile createResultPropertyFile = new CreateResultPropertyFile(commandlineProperties);
+		Resolver createResultPropertyFile = new Resolver(commandlineProperties);
 		createResultPropertyFile.create();
 
-		Util.checkIfResultIsAsExpected(startPath);
+		TestUtil.checkIfResultIsAsExpected(startPath);
 	}
 }

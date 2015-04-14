@@ -32,8 +32,9 @@ import org.apache.tools.ant.types.FilterSetCollection;
 import org.apache.tools.ant.util.FileUtils;
 import org.slf4j.Logger;
 
+import com.geewhiz.pacify.Replacer;
+import com.geewhiz.pacify.common.logger.Log;
 import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.logger.Log;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PProperty;
 import com.geewhiz.pacify.model.Pacify;
@@ -72,7 +73,7 @@ public class PropertyPFReplacer {
 					throw new RuntimeException("Couldn't rename filtered file from [" + tmpFile.getPath() + "] to ["
 					        + file.getPath() + "]... Aborting!");
 				}
-				defects.addAll(Utils.checkFileForNotReplacedStuff(file));
+				defects.addAll(Replacer.checkFileForNotReplacedStuff(file));
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}

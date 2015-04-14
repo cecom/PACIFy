@@ -37,7 +37,7 @@ public class TestCheckPropertyDuplicateDefinedInPropertyFile {
         File testStartPath = new File("target/test-classes/checkPropertyDuplicateDefinedInPropertyFile/wrong");
         File file = new File(testStartPath, "myProperties.properties");
 
-        URL fileUrl = Util.getURLForFile(file);
+        URL fileUrl = TestUtil.getURLForFile(file);
         FilePropertyContainer filePropertyContainer = new FilePropertyContainer(fileUrl);
 
         CheckPropertyDuplicateInPropertyFile checker = new CheckPropertyDuplicateInPropertyFile(filePropertyContainer);
@@ -53,7 +53,7 @@ public class TestCheckPropertyDuplicateDefinedInPropertyFile {
         File testStartPath = new File("target/test-classes/checkPropertyDuplicateDefinedInPropertyFile/correct");
         File file = new File(testStartPath, "myProperties.properties");
 
-        URL fileUrl = Util.getURLForFile(file);
+        URL fileUrl = TestUtil.getURLForFile(file);
         FilePropertyContainer filePropertyContainer = new FilePropertyContainer(fileUrl);
 
         CheckPropertyDuplicateInPropertyFile checker = new CheckPropertyDuplicateInPropertyFile(filePropertyContainer);

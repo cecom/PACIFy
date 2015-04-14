@@ -37,7 +37,7 @@ public class TestCheckPropertyExistsInPropertyFile extends BaseCheck {
         File testStartPath = new File("target/test-classes/checkPropertyExistsTest/wrong");
         File file = new File(testStartPath, "checkForMissingProperty.properties");
 
-        URL fileUrl = Util.getURLForFile(file);
+        URL fileUrl = TestUtil.getURLForFile(file);
         FilePropertyContainer filePropertyContainer = new FilePropertyContainer(fileUrl);
 
         List<Defect> defects = getDefects(new CheckPropertyExists(filePropertyContainer), testStartPath);
@@ -50,7 +50,7 @@ public class TestCheckPropertyExistsInPropertyFile extends BaseCheck {
         File testStartPath = new File("target/test-classes/checkPropertyExistsTest/correct");
         File file = new File(testStartPath, "checkForAllCorrect.properties");
 
-        URL fileUrl = Util.getURLForFile(file);
+        URL fileUrl = TestUtil.getURLForFile(file);
         FilePropertyContainer filePropertyContainer = new FilePropertyContainer(fileUrl);
 
         List<Defect> defects = getDefects(new CheckPropertyExists(filePropertyContainer), testStartPath);

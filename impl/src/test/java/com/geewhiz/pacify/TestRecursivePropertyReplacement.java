@@ -26,8 +26,6 @@ import java.util.EnumMap;
 
 import org.testng.annotations.Test;
 
-import com.geewhiz.pacify.configuration.CommandLineParameter;
-
 public class TestRecursivePropertyReplacement {
 
 	@Test
@@ -37,16 +35,15 @@ public class TestRecursivePropertyReplacement {
 
 		assertTrue("StartPath [" + startPath.getPath() + "] doesn't exist!", startPath.exists());
 
-		EnumMap<CommandLineParameter, Object> commandlineProperties = new EnumMap<CommandLineParameter, Object>(
-		        CommandLineParameter.class);
-		commandlineProperties.put(CommandLineParameter.StartPath, startPath);
-		commandlineProperties.put(CommandLineParameter.PropertyFileURL, Util.getURLForFile(myTestProperty));
-		commandlineProperties.put(CommandLineParameter.LogLevel, "debug");
+		EnumMap<Replacer.Parameter, Object> commandlineProperties = new EnumMap<Replacer.Parameter, Object>(
+		        Replacer.Parameter.class);
+		commandlineProperties.put(Replacer.Parameter.PackagePath, startPath);
+		commandlineProperties.put(Replacer.Parameter.PropertyFileURL, TestUtil.getURLForFile(myTestProperty));
 
-		Pacifier pfListPropertyReplacer = new Pacifier(commandlineProperties);
+		Replacer pfListPropertyReplacer = new Replacer(commandlineProperties);
 		pfListPropertyReplacer.replace();
 
-		Util.checkIfResultIsAsExpected(startPath);
+		TestUtil.checkIfResultIsAsExpected(startPath);
 	}
 
 }
