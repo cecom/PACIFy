@@ -34,25 +34,6 @@ public class TestXml {
 	public void testAll() {
 		File source = new File("target/test-classes/testXml");
 
-		/**
-		 * JAXBContext jaxbContext;
-		 * 
-		 * try {
-		 * jaxbContext = JAXBContext.newInstance(Pacify.class);
-		 * } catch (JAXBException e) {
-		 * throw new RuntimeException("Couldn't create jaxbContext", e);
-		 * }
-		 * 
-		 * Pacify pfListEntity = null;
-		 * try {
-		 * Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-		 * pfListEntity = (Pacify) jaxbUnmarshaller.unmarshal(source);
-		 * pfListEntity.setFile(source);
-		 * } catch (Exception e) {
-		 * throw new RuntimeException("Couldnt read xml file.", e);
-		 * }
-		 */
-
 		EntityManager pfEntityManager = new EntityManager(source);
 
 		PMarker pfListEntity = pfEntityManager.getPMarkers().get(0);
@@ -62,12 +43,9 @@ public class TestXml {
 		assertEquals("foobar1", pfListEntity.getProperties().get(0).getName());
 		assertEquals("foobar2", pfListEntity.getProperties().get(1).getName());
 
-		assertEquals("someConf.conf", pfListEntity.getProperties().get(0).getFiles().get(0)
-		        .getPath());
-		assertEquals("subfolder/someOtherConf.conf", pfListEntity.getProperties().get(0).getFiles()
-		        .get(1).getPath());
-		assertEquals("someParentConf.conf", pfListEntity.getProperties().get(1).getFiles().get(0)
-		        .getPath());
+		assertEquals("someConf.conf", pfListEntity.getProperties().get(0).getFiles().get(0).getPath());
+		assertEquals("subfolder/someOtherConf.conf", pfListEntity.getProperties().get(0).getFiles().get(1).getPath());
+		assertEquals("someParentConf.conf", pfListEntity.getProperties().get(1).getFiles().get(0).getPath());
 
 	}
 }

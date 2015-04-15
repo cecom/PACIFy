@@ -1,4 +1,4 @@
-package com.geewhiz.pacify;
+package com.geewhiz.pacify.commandline;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,32 +19,25 @@ package com.geewhiz.pacify;
  * under the License.
  */
 
-import static org.testng.AssertJUnit.assertTrue;
-
 import java.io.File;
-import java.util.EnumMap;
 
+import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import com.geewhiz.pacify.TestUtil;
 
 public class TestCreateResultPropertyFile {
 
 	@Test
-	public void checkForNotCorrect() {
+	public void TestAll() {
 		File startPath = new File("target/test-classes/TestCreateResultPropertyFile");
 
-		File myTestProperty = new File(startPath, "subfolder/ChildOfChilds.properties");
-		File targetFile = new File(startPath, "result.properties");
+		int result = PacifyViaCommandline.mainInternal(new String[] {
+		        "resolve"
+		        , "--propertyFile=" + startPath + "/subfolder/ChildOfChilds.properties"
+		        , "--targetFile=" + startPath + "/result.properties" });
 
-		assertTrue("StartPath [" + startPath.getPath() + "] doesn't exist!", startPath.exists());
-
-		EnumMap<Resolver.Parameter, Object> commandlineProperties = new EnumMap<Resolver.Parameter, Object>(
-		        Resolver.Parameter.class);
-		commandlineProperties.put(Resolver.Parameter.PropertyFileURL, TestUtil.getURLForFile(myTestProperty));
-		commandlineProperties.put(Resolver.Parameter.OutputType, Resolver.OutputType.File);
-		commandlineProperties.put(Resolver.Parameter.TargetFile, targetFile);
-
-		Resolver createResultPropertyFile = new Resolver(commandlineProperties);
-		createResultPropertyFile.create();
+		Assert.assertEquals(result, 0, "Resolver returned with errors.");
 
 		TestUtil.checkIfResultIsAsExpected(startPath);
 	}
