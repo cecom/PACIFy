@@ -33,7 +33,7 @@ public class TestCheckPropertyDuplicateDefinedInPFList extends BaseCheck {
     public void checkForNotCorrect() {
         File testStartPath = new File("target/test-classes/checkPropertyDuplicateDefinedInPfListCheck/wrong");
 
-        List<Defect> defects = getDefects(new com.geewhiz.pacify.checker.CheckPropertyDuplicateDefinedInPFList(),
+        List<Defect> defects = getDefects(new com.geewhiz.pacify.checker.checks.CheckPropertyDuplicateDefinedInPFList(),
                 testStartPath);
 
         Assert.assertEquals(1, defects.size());
@@ -43,7 +43,7 @@ public class TestCheckPropertyDuplicateDefinedInPFList extends BaseCheck {
     public void checkForCorrect() {
         File testStartPath = new File("target/test-classes/checkPropertyDuplicateDefinedInPfListCheck/correct");
 
-        List<Defect> defects = getDefects(new com.geewhiz.pacify.checker.CheckPropertyDuplicateDefinedInPFList(),
+        List<Defect> defects = getDefects(new com.geewhiz.pacify.checker.checks.CheckPropertyDuplicateDefinedInPFList(),
                 testStartPath);
 
         Assert.assertEquals(0, defects.size());

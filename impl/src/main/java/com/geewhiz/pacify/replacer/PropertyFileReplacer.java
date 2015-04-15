@@ -31,7 +31,7 @@ import org.apache.tools.ant.types.FilterSetCollection;
 import org.apache.tools.ant.util.FileUtils;
 import org.slf4j.Logger;
 
-import com.geewhiz.pacify.checker.CheckForNotReplacedTokens;
+import com.geewhiz.pacify.checker.checks.CheckForNotReplacedTokens;
 import com.geewhiz.pacify.common.logger.Log;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.property.PropertyContainer;

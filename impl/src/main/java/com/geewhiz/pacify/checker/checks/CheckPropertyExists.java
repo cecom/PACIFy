@@ -1,4 +1,4 @@
-package com.geewhiz.pacify.checker;
+package com.geewhiz.pacify.checker.checks;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -22,6 +22,7 @@ package com.geewhiz.pacify.checker;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.geewhiz.pacify.checker.PMarkerCheck;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.PropertyNotDefinedDefect;
 import com.geewhiz.pacify.model.PProperty;

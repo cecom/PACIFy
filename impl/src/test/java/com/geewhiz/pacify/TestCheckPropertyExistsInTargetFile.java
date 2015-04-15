@@ -32,7 +32,7 @@ public class TestCheckPropertyExistsInTargetFile extends BaseCheck {
     public void checkForNotCorrect() {
         File testStartPath = new File("target/test-classes/checkPropertyExistsInTargetFileTest/wrong");
 
-        List<Defect> defects = getDefects(new com.geewhiz.pacify.checker.CheckPropertyExistsInTargetFile(),
+        List<Defect> defects = getDefects(new com.geewhiz.pacify.checker.checks.CheckPropertyExistsInTargetFile(),
                 testStartPath);
 
         Assert.assertEquals(2, defects.size());
@@ -42,7 +42,7 @@ public class TestCheckPropertyExistsInTargetFile extends BaseCheck {
     public void checkForCorrect() {
         File testStartPath = new File("target/test-classes/checkPropertyExistsInTargetFileTest/correct");
 
-        List<Defect> defects = getDefects(new com.geewhiz.pacify.checker.CheckPropertyExistsInTargetFile(),
+        List<Defect> defects = getDefects(new com.geewhiz.pacify.checker.checks.CheckPropertyExistsInTargetFile(),
                 testStartPath);
 
         Assert.assertEquals(0, defects.size());

@@ -1,4 +1,4 @@
-package com.geewhiz.pacify.checker;
+package com.geewhiz.pacify.checker.checks;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.geewhiz.pacify.checker.PMarkerCheck;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.PropertyDoesNotExistInTargetFileDefect;
 import com.geewhiz.pacify.model.PFile;

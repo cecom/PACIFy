@@ -22,31 +22,36 @@ package com.geewhiz.pacify.checker;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.geewhiz.pacify.checker.checks.CheckPropertyDuplicateDefinedInPFList;
+import com.geewhiz.pacify.checker.checks.CheckPropertyDuplicateInPropertyFile;
+import com.geewhiz.pacify.checker.checks.CheckPropertyExists;
+import com.geewhiz.pacify.checker.checks.CheckPropertyExistsInTargetFile;
+import com.geewhiz.pacify.checker.checks.CheckTargetFileExist;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.property.PropertyContainer;
 
 public class PacifyChecker {
 
-    List<Check> checks = new ArrayList<Check>();
-    List<PMarkerCheck> pfListChecks = new ArrayList<PMarkerCheck>();
+	List<Check> checks = new ArrayList<Check>();
+	List<PMarkerCheck> pMarkerChecks = new ArrayList<PMarkerCheck>();
 
-    public PacifyChecker(PropertyContainer propertyContainer) {
-        checks.add(new CheckPropertyDuplicateInPropertyFile(propertyContainer));
-        pfListChecks.add(new CheckTargetFileExist());
-        pfListChecks.add(new CheckPropertyDuplicateDefinedInPFList());
-        pfListChecks.add(new CheckPropertyExists(propertyContainer));
-        pfListChecks.add(new CheckPropertyExistsInTargetFile());
-    }
+	public PacifyChecker(PropertyContainer propertyContainer) {
+		checks.add(new CheckPropertyDuplicateInPropertyFile(propertyContainer));
+		pMarkerChecks.add(new CheckTargetFileExist());
+		pMarkerChecks.add(new CheckPropertyDuplicateDefinedInPFList());
+		pMarkerChecks.add(new CheckPropertyExists(propertyContainer));
+		pMarkerChecks.add(new CheckPropertyExistsInTargetFile());
+	}
 
-    public List<Defect> check(PMarker pfListEntity) {
-        List<Defect> defects = new ArrayList<Defect>();
-        for (Check check : checks) {
-            defects.addAll(check.checkForErrors());
-        }
-        for (PMarkerCheck pfListCheck : pfListChecks) {
-            defects.addAll(pfListCheck.checkForErrors(pfListEntity));
-        }
-        return defects;
-    }
+	public List<Defect> check(PMarker pMarker) {
+		List<Defect> defects = new ArrayList<Defect>();
+		for (Check check : checks) {
+			defects.addAll(check.checkForErrors());
+		}
+		for (PMarkerCheck pfListCheck : pMarkerChecks) {
+			defects.addAll(pfListCheck.checkForErrors(pMarker));
+		}
+		return defects;
+	}
 }

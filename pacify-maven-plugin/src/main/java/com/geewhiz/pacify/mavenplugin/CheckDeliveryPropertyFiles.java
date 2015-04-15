@@ -25,8 +25,8 @@ import java.util.List;
 
 import org.apache.maven.plugin.MojoExecutionException;
 
-import com.geewhiz.pacify.checker.CheckPropertyDuplicateInPropertyFile;
-import com.geewhiz.pacify.checker.CheckPropertyExists;
+import com.geewhiz.pacify.checker.checks.CheckPropertyDuplicateInPropertyFile;
+import com.geewhiz.pacify.checker.checks.CheckPropertyExists;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.model.EntityManager;
 import com.geewhiz.pacify.model.PMarker;

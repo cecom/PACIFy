@@ -27,7 +27,7 @@ import java.util.List;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import com.geewhiz.pacify.checker.CheckPropertyDuplicateInPropertyFile;
+import com.geewhiz.pacify.checker.checks.CheckPropertyDuplicateInPropertyFile;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.property.FilePropertyContainer;
 
