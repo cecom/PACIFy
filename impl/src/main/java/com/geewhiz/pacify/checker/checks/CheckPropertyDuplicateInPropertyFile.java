@@ -24,21 +24,21 @@ import java.util.List;
 
 import com.geewhiz.pacify.checker.Check;
 import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.property.PropertyContainer;
+import com.geewhiz.pacify.property.PropertyResolveManager;
 
 public class CheckPropertyDuplicateInPropertyFile implements Check {
 
-    PropertyContainer propertyContainer;
+	PropertyResolveManager propertyResolveManager;
 
-    public CheckPropertyDuplicateInPropertyFile(PropertyContainer propertyContainer) {
-        this.propertyContainer = propertyContainer;
-    }
+	public CheckPropertyDuplicateInPropertyFile(PropertyResolveManager propertyResolveManager) {
+		this.propertyResolveManager = propertyResolveManager;
+	}
 
-    public List<Defect> checkForErrors() {
-        List<Defect> defects = new ArrayList<Defect>();
+	public List<Defect> checkForErrors() {
+		List<Defect> defects = new ArrayList<Defect>();
 
-        defects.addAll(propertyContainer.checkForDuplicateEntry());
+		defects.addAll(propertyResolveManager.checkForDuplicateEntry());
 
-        return defects;
-    }
+		return defects;
+	}
 }

@@ -6,7 +6,6 @@ import java.util.EnumMap;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import com.geewhiz.pacify.Resolver;
-import com.geewhiz.pacify.common.file.FileUtils;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -28,31 +27,23 @@ import com.geewhiz.pacify.common.file.FileUtils;
  */
 
 @Parameters(separators = "=", commandDescription = "Used to resolve the property file with its dependencies")
-public class ResolverCommand {
+public class ResolverCommand extends BasePropertyResolverCommand {
 
-	@Parameter(names = { "-pf", "--propertyFile" }, description = "The property file where we get the property values from.", required = true)
-	private String propertyFile;
-
-	@Parameter(names = { "-tf", "--targetFile" }, description = "Where to write the result to. If not given, it will be printed to stdout", required = false)
+	@Parameter(names = { "-d", "--destinationFile" }, description = "Where to write the result to. If not given, it will be printed to stdout", required = false)
 	private File targetFile;
 
-	public String getPropertyFile() {
-		return propertyFile;
-	}
+	@Parameter(names = { "-e", "--targetEncoding" }, description = "Which encoding do you want in the created file", required = false)
+	private String targetEncoding = "utf-8";
 
-	public File getTargetFile() {
-		return targetFile;
-	}
-
-	public EnumMap<Resolver.Parameter, Object> getPropertyMap() {
+	public EnumMap<Resolver.Parameter, Object> getCommandlineParameters() {
 		EnumMap<Resolver.Parameter, Object> result = new EnumMap<Resolver.Parameter, Object>(Resolver.Parameter.class);
-		result.put(Resolver.Parameter.PropertyFileURL, FileUtils.getFileUrl(getPropertyFile()));
-		if (getTargetFile() != null) {
+		if (targetFile != null) {
 			result.put(Resolver.Parameter.OutputType, Resolver.OutputType.File);
-			result.put(Resolver.Parameter.TargetFile, getTargetFile());
+			result.put(Resolver.Parameter.TargetFile, targetFile);
 		} else {
 			result.put(Resolver.Parameter.OutputType, Resolver.OutputType.Stdout);
 		}
+		result.put(Resolver.Parameter.OutputEncodingType, targetEncoding);
 		return result;
 	}
 }

@@ -29,18 +29,18 @@ import com.geewhiz.pacify.checker.checks.CheckPropertyExistsInTargetFile;
 import com.geewhiz.pacify.checker.checks.CheckTargetFileExist;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.model.PMarker;
-import com.geewhiz.pacify.property.PropertyContainer;
+import com.geewhiz.pacify.property.PropertyResolveManager;
 
 public class PacifyChecker {
 
 	List<Check> checks = new ArrayList<Check>();
 	List<PMarkerCheck> pMarkerChecks = new ArrayList<PMarkerCheck>();
 
-	public PacifyChecker(PropertyContainer propertyContainer) {
-		checks.add(new CheckPropertyDuplicateInPropertyFile(propertyContainer));
+	public PacifyChecker(PropertyResolveManager propertyResolveManager) {
+		checks.add(new CheckPropertyDuplicateInPropertyFile(propertyResolveManager));
 		pMarkerChecks.add(new CheckTargetFileExist());
 		pMarkerChecks.add(new CheckPropertyDuplicateDefinedInPFList());
-		pMarkerChecks.add(new CheckPropertyExists(propertyContainer));
+		pMarkerChecks.add(new CheckPropertyExists(propertyResolveManager));
 		pMarkerChecks.add(new CheckPropertyExistsInTargetFile());
 	}
 

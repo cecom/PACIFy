@@ -28,8 +28,8 @@ import com.geewhiz.pacify.checker.PMarkerCheck;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.PropertyDoesNotExistInTargetFileDefect;
 import com.geewhiz.pacify.model.PFile;
-import com.geewhiz.pacify.model.PProperty;
 import com.geewhiz.pacify.model.PMarker;
+import com.geewhiz.pacify.model.PProperty;
 import com.geewhiz.pacify.replacer.PropertyFileReplacer;
 import com.geewhiz.pacify.utils.FileUtils;
 

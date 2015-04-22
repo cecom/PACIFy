@@ -25,16 +25,20 @@ import java.io.File;
 import java.net.URL;
 import java.util.EnumMap;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.model.EntityManager;
-import com.geewhiz.pacify.property.FilePropertyContainer;
+import com.geewhiz.pacify.property.PropertyResolveManager;
+import com.geewhiz.pacify.property.resolver.fileresolver.FilePropertyResolver;
+import com.geewhiz.pacify.resolver.PropertyResolver;
 import com.geewhiz.pacify.utils.FileUtils;
 
-public class TestNotReplacedProperty extends BaseCheck {
+public class TestNotReplacedProperty extends TestBase {
 
 	@Test
 	public void checkForNotCorrect() {
@@ -47,10 +51,16 @@ public class TestNotReplacedProperty extends BaseCheck {
 		EnumMap<Replacer.Parameter, Object> commandlineProperties = new EnumMap<Replacer.Parameter, Object>(
 		        Replacer.Parameter.class);
 		commandlineProperties.put(Replacer.Parameter.PackagePath, startPath);
-		commandlineProperties.put(Replacer.Parameter.PropertyFileURL, TestUtil.getURLForFile(myTestProperty));
+		// commandlineProperties.put(Replacer.Parameter.PropertyFileURL, TestUtil.getURLForFile(myTestProperty));
 
-		EntityManager pfEntityManager = new EntityManager(startPath);
-		List<Defect> defects = pfEntityManager.doReplacement(new FilePropertyContainer(myTestPropertyURL));
+		Set<PropertyResolver> resolverList = new TreeSet<PropertyResolver>();
+		FilePropertyResolver filePropertyResolver = new FilePropertyResolver(myTestPropertyURL);
+		resolverList.add(filePropertyResolver);
+
+		PropertyResolveManager propertyResolveManager = new PropertyResolveManager(resolverList);
+
+		EntityManager entityManager = new EntityManager(startPath);
+		List<Defect> defects = entityManager.doReplacement(propertyResolveManager);
 
 		Assert.assertEquals(defects.size(), 4);
 	}

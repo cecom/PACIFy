@@ -27,43 +27,47 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.net.URL;
 import java.util.EnumMap;
 import java.util.Enumeration;
 
 import org.slf4j.Logger;
 
 import com.geewhiz.pacify.common.logger.Log;
-import com.geewhiz.pacify.property.FilePropertyContainer;
-import com.geewhiz.pacify.property.PropertyContainer;
+import com.geewhiz.pacify.property.PropertyResolveManager;
 import com.geewhiz.pacify.replacer.PropertyFileReplacer;
 import com.geewhiz.pacify.utils.Utils;
+import com.google.inject.Inject;
 
 public class Resolver {
 
 	public enum Parameter {
-		PropertyFileURL, TargetFile, OutputType
+		PropertyFileURL, TargetFile, OutputType, OutputEncodingType
 	}
 
 	public enum OutputType {
 		Stdout, File
 	}
 
+	private PropertyResolveManager propertyResolveManager;
 	private Logger logger = Log.getInstance();
-	private EnumMap<Parameter, Object> propertyMap;
+	private EnumMap<Parameter, Object> commandLineParamerters;
 
-	public Resolver(EnumMap<Parameter, Object> propertyMap) {
-		this.propertyMap = propertyMap;
+	@Inject
+	public Resolver(PropertyResolveManager propertyResolveManager) {
+		this.propertyResolveManager = propertyResolveManager;
+	}
 
-		logger.info("== Executing CreateResultPropertyFile [Version=" + Utils.getJarVersion() + "]");
-		logger.info("     [PropertyFileURL=" + getPropertyFileURL().getPath() + "]");
-		if (getOutputType() == OutputType.File) {
-			logger.info("     [TargetFile=" + getTargetFile().getPath() + "]");
-		}
+	public void setCommandLineParameters(EnumMap<Parameter, Object> commandLineParamerters) {
+		this.commandLineParamerters = commandLineParamerters;
 	}
 
 	public void create() {
-		PropertyContainer propertyContainer = new FilePropertyContainer(getPropertyFileURL());
+		logger.info("== Executing CreateResultPropertyFile [Version=" + Utils.getJarVersion() + "]");
+		logger.info("     [PropertyResolver=" + propertyResolveManager.toString() + "]");
+
+		if (getOutputType() == OutputType.File) {
+			logger.info("     [TargetFile=" + getTargetFile().getPath() + "]");
+		}
 
 		File tmpFile = createTempFile();
 
@@ -71,10 +75,10 @@ public class Resolver {
 		PrintWriter out = null;
 		try {
 			out = new PrintWriter(
-			        new OutputStreamWriter(new FileOutputStream(tmpFile), propertyContainer.getEncoding()), false);
-			for (Enumeration e = propertyContainer.getProperties().propertyNames(); e.hasMoreElements();) {
+			        new OutputStreamWriter(new FileOutputStream(tmpFile), getOutputEncodingType()), false);
+			for (Enumeration e = propertyResolveManager.getProperties().propertyNames(); e.hasMoreElements();) {
 				String propertyId = (String) e.nextElement();
-				String propertyValue = propertyContainer.getPropertyValue(propertyId);
+				String propertyValue = propertyResolveManager.getPropertyValue(propertyId);
 
 				// i don't use propertyContainer.getProperties.store(..) because he quotes
 				out.println(propertyId + "=" + propertyValue);
@@ -89,13 +93,13 @@ public class Resolver {
 		}
 
 		// second, replace all in place used variables e.g. bla=%{foo}%{bar}
-		PropertyFileReplacer replacer = new PropertyFileReplacer(propertyContainer);
+		PropertyFileReplacer replacer = new PropertyFileReplacer(propertyResolveManager);
 		replacer.replace(tmpFile);
 
 		if (getOutputType() == OutputType.File) {
 			tmpFile.renameTo(getTargetFile());
 		} else if (getOutputType() == OutputType.Stdout) {
-			writeToStdout(tmpFile, propertyContainer.getEncoding());
+			writeToStdout(tmpFile, getOutputEncodingType());
 		} else {
 			throw new IllegalArgumentException("OutputType not implemented! [" + getOutputType() + "]");
 		}
@@ -135,16 +139,16 @@ public class Resolver {
 		}
 	}
 
-	private File getTargetFile() {
-		return (File) propertyMap.get(Parameter.TargetFile);
-	}
-
-	private URL getPropertyFileURL() {
-		return (URL) propertyMap.get(Parameter.PropertyFileURL);
+	private String getOutputEncodingType() {
+		return (String) commandLineParamerters.get(Resolver.Parameter.OutputEncodingType);
 	}
 
 	private OutputType getOutputType() {
-		return (OutputType) propertyMap.get(Resolver.Parameter.OutputType);
+		return (OutputType) commandLineParamerters.get(Resolver.Parameter.OutputType);
+	}
+
+	private File getTargetFile() {
+		return (File) commandLineParamerters.get(Resolver.Parameter.TargetFile);
 	}
 
 }

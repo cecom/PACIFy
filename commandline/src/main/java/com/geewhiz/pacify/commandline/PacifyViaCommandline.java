@@ -1,5 +1,7 @@
 package com.geewhiz.pacify.commandline;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 
 import com.beust.jcommander.JCommander;
@@ -10,6 +12,9 @@ import com.geewhiz.pacify.commandline.commands.MainCommand;
 import com.geewhiz.pacify.commandline.commands.ReplacerCommand;
 import com.geewhiz.pacify.commandline.commands.ResolverCommand;
 import com.geewhiz.pacify.common.logger.Log;
+import com.geewhiz.pacify.resolver.PropertyResolverModule;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -67,14 +72,27 @@ public class PacifyViaCommandline {
 	}
 
 	private static int executeResolver(ResolverCommand resolverCommand) {
-		Resolver resolver = new Resolver(resolverCommand.getPropertyMap());
+		List<PropertyResolverModule> propertyResolverModules = resolverCommand.getPropertyResolverModules();
+
+		Injector injector = Guice.createInjector(propertyResolverModules);
+
+		Resolver resolver = injector.getInstance(Resolver.class);
+		resolver.setCommandLineParameters(resolverCommand.getCommandlineParameters());
 		resolver.create();
+
 		return 0;
 	}
 
 	private static int executeReplacer(ReplacerCommand replacerCommand) {
-		Replacer replacer = new Replacer(replacerCommand.getPropertyMap());
+		List<PropertyResolverModule> propertyResolverModules = replacerCommand.getPropertyResolverModules();
+
+		Injector injector = Guice.createInjector(propertyResolverModules);
+
+		Replacer replacer = injector.getInstance(Replacer.class);
+		replacer.setCommandLineParameters(replacerCommand.getCommandlineParameters());
 		replacer.replace();
+
 		return 0;
 	}
+
 }

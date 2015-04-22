@@ -1,4 +1,4 @@
-package com.geewhiz.pacify.property;
+package com.geewhiz.pacify.defect;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,22 +19,22 @@ package com.geewhiz.pacify.property;
  * under the License.
  */
 
-import java.util.List;
-import java.util.Properties;
+import com.geewhiz.pacify.model.PMarker;
+import com.geewhiz.pacify.model.PProperty;
 
-import com.geewhiz.pacify.defect.Defect;
+public class PropertyNotDefinedDefect implements Defect {
 
-public interface PropertyContainer {
+	private PMarker pMarker;
+	private PProperty pproperty;
 
-    boolean containsKey(String key);
+	public PropertyNotDefinedDefect(PMarker pMarker, PProperty pproperty) {
+		this.pMarker = pMarker;
+		this.pproperty = pproperty;
+	}
 
-    String getPropertyValue(String key);
+	public String getDefectMessage() {
+		return "Property [" + pproperty.getName() + "] which is defined in [" + pMarker.getFile().getPath()
+		        + "] is not set in [TODO].";
+	}
 
-    Properties getProperties();
-
-    List<Defect> checkForDuplicateEntry();
-
-    String getPropertyLoadedFrom();
-
-    String getEncoding();
 }

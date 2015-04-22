@@ -1,5 +1,8 @@
 package com.geewhiz.pacify.defect;
 
+import com.geewhiz.pacify.model.PMarker;
+import com.geewhiz.pacify.model.PProperty;
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
@@ -18,19 +21,19 @@ package com.geewhiz.pacify.defect;
  * specific language governing permissions and limitations
  * under the License.
  */
-import com.geewhiz.pacify.property.PropertyContainer;
 
-public class PropertyDuplicateDefinedInPropertyFileDefect implements Defect {
-    private String property;
-    private PropertyContainer propertyContainer;
+public class PropertyDuplicateDefinedInPMarkerDefect implements Defect {
 
-    public PropertyDuplicateDefinedInPropertyFileDefect(String property, PropertyContainer propertyContainer) {
-        this.property = property;
-        this.propertyContainer = propertyContainer;
-    }
+	private PMarker pMarker;
+	private PProperty pproperty;
 
-    public String getDefectMessage() {
-        return "Property [" + property + "] is duplicate defined in property file ["
-                + propertyContainer.getPropertyLoadedFrom() + "]";
-    }
+	public PropertyDuplicateDefinedInPMarkerDefect(PMarker pMarker, PProperty pproperty) {
+		this.pMarker = pMarker;
+		this.pproperty = pproperty;
+	}
+
+	public String getDefectMessage() {
+		return "Property [" + pproperty.getName() + "] is duplicate defined in pacify descriptor ["
+		        + pMarker.getFile().getPath() + "]";
+	}
 }

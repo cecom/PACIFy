@@ -63,7 +63,7 @@ public abstract class PMarkerBase {
 		return result;
 	}
 
-	public List<PProperty> getPfPropertyEntitiesForPFFileEntity(PFile pfile) {
+	public List<PProperty> getPPropertiesForFile(PFile pfile) {
 		List<PProperty> result = new ArrayList<PProperty>();
 		for (PProperty pproperty : getProperties()) {
 			if (pproperty.getFiles().contains(pfile)) {

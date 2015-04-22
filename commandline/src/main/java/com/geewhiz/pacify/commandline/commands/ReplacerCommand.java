@@ -6,7 +6,6 @@ import java.util.EnumMap;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import com.geewhiz.pacify.Replacer;
-import com.geewhiz.pacify.common.file.FileUtils;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -28,25 +27,14 @@ import com.geewhiz.pacify.common.file.FileUtils;
  */
 
 @Parameters(separators = "=", commandDescription = "Used to configure a package.")
-public class ReplacerCommand {
+public class ReplacerCommand extends BasePropertyResolverCommand {
+
 	@Parameter(names = { "-p", "--package" }, description = "The package path which you want to configure.", required = true)
 	private File packagePath;
 
-	@Parameter(names = { "-pf", "--propertyFile" }, description = "The property file where we get the property values from", required = true)
-	private String propertyFile;
-
-	public File getPackagePath() {
-		return packagePath;
-	}
-
-	public String getPropertyFile() {
-		return propertyFile;
-	}
-
-	public EnumMap<Replacer.Parameter, Object> getPropertyMap() {
+	public EnumMap<Replacer.Parameter, Object> getCommandlineParameters() {
 		EnumMap<Replacer.Parameter, Object> result = new EnumMap<Replacer.Parameter, Object>(Replacer.Parameter.class);
-		result.put(Replacer.Parameter.PackagePath, getPackagePath());
-		result.put(Replacer.Parameter.PropertyFileURL, FileUtils.getFileUrl(propertyFile));
+		result.put(Replacer.Parameter.PackagePath, packagePath);
 		return result;
 	}
 }

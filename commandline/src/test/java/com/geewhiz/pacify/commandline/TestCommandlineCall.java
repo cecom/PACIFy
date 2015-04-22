@@ -35,8 +35,9 @@ public class TestCommandlineCall {
 
 		int result = PacifyViaCommandline.mainInternal(new String[] {
 		        "replace",
+		        "--resolvers=FileResolver",
 		        "--package=" + startPath,
-		        "--propertyFile=" + startPath + "/myTest.properties" });
+		        "-DFileResolver.file=" + startPath + "/myTest.properties" });
 
 		Assert.assertEquals(result, 0, "Configuration returned with errors.");
 

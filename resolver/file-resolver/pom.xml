@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.geewhiz.pacify</groupId>
+        <artifactId>pacify.resolver</artifactId>
+        <version>develop</version>
+    </parent>
+    <artifactId>pacify.resolver.file-resolver</artifactId>
+    <name>com.geewhiz.pacify.resolver.file-resolver</name>
+    <packaging>jar</packaging>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.geewhiz.pacify</groupId>
+            <artifactId>pacify.impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.geewhiz.pacify</groupId>
+            <artifactId>pacify.common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.inject.extensions</groupId>
+            <artifactId>guice-multibindings</artifactId>
+        </dependency>
+
+        <!-- TEST Dependencies -->
+        <dependency>
+            <groupId>com.geewhiz.pacify</groupId>
+            <artifactId>pacify.common</artifactId>
+            <version>${project.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+         <dependency>
+            <groupId>com.geewhiz.pacify</groupId>
+            <artifactId>pacify.impl</artifactId>
+            <version>${project.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+</project>

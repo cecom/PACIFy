@@ -24,8 +24,7 @@ import java.util.Properties;
 
 import org.apache.maven.plugin.MojoExecutionException;
 
-import com.geewhiz.pacify.property.FilePropertyContainer;
-import com.geewhiz.pacify.property.PropertyContainer;
+import com.geewhiz.pacify.property.resolver.fileresolver.FilePropertyResolver;
 
 /**
  * User: sop
@@ -37,31 +36,31 @@ import com.geewhiz.pacify.property.PropertyContainer;
  */
 public class LoadPropertyFileIntoMavenMojo extends BaseMojo {
 
-    /**
-     * In which jar is the propertyFile contained?
-     * 
-     * @parameter
-     * @required
-     */
-    protected String propertyFileArtifact;
+	/**
+	 * In which jar is the propertyFile contained?
+	 * 
+	 * @parameter
+	 * @required
+	 */
+	protected String propertyFileArtifact;
 
-    /**
-     * Which property file should be used?
-     * 
-     * @parameter expression="${pflist.usePropertyFile}"
-     */
-    protected String propertyFile;
+	/**
+	 * Which property file should be used?
+	 * 
+	 * @parameter expression="${pflist.usePropertyFile}"
+	 */
+	protected String propertyFile;
 
-    @Override
-    protected void executePFList() throws MojoExecutionException {
-        URL propertyFileURL = getPropertyFileURL(propertyFileArtifact, propertyFile);
+	@Override
+	protected void executePFList() throws MojoExecutionException {
+		URL propertyFileURL = getPropertyFileURL(propertyFileArtifact, propertyFile);
 
-        PropertyContainer propertyContainer = new FilePropertyContainer(propertyFileURL);
+		FilePropertyResolver propertyResolver = new FilePropertyResolver(propertyFileURL);
 
-        getLog().info("Loading properties from [" + propertyContainer.getPropertyLoadedFrom() + "]...");
+		getLog().info("Loading properties from [" + propertyResolver.getPropertyResolverDescription() + "]...");
 
-        Properties properties = propertyContainer.getProperties();
-        project.getProperties().putAll(properties);
-    }
+		Properties properties = propertyResolver.getProperties();
+		project.getProperties().putAll(properties);
+	}
 
 }

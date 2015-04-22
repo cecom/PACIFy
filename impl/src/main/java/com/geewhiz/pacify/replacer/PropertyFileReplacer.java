@@ -34,7 +34,7 @@ import org.slf4j.Logger;
 import com.geewhiz.pacify.checker.checks.CheckForNotReplacedTokens;
 import com.geewhiz.pacify.common.logger.Log;
 import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.property.PropertyContainer;
+import com.geewhiz.pacify.property.PropertyResolveManager;
 import com.geewhiz.pacify.utils.Utils;
 
 public class PropertyFileReplacer {
@@ -44,10 +44,10 @@ public class PropertyFileReplacer {
 
 	Logger logger = Log.getInstance();
 
-	protected PropertyContainer propertyContainer;
+	protected PropertyResolveManager propertyResolveManager;
 
-	public PropertyFileReplacer(PropertyContainer propertyContainer) {
-		this.propertyContainer = propertyContainer;
+	public PropertyFileReplacer(PropertyResolveManager propertyResolveManager) {
+		this.propertyResolveManager = propertyResolveManager;
 	}
 
 	public List<Defect> replace(File file) {
@@ -57,7 +57,7 @@ public class PropertyFileReplacer {
 
 		try {
 			String encoding = Utils.getEncoding(file);
-			FileUtils.getFileUtils().copyFile(file, tmpFile, getFilterSetCollection(propertyContainer), true, true,
+			FileUtils.getFileUtils().copyFile(file, tmpFile, getFilterSetCollection(propertyResolveManager), true, true,
 			        encoding);
 			logger.info("Using  encoding [" + encoding + "] for  File  [" + file.getAbsolutePath() + "]");
 			if (!file.delete()) {
@@ -76,8 +76,8 @@ public class PropertyFileReplacer {
 		return defects;
 	}
 
-	private FilterSetCollection getFilterSetCollection(PropertyContainer propertyContainer) {
-		FilterSet filterSet = getFilterSet(propertyContainer);
+	private FilterSetCollection getFilterSetCollection(PropertyResolveManager propertyResolveManager) {
+		FilterSet filterSet = getFilterSet(propertyResolveManager);
 
 		FilterSetCollection executionFilters = new FilterSetCollection();
 		executionFilters.addFilterSet(filterSet);
@@ -85,15 +85,15 @@ public class PropertyFileReplacer {
 		return executionFilters;
 	}
 
-	private FilterSet getFilterSet(PropertyContainer propertyContainer) {
+	private FilterSet getFilterSet(PropertyResolveManager propertyResolveManager) {
 		FilterSet filterSet = new FilterSet();
 
 		filterSet.setBeginToken(BEGIN_TOKEN);
 		filterSet.setEndToken(END_TOKEN);
 
-		for (Enumeration e = propertyContainer.getProperties().propertyNames(); e.hasMoreElements();) {
+		for (Enumeration e = propertyResolveManager.getProperties().propertyNames(); e.hasMoreElements();) {
 			String propertyId = (String) e.nextElement();
-			String propertyValue = propertyContainer.getPropertyValue(propertyId);
+			String propertyValue = propertyResolveManager.getPropertyValue(propertyId);
 
 			filterSet.addFilter(propertyId, propertyValue);
 		}

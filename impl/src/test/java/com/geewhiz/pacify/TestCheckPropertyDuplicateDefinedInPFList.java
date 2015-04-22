@@ -25,28 +25,27 @@ import java.util.List;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import com.geewhiz.pacify.checker.checks.CheckPropertyDuplicateDefinedInPFList;
 import com.geewhiz.pacify.defect.Defect;
 
-public class TestCheckPropertyDuplicateDefinedInPFList extends BaseCheck {
+public class TestCheckPropertyDuplicateDefinedInPFList extends TestBase {
 
-    @Test
-    public void checkForNotCorrect() {
-        File testStartPath = new File("target/test-classes/checkPropertyDuplicateDefinedInPfListCheck/wrong");
+	@Test
+	public void checkForNotCorrect() {
+		File testStartPath = new File("target/test-classes/checkPropertyDuplicateDefinedInPfListCheck/wrong");
 
-        List<Defect> defects = getDefects(new com.geewhiz.pacify.checker.checks.CheckPropertyDuplicateDefinedInPFList(),
-                testStartPath);
+		List<Defect> defects = getDefects(new CheckPropertyDuplicateDefinedInPFList(), testStartPath);
 
-        Assert.assertEquals(1, defects.size());
-    }
+		Assert.assertEquals(1, defects.size());
+	}
 
-    @Test
-    public void checkForCorrect() {
-        File testStartPath = new File("target/test-classes/checkPropertyDuplicateDefinedInPfListCheck/correct");
+	@Test
+	public void checkForCorrect() {
+		File testStartPath = new File("target/test-classes/checkPropertyDuplicateDefinedInPfListCheck/correct");
 
-        List<Defect> defects = getDefects(new com.geewhiz.pacify.checker.checks.CheckPropertyDuplicateDefinedInPFList(),
-                testStartPath);
+		List<Defect> defects = getDefects(new CheckPropertyDuplicateDefinedInPFList(), testStartPath);
 
-        Assert.assertEquals(0, defects.size());
-    }
+		Assert.assertEquals(0, defects.size());
+	}
 
 }

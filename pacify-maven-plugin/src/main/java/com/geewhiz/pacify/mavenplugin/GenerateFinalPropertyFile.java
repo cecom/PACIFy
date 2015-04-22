@@ -21,10 +21,15 @@ package com.geewhiz.pacify.mavenplugin;
 
 import java.io.File;
 import java.util.EnumMap;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.maven.plugin.MojoExecutionException;
 
 import com.geewhiz.pacify.Resolver;
+import com.geewhiz.pacify.property.PropertyResolveManager;
+import com.geewhiz.pacify.property.resolver.fileresolver.FilePropertyResolver;
+import com.geewhiz.pacify.resolver.PropertyResolver;
 
 /**
  * @goal generateFinalPropertyFile
@@ -75,7 +80,16 @@ public class GenerateFinalPropertyFile extends BaseMojo {
 				commandlineProperties.put(Resolver.Parameter.OutputType, Resolver.OutputType.Stdout);
 			}
 
-			Resolver createResultPropertyFile = new Resolver(commandlineProperties);
+			FilePropertyResolver propertyResolver = new FilePropertyResolver(getPropertyFileURL(propertyFileArtifact,
+			        propertyFile));
+
+			Set<PropertyResolver> propertyResolverList = new TreeSet<PropertyResolver>();
+			propertyResolverList.add(propertyResolver);
+
+			PropertyResolveManager propertyResolveManager = new PropertyResolveManager(propertyResolverList);
+
+			Resolver createResultPropertyFile = new Resolver(propertyResolveManager);
+			createResultPropertyFile.setCommandLineParameters(commandlineProperties);
 			createResultPropertyFile.create();
 		}
 	}

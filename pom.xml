@@ -29,6 +29,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <org.jvnet.jaxb2_commons_jaxb2-basics_version>0.9.3</org.jvnet.jaxb2_commons_jaxb2-basics_version>
         <org.jvnet.jaxb2_commons_jaxb2-basics-annotate_version>1.0.1</org.jvnet.jaxb2_commons_jaxb2-basics-annotate_version>
+        <com.google.inject_version>3.0</com.google.inject_version>
     </properties>
 
     <modules>
@@ -37,7 +38,8 @@
         <module>model</module>
         <module>commandline</module>
         <module>impl</module>
-        <module>pacify-maven-plugin</module>
+        <!-- module>pacify-maven-plugin</module-->
+        <module>resolver</module>
     </modules>
 
     <dependencyManagement>
@@ -50,7 +52,7 @@
             <dependency>
                 <groupId>org.testng</groupId>
                 <artifactId>testng</artifactId>
-                <version>6.1.1</version>
+                <version>6.8.8</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -61,23 +63,23 @@
             <dependency>
                 <groupId>org.apache.maven</groupId>
                 <artifactId>maven-plugin-api</artifactId>
-                <version>3.0</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.maven</groupId>
-                <artifactId>maven-project</artifactId>
-                <version>2.2.1</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.maven.plugin-testing</groupId>
-                <artifactId>maven-plugin-testing-harness</artifactId>
-                <version>2.0-alpha-1</version>
-                <scope>test</scope>
+                <version>3.2.5</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.maven</groupId>
                 <artifactId>maven-artifact</artifactId>
+                <version>3.2.5</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-project</artifactId>
+                <version>3.0-alpha-2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.maven.plugin-testing</groupId>
+                <artifactId>maven-plugin-testing-harness</artifactId>
                 <version>2.0</version>
+                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.jvnet.jaxb2_commons</groupId>
@@ -97,7 +99,19 @@
             <dependency>
                 <groupId>com.beust</groupId>
                 <artifactId>jcommander</artifactId>
-                <version>1.35</version>
+                <!-- testng uses jcommander too, got problems of failing ,
+                    when using a different version than testng -->
+                <version>1.27</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.inject</groupId>
+                <artifactId>guice</artifactId>
+                <version>${com.google.inject_version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.inject.extensions</groupId>
+                <artifactId>guice-multibindings</artifactId>
+                <version>${com.google.inject_version}</version>
             </dependency>
         </dependencies>
 
@@ -178,6 +192,11 @@
                     <groupId>org.jvnet.jaxb2.maven2</groupId>
                     <artifactId>maven-jaxb2-plugin</artifactId>
                     <version>0.12.3</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-shade-plugin</artifactId>
+                    <version>2.3</version>
                 </plugin>
             </plugins>
         </pluginManagement>

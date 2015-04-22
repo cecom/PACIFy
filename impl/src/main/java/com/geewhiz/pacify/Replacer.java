@@ -20,33 +20,37 @@ package com.geewhiz.pacify;
  */
 
 import java.io.File;
-import java.net.URL;
+import java.util.EnumMap;
 import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 
 import com.geewhiz.pacify.common.logger.Log;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.model.EntityManager;
-import com.geewhiz.pacify.property.FilePropertyContainer;
-import com.geewhiz.pacify.property.PropertyContainer;
+import com.geewhiz.pacify.property.PropertyResolveManager;
 import com.geewhiz.pacify.utils.Utils;
+import com.google.inject.Inject;
 
 public class Replacer {
 
 	public enum Parameter {
-		PropertyFileURL, PackagePath, TargetFile
+		PackagePath, TargetFile
 	}
 
-	private Map<Parameter, Object> propertyMap;
+	private PropertyResolveManager propertyResolveManager;
+	private EnumMap<Parameter, Object> commandLineParamerters;
 	private Logger logger = Log.getInstance();
 
-	public Replacer(Map<Parameter, Object> propertyMap) {
-		this.propertyMap = propertyMap;
+	@Inject
+	public Replacer(PropertyResolveManager propertyResolveManager) {
+		this.propertyResolveManager = propertyResolveManager;
+	}
+
+	public void setCommandLineParameters(EnumMap<Parameter, Object> commandLineParamerters) {
+		this.commandLineParamerters = commandLineParamerters;
 		logger.info("== Executing PFListPropertyReplacer [Version=" + Utils.getJarVersion() + "]");
 		logger.info("     [StartPath=" + getPackagePath().getAbsolutePath() + "]");
-		logger.info("     [PropertyFileURL=" + getCommandLinePropertyFileURL().getPath() + "]");
 	}
 
 	public void replace() {
@@ -55,26 +59,18 @@ public class Replacer {
 		logger.info("==== Found [" + entityManager.getPMarkerCount() + "] pacify Files...");
 
 		logger.info("==== Checking pacify files...");
-		List<Defect> defects = entityManager.checkCorrectnessOfPFListFiles(getPropertyFile());
+		List<Defect> defects = entityManager.validate(propertyResolveManager);
 		shouldWeAbortIt(defects);
 
 		logger.info("==== Doing Replacement...");
-		defects = entityManager.doReplacement(getPropertyFile());
+		defects = entityManager.doReplacement(propertyResolveManager);
 		shouldWeAbortIt(defects);
 
 		logger.info("== Successfully finished...");
 	}
 
 	private File getPackagePath() {
-		return (File) propertyMap.get(Parameter.PackagePath);
-	}
-
-	private PropertyContainer getPropertyFile() {
-		return new FilePropertyContainer(getCommandLinePropertyFileURL());
-	}
-
-	private URL getCommandLinePropertyFileURL() {
-		return (URL) propertyMap.get(Parameter.PropertyFileURL);
+		return (File) commandLineParamerters.get(Parameter.PackagePath);
 	}
 
 	private void shouldWeAbortIt(List<Defect> defects) {

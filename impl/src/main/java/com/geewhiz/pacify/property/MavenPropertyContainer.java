@@ -24,8 +24,9 @@ import java.util.List;
 import java.util.Properties;
 
 import com.geewhiz.pacify.defect.Defect;
+import com.geewhiz.pacify.resolver.PropertyResolver;
 
-public class MavenPropertyContainer implements PropertyContainer {
+public class MavenPropertyContainer implements PropertyResolver {
 
     Properties properties;
     String encoding;
@@ -35,12 +36,12 @@ public class MavenPropertyContainer implements PropertyContainer {
         this.encoding = encoding;
     }
 
-    public boolean containsKey(String key) {
+    public boolean containsProperty(String key) {
         return getProperties().containsKey(key);
     }
 
     public String getPropertyValue(String key) {
-        if (containsKey(key)) {
+        if (containsProperty(key)) {
             return getProperties().getProperty(key);
         }
         throw new IllegalArgumentException("Property [" + key + "] not defined within maven... Aborting!");
@@ -54,7 +55,7 @@ public class MavenPropertyContainer implements PropertyContainer {
         return Collections.emptyList();
     }
 
-    public String getPropertyLoadedFrom() {
+    public String getPropertyResolverDescription() {
         return "maven";
     }
 

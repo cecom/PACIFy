@@ -19,7 +19,6 @@ package com.geewhiz.pacify.replacer;
  * under the License.
  */
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,7 +26,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.tools.ant.types.FilterSet;
 import org.apache.tools.ant.types.FilterSetCollection;
@@ -37,22 +35,21 @@ import org.slf4j.Logger;
 import com.geewhiz.pacify.checker.checks.CheckForNotReplacedTokens;
 import com.geewhiz.pacify.common.logger.Log;
 import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.defect.PropertyNotReplacedDefect;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.model.PProperty;
-import com.geewhiz.pacify.property.PropertyContainer;
+import com.geewhiz.pacify.property.PropertyResolveManager;
 import com.geewhiz.pacify.utils.Utils;
 
 public class PropertyPFReplacer {
 
-	private PropertyContainer propertyContainer;
+	private PropertyResolveManager propertyResolveManager;
 	private PMarker pMarker;
 
 	Logger logger = Log.getInstance();
 
-	public PropertyPFReplacer(PropertyContainer propertyContainer, PMarker pfListEntity) {
-		this.propertyContainer = propertyContainer;
+	public PropertyPFReplacer(PropertyResolveManager propertyResolveManager, PMarker pfListEntity) {
+		this.propertyResolveManager = propertyResolveManager;
 		this.pMarker = pfListEntity;
 	}
 
@@ -85,22 +82,6 @@ public class PropertyPFReplacer {
 		return defects;
 	}
 
-	public static List<Defect> checkFileForNotReplacedStuff(File file) {
-		List<Defect> defects = new ArrayList<Defect>();
-
-		String fileContent = com.geewhiz.pacify.utils.FileUtils.getFileInOneString(file);
-
-		Pattern pattern = PropertyFileReplacer.getPattern("([^}]*)", false);
-		Matcher matcher = pattern.matcher(fileContent);
-
-		while (matcher.find()) {
-			String propertyId = matcher.group(1);
-			Defect defect = new PropertyNotReplacedDefect(file, propertyId);
-			defects.add(defect);
-		}
-		return defects;
-	}
-
 	private FilterSetCollection getFilterSetCollection(PFile pfile) {
 		FilterSet filterSet = getFilterSet(pfile);
 
@@ -116,11 +97,11 @@ public class PropertyPFReplacer {
 		filterSet.setBeginToken(PropertyFileReplacer.BEGIN_TOKEN);
 		filterSet.setEndToken(PropertyFileReplacer.END_TOKEN);
 
-		List<PProperty> pproperties = pMarker.getPfPropertyEntitiesForPFFileEntity(pfile);
+		List<PProperty> pproperties = pMarker.getPPropertiesForFile(pfile);
 
 		for (PProperty pproperty : pproperties) {
 			String propertyName = pproperty.getName();
-			String propertyValue = propertyContainer.getPropertyValue(propertyName);
+			String propertyValue = propertyResolveManager.getPropertyValue(propertyName);
 
 			if (pproperty.isConvertBackslashToSlash()) {
 				String convertedString = propertyValue;
@@ -140,7 +121,7 @@ public class PropertyPFReplacer {
 			// property too.
 			for (String referencedPropertyId : getAllReferencedPropertyIds(propertyResolvePath, propertyName,
 			        propertyValue)) {
-				String referencedValue = propertyContainer.getPropertyValue(referencedPropertyId);
+				String referencedValue = propertyResolveManager.getPropertyValue(referencedPropertyId);
 				filterSet.addFilter(referencedPropertyId, referencedValue);
 			}
 		}
@@ -162,8 +143,7 @@ public class PropertyPFReplacer {
 			if (parentPropertyResolvePath.contains(propertyId)) {
 				throw new RuntimeException("You have a cycle reference in property [" + parentPropertyId
 				        + "] which is used in " +
-				        "pflist file [" + pMarker.getFile().getAbsolutePath() + "]. Property values loaded from ["
-				        + propertyContainer.getPropertyLoadedFrom() + "]");
+				        "pflist file [" + pMarker.getFile().getAbsolutePath() + "]. Property values loaded from [TODO]");
 			}
 
 			result.add(propertyId);
@@ -171,7 +151,7 @@ public class PropertyPFReplacer {
 			Set<String> propertyResolvePath = new TreeSet<String>(parentPropertyResolvePath);
 			propertyResolvePath.add(propertyId);
 
-			String propertyValue = propertyContainer.getPropertyValue(propertyId);
+			String propertyValue = propertyResolveManager.getPropertyValue(propertyId);
 			result.addAll(getAllReferencedPropertyIds(propertyResolvePath, propertyId, propertyValue));
 		}
 		return result;

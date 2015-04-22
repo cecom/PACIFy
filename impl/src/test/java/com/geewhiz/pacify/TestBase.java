@@ -28,14 +28,14 @@ import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.model.EntityManager;
 import com.geewhiz.pacify.model.PMarker;
 
-public abstract class BaseCheck {
+public abstract class TestBase {
 
 	protected List<Defect> getDefects(PMarkerCheck checker, File testStartPath) {
 		EntityManager entityManager = new EntityManager(testStartPath);
 
 		List<Defect> defects = new ArrayList<Defect>();
-		for (PMarker pfListEntity : entityManager.getPMarkers()) {
-			defects.addAll(checker.checkForErrors(pfListEntity));
+		for (PMarker pMarker : entityManager.getPMarkers()) {
+			defects.addAll(checker.checkForErrors(pMarker));
 		}
 		return defects;
 	}

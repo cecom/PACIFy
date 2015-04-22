@@ -25,16 +25,16 @@ import java.util.List;
 import com.geewhiz.pacify.checker.PMarkerCheck;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.PropertyNotDefinedDefect;
-import com.geewhiz.pacify.model.PProperty;
 import com.geewhiz.pacify.model.PMarker;
-import com.geewhiz.pacify.property.PropertyContainer;
+import com.geewhiz.pacify.model.PProperty;
+import com.geewhiz.pacify.property.PropertyResolveManager;
 
 public class CheckPropertyExists implements PMarkerCheck {
 
-	private PropertyContainer propertyContainer;
+	private PropertyResolveManager propertyResolveManager;
 
-	public CheckPropertyExists(PropertyContainer propertyContainer) {
-		this.propertyContainer = propertyContainer;
+	public CheckPropertyExists(PropertyResolveManager propertyResolveManager) {
+		this.propertyResolveManager = propertyResolveManager;
 	}
 
 	public List<Defect> checkForErrors(PMarker pfListEntity) {
@@ -42,10 +42,10 @@ public class CheckPropertyExists implements PMarkerCheck {
 
 		List<PProperty> pfPropertyEntities = pfListEntity.getProperties();
 		for (PProperty pfPropertyEntity : pfPropertyEntities) {
-			if (propertyContainer.containsKey(pfPropertyEntity.getName())) {
+			if (propertyResolveManager.containsProperty(pfPropertyEntity.getName())) {
 				continue;
 			}
-			Defect defect = new PropertyNotDefinedDefect(pfListEntity, pfPropertyEntity, propertyContainer);
+			Defect defect = new PropertyNotDefinedDefect(pfListEntity, pfPropertyEntity);
 			defects.add(defect);
 		}
 

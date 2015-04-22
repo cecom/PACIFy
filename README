@@ -1,2 +1,6 @@
 - jdk >1.6
 - GIT_SSL_NO_VERIFY=true  git push
+
+- logger : https://github.com/google/guice/wiki/BuiltInBindings
+- testng -> junit
+- maven plugin auf 3.0 umstellen

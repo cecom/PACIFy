@@ -33,9 +33,10 @@ public class TestCreateResultPropertyFile {
 		File startPath = new File("target/test-classes/TestCreateResultPropertyFile");
 
 		int result = PacifyViaCommandline.mainInternal(new String[] {
-		        "resolve"
-		        , "--propertyFile=" + startPath + "/subfolder/ChildOfChilds.properties"
-		        , "--targetFile=" + startPath + "/result.properties" });
+		        "resolve",
+		        "--resolvers=FileResolver",
+		        "--destinationFile=" + startPath + "/result.properties",
+		        "-DFileResolver.file=" + startPath + "/subfolder/ChildOfChilds.properties" });
 
 		Assert.assertEquals(result, 0, "Resolver returned with errors.");
 

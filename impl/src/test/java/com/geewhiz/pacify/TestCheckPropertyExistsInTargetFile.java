@@ -27,24 +27,24 @@ import org.testng.annotations.Test;
 
 import com.geewhiz.pacify.defect.Defect;
 
-public class TestCheckPropertyExistsInTargetFile extends BaseCheck {
-    @Test
-    public void checkForNotCorrect() {
-        File testStartPath = new File("target/test-classes/checkPropertyExistsInTargetFileTest/wrong");
+public class TestCheckPropertyExistsInTargetFile extends TestBase {
+	@Test
+	public void checkForNotCorrect() {
+		File testStartPath = new File("target/test-classes/checkPropertyExistsInTargetFileTest/wrong");
 
-        List<Defect> defects = getDefects(new com.geewhiz.pacify.checker.checks.CheckPropertyExistsInTargetFile(),
-                testStartPath);
+		List<Defect> defects = getDefects(new com.geewhiz.pacify.checker.checks.CheckPropertyExistsInTargetFile(),
+		        testStartPath);
 
-        Assert.assertEquals(2, defects.size());
-    }
+		Assert.assertEquals(2, defects.size());
+	}
 
-    @Test
-    public void checkForCorrect() {
-        File testStartPath = new File("target/test-classes/checkPropertyExistsInTargetFileTest/correct");
+	@Test
+	public void checkForCorrect() {
+		File testStartPath = new File("target/test-classes/checkPropertyExistsInTargetFileTest/correct");
 
-        List<Defect> defects = getDefects(new com.geewhiz.pacify.checker.checks.CheckPropertyExistsInTargetFile(),
-                testStartPath);
+		List<Defect> defects = getDefects(new com.geewhiz.pacify.checker.checks.CheckPropertyExistsInTargetFile(),
+		        testStartPath);
 
-        Assert.assertEquals(0, defects.size());
-    }
+		Assert.assertEquals(0, defects.size());
+	}
 }
