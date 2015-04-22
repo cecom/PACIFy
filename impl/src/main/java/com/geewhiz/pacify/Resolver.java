@@ -50,15 +50,15 @@ public class Resolver {
 
 	private PropertyResolveManager propertyResolveManager;
 	private Logger logger = Log.getInstance();
-	private EnumMap<Parameter, Object> commandLineParamerters;
+	private EnumMap<Parameter, Object> parameters;
 
 	@Inject
 	public Resolver(PropertyResolveManager propertyResolveManager) {
 		this.propertyResolveManager = propertyResolveManager;
 	}
 
-	public void setCommandLineParameters(EnumMap<Parameter, Object> commandLineParamerters) {
-		this.commandLineParamerters = commandLineParamerters;
+	public void setParameters(EnumMap<Parameter, Object> parameters) {
+		this.parameters = parameters;
 	}
 
 	public void create() {
@@ -140,15 +140,15 @@ public class Resolver {
 	}
 
 	private String getOutputEncodingType() {
-		return (String) commandLineParamerters.get(Resolver.Parameter.OutputEncodingType);
+		return (String) parameters.get(Resolver.Parameter.OutputEncodingType);
 	}
 
 	private OutputType getOutputType() {
-		return (OutputType) commandLineParamerters.get(Resolver.Parameter.OutputType);
+		return (OutputType) parameters.get(Resolver.Parameter.OutputType);
 	}
 
 	private File getTargetFile() {
-		return (File) commandLineParamerters.get(Resolver.Parameter.TargetFile);
+		return (File) parameters.get(Resolver.Parameter.TargetFile);
 	}
 
 }

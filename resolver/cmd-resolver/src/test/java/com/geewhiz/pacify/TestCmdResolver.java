@@ -23,41 +23,53 @@ import static org.testng.AssertJUnit.assertTrue;
 
 import java.io.File;
 import java.util.EnumMap;
+import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
 
 import org.testng.annotations.Test;
 
 import com.geewhiz.pacify.property.PropertyResolveManager;
-import com.geewhiz.pacify.property.resolver.fileresolver.FilePropertyResolver;
+import com.geewhiz.pacify.property.resolver.cmdresolver.CmdPropertyResolver;
 import com.geewhiz.pacify.resolver.PropertyResolver;
 
-public class TestRecursivePropertyReplacement {
+public class TestCmdResolver {
 
 	@Test
 	public void testAll() {
-		File startPath = new File("target/test-classes/recursePropertyReplacement");
-		File myTestProperty = new File(startPath, "myProperties.properties");
-
+		File startPath = new File("target/test-classes/TestCmdResolver");
 		assertTrue("StartPath [" + startPath.getPath() + "] doesn't exist!", startPath.exists());
 
-		EnumMap<Replacer.Parameter, Object> commandlineProperties = new EnumMap<Replacer.Parameter, Object>(
-		        Replacer.Parameter.class);
+		PropertyResolveManager propertyResolveManager = getPropertyResolveManager(startPath);
+
+		EnumMap<Replacer.Parameter, Object> commandlineProperties =
+		        new EnumMap<Replacer.Parameter, Object>(Replacer.Parameter.class);
 		commandlineProperties.put(Replacer.Parameter.PackagePath, startPath);
-		// commandlineProperties.put(Replacer.Parameter.PropertyFileURL, TestUtil.getURLForFile(myTestProperty));
 
-		FilePropertyResolver filePropertyResolver = new FilePropertyResolver(TestUtil.getURLForFile(myTestProperty));
-
-		Set<PropertyResolver> resolverList = new TreeSet<PropertyResolver>();
-		resolverList.add(filePropertyResolver);
-
-		PropertyResolveManager propertyResolveManager = new PropertyResolveManager(resolverList);
-
-		Replacer pfListPropertyReplacer = new Replacer(propertyResolveManager);
-
-		pfListPropertyReplacer.setParameters(commandlineProperties);
-		pfListPropertyReplacer.replace();
+		Replacer replacer = new Replacer(propertyResolveManager);
+		replacer.setParameters(commandlineProperties);
+		replacer.replace();
 
 		TestUtil.checkIfResultIsAsExpected(startPath);
+	}
+
+	private PropertyResolveManager getPropertyResolveManager(File startPath) {
+		Properties properties = new Properties();
+		properties.put("foobar3", "%{foobar1}:%{foobar2}");
+		properties.put("foobar2", "6299äÖ9");
+		properties.put("foobar5", "%{foobar6}");
+		properties.put("foobar6", "%{foobar7}");
+		properties.put("foobar7", "someProperty");
+		properties.put("path", "d:\\tmp\\somefolder");
+		properties.put("foobar1", "http://0815");
+		properties.put("foobar4", "%{foobar2}/%{foobar1}/%{foobar5}");
+
+		CmdPropertyResolver cmdPropertyResolver = new CmdPropertyResolver(properties);
+
+		Set<PropertyResolver> resolverList = new TreeSet<PropertyResolver>();
+		resolverList.add(cmdPropertyResolver);
+
+		PropertyResolveManager propertyResolveManager = new PropertyResolveManager(resolverList);
+		return propertyResolveManager;
 	}
 }

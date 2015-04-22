@@ -89,7 +89,7 @@ public class GenerateFinalPropertyFile extends BaseMojo {
 			PropertyResolveManager propertyResolveManager = new PropertyResolveManager(propertyResolverList);
 
 			Resolver createResultPropertyFile = new Resolver(propertyResolveManager);
-			createResultPropertyFile.setCommandLineParameters(commandlineProperties);
+			createResultPropertyFile.setParameters(commandlineProperties);
 			createResultPropertyFile.create();
 		}
 	}

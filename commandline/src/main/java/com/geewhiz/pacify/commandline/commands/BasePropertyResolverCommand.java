@@ -47,8 +47,8 @@ public abstract class BasePropertyResolverCommand {
 
 	private PropertyResolverModule getModuleForId(String resolver) {
 		for (PropertyResolverModule module : ServiceLoader.load(PropertyResolverModule.class)) {
-			if (module.getPropertyResolverId().equals(resolver)) {
-				module.setCommandLineParameters(getModuleProperties(module));
+			if (module.getResolverId().equals(resolver)) {
+				module.setParameters(getModuleProperties(module));
 				return module;
 			}
 		}
@@ -58,7 +58,7 @@ public abstract class BasePropertyResolverCommand {
 	private Map<String, String> getModuleProperties(PropertyResolverModule module) {
 		Map<String, String> result = new HashMap<String, String>();
 
-		String propertyResolverId = module.getPropertyResolverId();
+		String propertyResolverId = module.getResolverId();
 		for (Map.Entry<String, String> entry : moduleParams.entrySet()) {
 			String key = entry.getKey();
 

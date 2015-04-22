@@ -77,7 +77,7 @@ public class PacifyViaCommandline {
 		Injector injector = Guice.createInjector(propertyResolverModules);
 
 		Resolver resolver = injector.getInstance(Resolver.class);
-		resolver.setCommandLineParameters(resolverCommand.getCommandlineParameters());
+		resolver.setParameters(resolverCommand.getCommandlineParameters());
 		resolver.create();
 
 		return 0;
@@ -89,7 +89,7 @@ public class PacifyViaCommandline {
 		Injector injector = Guice.createInjector(propertyResolverModules);
 
 		Replacer replacer = injector.getInstance(Replacer.class);
-		replacer.setCommandLineParameters(replacerCommand.getCommandlineParameters());
+		replacer.setParameters(replacerCommand.getCommandlineParameters());
 		replacer.replace();
 
 		return 0;

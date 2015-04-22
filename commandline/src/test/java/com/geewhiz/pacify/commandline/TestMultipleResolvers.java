@@ -26,18 +26,19 @@ import org.testng.annotations.Test;
 
 import com.geewhiz.pacify.TestUtil;
 
-public class TestCommandlineCall {
+public class TestMultipleResolvers {
 
 	@Test
 	public void testAll() {
 
-		String startPath = "target/test-classes/testAll";
+		String startPath = "target/test-classes/TestMultipleResolver";
 
 		int result = PacifyViaCommandline.mainInternal(new String[] {
 		        "replace",
-		        "--resolvers=FileResolver",
+		        "--resolvers=CmdResolver,FileResolver",
 		        "--package=" + startPath,
-		        "-DFileResolver.file=" + startPath + "/myTest.properties"
+		        "-DFileResolver.file=" + startPath + "/myProperties.properties",
+		        "-DCmdResolver.foobar7=anotherValue"
 		});
 
 		Assert.assertEquals(result, 0, "Configuration returned with errors.");

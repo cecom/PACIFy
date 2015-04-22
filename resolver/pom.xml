@@ -11,5 +11,6 @@
     <packaging>pom</packaging>
     <modules>
         <module>file-resolver</module>
+        <module>cmd-resolver</module>
     </modules>
 </project>

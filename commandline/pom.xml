@@ -38,6 +38,12 @@
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
+         <dependency>
+            <groupId>com.geewhiz.pacify</groupId>
+            <artifactId>pacify.resolver.cmd-resolver</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>com.geewhiz.pacify</groupId>
             <artifactId>pacify.common</artifactId>

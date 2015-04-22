@@ -198,10 +198,7 @@ public class FilePropertyResolver implements PropertyResolver {
 		try {
 			result = new InputStreamReader(propertyFilePathURL.openStream(), getEncoding());
 		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-		if (result == null) {
-			throw new RuntimeException("Couldn't find resource [" + propertyFilePathURL + "] in classpath.");
+			throw new RuntimeException("Couldn't find resource [" + propertyFilePathURL + "] in classpath.", e);
 		}
 		return result;
 	}

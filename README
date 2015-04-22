@@ -1,6 +1,8 @@
 - jdk >1.6
+- export HTTPS_PROXY=...
 - GIT_SSL_NO_VERIFY=true  git push
 
+- test resourcen auf utf-8 umstellen
 - logger : https://github.com/google/guice/wiki/BuiltInBindings
 - testng -> junit
 - maven plugin auf 3.0 umstellen

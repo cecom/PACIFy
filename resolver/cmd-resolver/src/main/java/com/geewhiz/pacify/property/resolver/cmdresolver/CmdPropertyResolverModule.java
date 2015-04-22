@@ -1,9 +1,8 @@
-package com.geewhiz.pacify.property.resolver.fileresolver;
+package com.geewhiz.pacify.property.resolver.cmdresolver;
 
-import java.net.URL;
 import java.util.Map;
+import java.util.Properties;
 
-import com.geewhiz.pacify.common.file.FileUtils;
 import com.geewhiz.pacify.resolver.PropertyResolver;
 import com.geewhiz.pacify.resolver.PropertyResolverModule;
 import com.google.inject.Provides;
@@ -28,36 +27,30 @@ import com.google.inject.multibindings.Multibinder;
  * under the License.
  */
 
-public class FilePropertyResolverModule extends PropertyResolverModule {
+public class CmdPropertyResolverModule extends PropertyResolverModule {
 
-	Map<String, String> commandLineParameters;
+	Map<String, String> parameters;
 
 	@Override
 	public String getResolverId() {
-		return "FileResolver";
+		return "CmdResolver";
 	}
 
 	@Override
 	protected void configure() {
 		Multibinder<PropertyResolver> resolveBinder = Multibinder.newSetBinder(binder(), PropertyResolver.class);
-		resolveBinder.addBinding().to(FilePropertyResolver.class);
+		resolveBinder.addBinding().to(CmdPropertyResolver.class);
 	}
 
 	@Override
-	public void setParameters(Map<String, String> commandLineParameters) {
-		this.commandLineParameters = commandLineParameters;
+	public void setParameters(Map<String, String> parameters) {
+		this.parameters = parameters;
 	}
 
 	@Provides
-	public FilePropertyResolver createFilePropertyResolver() {
-		String file = commandLineParameters.get("file");
-
-		if (file == null) {
-			throw new IllegalArgumentException(
-			        "The FileResolver need's the file where to read the properties from. Specify it via -DFileResolver.file=<path>");
-		}
-
-		URL fileUrl = FileUtils.getFileUrl(commandLineParameters.get("file"));
-		return new FilePropertyResolver(fileUrl);
+	public CmdPropertyResolver createFilePropertyResolver() {
+		Properties properties = new Properties();
+		properties.putAll(parameters);
+		return new CmdPropertyResolver(properties);
 	}
 }

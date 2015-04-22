@@ -26,15 +26,17 @@ public class PropertyNotDefinedDefect implements Defect {
 
 	private PMarker pMarker;
 	private PProperty pproperty;
+	private String resolver;
 
-	public PropertyNotDefinedDefect(PMarker pMarker, PProperty pproperty) {
+	public PropertyNotDefinedDefect(PMarker pMarker, PProperty pproperty, String resolver) {
 		this.pMarker = pMarker;
 		this.pproperty = pproperty;
+		this.resolver = resolver;
 	}
 
 	public String getDefectMessage() {
 		return "Property [" + pproperty.getName() + "] which is defined in [" + pMarker.getFile().getPath()
-		        + "] is not set in [TODO].";
+		        + "] is not defined in the given resolver(s)  [" + resolver + "].";
 	}
 
 }

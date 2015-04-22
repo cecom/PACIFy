@@ -39,7 +39,7 @@ public class Replacer {
 	}
 
 	private PropertyResolveManager propertyResolveManager;
-	private EnumMap<Parameter, Object> commandLineParamerters;
+	private EnumMap<Parameter, Object> parameters;
 	private Logger logger = Log.getInstance();
 
 	@Inject
@@ -47,8 +47,8 @@ public class Replacer {
 		this.propertyResolveManager = propertyResolveManager;
 	}
 
-	public void setCommandLineParameters(EnumMap<Parameter, Object> commandLineParamerters) {
-		this.commandLineParamerters = commandLineParamerters;
+	public void setParameters(EnumMap<Parameter, Object> parameters) {
+		this.parameters = parameters;
 		logger.info("== Executing PFListPropertyReplacer [Version=" + Utils.getJarVersion() + "]");
 		logger.info("     [StartPath=" + getPackagePath().getAbsolutePath() + "]");
 	}
@@ -70,7 +70,7 @@ public class Replacer {
 	}
 
 	private File getPackagePath() {
-		return (File) commandLineParamerters.get(Parameter.PackagePath);
+		return (File) parameters.get(Parameter.PackagePath);
 	}
 
 	private void shouldWeAbortIt(List<Defect> defects) {

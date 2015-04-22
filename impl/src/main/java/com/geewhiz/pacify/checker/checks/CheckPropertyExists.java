@@ -45,7 +45,8 @@ public class CheckPropertyExists implements PMarkerCheck {
 			if (propertyResolveManager.containsProperty(pfPropertyEntity.getName())) {
 				continue;
 			}
-			Defect defect = new PropertyNotDefinedDefect(pfListEntity, pfPropertyEntity);
+			Defect defect = new PropertyNotDefinedDefect(pfListEntity, pfPropertyEntity,
+			        propertyResolveManager.toString());
 			defects.add(defect);
 		}
 

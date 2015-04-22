@@ -30,8 +30,8 @@ import com.google.inject.AbstractModule;
  */
 public abstract class PropertyResolverModule extends AbstractModule {
 
-	public abstract String getPropertyResolverId();
+	public abstract String getResolverId();
 
-	public abstract void setCommandLineParameters(Map<String, String> commandLineParameters);
+	public abstract void setParameters(Map<String, String> parameters);
 
 }
