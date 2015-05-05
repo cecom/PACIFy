@@ -29,12 +29,27 @@ import com.geewhiz.pacify.Replacer;
 @Parameters(separators = "=", commandDescription = "Used to configure a package.")
 public class ReplacerCommand extends BasePropertyResolverCommand {
 
+	@Parameter(names = { "-env", "--envName" }, description = "The name of the Environment which the package is configured for.", required = true)
+	private String envName;
+
 	@Parameter(names = { "-p", "--package" }, description = "The package path which you want to configure.", required = true)
 	private File packagePath;
 
+	@Parameter(names = { "-cc", "--createCopy" }, description = "Create a copy and configure the copy.", required = false, arity = 1)
+	private Boolean createCopy = Boolean.TRUE;
+
+	@Parameter(names = { "-cd", "--copyDestination" }, description = "Where to write the copy of the original package to. If not specified a folder with name of the package + _ + envName is created.", required = false)
+	private File copyDestination;
+
 	public EnumMap<Replacer.Parameter, Object> getCommandlineParameters() {
 		EnumMap<Replacer.Parameter, Object> result = new EnumMap<Replacer.Parameter, Object>(Replacer.Parameter.class);
+		result.put(Replacer.Parameter.EnvName, envName);
 		result.put(Replacer.Parameter.PackagePath, packagePath);
+		result.put(Replacer.Parameter.CreateCopy, createCopy);
+		if (createCopy && copyDestination == null) {
+			copyDestination = new File(packagePath.getParentFile(), packagePath.getName() + "_" + envName);
+			result.put(Replacer.Parameter.CopyDestination, copyDestination);
+		}
 		return result;
 	}
 }

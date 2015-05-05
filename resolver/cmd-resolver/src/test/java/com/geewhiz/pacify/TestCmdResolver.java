@@ -45,6 +45,7 @@ public class TestCmdResolver {
 		EnumMap<Replacer.Parameter, Object> commandlineProperties =
 		        new EnumMap<Replacer.Parameter, Object>(Replacer.Parameter.class);
 		commandlineProperties.put(Replacer.Parameter.PackagePath, startPath);
+		commandlineProperties.put(Replacer.Parameter.CreateCopy, Boolean.FALSE);
 
 		Replacer replacer = new Replacer(propertyResolveManager);
 		replacer.setParameters(commandlineProperties);

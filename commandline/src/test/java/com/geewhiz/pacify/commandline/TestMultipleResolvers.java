@@ -35,6 +35,27 @@ public class TestMultipleResolvers {
 
 		int result = PacifyViaCommandline.mainInternal(new String[] {
 		        "replace",
+		        "--envName=local",
+		        "--resolvers=CmdResolver,FileResolver",
+		        "--package=" + startPath,
+		        "--createCopy=false",
+		        "-DFileResolver.file=" + startPath + "/myProperties.properties",
+		        "-DCmdResolver.foobar7=anotherValue"
+		});
+
+		Assert.assertEquals(result, 0, "Configuration returned with errors.");
+
+		TestUtil.checkIfResultIsAsExpected(new File(startPath));
+	}
+
+	@Test
+	public void testAllOnCopy() {
+		String startPath = "target/test-classes/TestMultipleResolverOnCopy";
+		String envName = "test";
+
+		int result = PacifyViaCommandline.mainInternal(new String[] {
+		        "replace",
+		        "--envName=" + envName,
 		        "--resolvers=CmdResolver,FileResolver",
 		        "--package=" + startPath,
 		        "-DFileResolver.file=" + startPath + "/myProperties.properties",
@@ -43,6 +64,7 @@ public class TestMultipleResolvers {
 
 		Assert.assertEquals(result, 0, "Configuration returned with errors.");
 
-		TestUtil.checkIfResultIsAsExpected(new File(startPath));
+		String copyPath = startPath + "_" + envName;
+		TestUtil.checkIfResultIsAsExpected(new File(copyPath));
 	}
 }

@@ -44,7 +44,7 @@ public class TestRecursivePropertyReplacement {
 		EnumMap<Replacer.Parameter, Object> commandlineProperties = new EnumMap<Replacer.Parameter, Object>(
 		        Replacer.Parameter.class);
 		commandlineProperties.put(Replacer.Parameter.PackagePath, startPath);
-		// commandlineProperties.put(Replacer.Parameter.PropertyFileURL, TestUtil.getURLForFile(myTestProperty));
+		commandlineProperties.put(Replacer.Parameter.CreateCopy, Boolean.FALSE);
 
 		FilePropertyResolver filePropertyResolver = new FilePropertyResolver(TestUtil.getURLForFile(myTestProperty));
 

@@ -20,9 +20,11 @@ package com.geewhiz.pacify;
  */
 
 import java.io.File;
+import java.io.IOException;
 import java.util.EnumMap;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 
 import com.geewhiz.pacify.common.logger.Log;
@@ -35,7 +37,7 @@ import com.google.inject.Inject;
 public class Replacer {
 
 	public enum Parameter {
-		PackagePath, TargetFile
+		EnvName, PackagePath, CreateCopy, CopyDestination
 	}
 
 	private PropertyResolveManager propertyResolveManager;
@@ -50,11 +52,22 @@ public class Replacer {
 	public void setParameters(EnumMap<Parameter, Object> parameters) {
 		this.parameters = parameters;
 		logger.info("== Executing PFListPropertyReplacer [Version=" + Utils.getJarVersion() + "]");
-		logger.info("     [StartPath=" + getPackagePath().getAbsolutePath() + "]");
+		logger.info("     [PackagePath=" + getPackagePath().getAbsolutePath() + "]");
+		logger.info("     [EnvName=" + getEnvName() + "]");
+		logger.info("     [CreateCopy=" + isCreateCopy() + "]");
+		if (isCreateCopy()) {
+			logger.info("     [Destination=" + getCopyDestination().getAbsolutePath() + "]");
+		}
 	}
 
 	public void replace() {
-		EntityManager entityManager = new EntityManager(getPackagePath());
+		if (isCreateCopy()) {
+			createCopy();
+		}
+
+		File pathToConfigure = isCreateCopy() ? getCopyDestination() : getPackagePath();
+
+		EntityManager entityManager = new EntityManager(pathToConfigure);
 
 		logger.info("==== Found [" + entityManager.getPMarkerCount() + "] pacify Files...");
 
@@ -69,8 +82,34 @@ public class Replacer {
 		logger.info("== Successfully finished...");
 	}
 
-	private File getPackagePath() {
+	private String getEnvName() {
+		return (String) parameters.get(Parameter.EnvName);
+	}
+
+	public File getPackagePath() {
 		return (File) parameters.get(Parameter.PackagePath);
+	}
+
+	public Boolean isCreateCopy() {
+		if (parameters.get(Parameter.CreateCopy) == null) {
+			throw new IllegalArgumentException("Parameter.CreateCopy not defined.");
+		}
+		return (Boolean) parameters.get(Parameter.CreateCopy);
+	}
+
+	public File getCopyDestination() {
+		if (parameters.get(Parameter.CopyDestination) == null) {
+			throw new IllegalArgumentException("No copy destination defined.");
+		}
+		return (File) parameters.get(Parameter.CopyDestination);
+	}
+
+	private void createCopy() {
+		try {
+			FileUtils.copyDirectory(getPackagePath(), getCopyDestination());
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	private void shouldWeAbortIt(List<Defect> defects) {

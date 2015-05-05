@@ -57,7 +57,8 @@ public class PropertyFileReplacer {
 
 		try {
 			String encoding = Utils.getEncoding(file);
-			FileUtils.getFileUtils().copyFile(file, tmpFile, getFilterSetCollection(propertyResolveManager), true, true,
+			FileUtils.getFileUtils().copyFile(file, tmpFile, getFilterSetCollection(propertyResolveManager),
+			        true, true,
 			        encoding);
 			logger.info("Using  encoding [" + encoding + "] for  File  [" + file.getAbsolutePath() + "]");
 			if (!file.delete()) {

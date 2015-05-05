@@ -6,3 +6,5 @@
 - logger : https://github.com/google/guice/wiki/BuiltInBindings
 - testng -> junit
 - maven plugin auf 3.0 umstellen
+- fileutils aufräumen
+- Ausgabe vom replacen anpassen und schick machen

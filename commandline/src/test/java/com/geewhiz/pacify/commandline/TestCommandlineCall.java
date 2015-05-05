@@ -35,8 +35,10 @@ public class TestCommandlineCall {
 
 		int result = PacifyViaCommandline.mainInternal(new String[] {
 		        "replace",
+		        "--envName=local",
 		        "--resolvers=FileResolver",
 		        "--package=" + startPath,
+		        "--createCopy=false",
 		        "-DFileResolver.file=" + startPath + "/myTest.properties"
 		});
 
