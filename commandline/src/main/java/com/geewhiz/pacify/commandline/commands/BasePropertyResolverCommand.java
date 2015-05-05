@@ -35,7 +35,7 @@ public abstract class BasePropertyResolverCommand {
 	private String resolvers;
 
 	@DynamicParameter(names = "-D", description = "dynamic property resolver paramerters")
-	private Map<String, String> moduleParams = new HashMap<String, String>();
+	private Map<String, String> resolverParameter = new HashMap<String, String>();
 
 	public List<PropertyResolverModule> getPropertyResolverModules() {
 		List<PropertyResolverModule> result = new ArrayList<PropertyResolverModule>();
@@ -59,7 +59,7 @@ public abstract class BasePropertyResolverCommand {
 		Map<String, String> result = new HashMap<String, String>();
 
 		String propertyResolverId = module.getResolverId();
-		for (Map.Entry<String, String> entry : moduleParams.entrySet()) {
+		for (Map.Entry<String, String> entry : resolverParameter.entrySet()) {
 			String key = entry.getKey();
 
 			if (!key.contains(".")) {
