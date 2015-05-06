@@ -8,9 +8,13 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 import com.geewhiz.pacify.Replacer;
 import com.geewhiz.pacify.Resolver;
+import com.geewhiz.pacify.Validator;
+import com.geewhiz.pacify.commandline.commands.BasePropertyResolverCommand;
 import com.geewhiz.pacify.commandline.commands.MainCommand;
 import com.geewhiz.pacify.commandline.commands.ReplacerCommand;
 import com.geewhiz.pacify.commandline.commands.ResolverCommand;
+import com.geewhiz.pacify.commandline.commands.ValidateCommand;
+import com.geewhiz.pacify.commandline.commands.ValidateMarkerFilesCommand;
 import com.geewhiz.pacify.common.logger.Log;
 import com.geewhiz.pacify.resolver.PropertyResolverModule;
 import com.google.inject.Guice;
@@ -49,10 +53,14 @@ public class PacifyViaCommandline {
 		MainCommand mainCommand = new MainCommand();
 		ReplacerCommand replacerCommand = new ReplacerCommand();
 		ResolverCommand resolverCommand = new ResolverCommand();
+		ValidateCommand validateCommand = new ValidateCommand();
+		ValidateMarkerFilesCommand validateMarkerFilesCommand = new ValidateMarkerFilesCommand();
 
 		JCommander jc = new JCommander(mainCommand);
 		jc.addCommand("replace", replacerCommand);
 		jc.addCommand("resolve", resolverCommand);
+		jc.addCommand("validate", validateCommand);
+		jc.addCommand("validateMarkerFiles", validateMarkerFilesCommand);
 
 		try {
 			jc.parse(args);
@@ -65,34 +73,59 @@ public class PacifyViaCommandline {
 			return executeReplacer(replacerCommand);
 		} else if ("resolve".equals(jc.getParsedCommand())) {
 			return executeResolver(resolverCommand);
+		} else if ("validate".equals(jc.getParsedCommand())) {
+			return executeValidate(validateCommand);
+		} else if ("validateMarkerFiles".equals(jc.getParsedCommand())) {
+			return executeValidateMarkerFiles(validateMarkerFilesCommand);
 		} else {
 			jc.usage();
 		}
 		return 1;
 	}
 
-	private static int executeResolver(ResolverCommand resolverCommand) {
-		List<PropertyResolverModule> propertyResolverModules = resolverCommand.getPropertyResolverModules();
+	private static int executeValidateMarkerFiles(ValidateMarkerFilesCommand validateMarkerFilesCommand) {
+		Validator validator = new Validator(null);
+		validateMarkerFilesCommand.configureValidator(validator);
+		validator.execute();
 
-		Injector injector = Guice.createInjector(propertyResolverModules);
+		return 0;
+	}
+
+	private static int executeValidate(ValidateCommand validateCommand) {
+		Injector injector = getInjector(validateCommand);
+
+		Validator validator = injector.getInstance(Validator.class);
+		validateCommand.configureValidator(validator);
+		validator.execute();
+
+		return 0;
+	}
+
+	private static int executeResolver(ResolverCommand resolverCommand) {
+		Injector injector = getInjector(resolverCommand);
 
 		Resolver resolver = injector.getInstance(Resolver.class);
-		resolver.setParameters(resolverCommand.getCommandlineParameters());
-		resolver.create();
+		resolverCommand.configureResolver(resolver);
+		resolver.execute();
 
 		return 0;
 	}
 
 	private static int executeReplacer(ReplacerCommand replacerCommand) {
-		List<PropertyResolverModule> propertyResolverModules = replacerCommand.getPropertyResolverModules();
-
-		Injector injector = Guice.createInjector(propertyResolverModules);
+		Injector injector = getInjector(replacerCommand);
 
 		Replacer replacer = injector.getInstance(Replacer.class);
-		replacer.setParameters(replacerCommand.getCommandlineParameters());
-		replacer.replace();
+		replacerCommand.configureReplacer(replacer);
+		replacer.execute();
 
 		return 0;
+	}
+
+	private static Injector getInjector(BasePropertyResolverCommand command) {
+		List<PropertyResolverModule> propertyResolverModules = command.getPropertyResolverModules();
+
+		Injector injector = Guice.createInjector(propertyResolverModules);
+		return injector;
 	}
 
 }

@@ -23,7 +23,6 @@ import static org.testng.AssertJUnit.assertTrue;
 
 import java.io.File;
 import java.net.URL;
-import java.util.EnumMap;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -48,20 +47,20 @@ public class TestNotReplacedProperty extends TestBase {
 
 		assertTrue("StartPath [" + startPath.getPath() + "] doesn't exist!", startPath.exists());
 
-		EnumMap<Replacer.Parameter, Object> commandlineProperties = new EnumMap<Replacer.Parameter, Object>(
-		        Replacer.Parameter.class);
-		commandlineProperties.put(Replacer.Parameter.PackagePath, startPath);
-		// commandlineProperties.put(Replacer.Parameter.PropertyFileURL, TestUtil.getURLForFile(myTestProperty));
+		PropertyResolveManager propertyResolveManager = createPropertyResolveManager(myTestPropertyURL);
 
+		Replacer replacer = new Replacer(propertyResolveManager);
+		List<Defect> defects = replacer.doReplacement(new EntityManager(startPath));
+
+		Assert.assertEquals(defects.size(), 4);
+	}
+
+	private PropertyResolveManager createPropertyResolveManager(URL myTestPropertyURL) {
 		Set<PropertyResolver> resolverList = new TreeSet<PropertyResolver>();
 		FilePropertyResolver filePropertyResolver = new FilePropertyResolver(myTestPropertyURL);
 		resolverList.add(filePropertyResolver);
 
 		PropertyResolveManager propertyResolveManager = new PropertyResolveManager(resolverList);
-
-		EntityManager entityManager = new EntityManager(startPath);
-		List<Defect> defects = entityManager.doReplacement(propertyResolveManager);
-
-		Assert.assertEquals(defects.size(), 4);
+		return propertyResolveManager;
 	}
 }

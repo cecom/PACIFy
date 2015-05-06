@@ -4,7 +4,7 @@ import java.io.File;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
-import com.geewhiz.pacify.Resolver;
+import com.geewhiz.pacify.Validator;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -25,18 +25,15 @@ import com.geewhiz.pacify.Resolver;
  * under the License.
  */
 
-@Parameters(separators = "=", commandDescription = "Used to resolve the property file with its dependencies")
-public class ResolverCommand extends BasePropertyResolverCommand {
+@Parameters(separators = "=", commandDescription = "Used to validate the pacify marker files and the property resolution.")
+public class ValidateCommand extends BasePropertyResolverCommand {
 
-	@Parameter(names = { "-d", "--destinationFile" }, description = "Where to write the result to. If not given, it will be printed to stdout", required = false)
-	private File targetFile;
+	@Parameter(names = { "-p", "--package" }, description = "The package path which you want to verify.", required = true)
+	public File packagePath;
 
-	@Parameter(names = { "-e", "--targetEncoding" }, description = "Which encoding do you want in the created file", required = false)
-	private String targetEncoding = "utf-8";
-
-	public void configureResolver(Resolver resolver) {
-		resolver.setTargetFile(targetFile);
-		resolver.setOutputEncoding(targetEncoding);
-		resolver.setOutputType(targetFile != null ? Resolver.OutputType.File : Resolver.OutputType.Stdout);
+	public void configureValidator(Validator validator) {
+		validator.setPackagePath(packagePath);
+		validator.enableMarkerFileChecks();
+		validator.enablePropertyResolveChecks();
 	}
 }

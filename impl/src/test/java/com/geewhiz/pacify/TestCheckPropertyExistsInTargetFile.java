@@ -25,6 +25,7 @@ import java.util.List;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import com.geewhiz.pacify.checks.impl.CheckPlaceholderExistsInTargetFile;
 import com.geewhiz.pacify.defect.Defect;
 
 public class TestCheckPropertyExistsInTargetFile extends TestBase {
@@ -32,8 +33,7 @@ public class TestCheckPropertyExistsInTargetFile extends TestBase {
 	public void checkForNotCorrect() {
 		File testStartPath = new File("target/test-classes/checkPropertyExistsInTargetFileTest/wrong");
 
-		List<Defect> defects = getDefects(new com.geewhiz.pacify.checker.checks.CheckPropertyExistsInTargetFile(),
-		        testStartPath);
+		List<Defect> defects = getDefects(new CheckPlaceholderExistsInTargetFile(), testStartPath);
 
 		Assert.assertEquals(2, defects.size());
 	}
@@ -42,8 +42,7 @@ public class TestCheckPropertyExistsInTargetFile extends TestBase {
 	public void checkForCorrect() {
 		File testStartPath = new File("target/test-classes/checkPropertyExistsInTargetFileTest/correct");
 
-		List<Defect> defects = getDefects(new com.geewhiz.pacify.checker.checks.CheckPropertyExistsInTargetFile(),
-		        testStartPath);
+		List<Defect> defects = getDefects(new CheckPlaceholderExistsInTargetFile(), testStartPath);
 
 		Assert.assertEquals(0, defects.size());
 	}

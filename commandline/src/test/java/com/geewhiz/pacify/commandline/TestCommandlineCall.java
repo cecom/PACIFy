@@ -29,9 +29,9 @@ import com.geewhiz.pacify.TestUtil;
 public class TestCommandlineCall {
 
 	@Test
-	public void testAll() {
+	public void testReplace() {
 
-		String startPath = "target/test-classes/testAll";
+		String startPath = "target/test-classes/testReplace";
 
 		int result = PacifyViaCommandline.mainInternal(new String[] {
 		        "replace",
@@ -45,5 +45,33 @@ public class TestCommandlineCall {
 		Assert.assertEquals(result, 0, "Configuration returned with errors.");
 
 		TestUtil.checkIfResultIsAsExpected(new File(startPath));
+	}
+
+	@Test
+	public void testValidateMarkerFiles() {
+
+		String startPath = "target/test-classes/testValidate";
+
+		int result = PacifyViaCommandline.mainInternal(new String[] {
+		        "validateMarkerFiles",
+		        "--package=" + startPath
+		});
+
+		Assert.assertEquals(result, 0, "Validate returned with errors.");
+	}
+
+	@Test
+	public void testValidateWithProperties() {
+
+		String startPath = "target/test-classes/testValidate";
+
+		int result = PacifyViaCommandline.mainInternal(new String[] {
+		        "validate",
+		        "--resolvers=FileResolver",
+		        "--package=" + startPath,
+		        "-DFileResolver.file=" + startPath + "/myTest.properties"
+		});
+
+		Assert.assertEquals(result, 0, "Validate returned with errors.");
 	}
 }

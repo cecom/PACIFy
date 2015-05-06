@@ -1,7 +1,6 @@
 package com.geewhiz.pacify.commandline.commands;
 
 import java.io.File;
-import java.util.EnumMap;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
@@ -41,15 +40,14 @@ public class ReplacerCommand extends BasePropertyResolverCommand {
 	@Parameter(names = { "-cd", "--copyDestination" }, description = "Where to write the copy of the original package to. If not specified a folder with name of the package + _ + envName is created.", required = false)
 	private File copyDestination;
 
-	public EnumMap<Replacer.Parameter, Object> getCommandlineParameters() {
-		EnumMap<Replacer.Parameter, Object> result = new EnumMap<Replacer.Parameter, Object>(Replacer.Parameter.class);
-		result.put(Replacer.Parameter.EnvName, envName);
-		result.put(Replacer.Parameter.PackagePath, packagePath);
-		result.put(Replacer.Parameter.CreateCopy, createCopy);
+	public void configureReplacer(Replacer replacer) {
+		replacer.setEnvName(envName);
+		replacer.setPackagePath(packagePath);
+		replacer.setCreateCopy(createCopy);
+		replacer.setCopyDestination(copyDestination);
 		if (createCopy && copyDestination == null) {
 			copyDestination = new File(packagePath.getParentFile(), packagePath.getName() + "_" + envName);
-			result.put(Replacer.Parameter.CopyDestination, copyDestination);
+			replacer.setCopyDestination(copyDestination);
 		}
-		return result;
 	}
 }

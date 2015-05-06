@@ -20,7 +20,6 @@ package com.geewhiz.pacify.mavenplugin;
  */
 
 import java.io.File;
-import java.util.EnumMap;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -59,27 +58,15 @@ public class GenerateFinalPropertyFile extends BaseMojo {
 	 */
 	protected String propertyFileArtifact;
 
+	/**
+	 * the encoding of the output.
+	 * @parameter"
+	 */
+	private String encoding = "utf-8";
+
 	@Override
-	protected void executePFList() throws MojoExecutionException {
+	protected void executePacify() throws MojoExecutionException {
 		for (String propertyFile : propertyFiles.split(",")) {
-			EnumMap<Resolver.Parameter, Object> commandlineProperties = new EnumMap<Resolver.Parameter, Object>(
-			        Resolver.Parameter.class);
-			commandlineProperties.put(Resolver.Parameter.PropertyFileURL,
-			        getPropertyFileURL(propertyFileArtifact, propertyFile));
-
-			if (outputDirectory != null) {
-				if (!outputDirectory.exists()) {
-					outputDirectory.mkdirs();
-				}
-				File targetFile = new File(outputDirectory, propertyFile);
-				getLog().info("Creating final property file [" + targetFile.getPath() + "] ...");
-				commandlineProperties.put(Resolver.Parameter.OutputType, Resolver.OutputType.File);
-				commandlineProperties.put(Resolver.Parameter.TargetFile, targetFile);
-			} else {
-				getLog().info("Creating final property file [" + propertyFile + "] ...");
-				commandlineProperties.put(Resolver.Parameter.OutputType, Resolver.OutputType.Stdout);
-			}
-
 			FilePropertyResolver propertyResolver = new FilePropertyResolver(getPropertyFileURL(propertyFileArtifact,
 			        propertyFile));
 
@@ -88,9 +75,21 @@ public class GenerateFinalPropertyFile extends BaseMojo {
 
 			PropertyResolveManager propertyResolveManager = new PropertyResolveManager(propertyResolverList);
 
-			Resolver createResultPropertyFile = new Resolver(propertyResolveManager);
-			createResultPropertyFile.setParameters(commandlineProperties);
-			createResultPropertyFile.create();
+			Resolver resolver = createResolver(propertyResolveManager, propertyFile);
+			resolver.execute();
 		}
+	}
+
+	private Resolver createResolver(PropertyResolveManager propertyResolveManager, String propertyFile) {
+		if (outputDirectory != null && !outputDirectory.exists()) {
+			outputDirectory.mkdirs();
+		}
+
+		Resolver resolver = new Resolver(propertyResolveManager);
+		resolver.setTargetFile(new File(outputDirectory, propertyFile));
+		resolver.setOutputEncoding(encoding);
+		resolver.setOutputType(outputDirectory != null ? Resolver.OutputType.File : Resolver.OutputType.Stdout);
+
+		return resolver;
 	}
 }

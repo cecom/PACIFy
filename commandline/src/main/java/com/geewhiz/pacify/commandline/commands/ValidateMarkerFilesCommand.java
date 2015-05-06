@@ -1,4 +1,10 @@
-package com.geewhiz.pacify.checker;
+package com.geewhiz.pacify.commandline.commands;
+
+import java.io.File;
+
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.Parameters;
+import com.geewhiz.pacify.Validator;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,13 +25,14 @@ package com.geewhiz.pacify.checker;
  * under the License.
  */
 
-import java.util.List;
+@Parameters(separators = "=", commandDescription = "Used to validate the pacify marker files.")
+public class ValidateMarkerFilesCommand {
 
-import com.geewhiz.pacify.defect.Defect;
+	@Parameter(names = { "-p", "--package" }, description = "The package path which you want to verify.", required = true)
+	public File packagePath;
 
-public interface Check {
-    /**
-     * @return if there are defects, return a list with the defects.
-     */
-    List<Defect> checkForErrors();
+	public void configureValidator(Validator validator) {
+		validator.setPackagePath(packagePath);
+		validator.enableMarkerFileChecks();
+	}
 }

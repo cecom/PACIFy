@@ -25,7 +25,7 @@ import java.util.List;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import com.geewhiz.pacify.checker.checks.CheckPropertyDuplicateDefinedInPFList;
+import com.geewhiz.pacify.checks.impl.CheckPropertyDuplicateDefinedInPacifyFile;
 import com.geewhiz.pacify.defect.Defect;
 
 public class TestCheckPropertyDuplicateDefinedInPFList extends TestBase {
@@ -34,7 +34,7 @@ public class TestCheckPropertyDuplicateDefinedInPFList extends TestBase {
 	public void checkForNotCorrect() {
 		File testStartPath = new File("target/test-classes/checkPropertyDuplicateDefinedInPfListCheck/wrong");
 
-		List<Defect> defects = getDefects(new CheckPropertyDuplicateDefinedInPFList(), testStartPath);
+		List<Defect> defects = getDefects(new CheckPropertyDuplicateDefinedInPacifyFile(), testStartPath);
 
 		Assert.assertEquals(1, defects.size());
 	}
@@ -43,7 +43,7 @@ public class TestCheckPropertyDuplicateDefinedInPFList extends TestBase {
 	public void checkForCorrect() {
 		File testStartPath = new File("target/test-classes/checkPropertyDuplicateDefinedInPfListCheck/correct");
 
-		List<Defect> defects = getDefects(new CheckPropertyDuplicateDefinedInPFList(), testStartPath);
+		List<Defect> defects = getDefects(new CheckPropertyDuplicateDefinedInPacifyFile(), testStartPath);
 
 		Assert.assertEquals(0, defects.size());
 	}

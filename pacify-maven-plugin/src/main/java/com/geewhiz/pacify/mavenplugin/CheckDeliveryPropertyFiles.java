@@ -27,8 +27,8 @@ import java.util.TreeSet;
 
 import org.apache.maven.plugin.MojoExecutionException;
 
-import com.geewhiz.pacify.checker.checks.CheckPropertyDuplicateInPropertyFile;
-import com.geewhiz.pacify.checker.checks.CheckPropertyExists;
+import com.geewhiz.pacify.checks.impl.CheckPropertyDuplicateInPropertyFile;
+import com.geewhiz.pacify.checks.impl.CheckPropertyExists;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.model.EntityManager;
 import com.geewhiz.pacify.model.PMarker;
@@ -65,7 +65,7 @@ public class CheckDeliveryPropertyFiles extends BaseMojo {
 	protected String propertyFileArtifact;
 
 	@Override
-	protected void executePFList() throws MojoExecutionException {
+	protected void executePacify() throws MojoExecutionException {
 		if (!pfListStartPath.exists()) {
 			File outputDirectory = new File(project.getModel().getBuild().getOutputDirectory());
 			if (pfListStartPath.equals(outputDirectory)) {

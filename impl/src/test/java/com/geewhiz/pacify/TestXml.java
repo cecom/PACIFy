@@ -34,18 +34,18 @@ public class TestXml {
 	public void testAll() {
 		File source = new File("target/test-classes/testXml");
 
-		EntityManager pfEntityManager = new EntityManager(source);
+		EntityManager entityManager = new EntityManager(source);
 
-		PMarker pfListEntity = pfEntityManager.getPMarkers().get(0);
+		PMarker pMarker = entityManager.getPMarkers().get(0);
 
-		assertEquals(pfListEntity.getProperties().size(), 2);
+		assertEquals(pMarker.getProperties().size(), 2);
 
-		assertEquals("foobar1", pfListEntity.getProperties().get(0).getName());
-		assertEquals("foobar2", pfListEntity.getProperties().get(1).getName());
+		assertEquals("foobar1", pMarker.getProperties().get(0).getName());
+		assertEquals("foobar2", pMarker.getProperties().get(1).getName());
 
-		assertEquals("someConf.conf", pfListEntity.getProperties().get(0).getFiles().get(0).getPath());
-		assertEquals("subfolder/someOtherConf.conf", pfListEntity.getProperties().get(0).getFiles().get(1).getPath());
-		assertEquals("someParentConf.conf", pfListEntity.getProperties().get(1).getFiles().get(0).getPath());
+		assertEquals("someConf.conf", pMarker.getProperties().get(0).getFiles().get(0).getPath());
+		assertEquals("subfolder/someOtherConf.conf", pMarker.getProperties().get(0).getFiles().get(1).getPath());
+		assertEquals("someParentConf.conf", pMarker.getProperties().get(1).getFiles().get(0).getPath());
 
 	}
 }

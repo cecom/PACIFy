@@ -52,7 +52,7 @@ public class LoadPropertyFileIntoMavenMojo extends BaseMojo {
 	protected String propertyFile;
 
 	@Override
-	protected void executePFList() throws MojoExecutionException {
+	protected void executePacify() throws MojoExecutionException {
 		URL propertyFileURL = getPropertyFileURL(propertyFileArtifact, propertyFile);
 
 		FilePropertyResolver propertyResolver = new FilePropertyResolver(propertyFileURL);

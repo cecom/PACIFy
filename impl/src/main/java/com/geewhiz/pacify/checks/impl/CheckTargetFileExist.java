@@ -1,4 +1,4 @@
-package com.geewhiz.pacify.checker.checks;
+package com.geewhiz.pacify.checks.impl;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -21,31 +21,26 @@ package com.geewhiz.pacify.checker.checks;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import com.geewhiz.pacify.checker.PMarkerCheck;
+import com.geewhiz.pacify.checks.PMarkerCheck;
 import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.defect.PropertyDoesNotExistInTargetFileDefect;
+import com.geewhiz.pacify.defect.TargetFileDoesNotExistDefect;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.model.PProperty;
-import com.geewhiz.pacify.replacer.PropertyFileReplacer;
-import com.geewhiz.pacify.utils.FileUtils;
 
-public class CheckPropertyExistsInTargetFile implements PMarkerCheck {
+public class CheckTargetFileExist implements PMarkerCheck {
 
-	public List<Defect> checkForErrors(PMarker pMarker) {
+	public List<Defect> checkForErrors(PMarker pfListEntity) {
 		List<Defect> defects = new ArrayList<Defect>();
 
-		for (PProperty pproperty : pMarker.getProperties()) {
+		for (PProperty pproperty : pfListEntity.getProperties()) {
 			for (PFile pfile : pproperty.getFiles()) {
-				java.io.File file = pMarker.getAbsoluteFileFor(pfile);
-				boolean exists = doesPropertyExistInFile(pproperty, file);
-				if (exists) {
+				java.io.File file = pfListEntity.getAbsoluteFileFor(pfile);
+				if (file.exists() && file.isFile()) {
 					continue;
 				}
-				Defect defect = new PropertyDoesNotExistInTargetFileDefect(pMarker, pproperty, pfile);
+				Defect defect = new TargetFileDoesNotExistDefect(pfListEntity, pproperty, pfile);
 				defects.add(defect);
 			}
 		}
@@ -53,12 +48,4 @@ public class CheckPropertyExistsInTargetFile implements PMarkerCheck {
 		return defects;
 	}
 
-	public boolean doesPropertyExistInFile(PProperty pproperty, java.io.File file) {
-		String fileContent = FileUtils.getFileInOneString(file);
-
-		Pattern pattern = PropertyFileReplacer.getPattern(pproperty.getName(), true);
-		Matcher matcher = pattern.matcher(fileContent);
-
-		return matcher.find();
-	}
 }

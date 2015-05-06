@@ -1,4 +1,4 @@
-package com.geewhiz.pacify.checker;
+package com.geewhiz.pacify;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,16 +19,7 @@ package com.geewhiz.pacify.checker;
  * under the License.
  */
 
-import java.util.List;
+public class MarkerFileValidator {
 
-import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.model.PMarker;
-
-public interface PMarkerCheck {
-
-    /**
-     * @param pmarker which pfList should be checked?
-     * @return if there are defects, return a list with the defects.
-     */
-    List<Defect> checkForErrors(PMarker pmarker);
 }
+

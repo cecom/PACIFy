@@ -1,4 +1,4 @@
-package com.geewhiz.pacify;
+package com.geewhiz.pacify.checks.impl;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,25 +19,37 @@ package com.geewhiz.pacify;
  * under the License.
  */
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.geewhiz.pacify.checks.PMarkerCheck;
 import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.model.EntityManager;
+import com.geewhiz.pacify.defect.PropertyNotDefinedDefect;
 import com.geewhiz.pacify.model.PMarker;
+import com.geewhiz.pacify.model.PProperty;
+import com.geewhiz.pacify.property.PropertyResolveManager;
 
-public abstract class TestBase {
+public class CheckPropertyExists implements PMarkerCheck {
 
-	protected List<Defect> getDefects(PMarkerCheck checker, File testStartPath) {
-		EntityManager entityManager = new EntityManager(testStartPath);
+	private PropertyResolveManager propertyResolveManager;
 
-		List<Defect> defects = new ArrayList<Defect>();
-		for (PMarker pMarker : entityManager.getPMarkers()) {
-			defects.addAll(checker.checkForErrors(pMarker));
-		}
-		return defects;
+	public CheckPropertyExists(PropertyResolveManager propertyResolveManager) {
+		this.propertyResolveManager = propertyResolveManager;
 	}
 
+	public List<Defect> checkForErrors(PMarker pfListEntity) {
+		List<Defect> defects = new ArrayList<Defect>();
+
+		List<PProperty> pfPropertyEntities = pfListEntity.getProperties();
+		for (PProperty pfPropertyEntity : pfPropertyEntities) {
+			if (propertyResolveManager.containsProperty(pfPropertyEntity.getName())) {
+				continue;
+			}
+			Defect defect = new PropertyNotDefinedDefect(pfListEntity, pfPropertyEntity,
+			        propertyResolveManager.toString());
+			defects.add(defect);
+		}
+
+		return defects;
+	}
 }

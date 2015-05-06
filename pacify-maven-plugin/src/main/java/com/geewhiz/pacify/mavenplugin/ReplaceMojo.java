@@ -26,7 +26,10 @@ import java.util.TreeSet;
 
 import org.apache.maven.plugin.MojoExecutionException;
 
+import com.geewhiz.pacify.Replacer;
+import com.geewhiz.pacify.Validator;
 import com.geewhiz.pacify.defect.Defect;
+import com.geewhiz.pacify.defect.DefectUtils;
 import com.geewhiz.pacify.model.EntityManager;
 import com.geewhiz.pacify.property.MavenPropertyContainer;
 import com.geewhiz.pacify.property.PropertyResolveManager;
@@ -43,7 +46,7 @@ public class ReplaceMojo extends BaseMojo {
 	 * @parameter default-value="${project.build.outputDirectory}"
 	 * @required
 	 */
-	private File pfListStartPath;
+	private File startPath;
 
 	/**
 	 * should we use the maven properties instead of a file?
@@ -68,22 +71,22 @@ public class ReplaceMojo extends BaseMojo {
 	protected String propertyFileArtifact;
 
 	@Override
-	protected void executePFList() throws MojoExecutionException {
-		if (!pfListStartPath.exists()) {
+	protected void executePacify() throws MojoExecutionException {
+		if (!startPath.exists()) {
 			File outputDirectory = new File(project.getModel().getBuild().getOutputDirectory());
-			if (pfListStartPath.equals(outputDirectory)) {
-				getLog().debug("Directory [" + pfListStartPath.getAbsolutePath() + "] does  not exists. Nothing to do.");
+			if (startPath.equals(outputDirectory)) {
+				getLog().debug("Directory [" + startPath.getAbsolutePath() + "] does  not exists. Nothing to do.");
 				return; // if it is a maven project which doesn't have a target folder, do nothing.
 			}
-			throw new MojoExecutionException("The folder [" + pfListStartPath.getAbsolutePath() + "] does not exist.");
+			throw new MojoExecutionException("The folder [" + startPath.getAbsolutePath() + "] does not exist.");
 		}
 
-		EntityManager pfEntityManager = new EntityManager(pfListStartPath);
-		if (pfEntityManager.getPMarkerCount() == 0) {
+		EntityManager entityManager = new EntityManager(startPath);
+		if (entityManager.getPMarkerCount() == 0) {
 			getLog().info("No pflist files found. Nothing to do.");
 			return;
 		}
-		getLog().info("Found [" + pfEntityManager.getPMarkerCount() + "] PFList Files...");
+		getLog().info("Found [" + entityManager.getPMarkerCount() + "] PFList Files...");
 
 		PropertyResolver propertyResolver;
 		if (useMavenProperties) {
@@ -102,23 +105,25 @@ public class ReplaceMojo extends BaseMojo {
 
 		PropertyResolveManager propertyResolveManager = new PropertyResolveManager(propertyResolverList);
 
-		List<Defect> defects = pfEntityManager.validate(propertyResolveManager);
-		checkDefects(defects);
+		getLog().info("Validating ...");
+		List<Defect> defects = createValidator(propertyResolveManager).validateInternal(entityManager);
+		DefectUtils.abortIfDefectExists(defects);
 
 		getLog().info("Doing Replacement...");
-		defects = pfEntityManager.doReplacement(propertyResolveManager);
-		checkDefects(defects);
+		defects = createReplacer(propertyResolveManager).doReplacement(entityManager);
+		DefectUtils.abortIfDefectExists(defects);
 	}
 
-	private void checkDefects(List<Defect> defects) throws MojoExecutionException {
-		if (defects.isEmpty()) {
-			return;
-		}
-		getLog().error("==== !!!!!! We got Errors !!!!! ...");
-		for (Defect defect : defects) {
-			getLog().error(defect.getDefectMessage());
-		}
-		throw new MojoExecutionException("We got errors... Aborting!");
+	private Replacer createReplacer(PropertyResolveManager propertyResolveManager) {
+		Replacer replacer = new Replacer(propertyResolveManager);
+		return replacer;
 	}
 
+	private Validator createValidator(PropertyResolveManager propertyResolveManager) {
+		Validator validator = new Validator(propertyResolveManager);
+		validator.setPackagePath(startPath);
+		validator.enableMarkerFileChecks();
+		validator.enablePropertyResolveChecks();
+		return validator;
+	}
 }

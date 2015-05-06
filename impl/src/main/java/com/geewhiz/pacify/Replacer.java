@@ -21,7 +21,7 @@ package com.geewhiz.pacify;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.EnumMap;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -29,38 +29,37 @@ import org.slf4j.Logger;
 
 import com.geewhiz.pacify.common.logger.Log;
 import com.geewhiz.pacify.defect.Defect;
+import com.geewhiz.pacify.defect.DefectUtils;
 import com.geewhiz.pacify.model.EntityManager;
+import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.property.PropertyResolveManager;
+import com.geewhiz.pacify.replacer.PropertyMarkerFileReplacer;
 import com.geewhiz.pacify.utils.Utils;
 import com.google.inject.Inject;
 
 public class Replacer {
 
-	public enum Parameter {
-		EnvName, PackagePath, CreateCopy, CopyDestination
-	}
-
 	private PropertyResolveManager propertyResolveManager;
-	private EnumMap<Parameter, Object> parameters;
 	private Logger logger = Log.getInstance();
+	private String envName;
+	private File packagePath;
+	private Boolean createCopy;
+	private File copyDestination;
 
 	@Inject
 	public Replacer(PropertyResolveManager propertyResolveManager) {
 		this.propertyResolveManager = propertyResolveManager;
 	}
 
-	public void setParameters(EnumMap<Parameter, Object> parameters) {
-		this.parameters = parameters;
-		logger.info("== Executing PFListPropertyReplacer [Version=" + Utils.getJarVersion() + "]");
+	public void execute() {
+		logger.info("== Executing Replacer [Version=" + Utils.getJarVersion() + "]");
 		logger.info("     [PackagePath=" + getPackagePath().getAbsolutePath() + "]");
 		logger.info("     [EnvName=" + getEnvName() + "]");
 		logger.info("     [CreateCopy=" + isCreateCopy() + "]");
 		if (isCreateCopy()) {
 			logger.info("     [Destination=" + getCopyDestination().getAbsolutePath() + "]");
 		}
-	}
 
-	public void replace() {
 		if (isCreateCopy()) {
 			createCopy();
 		}
@@ -69,39 +68,49 @@ public class Replacer {
 
 		EntityManager entityManager = new EntityManager(pathToConfigure);
 
-		logger.info("==== Found [" + entityManager.getPMarkerCount() + "] pacify Files...");
+		logger.info("==== Found [" + entityManager.getPMarkerCount() + "] pacify files...");
+		logger.info("==== Validating ...");
 
-		logger.info("==== Checking pacify files...");
-		List<Defect> defects = entityManager.validate(propertyResolveManager);
-		shouldWeAbortIt(defects);
+		List<Defect> defects = createValidator().validateInternal(entityManager);
+		DefectUtils.abortIfDefectExists(defects);
 
 		logger.info("==== Doing Replacement...");
-		defects = entityManager.doReplacement(propertyResolveManager);
-		shouldWeAbortIt(defects);
+		defects = doReplacement(entityManager);
+		DefectUtils.abortIfDefectExists(defects);
 
 		logger.info("== Successfully finished...");
 	}
 
-	private String getEnvName() {
-		return (String) parameters.get(Parameter.EnvName);
+	public String getEnvName() {
+		return envName;
+	}
+
+	public void setEnvName(String envName) {
+		this.envName = envName;
 	}
 
 	public File getPackagePath() {
-		return (File) parameters.get(Parameter.PackagePath);
+		return packagePath;
+	}
+
+	public void setPackagePath(File packagePath) {
+		this.packagePath = packagePath;
 	}
 
 	public Boolean isCreateCopy() {
-		if (parameters.get(Parameter.CreateCopy) == null) {
-			throw new IllegalArgumentException("Parameter.CreateCopy not defined.");
-		}
-		return (Boolean) parameters.get(Parameter.CreateCopy);
+		return createCopy;
+	}
+
+	public void setCreateCopy(Boolean createCopy) {
+		this.createCopy = createCopy;
 	}
 
 	public File getCopyDestination() {
-		if (parameters.get(Parameter.CopyDestination) == null) {
-			throw new IllegalArgumentException("No copy destination defined.");
-		}
-		return (File) parameters.get(Parameter.CopyDestination);
+		return copyDestination;
+	}
+
+	public void setCopyDestination(File copyDestination) {
+		this.copyDestination = copyDestination;
 	}
 
 	private void createCopy() {
@@ -112,15 +121,22 @@ public class Replacer {
 		}
 	}
 
-	private void shouldWeAbortIt(List<Defect> defects) {
-		if (defects.isEmpty()) {
-			return;
+	public List<Defect> doReplacement(EntityManager entityManager) {
+		List<Defect> defects = new ArrayList<Defect>();
+		for (PMarker pMarker : entityManager.getPMarkers()) {
+			logger.info("====== Replacing stuff which is configured in [" + pMarker.getFile().getPath()
+			        + "] ...");
+			PropertyMarkerFileReplacer propertyReplacer = new PropertyMarkerFileReplacer(propertyResolveManager, pMarker);
+			defects.addAll(propertyReplacer.replace());
 		}
+		return defects;
+	}
 
-		logger.error("==== !!!!!! We got Errors !!!!! ...");
-		for (Defect defect : defects) {
-			logger.error(defect.getDefectMessage());
-		}
-		throw new RuntimeException("We got errors... Aborting!");
+	private Validator createValidator() {
+		Validator validator = new Validator(propertyResolveManager);
+		validator.setPackagePath(packagePath);
+		validator.enableMarkerFileChecks();
+		validator.enablePropertyResolveChecks();
+		return validator;
 	}
 }

@@ -22,7 +22,6 @@ package com.geewhiz.pacify;
 import static org.testng.AssertJUnit.assertTrue;
 
 import java.io.File;
-import java.util.EnumMap;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -41,23 +40,23 @@ public class TestRecursivePropertyReplacement {
 
 		assertTrue("StartPath [" + startPath.getPath() + "] doesn't exist!", startPath.exists());
 
-		EnumMap<Replacer.Parameter, Object> commandlineProperties = new EnumMap<Replacer.Parameter, Object>(
-		        Replacer.Parameter.class);
-		commandlineProperties.put(Replacer.Parameter.PackagePath, startPath);
-		commandlineProperties.put(Replacer.Parameter.CreateCopy, Boolean.FALSE);
+		PropertyResolveManager propertyResolveManager = getPropertyResolveManager(myTestProperty);
 
+		Replacer replacer = new Replacer(propertyResolveManager);
+		replacer.setPackagePath(startPath);
+		replacer.setCreateCopy(Boolean.FALSE);
+		replacer.execute();
+
+		TestUtil.checkIfResultIsAsExpected(startPath);
+	}
+
+	private PropertyResolveManager getPropertyResolveManager(File myTestProperty) {
 		FilePropertyResolver filePropertyResolver = new FilePropertyResolver(TestUtil.getURLForFile(myTestProperty));
 
 		Set<PropertyResolver> resolverList = new TreeSet<PropertyResolver>();
 		resolverList.add(filePropertyResolver);
 
 		PropertyResolveManager propertyResolveManager = new PropertyResolveManager(resolverList);
-
-		Replacer pfListPropertyReplacer = new Replacer(propertyResolveManager);
-
-		pfListPropertyReplacer.setParameters(commandlineProperties);
-		pfListPropertyReplacer.replace();
-
-		TestUtil.checkIfResultIsAsExpected(startPath);
+		return propertyResolveManager;
 	}
 }

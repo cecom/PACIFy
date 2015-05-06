@@ -83,10 +83,10 @@ public abstract class BaseMojo extends AbstractMojo {
 			return;
 		}
 
-		executePFList();
+		executePacify();
 	}
 
-	protected abstract void executePFList() throws MojoExecutionException;
+	protected abstract void executePacify() throws MojoExecutionException;
 
 	protected URL getPropertyFileURL(String propertyFileArtifact, String propertyFile) throws MojoExecutionException {
 		if (propertyFile == null) {

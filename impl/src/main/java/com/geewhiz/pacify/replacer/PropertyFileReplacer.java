@@ -31,7 +31,7 @@ import org.apache.tools.ant.types.FilterSetCollection;
 import org.apache.tools.ant.util.FileUtils;
 import org.slf4j.Logger;
 
-import com.geewhiz.pacify.checker.checks.CheckForNotReplacedTokens;
+import com.geewhiz.pacify.checks.impl.CheckForNotReplacedTokens;
 import com.geewhiz.pacify.common.logger.Log;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.property.PropertyResolveManager;
@@ -57,7 +57,7 @@ public class PropertyFileReplacer {
 
 		try {
 			String encoding = Utils.getEncoding(file);
-			FileUtils.getFileUtils().copyFile(file, tmpFile, getFilterSetCollection(propertyResolveManager),
+			FileUtils.getFileUtils().copyFile(file, tmpFile, getFilterSetCollection(),
 			        true, true,
 			        encoding);
 			logger.info("Using  encoding [" + encoding + "] for  File  [" + file.getAbsolutePath() + "]");
@@ -77,8 +77,8 @@ public class PropertyFileReplacer {
 		return defects;
 	}
 
-	private FilterSetCollection getFilterSetCollection(PropertyResolveManager propertyResolveManager) {
-		FilterSet filterSet = getFilterSet(propertyResolveManager);
+	private FilterSetCollection getFilterSetCollection() {
+		FilterSet filterSet = getFilterSet();
 
 		FilterSetCollection executionFilters = new FilterSetCollection();
 		executionFilters.addFilterSet(filterSet);
@@ -86,13 +86,13 @@ public class PropertyFileReplacer {
 		return executionFilters;
 	}
 
-	private FilterSet getFilterSet(PropertyResolveManager propertyResolveManager) {
+	private FilterSet getFilterSet() {
 		FilterSet filterSet = new FilterSet();
 
 		filterSet.setBeginToken(BEGIN_TOKEN);
 		filterSet.setEndToken(END_TOKEN);
 
-		for (Enumeration e = propertyResolveManager.getProperties().propertyNames(); e.hasMoreElements();) {
+		for (Enumeration<?> e = propertyResolveManager.getProperties().propertyNames(); e.hasMoreElements();) {
 			String propertyId = (String) e.nextElement();
 			String propertyValue = propertyResolveManager.getPropertyValue(propertyId);
 

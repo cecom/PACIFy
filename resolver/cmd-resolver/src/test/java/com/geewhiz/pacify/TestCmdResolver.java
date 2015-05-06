@@ -22,7 +22,6 @@ package com.geewhiz.pacify;
 import static org.testng.AssertJUnit.assertTrue;
 
 import java.io.File;
-import java.util.EnumMap;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
@@ -42,14 +41,10 @@ public class TestCmdResolver {
 
 		PropertyResolveManager propertyResolveManager = getPropertyResolveManager(startPath);
 
-		EnumMap<Replacer.Parameter, Object> commandlineProperties =
-		        new EnumMap<Replacer.Parameter, Object>(Replacer.Parameter.class);
-		commandlineProperties.put(Replacer.Parameter.PackagePath, startPath);
-		commandlineProperties.put(Replacer.Parameter.CreateCopy, Boolean.FALSE);
-
 		Replacer replacer = new Replacer(propertyResolveManager);
-		replacer.setParameters(commandlineProperties);
-		replacer.replace();
+		replacer.setPackagePath(startPath);
+		replacer.setCreateCopy(Boolean.FALSE);
+		replacer.execute();
 
 		TestUtil.checkIfResultIsAsExpected(startPath);
 	}

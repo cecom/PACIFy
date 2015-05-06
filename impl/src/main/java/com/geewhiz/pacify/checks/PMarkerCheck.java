@@ -1,4 +1,4 @@
-package com.geewhiz.pacify.checker.checks;
+package com.geewhiz.pacify.checks;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,26 +19,16 @@ package com.geewhiz.pacify.checker.checks;
  * under the License.
  */
 
-import java.util.ArrayList;
 import java.util.List;
 
-import com.geewhiz.pacify.checker.Check;
 import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.property.PropertyResolveManager;
+import com.geewhiz.pacify.model.PMarker;
 
-public class CheckPropertyDuplicateInPropertyFile implements Check {
+public interface PMarkerCheck {
 
-	PropertyResolveManager propertyResolveManager;
-
-	public CheckPropertyDuplicateInPropertyFile(PropertyResolveManager propertyResolveManager) {
-		this.propertyResolveManager = propertyResolveManager;
-	}
-
-	public List<Defect> checkForErrors() {
-		List<Defect> defects = new ArrayList<Defect>();
-
-		defects.addAll(propertyResolveManager.checkForDuplicateEntry());
-
-		return defects;
-	}
+	/**
+	 * @param pmarker which pfList should be checked?
+	 * @return if there are defects, return a list with the defects.
+	 */
+	List<Defect> checkForErrors(PMarker pmarker);
 }

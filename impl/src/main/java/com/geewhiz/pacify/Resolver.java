@@ -27,7 +27,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.util.EnumMap;
 import java.util.Enumeration;
 
 import org.slf4j.Logger;
@@ -40,29 +39,24 @@ import com.google.inject.Inject;
 
 public class Resolver {
 
-	public enum Parameter {
-		PropertyFileURL, TargetFile, OutputType, OutputEncodingType
-	}
-
 	public enum OutputType {
 		Stdout, File
 	}
 
-	private PropertyResolveManager propertyResolveManager;
 	private Logger logger = Log.getInstance();
-	private EnumMap<Parameter, Object> parameters;
+
+	private PropertyResolveManager propertyResolveManager;
+	private OutputType outputType;
+	private File targetFile;
+	private String outputEncoding;
 
 	@Inject
 	public Resolver(PropertyResolveManager propertyResolveManager) {
 		this.propertyResolveManager = propertyResolveManager;
 	}
 
-	public void setParameters(EnumMap<Parameter, Object> parameters) {
-		this.parameters = parameters;
-	}
-
-	public void create() {
-		logger.info("== Executing CreateResultPropertyFile [Version=" + Utils.getJarVersion() + "]");
+	public void execute() {
+		logger.info("== Executing Resolver [Version=" + Utils.getJarVersion() + "]");
 		logger.info("     [PropertyResolver=" + propertyResolveManager.toString() + "]");
 
 		if (getOutputType() == OutputType.File) {
@@ -76,7 +70,7 @@ public class Resolver {
 		try {
 			out = new PrintWriter(
 			        new OutputStreamWriter(new FileOutputStream(tmpFile), getOutputEncodingType()), false);
-			for (Enumeration e = propertyResolveManager.getProperties().propertyNames(); e.hasMoreElements();) {
+			for (Enumeration<?> e = propertyResolveManager.getProperties().propertyNames(); e.hasMoreElements();) {
 				String propertyId = (String) e.nextElement();
 				String propertyValue = propertyResolveManager.getPropertyValue(propertyId);
 
@@ -133,22 +127,34 @@ public class Resolver {
 
 	private File createTempFile() {
 		try {
-			return File.createTempFile("pftmp", "properties");
+			return File.createTempFile("pacifytmp", "properties");
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	private String getOutputEncodingType() {
-		return (String) parameters.get(Resolver.Parameter.OutputEncodingType);
+	public String getOutputEncodingType() {
+		return outputEncoding;
 	}
 
-	private OutputType getOutputType() {
-		return (OutputType) parameters.get(Resolver.Parameter.OutputType);
+	public void setOutputEncoding(String encoding) {
+		this.outputEncoding = encoding;
 	}
 
-	private File getTargetFile() {
-		return (File) parameters.get(Resolver.Parameter.TargetFile);
+	public OutputType getOutputType() {
+		return outputType;
+	}
+
+	public void setOutputType(OutputType outputType) {
+		this.outputType = outputType;
+	}
+
+	public File getTargetFile() {
+		return targetFile;
+	}
+
+	public void setTargetFile(File file) {
+		this.targetFile = file;
 	}
 
 }

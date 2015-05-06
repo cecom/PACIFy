@@ -1,4 +1,4 @@
-package com.geewhiz.pacify.checker.checks;
+package com.geewhiz.pacify.checks.impl;
 
 import java.io.File;
 import java.util.ArrayList;

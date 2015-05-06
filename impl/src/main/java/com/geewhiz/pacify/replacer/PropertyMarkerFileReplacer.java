@@ -32,7 +32,7 @@ import org.apache.tools.ant.types.FilterSetCollection;
 import org.apache.tools.ant.util.FileUtils;
 import org.slf4j.Logger;
 
-import com.geewhiz.pacify.checker.checks.CheckForNotReplacedTokens;
+import com.geewhiz.pacify.checks.impl.CheckForNotReplacedTokens;
 import com.geewhiz.pacify.common.logger.Log;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.model.PFile;
@@ -41,16 +41,16 @@ import com.geewhiz.pacify.model.PProperty;
 import com.geewhiz.pacify.property.PropertyResolveManager;
 import com.geewhiz.pacify.utils.Utils;
 
-public class PropertyPFReplacer {
+public class PropertyMarkerFileReplacer {
 
 	private PropertyResolveManager propertyResolveManager;
 	private PMarker pMarker;
 
 	Logger logger = Log.getInstance();
 
-	public PropertyPFReplacer(PropertyResolveManager propertyResolveManager, PMarker pfListEntity) {
+	public PropertyMarkerFileReplacer(PropertyResolveManager propertyResolveManager, PMarker pMarker) {
 		this.propertyResolveManager = propertyResolveManager;
-		this.pMarker = pfListEntity;
+		this.pMarker = pMarker;
 	}
 
 	public List<Defect> replace() {
@@ -117,7 +117,7 @@ public class PropertyPFReplacer {
 			Set<String> propertyResolvePath = new TreeSet<String>();
 			propertyResolvePath.add(propertyName);
 
-			// if a property contains another property which is not in the CMFile.pacify file, we have to add the other
+			// if a property contains another property which is not in the marker file, we have to add the other
 			// property too.
 			for (String referencedPropertyId : getAllReferencedPropertyIds(propertyResolvePath, propertyName,
 			        propertyValue)) {

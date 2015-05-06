@@ -1,4 +1,6 @@
-package com.geewhiz.pacify;
+package com.geewhiz.pacify.defect;
+
+import java.util.List;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,32 +21,19 @@ package com.geewhiz.pacify;
  * under the License.
  */
 
-import java.io.File;
-import java.util.List;
+public class DefectUtils {
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
+	public static void abortIfDefectExists(List<Defect> defects) {
+		if (defects.isEmpty()) {
+			return;
+		}
 
-import com.geewhiz.pacify.defect.Defect;
-
-public class TestCheckTargetFileExist extends TestBase {
-
-	@Test
-	public void checkForNotCorrect() {
-		File testStartPath = new File("target/test-classes/checkTargetFileExistTest/wrong");
-
-		List<Defect> defects = getDefects(new com.geewhiz.pacify.checks.impl.CheckTargetFileExist(), testStartPath);
-
-		Assert.assertEquals(2, defects.size());
+		// TODO: logger
+		// logger.error("==== !!!!!! We got Errors !!!!! ...");
+		System.out.println("==== !!!!!! We got Errors !!!!! ...");
+		for (Defect defect : defects) {
+			System.out.println(defect.getDefectMessage());
+		}
+		throw new RuntimeException("We got errors... Aborting!");
 	}
-
-	@Test
-	public void checkForCorrect() {
-		File testStartPath = new File("target/test-classes/checkTargetFileExistTest/correct");
-
-		List<Defect> defects = getDefects(new com.geewhiz.pacify.checks.impl.CheckTargetFileExist(), testStartPath);
-
-		Assert.assertEquals(0, defects.size());
-	}
-
 }

@@ -29,17 +29,13 @@ import javax.xml.bind.Unmarshaller;
 
 import org.slf4j.Logger;
 
-import com.geewhiz.pacify.checker.PacifyChecker;
 import com.geewhiz.pacify.common.logger.Log;
-import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.model.utils.PacifyFilesFinder;
-import com.geewhiz.pacify.property.PropertyResolveManager;
-import com.geewhiz.pacify.replacer.PropertyPFReplacer;
 
 public class EntityManager {
 
 	private File startPath;
-	private List<PMarker> pacifyList;
+	private List<PMarker> pMarkers;
 
 	Logger logger = Log.getInstance();
 
@@ -51,34 +47,12 @@ public class EntityManager {
 		return getPMarkers().size();
 	}
 
-	public List<Defect> validate(PropertyResolveManager propertyResolveManager) {
-		PacifyChecker pacifyChecker = new PacifyChecker(propertyResolveManager);
-
-		List<Defect> defects = new ArrayList<Defect>();
-		for (PMarker pMarker : getPMarkers()) {
-			defects.addAll(pacifyChecker.check(pMarker));
-		}
-
-		return defects;
-	}
-
-	public List<Defect> doReplacement(PropertyResolveManager propertyResolveManager) {
-		List<Defect> defects = new ArrayList<Defect>();
-		for (PMarker pMarker : getPMarkers()) {
-			logger.info("====== Replacing stuff which is configured in [" + pMarker.getFile().getPath()
-			        + "] ...");
-			PropertyPFReplacer propertyReplacer = new PropertyPFReplacer(propertyResolveManager, pMarker);
-			defects.addAll(propertyReplacer.replace());
-		}
-		return defects;
-	}
-
 	public List<PMarker> getPMarkers() {
-		if (pacifyList != null) {
-			return pacifyList;
+		if (pMarkers != null) {
+			return pMarkers;
 		}
 
-		pacifyList = new ArrayList<PMarker>();
+		pMarkers = new ArrayList<PMarker>();
 
 		List<File> pacifyFiles = new PacifyFilesFinder(startPath).getPacifyFiles();
 
@@ -94,12 +68,12 @@ public class EntityManager {
 				Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
 				PMarker pMarker = (PMarker) jaxbUnmarshaller.unmarshal(file);
 				pMarker.setFile(file);
-				pacifyList.add(pMarker);
+				pMarkers.add(pMarker);
 			} catch (Exception e) {
 				throw new RuntimeException("Couldn't read xml file [" + file.getPath() + "].", e);
 			}
 		}
 
-		return pacifyList;
+		return pMarkers;
 	}
 }

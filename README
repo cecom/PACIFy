@@ -8,3 +8,4 @@
 - maven plugin auf 3.0 umstellen
 - fileutils aufräumen
 - Ausgabe vom replacen anpassen und schick machen
+- löschen der pacify files nach ersetzung

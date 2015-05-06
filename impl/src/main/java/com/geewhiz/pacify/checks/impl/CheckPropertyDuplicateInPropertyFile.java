@@ -1,4 +1,4 @@
-package com.geewhiz.pacify.checker.checks;
+package com.geewhiz.pacify.checks.impl;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -22,33 +22,22 @@ package com.geewhiz.pacify.checker.checks;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.geewhiz.pacify.checker.PMarkerCheck;
+import com.geewhiz.pacify.checks.Check;
 import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.defect.PropertyNotDefinedDefect;
-import com.geewhiz.pacify.model.PMarker;
-import com.geewhiz.pacify.model.PProperty;
 import com.geewhiz.pacify.property.PropertyResolveManager;
 
-public class CheckPropertyExists implements PMarkerCheck {
+public class CheckPropertyDuplicateInPropertyFile implements Check {
 
-	private PropertyResolveManager propertyResolveManager;
+	PropertyResolveManager propertyResolveManager;
 
-	public CheckPropertyExists(PropertyResolveManager propertyResolveManager) {
+	public CheckPropertyDuplicateInPropertyFile(PropertyResolveManager propertyResolveManager) {
 		this.propertyResolveManager = propertyResolveManager;
 	}
 
-	public List<Defect> checkForErrors(PMarker pfListEntity) {
+	public List<Defect> checkForErrors() {
 		List<Defect> defects = new ArrayList<Defect>();
 
-		List<PProperty> pfPropertyEntities = pfListEntity.getProperties();
-		for (PProperty pfPropertyEntity : pfPropertyEntities) {
-			if (propertyResolveManager.containsProperty(pfPropertyEntity.getName())) {
-				continue;
-			}
-			Defect defect = new PropertyNotDefinedDefect(pfListEntity, pfPropertyEntity,
-			        propertyResolveManager.toString());
-			defects.add(defect);
-		}
+		defects.addAll(propertyResolveManager.checkForDuplicateEntry());
 
 		return defects;
 	}
