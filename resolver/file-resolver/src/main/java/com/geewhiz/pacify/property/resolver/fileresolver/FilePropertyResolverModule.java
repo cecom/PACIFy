@@ -58,6 +58,13 @@ public class FilePropertyResolverModule extends PropertyResolverModule {
 		}
 
 		URL fileUrl = FileUtils.getFileUrl(commandLineParameters.get("file"));
-		return new FilePropertyResolver(fileUrl);
+		FilePropertyResolver filePropertyResolver = new FilePropertyResolver(fileUrl);
+		if (commandLineParameters.containsKey("beginToken")) {
+			filePropertyResolver.setBeginToken(commandLineParameters.get("beginToken"));
+		}
+		if (commandLineParameters.containsKey("endToken")) {
+			filePropertyResolver.setEndToken(commandLineParameters.get("endToken"));
+		}
+		return filePropertyResolver;
 	}
 }

@@ -25,7 +25,7 @@ import java.util.TreeSet;
 
 import org.apache.maven.plugin.MojoExecutionException;
 
-import com.geewhiz.pacify.Resolver;
+import com.geewhiz.pacify.WritePropertyFile;
 import com.geewhiz.pacify.property.PropertyResolveManager;
 import com.geewhiz.pacify.property.resolver.fileresolver.FilePropertyResolver;
 import com.geewhiz.pacify.resolver.PropertyResolver;
@@ -75,21 +75,21 @@ public class GenerateFinalPropertyFile extends BaseMojo {
 
 			PropertyResolveManager propertyResolveManager = new PropertyResolveManager(propertyResolverList);
 
-			Resolver resolver = createResolver(propertyResolveManager, propertyFile);
-			resolver.execute();
+			WritePropertyFile writePropertyFile = createResolver(propertyResolveManager, propertyFile);
+			writePropertyFile.writeTo();
 		}
 	}
 
-	private Resolver createResolver(PropertyResolveManager propertyResolveManager, String propertyFile) {
+	private WritePropertyFile createResolver(PropertyResolveManager propertyResolveManager, String propertyFile) {
 		if (outputDirectory != null && !outputDirectory.exists()) {
 			outputDirectory.mkdirs();
 		}
 
-		Resolver resolver = new Resolver(propertyResolveManager);
-		resolver.setTargetFile(new File(outputDirectory, propertyFile));
-		resolver.setOutputEncoding(encoding);
-		resolver.setOutputType(outputDirectory != null ? Resolver.OutputType.File : Resolver.OutputType.Stdout);
+		WritePropertyFile writePropertyFile = new WritePropertyFile(propertyResolveManager);
+		writePropertyFile.setTargetFile(new File(outputDirectory, propertyFile));
+		writePropertyFile.setOutputEncoding(encoding);
+		writePropertyFile.setOutputType(outputDirectory != null ? WritePropertyFile.OutputType.File : WritePropertyFile.OutputType.Stdout);
 
-		return resolver;
+		return writePropertyFile;
 	}
 }

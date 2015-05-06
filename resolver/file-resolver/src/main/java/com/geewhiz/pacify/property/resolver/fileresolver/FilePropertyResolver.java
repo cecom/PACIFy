@@ -28,18 +28,20 @@ import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import java.util.TreeSet;
 
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.PropertyDuplicateDefinedInPropertyFileDefect;
-import com.geewhiz.pacify.resolver.PropertyResolver;
+import com.geewhiz.pacify.resolver.BasePropertyResolver;
 import com.geewhiz.pacify.utils.FileUtils;
 import com.geewhiz.pacify.utils.Utils;
 
-public class FilePropertyResolver implements PropertyResolver {
+public class FilePropertyResolver extends BasePropertyResolver {
 
 	public static final String IMPORT_STRING = "#!import";
 
@@ -50,6 +52,8 @@ public class FilePropertyResolver implements PropertyResolver {
 	private Properties properties;
 	private String fileEncoding;
 	private List<FilePropertyResolver> parentFileProperties = new ArrayList<FilePropertyResolver>();
+	private String beginToken = "%{";
+	private String endToken = "}";
 
 	public FilePropertyResolver(URL propertyFileURL) {
 		this.propertyFileURL = propertyFileURL;
@@ -66,7 +70,7 @@ public class FilePropertyResolver implements PropertyResolver {
 	}
 
 	public String getPropertyValue(String key) {
-		return getProperties().getProperty(key);
+		return getFileProperties().getProperty(key);
 	}
 
 	/**
@@ -79,10 +83,24 @@ public class FilePropertyResolver implements PropertyResolver {
 		return localProperties;
 	}
 
+	public Set<String> getProperties() {
+		if (!initialized) {
+			initialize();
+		}
+
+		Set<String> result = new TreeSet<String>();
+
+		for (Enumeration<Object> enumerator = properties.keys(); enumerator.hasMoreElements();) {
+			result.add((String) enumerator.nextElement());
+		}
+
+		return result;
+	}
+
 	/**
 	 * @return the localProperties for this instance and its parents.
 	 */
-	public Properties getProperties() {
+	public Properties getFileProperties() {
 		if (!initialized) {
 			initialize();
 		}
@@ -135,7 +153,7 @@ public class FilePropertyResolver implements PropertyResolver {
 
 		properties = new Properties();
 		for (FilePropertyResolver parentFilePropertyContainer : getParentPropertyFileProperties()) {
-			Properties parentProperties = parentFilePropertyContainer.getProperties();
+			Properties parentProperties = parentFilePropertyContainer.getFileProperties();
 			properties.putAll(parentProperties);
 		}
 		properties.putAll(localProperties);
@@ -201,6 +219,22 @@ public class FilePropertyResolver implements PropertyResolver {
 			throw new RuntimeException("Couldn't find resource [" + propertyFilePathURL + "] in classpath.", e);
 		}
 		return result;
+	}
+
+	public void setBeginToken(String beginToken) {
+		this.beginToken = beginToken;
+	}
+
+	public String getBeginToken() {
+		return beginToken;
+	}
+
+	public void setEndToken(String endToken) {
+		this.endToken = endToken;
+	}
+
+	public String getEndToken() {
+		return endToken;
 	}
 
 }

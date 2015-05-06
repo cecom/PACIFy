@@ -7,14 +7,14 @@ import org.slf4j.Logger;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 import com.geewhiz.pacify.Replacer;
-import com.geewhiz.pacify.Resolver;
 import com.geewhiz.pacify.Validator;
+import com.geewhiz.pacify.WritePropertyFile;
 import com.geewhiz.pacify.commandline.commands.BasePropertyResolverCommand;
 import com.geewhiz.pacify.commandline.commands.MainCommand;
 import com.geewhiz.pacify.commandline.commands.ReplacerCommand;
-import com.geewhiz.pacify.commandline.commands.ResolverCommand;
 import com.geewhiz.pacify.commandline.commands.ValidateCommand;
 import com.geewhiz.pacify.commandline.commands.ValidateMarkerFilesCommand;
+import com.geewhiz.pacify.commandline.commands.WritePropertyFileCommand;
 import com.geewhiz.pacify.common.logger.Log;
 import com.geewhiz.pacify.resolver.PropertyResolverModule;
 import com.google.inject.Guice;
@@ -52,13 +52,13 @@ public class PacifyViaCommandline {
 	protected static int mainInternal(String[] args) {
 		MainCommand mainCommand = new MainCommand();
 		ReplacerCommand replacerCommand = new ReplacerCommand();
-		ResolverCommand resolverCommand = new ResolverCommand();
+		WritePropertyFileCommand writePropertyFileCommand = new WritePropertyFileCommand();
 		ValidateCommand validateCommand = new ValidateCommand();
 		ValidateMarkerFilesCommand validateMarkerFilesCommand = new ValidateMarkerFilesCommand();
 
 		JCommander jc = new JCommander(mainCommand);
 		jc.addCommand("replace", replacerCommand);
-		jc.addCommand("resolve", resolverCommand);
+		jc.addCommand("writePropertyFile", writePropertyFileCommand);
 		jc.addCommand("validate", validateCommand);
 		jc.addCommand("validateMarkerFiles", validateMarkerFilesCommand);
 
@@ -71,8 +71,8 @@ public class PacifyViaCommandline {
 
 		if ("replace".equals(jc.getParsedCommand())) {
 			return executeReplacer(replacerCommand);
-		} else if ("resolve".equals(jc.getParsedCommand())) {
-			return executeResolver(resolverCommand);
+		} else if ("writePropertyFile".equals(jc.getParsedCommand())) {
+			return executeWritePropertyFile(writePropertyFileCommand);
 		} else if ("validate".equals(jc.getParsedCommand())) {
 			return executeValidate(validateCommand);
 		} else if ("validateMarkerFiles".equals(jc.getParsedCommand())) {
@@ -101,12 +101,12 @@ public class PacifyViaCommandline {
 		return 0;
 	}
 
-	private static int executeResolver(ResolverCommand resolverCommand) {
-		Injector injector = getInjector(resolverCommand);
+	private static int executeWritePropertyFile(WritePropertyFileCommand writePropertyFileCommand) {
+		Injector injector = getInjector(writePropertyFileCommand);
 
-		Resolver resolver = injector.getInstance(Resolver.class);
-		resolverCommand.configureResolver(resolver);
-		resolver.execute();
+		WritePropertyFile writePropertyFile = injector.getInstance(WritePropertyFile.class);
+		writePropertyFileCommand.configure(writePropertyFile);
+		writePropertyFile.writeTo();
 
 		return 0;
 	}

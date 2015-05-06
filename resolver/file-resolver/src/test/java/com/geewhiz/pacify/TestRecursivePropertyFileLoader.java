@@ -63,13 +63,13 @@ public class TestRecursivePropertyFileLoader {
 
 		FilePropertyResolver filePropertyResolver = new FilePropertyResolver(url);
 
-		assertEquals(allPropertiesShouldLookLike, filePropertyResolver.getProperties());
-		assertEquals(childOfChildPropertiesShouldLookLike, filePropertyResolver.getLocalProperties());
-		assertEquals(child1PropertiesShouldLookLike, filePropertyResolver.getParentPropertyFileProperties().get(0)
-		        .getLocalProperties());
-		assertEquals(child2PropertiesShouldLookLike, filePropertyResolver.getParentPropertyFileProperties().get(1)
-		        .getLocalProperties());
-		assertEquals(basePropertiesShouldLookLike, filePropertyResolver.getParentPropertyFileProperties().get(0)
-		        .getParentPropertyFileProperties().get(0).getLocalProperties());
+		assertEquals(filePropertyResolver.getFileProperties(), allPropertiesShouldLookLike);
+		assertEquals(filePropertyResolver.getLocalProperties(), childOfChildPropertiesShouldLookLike);
+		assertEquals(filePropertyResolver.getParentPropertyFileProperties().get(0).getLocalProperties(),
+		        child1PropertiesShouldLookLike);
+		assertEquals(filePropertyResolver.getParentPropertyFileProperties().get(1)
+		        .getLocalProperties(), child2PropertiesShouldLookLike);
+		assertEquals(filePropertyResolver.getParentPropertyFileProperties().get(0)
+		        .getParentPropertyFileProperties().get(0).getLocalProperties(), basePropertiesShouldLookLike);
 	}
 }

@@ -1,4 +1,4 @@
-package com.geewhiz.pacify.property.resolver.cmdresolver;
+package com.geewhiz.pacify.mavenplugin;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,7 +19,7 @@ package com.geewhiz.pacify.property.resolver.cmdresolver;
  * under the License.
  */
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
@@ -29,30 +29,27 @@ import java.util.TreeSet;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.resolver.BasePropertyResolver;
 
-public class CmdPropertyResolver extends BasePropertyResolver {
+public class MavenPropertyContainer extends BasePropertyResolver {
 
-	private Properties properties;
+	Properties properties;
+	String encoding;
 
-	public CmdPropertyResolver(Properties properties) {
+	public MavenPropertyContainer(Properties properties, String encoding) {
 		this.properties = properties;
+		this.encoding = encoding;
 	}
 
-	@Override
 	public boolean containsProperty(String key) {
 		return properties.containsKey(key);
 	}
 
-	@Override
 	public String getPropertyValue(String key) {
-		return properties.getProperty(key);
+		if (containsProperty(key)) {
+			return properties.getProperty(key);
+		}
+		throw new IllegalArgumentException("Property [" + key + "] not defined within maven... Aborting!");
 	}
 
-	@Override
-	public List<Defect> checkForDuplicateEntry() {
-		return new ArrayList<Defect>();
-	}
-
-	@Override
 	public Set<String> getProperties() {
 		Set<String> result = new TreeSet<String>();
 
@@ -63,21 +60,28 @@ public class CmdPropertyResolver extends BasePropertyResolver {
 		return result;
 	}
 
-	@Override
-	public String getEncoding() {
-		return "utf-8";
+	public List<Defect> checkForDuplicateEntry() {
+		return Collections.emptyList();
 	}
 
-	@Override
 	public String getPropertyResolverDescription() {
-		return "CommandLine";
+		return "maven";
 	}
 
+	public String getEncoding() {
+		return encoding;
+	}
+
+	@Override
 	public String getBeginToken() {
-		return properties.getProperty("beginToken", "%{");
+		// TODO Auto-generated method stub
+		return null;
 	}
 
+	@Override
 	public String getEndToken() {
-		return properties.getProperty("endToken", "}");
+		// TODO Auto-generated method stub
+		return null;
 	}
+
 }

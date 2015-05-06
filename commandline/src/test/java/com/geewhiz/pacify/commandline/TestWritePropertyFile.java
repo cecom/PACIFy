@@ -26,14 +26,14 @@ import org.testng.annotations.Test;
 
 import com.geewhiz.pacify.TestUtil;
 
-public class TestCreateResultPropertyFile {
+public class TestWritePropertyFile {
 
 	@Test
 	public void TestAll() {
-		File startPath = new File("target/test-classes/TestCreateResultPropertyFile");
+		File startPath = new File("target/test-classes/TestWritePropertyFile");
 
 		int result = PacifyViaCommandline.mainInternal(new String[] {
-		        "resolve",
+		        "writePropertyFile",
 		        "--resolvers=FileResolver",
 		        "--destinationFile=" + startPath + "/result.properties",
 		        "-DFileResolver.file=" + startPath + "/subfolder/ChildOfChilds.properties" });

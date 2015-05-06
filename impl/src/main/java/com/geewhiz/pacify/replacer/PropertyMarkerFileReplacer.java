@@ -21,11 +21,8 @@ package com.geewhiz.pacify.replacer;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.tools.ant.types.FilterSet;
 import org.apache.tools.ant.types.FilterSetCollection;
@@ -94,8 +91,8 @@ public class PropertyMarkerFileReplacer {
 	private FilterSet getFilterSet(PFile pfile) {
 		FilterSet filterSet = new FilterSet();
 
-		filterSet.setBeginToken(PropertyFileReplacer.BEGIN_TOKEN);
-		filterSet.setEndToken(PropertyFileReplacer.END_TOKEN);
+		filterSet.setBeginToken("%{");
+		filterSet.setEndToken("}");
 
 		List<PProperty> pproperties = pMarker.getPPropertiesForFile(pfile);
 
@@ -111,49 +108,14 @@ public class PropertyMarkerFileReplacer {
 			}
 
 			filterSet.addFilter(propertyName, propertyValue);
-
-			// needed for checking that we don't have a property which references another property, which references
-			// this property (cycle)
-			Set<String> propertyResolvePath = new TreeSet<String>();
-			propertyResolvePath.add(propertyName);
-
-			// if a property contains another property which is not in the marker file, we have to add the other
-			// property too.
-			for (String referencedPropertyId : getAllReferencedPropertyIds(propertyResolvePath, propertyName,
-			        propertyValue)) {
-				String referencedValue = propertyResolveManager.getPropertyValue(referencedPropertyId);
-				filterSet.addFilter(referencedPropertyId, referencedValue);
-			}
 		}
 		return filterSet;
 	}
 
-	private Set<String> getAllReferencedPropertyIds(Set<String> parentPropertyResolvePath, String parentPropertyId,
-	        String parentPropertyValue) {
-		if (parentPropertyValue == null) {
-			return Collections.emptySet();
-		}
+	public static Pattern getPattern(String match, boolean quoteIt) {
+		String searchPattern = Pattern.quote("%{")
+		        + (quoteIt ? Pattern.quote(match) : match) + Pattern.quote("}");
 
-		Set<String> result = new TreeSet<String>();
-
-		Matcher matcher = PropertyFileReplacer.getPattern("([^}]*)", false).matcher(parentPropertyValue);
-		while (matcher.find()) {
-			String propertyId = matcher.group(1);
-
-			if (parentPropertyResolvePath.contains(propertyId)) {
-				throw new RuntimeException("You have a cycle reference in property [" + parentPropertyId
-				        + "] which is used in " +
-				        "pflist file [" + pMarker.getFile().getAbsolutePath() + "]. Property values loaded from [TODO]");
-			}
-
-			result.add(propertyId);
-
-			Set<String> propertyResolvePath = new TreeSet<String>(parentPropertyResolvePath);
-			propertyResolvePath.add(propertyId);
-
-			String propertyValue = propertyResolveManager.getPropertyValue(propertyId);
-			result.addAll(getAllReferencedPropertyIds(propertyResolvePath, propertyId, propertyValue));
-		}
-		return result;
+		return Pattern.compile(searchPattern);
 	}
 }

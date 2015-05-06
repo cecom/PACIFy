@@ -4,7 +4,7 @@ import java.io.File;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
-import com.geewhiz.pacify.Resolver;
+import com.geewhiz.pacify.WritePropertyFile;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -26,7 +26,7 @@ import com.geewhiz.pacify.Resolver;
  */
 
 @Parameters(separators = "=", commandDescription = "Used to resolve the property file with its dependencies")
-public class ResolverCommand extends BasePropertyResolverCommand {
+public class WritePropertyFileCommand extends BasePropertyResolverCommand {
 
 	@Parameter(names = { "-d", "--destinationFile" }, description = "Where to write the result to. If not given, it will be printed to stdout", required = false)
 	private File targetFile;
@@ -34,9 +34,10 @@ public class ResolverCommand extends BasePropertyResolverCommand {
 	@Parameter(names = { "-e", "--targetEncoding" }, description = "Which encoding do you want in the created file", required = false)
 	private String targetEncoding = "utf-8";
 
-	public void configureResolver(Resolver resolver) {
-		resolver.setTargetFile(targetFile);
-		resolver.setOutputEncoding(targetEncoding);
-		resolver.setOutputType(targetFile != null ? Resolver.OutputType.File : Resolver.OutputType.Stdout);
+	public void configure(WritePropertyFile writePropertyFile) {
+		writePropertyFile.setTargetFile(targetFile);
+		writePropertyFile.setOutputEncoding(targetEncoding);
+		writePropertyFile.setOutputType(targetFile != null ? WritePropertyFile.OutputType.File
+		        : WritePropertyFile.OutputType.Stdout);
 	}
 }

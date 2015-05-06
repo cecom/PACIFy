@@ -59,8 +59,7 @@ public class LoadPropertyFileIntoMavenMojo extends BaseMojo {
 
 		getLog().info("Loading properties from [" + propertyResolver.getPropertyResolverDescription() + "]...");
 
-		Properties properties = propertyResolver.getProperties();
+		Properties properties = propertyResolver.getFileProperties();
 		project.getProperties().putAll(properties);
 	}
-
 }

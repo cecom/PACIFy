@@ -9,3 +9,8 @@
 - fileutils aufräumen
 - Ausgabe vom replacen anpassen und schick machen
 - löschen der pacify files nach ersetzung
+
+
+Tokens:
+- Resolver kann eigenständige Tokens für die Ersetzung haben (implementiert)
+- In der zu ersetzenden Datei kann es eigenständige Tokens geben

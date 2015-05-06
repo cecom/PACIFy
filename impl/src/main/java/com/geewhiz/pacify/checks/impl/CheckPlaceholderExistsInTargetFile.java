@@ -30,7 +30,7 @@ import com.geewhiz.pacify.defect.PropertyDoesNotExistInTargetFileDefect;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.model.PProperty;
-import com.geewhiz.pacify.replacer.PropertyFileReplacer;
+import com.geewhiz.pacify.replacer.PropertyMarkerFileReplacer;
 import com.geewhiz.pacify.utils.FileUtils;
 
 public class CheckPlaceholderExistsInTargetFile implements PMarkerCheck {
@@ -56,7 +56,8 @@ public class CheckPlaceholderExistsInTargetFile implements PMarkerCheck {
 	public boolean doesPropertyExistInFile(PProperty pproperty, java.io.File file) {
 		String fileContent = FileUtils.getFileInOneString(file);
 
-		Pattern pattern = PropertyFileReplacer.getPattern(pproperty.getName(), true);
+		// todo: das pattern muss raus, kann file spezifisch sein
+		Pattern pattern = PropertyMarkerFileReplacer.getPattern(pproperty.getName(), true);
 		Matcher matcher = pattern.matcher(fileContent);
 
 		return matcher.find();

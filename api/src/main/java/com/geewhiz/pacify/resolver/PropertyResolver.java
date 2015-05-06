@@ -20,7 +20,9 @@ package com.geewhiz.pacify.resolver;
  */
 
 import java.util.List;
-import java.util.Properties;
+import java.util.Set;
+
+import org.apache.tools.ant.types.FilterSet;
 
 import com.geewhiz.pacify.defect.Defect;
 
@@ -30,11 +32,22 @@ public interface PropertyResolver {
 
 	String getPropertyValue(String key);
 
-	Properties getProperties();
+	Set<String> getReferencedProperties(String property);
+
+	Set<String> getProperties();
 
 	String getEncoding();
 
 	String getPropertyResolverDescription();
 
 	List<Defect> checkForDuplicateEntry();
+
+	FilterSet createFilterSet();
+
+	boolean propertyUsesToken(String property);
+
+	String getBeginToken();
+
+	String getEndToken();
+
 }
