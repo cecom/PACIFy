@@ -26,7 +26,7 @@ import org.apache.tools.ant.types.FilterSet;
 
 import com.geewhiz.pacify.defect.Defect;
 
-public interface PropertyResolver {
+public interface PropertyResolver extends Comparable<PropertyResolver>{
 
 	boolean containsProperty(String property);
 
