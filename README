@@ -6,10 +6,8 @@
 - logger : https://github.com/google/guice/wiki/BuiltInBindings
 - testng -> junit
 - maven plugin auf 3.0 umstellen
-- fileutils aufräumen
 - Ausgabe vom replacen anpassen und schick machen
-- löschen der pacify files nach ersetzung
-
+- cmd und sh scripte löschen?
 
 Tokens:
 - Resolver kann eigenständige Tokens für die Ersetzung haben (implementiert)

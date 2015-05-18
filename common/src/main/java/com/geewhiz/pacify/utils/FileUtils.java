@@ -35,65 +35,80 @@ import java.util.List;
 
 public class FileUtils {
 
-    public static String getFileInOneString(File file) {
-        byte[] buffer;
-        try {
-            buffer = new byte[(int) file.length()];
-            BufferedInputStream f = null;
-            try {
-                f = new BufferedInputStream(new FileInputStream(file));
-                f.read(buffer);
-            }
-            finally {
-                if (f != null) {
-                    f.close();
-                }
-            }
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        String encoding = Utils.getEncoding(file);
-        try {
-            return new String(buffer, encoding);
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
-    }
+	public static String getFileInOneString(File file) {
+		byte[] buffer;
+		try {
+			buffer = new byte[(int) file.length()];
+			BufferedInputStream f = null;
+			try {
+				f = new BufferedInputStream(new FileInputStream(file));
+				f.read(buffer);
+			}
+			finally {
+				if (f != null) {
+					f.close();
+				}
+			}
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException(e);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		String encoding = Utils.getEncoding(file);
+		try {
+			return new String(buffer, encoding);
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
-    public static List<String> getFileAsLines(URL fileURL) {
-        InputStream is = null;
-        try {
-            is = fileURL.openStream();
-            String encoding = Utils.getEncoding(fileURL);
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(is, encoding));
-            List<String> lines = new ArrayList<String>();
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
-                lines.add(line);
-            }
-            bufferedReader.close();
-            return lines;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        finally {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (IOException ignored) {
-                }
-            }
-        }
-    }
+	public static List<String> getFileAsLines(URL fileURL) {
+		InputStream is = null;
+		try {
+			is = fileURL.openStream();
+			String encoding = Utils.getEncoding(fileURL);
+			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(is, encoding));
+			List<String> lines = new ArrayList<String>();
+			String line;
+			while ((line = bufferedReader.readLine()) != null) {
+				lines.add(line);
+			}
+			bufferedReader.close();
+			return lines;
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		finally {
+			if (is != null) {
+				try {
+					is.close();
+				} catch (IOException ignored) {
+				}
+			}
+		}
+	}
 
-    public static URL getFileUrl(File file) {
-        try {
-            return file.toURI().toURL();
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
-    }
+	public static URL getFileUrl(File file) {
+		try {
+			return file.toURI().toURL();
+		} catch (MalformedURLException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
+	public static URL getFileUrl(String filePath) {
+		File file = new File(filePath);
+		if (file.exists() && file.isFile()) {
+			return getFileUrl(file);
+		}
+
+		URL url = FileUtils.class.getClassLoader().getResource(filePath);
+		if (url != null) {
+			return url;
+		}
+
+		throw new RuntimeException("Couldn't find property File [" + filePath
+		        + "] in Classpath nor absolute... Aborting!");
+
+	}
 }

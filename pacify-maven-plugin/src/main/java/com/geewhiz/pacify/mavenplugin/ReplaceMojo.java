@@ -58,7 +58,7 @@ public class ReplaceMojo extends BaseMojo {
 	/**
 	 * If you defined useMavenProperties with false, you have to define the propertyFile.
 	 * 
-	 * @parameter expression="${pflist.usePropertyFile}"
+	 * @parameter expression="${pacify.usePropertyFile}"
 	 */
 	protected String propertyFile;
 
@@ -82,10 +82,10 @@ public class ReplaceMojo extends BaseMojo {
 
 		EntityManager entityManager = new EntityManager(startPath);
 		if (entityManager.getPMarkerCount() == 0) {
-			getLog().info("No pflist files found. Nothing to do.");
+			getLog().info("No pacify files found. Nothing to do.");
 			return;
 		}
-		getLog().info("Found [" + entityManager.getPMarkerCount() + "] PFList Files...");
+		getLog().info("Found [" + entityManager.getPMarkerCount() + "] pacify Files...");
 
 		PropertyResolver propertyResolver;
 		if (useMavenProperties) {
@@ -97,7 +97,7 @@ public class ReplaceMojo extends BaseMojo {
 		}
 
 		getLog().info("Loading properties from [" + propertyResolver.getPropertyResolverDescription() + "]... ");
-		getLog().info("Checking PFListFiles...");
+		getLog().info("Checking pacify files...");
 
 		Set<PropertyResolver> propertyResolverList = new TreeSet<PropertyResolver>();
 		propertyResolverList.add(propertyResolver);

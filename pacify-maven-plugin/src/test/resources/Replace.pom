@@ -6,7 +6,7 @@
         <configuration>
             <propertyFilePath>ChildOfChilds.properties</propertyFilePath>
             <pfListStartPath>target/test-classes/replace</pfListStartPath>
-            <project implementation="com.geewhiz.pacify.mavenplugin.stubs.PFListMavenMojoProjectStub"/>
+            <project implementation="com.geewhiz.pacify.mavenplugin.stubs.PacifyMavenMojoProjectStub"/>
         </configuration>
       </plugin>
     </plugins>

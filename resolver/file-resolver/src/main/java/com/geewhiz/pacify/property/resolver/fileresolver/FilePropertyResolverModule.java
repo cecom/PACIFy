@@ -3,9 +3,9 @@ package com.geewhiz.pacify.property.resolver.fileresolver;
 import java.net.URL;
 import java.util.Map;
 
-import com.geewhiz.pacify.common.file.FileUtils;
 import com.geewhiz.pacify.resolver.PropertyResolver;
 import com.geewhiz.pacify.resolver.PropertyResolverModule;
+import com.geewhiz.pacify.utils.FileUtils;
 import com.google.inject.Provides;
 import com.google.inject.multibindings.Multibinder;
 

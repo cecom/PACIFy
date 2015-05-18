@@ -5,7 +5,7 @@
         <artifactId>maven-pflist-plugin</artifactId>
         <configuration>
             <propertyFilePath>ChildOfChilds.properties</propertyFilePath>
-            <project implementation="com.geewhiz.pacify.mavenplugin.stubs.PFListMavenMojoProjectStub"/>
+            <project implementation="com.geewhiz.pacify.mavenplugin.stubsPacifyMavenMojoProjectStub"/>
         </configuration>
       </plugin>
     </plugins>

@@ -25,35 +25,35 @@ import java.util.Arrays;
 import java.util.List;
 
 public class PacifyFilesFinder {
-    private static CMFileFileFilter pfListFilenameFilter = new CMFileFileFilter();
-    private static DirFilter dirFilter = new DirFilter();
+	private static CMFileFilter CMFileFilter = new CMFileFilter();
+	private static DirFilter dirFilter = new DirFilter();
 
-    private File folderToCheck;
+	private File folderToCheck;
 
-    public PacifyFilesFinder(File folderToCheck) {
-        this.folderToCheck = folderToCheck;
-    }
+	public PacifyFilesFinder(File folderToCheck) {
+		this.folderToCheck = folderToCheck;
+	}
 
-    public List<File> getPacifyFiles() {
-        List<File> pfListFiles = new ArrayList<File>();
-        addPFListFiles(pfListFiles, folderToCheck);
-        return pfListFiles;
-    }
+	public List<File> getPacifyFiles() {
+		List<File> pMarkerFiles = new ArrayList<File>();
+		addPMarkerFilesFor(pMarkerFiles, folderToCheck);
+		return pMarkerFiles;
+	}
 
-    private void addPFListFiles(List<File> pfListFiles, File folderToCheck) {
-        if (folderToCheck == null) {
-            throw new IllegalArgumentException("Folder is null.... Aborting!");
-        }
-        if (!folderToCheck.exists()) {
-            throw new IllegalArgumentException("Folder [" + folderToCheck.getAbsolutePath()
-                    + "] does not exist... Aborting!");
-        }
+	private void addPMarkerFilesFor(List<File> pMarkerFiles, File folderToCheck) {
+		if (folderToCheck == null) {
+			throw new IllegalArgumentException("Folder is null.... Aborting!");
+		}
+		if (!folderToCheck.exists()) {
+			throw new IllegalArgumentException("Folder [" + folderToCheck.getAbsolutePath()
+			        + "] does not exist... Aborting!");
+		}
 
-        pfListFiles.addAll(Arrays.asList(folderToCheck.listFiles(pfListFilenameFilter)));
+		pMarkerFiles.addAll(Arrays.asList(folderToCheck.listFiles(CMFileFilter)));
 
-        File[] subFolders = folderToCheck.listFiles(dirFilter);
-        for (File subFolder : subFolders) {
-            addPFListFiles(pfListFiles, subFolder);
-        }
-    }
+		File[] subFolders = folderToCheck.listFiles(dirFilter);
+		for (File subFolder : subFolders) {
+			addPMarkerFilesFor(pMarkerFiles, subFolder);
+		}
+	}
 }

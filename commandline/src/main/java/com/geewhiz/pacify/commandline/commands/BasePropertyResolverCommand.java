@@ -31,7 +31,7 @@ import com.geewhiz.pacify.resolver.PropertyResolverModule;
 
 public abstract class BasePropertyResolverCommand {
 
-	@Parameter(names = { "-r", "--resolvers" }, description = "Where to get the Property values from.", required = true)
+	@Parameter(names = { "-r", "--resolvers" }, description = "Where to get the Property values from. Provided ones: FileResolver and CmdResolver (can be chained). Example --resolvers=CmdResolver,FileResolver", required = true)
 	private String resolvers;
 
 	@DynamicParameter(names = "-D", description = "dynamic property resolver paramerters")

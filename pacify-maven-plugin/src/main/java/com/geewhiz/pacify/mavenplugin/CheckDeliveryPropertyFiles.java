@@ -46,7 +46,7 @@ public class CheckDeliveryPropertyFiles extends BaseMojo {
 	 * @parameter default-value="${project.build.outputDirectory}"
 	 * @required
 	 */
-	private File pfListStartPath;
+	private File pacifyStartPath;
 
 	/**
 	 * which files should be checked? its a comma separated list
@@ -66,27 +66,27 @@ public class CheckDeliveryPropertyFiles extends BaseMojo {
 
 	@Override
 	protected void executePacify() throws MojoExecutionException {
-		if (!pfListStartPath.exists()) {
+		if (!pacifyStartPath.exists()) {
 			File outputDirectory = new File(project.getModel().getBuild().getOutputDirectory());
-			if (pfListStartPath.equals(outputDirectory)) {
-				getLog().debug("Directory [" + pfListStartPath.getAbsolutePath() + "] does  not exists. Nothing to do.");
+			if (pacifyStartPath.equals(outputDirectory)) {
+				getLog().debug("Directory [" + pacifyStartPath.getAbsolutePath() + "] does  not exists. Nothing to do.");
 				return; // if it is a maven project which doesn't have a target folder, do nothing.
 			}
-			throw new MojoExecutionException("The folder [" + pfListStartPath.getAbsolutePath() + "] does not exist.");
+			throw new MojoExecutionException("The folder [" + pacifyStartPath.getAbsolutePath() + "] does not exist.");
 		}
 
-		EntityManager pfEntityManager = new EntityManager(pfListStartPath);
-		if (pfEntityManager.getPMarkerCount() == 0) {
-			getLog().info("No pflist files found. Nothing to check.");
+		EntityManager entityManager = new EntityManager(pacifyStartPath);
+		if (entityManager.getPMarkerCount() == 0) {
+			getLog().info("No pacify files found. Nothing to check.");
 			return;
 		}
 
-		getLog().info("Found [" + pfEntityManager.getPMarkerCount() + "] PFList Files...");
+		getLog().info("Found [" + entityManager.getPMarkerCount() + "] pacify Files...");
 
 		List<Defect> defects = new ArrayList<Defect>();
 		for (String propertyFile : propertyFiles.split(",")) {
 			getLog().info("Checking property file [" + propertyFile + "] ...");
-			defects.addAll(checkPropertyFile(pfEntityManager, propertyFile));
+			defects.addAll(checkPropertyFile(entityManager, propertyFile));
 		}
 
 		if (defects.isEmpty()) {
@@ -100,7 +100,7 @@ public class CheckDeliveryPropertyFiles extends BaseMojo {
 		throw new MojoExecutionException("We got errors... Aborting!");
 	}
 
-	private List<Defect> checkPropertyFile(EntityManager pfEntityManager, String propertyFile)
+	private List<Defect> checkPropertyFile(EntityManager entityManager, String propertyFile)
 	        throws MojoExecutionException {
 		FilePropertyResolver propertyResolver = new FilePropertyResolver(getPropertyFileURL(propertyFileArtifact,
 		        propertyFile));
@@ -117,8 +117,8 @@ public class CheckDeliveryPropertyFiles extends BaseMojo {
 		List<Defect> defects = new ArrayList<Defect>();
 		defects.addAll(duplicateChecker.checkForErrors());
 
-		for (PMarker pfListEntity : pfEntityManager.getPMarkers()) {
-			defects.addAll(propertyExistsChecker.checkForErrors(pfListEntity));
+		for (PMarker pMarker : entityManager.getPMarkers()) {
+			defects.addAll(propertyExistsChecker.checkForErrors(pMarker));
 		}
 
 		return defects;

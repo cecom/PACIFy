@@ -75,6 +75,9 @@ public class PropertyMarkerFileReplacer {
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
+			if (defects.isEmpty()) {
+				pMarker.getFile().deleteOnExit();
+			}
 		}
 		return defects;
 	}

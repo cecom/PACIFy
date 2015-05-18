@@ -51,31 +51,31 @@ public class CheckAllPropertiesAreReplaced extends AbstractMojo {
 	 * @parameter default-value="${project.build.outputDirectory}"
 	 * @required
 	 */
-	private java.io.File pfListStartPath;
+	private java.io.File pacifyStartPath;
 
 	/**
 	 * Should it be skipped??
 	 * 
-	 * @parameter expression="${skipPFList}" default-value="false"
+	 * @parameter expression="${skipPacify}" default-value="false"
 	 */
 	protected boolean skip;
 
 	public void execute() throws MojoExecutionException {
 		if (skip) {
-			getLog().info("PFList is skipped.");
+			getLog().info("Pacify is skipped.");
 			return;
 		}
 
-		if (!pfListStartPath.exists()) {
+		if (!pacifyStartPath.exists()) {
 			java.io.File outputDirectory = new java.io.File(project.getModel().getBuild().getOutputDirectory());
-			if (pfListStartPath.equals(outputDirectory)) {
-				getLog().debug("Directory [" + pfListStartPath.getAbsolutePath() + "] does  not exists. Nothing to do.");
+			if (pacifyStartPath.equals(outputDirectory)) {
+				getLog().debug("Directory [" + pacifyStartPath.getAbsolutePath() + "] does  not exists. Nothing to do.");
 				return; // if it is a maven project which doesn't have a target folder, do nothing.
 			}
-			throw new MojoExecutionException("The folder [" + pfListStartPath.getAbsolutePath() + "] does not exist.");
+			throw new MojoExecutionException("The folder [" + pacifyStartPath.getAbsolutePath() + "] does not exist.");
 		}
 
-		EntityManager entityManager = new EntityManager(pfListStartPath);
+		EntityManager entityManager = new EntityManager(pacifyStartPath);
 		if (entityManager.getPMarkerCount() == 0) {
 			getLog().info("No pflist files found. Nothing to check.");
 			return;

@@ -79,7 +79,7 @@ public abstract class BaseMojo extends AbstractMojo {
 
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		if (skip) {
-			getLog().info("PFList is skipped.");
+			getLog().info("Pacify is skipped.");
 			return;
 		}
 
