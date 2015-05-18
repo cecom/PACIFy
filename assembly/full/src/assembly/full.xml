@@ -9,4 +9,12 @@
             <outputDirectory>lib/</outputDirectory>
         </dependencySet>
     </dependencySets>
+    <fileSets>
+        <fileSet>
+            <directory>src/scripts</directory>
+            <outputDirectory>bin</outputDirectory>
+            <fileMode>755</fileMode>
+            <filtered>false</filtered>
+        </fileSet>
+    </fileSets>
 </assembly>
