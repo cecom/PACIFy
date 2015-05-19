@@ -39,7 +39,6 @@ import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.PropertyDuplicateDefinedInPropertyFileDefect;
 import com.geewhiz.pacify.resolver.BasePropertyResolver;
 import com.geewhiz.pacify.utils.FileUtils;
-import com.geewhiz.pacify.utils.Utils;
 
 public class FilePropertyResolver extends BasePropertyResolver {
 
@@ -50,14 +49,13 @@ public class FilePropertyResolver extends BasePropertyResolver {
 	private boolean initialized = false;
 	private Properties localProperties;
 	private Properties properties;
-	private String fileEncoding;
+	private String fileEncoding = "utf-8";
 	private List<FilePropertyResolver> parentFileProperties = new ArrayList<FilePropertyResolver>();
 	private String beginToken = "%{";
 	private String endToken = "}";
 
 	public FilePropertyResolver(URL propertyFileURL) {
 		this.propertyFileURL = propertyFileURL;
-		this.fileEncoding = Utils.getEncoding(propertyFileURL);
 	}
 
 	@Override
@@ -116,7 +114,7 @@ public class FilePropertyResolver extends BasePropertyResolver {
 
 		Set<String> propertyIds = new HashSet<String>();
 
-		for (String line : FileUtils.getFileAsLines(getPropertyFileURL())) {
+		for (String line : FileUtils.getFileAsLines(getPropertyFileURL(), fileEncoding)) {
 			if (line.startsWith("#")) {
 				continue;
 			}
@@ -219,6 +217,10 @@ public class FilePropertyResolver extends BasePropertyResolver {
 			throw new RuntimeException("Couldn't find resource [" + propertyFilePathURL + "] in classpath.", e);
 		}
 		return result;
+	}
+
+	public void setEncoding(String encoding) {
+		this.fileEncoding = encoding;
 	}
 
 	public void setBeginToken(String beginToken) {

@@ -27,17 +27,12 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
-import org.slf4j.Logger;
-
-import com.geewhiz.pacify.common.logger.Log;
 import com.geewhiz.pacify.model.utils.PacifyFilesFinder;
 
 public class EntityManager {
 
 	private File startPath;
 	private List<PMarker> pMarkers;
-
-	Logger logger = Log.getInstance();
 
 	public EntityManager(File startPath) {
 		this.startPath = startPath;

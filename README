@@ -2,12 +2,18 @@
 - export HTTPS_PROXY=...
 - GIT_SSL_NO_VERIFY=true  git push
 
+-schema und platzhalter adden
+-writePropertyfile umbennen zu createPropertyFile
+
+- test resourcen aufräumen result files in unter ordner
 - test resourcen auf utf-8 umstellen
 - logger : https://github.com/google/guice/wiki/BuiltInBindings
 - testng -> junit
 - maven plugin auf 3.0 umstellen
 - Ausgabe vom replacen anpassen und schick machen
 - cmd und sh scripte lÃ¶schen?
+- keinen Stacktrace werfen, eher verschiedene return codes
+- beim validieren müssen auch zyklische abhängigkeiten zu fehlern führen
 
 Tokens:
 - Resolver kann eigenstÃ¤ndige Tokens fÃ¼r die Ersetzung haben (implementiert)

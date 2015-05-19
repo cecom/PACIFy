@@ -19,6 +19,7 @@ package com.geewhiz.pacify.replacer;
  * under the License.
  */
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,23 +28,21 @@ import java.util.regex.Pattern;
 import org.apache.tools.ant.types.FilterSet;
 import org.apache.tools.ant.types.FilterSetCollection;
 import org.apache.tools.ant.util.FileUtils;
-import org.slf4j.Logger;
 
 import com.geewhiz.pacify.checks.impl.CheckForNotReplacedTokens;
-import com.geewhiz.pacify.common.logger.Log;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.model.PProperty;
 import com.geewhiz.pacify.property.PropertyResolveManager;
-import com.geewhiz.pacify.utils.Utils;
+import com.marzapower.loggable.Log;
+import com.marzapower.loggable.Loggable;
 
+@Loggable(loggerName = "com.geewhiz.pacify")
 public class PropertyMarkerFileReplacer {
 
 	private PropertyResolveManager propertyResolveManager;
 	private PMarker pMarker;
-
-	Logger logger = Log.getInstance();
 
 	public PropertyMarkerFileReplacer(PropertyResolveManager propertyResolveManager, PMarker pMarker) {
 		this.propertyResolveManager = propertyResolveManager;
@@ -53,15 +52,16 @@ public class PropertyMarkerFileReplacer {
 	public List<Defect> replace() {
 		List<Defect> defects = new ArrayList<Defect>();
 		for (PFile pfile : pMarker.getPFiles()) {
+			File file = pMarker.getAbsoluteFileFor(pfile);
+			String encoding = pfile.getEncoding();
+
+			Log.get().debug("     Filtering [" + file.getAbsolutePath() + "] using encoding [" + encoding + "]");
 
 			FilterSetCollection filterSetCollection = getFilterSetCollection(pfile);
 
-			java.io.File file = pMarker.getAbsoluteFileFor(pfile);
-			java.io.File tmpFile = new java.io.File(file.getParentFile(), file.getName() + "_tmp");
+			File tmpFile = new File(file.getParentFile(), file.getName() + "_tmp");
 
 			try {
-				String encoding = Utils.getEncoding(file);
-				logger.info("Using  encoding [" + encoding + "] for  File  [" + file.getAbsolutePath() + "]");
 				FileUtils.getFileUtils().copyFile(file, tmpFile, filterSetCollection, true, true, encoding);
 				if (!file.delete()) {
 					throw new RuntimeException("Couldn't delete file [" + file.getPath() + "]... Aborting!");
@@ -71,7 +71,7 @@ public class PropertyMarkerFileReplacer {
 					        + file.getPath() + "]... Aborting!");
 				}
 				CheckForNotReplacedTokens checker = new CheckForNotReplacedTokens();
-				defects.addAll(checker.checkForErrors(file));
+				defects.addAll(checker.checkForErrors(file, pfile.getEncoding()));
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
@@ -106,8 +106,12 @@ public class PropertyMarkerFileReplacer {
 			if (pproperty.isConvertBackslashToSlash()) {
 				String convertedString = propertyValue;
 				convertedString = propertyValue.replace('\\', '/');
-				logger.info(" Converting backslashes [" + propertyValue + "] to slashes [" + convertedString + "]");
+				Log.get().debug(
+				        "       Using property [" + propertyName + "] original value [" + propertyValue
+				                + "] with backslash convertion to [" + convertedString + "]");
 				propertyValue = convertedString;
+			} else {
+				Log.get().debug("       Using property [" + propertyName + "] with value [" + propertyValue + "] ");
 			}
 
 			filterSet.addFilter(propertyName, propertyValue);

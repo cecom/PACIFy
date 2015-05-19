@@ -88,7 +88,7 @@ public class CheckAllPropertiesAreReplaced extends AbstractMojo {
 		for (PMarker pMarker : entityManager.getPMarkers()) {
 			for (PFile pfile : pMarker.getPFiles()) {
 				File file = pMarker.getAbsoluteFileFor(pfile);
-				defects.addAll(checker.checkForErrors(file));
+				defects.addAll(checker.checkForErrors(file, pfile.getEncoding()));
 			}
 		}
 

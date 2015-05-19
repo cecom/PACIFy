@@ -4,8 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-
 import com.geewhiz.pacify.checks.Check;
 import com.geewhiz.pacify.checks.PMarkerCheck;
 import com.geewhiz.pacify.checks.impl.CheckPlaceholderExistsInTargetFile;
@@ -13,7 +11,6 @@ import com.geewhiz.pacify.checks.impl.CheckPropertyDuplicateDefinedInPacifyFile;
 import com.geewhiz.pacify.checks.impl.CheckPropertyDuplicateInPropertyFile;
 import com.geewhiz.pacify.checks.impl.CheckPropertyExists;
 import com.geewhiz.pacify.checks.impl.CheckTargetFileExist;
-import com.geewhiz.pacify.common.logger.Log;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.DefectUtils;
 import com.geewhiz.pacify.model.EntityManager;
@@ -21,6 +18,8 @@ import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.property.PropertyResolveManager;
 import com.geewhiz.pacify.utils.Utils;
 import com.google.inject.Inject;
+import com.marzapower.loggable.Log;
+import com.marzapower.loggable.Loggable;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -41,9 +40,8 @@ import com.google.inject.Inject;
  * under the License.
  */
 
+@Loggable(loggerName = "com.geewhiz.pacify")
 public class Validator {
-
-	private Logger logger = Log.getInstance();
 
 	File packagePath;
 	List<Check> checks = new ArrayList<Check>();
@@ -94,15 +92,18 @@ public class Validator {
 	public void execute() {
 		EntityManager entityManager = new EntityManager(getPackagePath());
 
-		logger.info("== Executing Validator [Version=" + Utils.getJarVersion() + "]");
+		Log.get().info("== Executing Validator [Version=" + Utils.getJarVersion() + "]");
 
-		logger.info("==== Found [" + entityManager.getPMarkerCount() + "] pacify files...");
-		logger.info("==== Validating ...");
+		Log.get().info("== Found [" + entityManager.getPMarkerCount() + "] pacify marker files");
+		for (PMarker pMarker : entityManager.getPMarkers()) {
+			Log.get().info("   [" + pMarker.getFile().getAbsolutePath() + "]");
+		}
+		Log.get().info("== Validating ...");
 
 		List<Defect> defects = validateInternal(entityManager);
 		DefectUtils.abortIfDefectExists(defects);
 
-		logger.info("== Successfully finished...");
+		Log.get().info("== Successfully finished");
 	}
 
 	public List<Defect> validateInternal(EntityManager entityManager) {
@@ -111,7 +112,9 @@ public class Validator {
 			defects.addAll(check.checkForErrors());
 		}
 		for (PMarker pMarker : entityManager.getPMarkers()) {
+			Log.get().debug("   Processing Marker File [" + pMarker.getFile().getAbsolutePath() + "]");
 			for (PMarkerCheck pMarkerCheck : pMarkerChecks) {
+				Log.get().debug("     Check [" + pMarkerCheck.getClass().getName() + "]");
 				defects.addAll(pMarkerCheck.checkForErrors(pMarker));
 			}
 		}

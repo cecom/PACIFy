@@ -31,10 +31,10 @@ import com.geewhiz.pacify.replacer.PropertyMarkerFileReplacer;
 
 public class CheckForNotReplacedTokens {
 
-	public List<Defect> checkForErrors(File file) {
+	public List<Defect> checkForErrors(File file, String encoding) {
 		List<Defect> defects = new ArrayList<Defect>();
 
-		String fileContent = com.geewhiz.pacify.utils.FileUtils.getFileInOneString(file);
+		String fileContent = com.geewhiz.pacify.utils.FileUtils.getFileInOneString(file, encoding);
 
 		// todo: das pattern muss raus, kann file spezifisch sein
 		Pattern pattern = PropertyMarkerFileReplacer.getPattern("([^}]*)", false);

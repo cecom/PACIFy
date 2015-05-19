@@ -19,18 +19,11 @@ package com.geewhiz.pacify.utils;
  * under the License.
  */
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.JarURLConnection;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
-
-import org.mozilla.universalchardet.UniversalDetector;
 
 public class Utils {
 
@@ -51,46 +44,5 @@ public class Utils {
 
 		Attributes attr = mf.getMainAttributes();
 		return attr.getValue("Implementation-Version");
-	}
-
-	public static String getEncoding(URL fileUrl) {
-		try {
-			return getEncoding(fileUrl.openStream());
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	public static String getEncoding(File file) {
-		try {
-			return getEncoding(new FileInputStream(file));
-		} catch (FileNotFoundException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	private static String getEncoding(InputStream inputStream) {
-		try {
-			UniversalDetector detector = new UniversalDetector(null);
-			int nread;
-			byte[] buf = new byte[4096];
-
-			while ((nread = inputStream.read(buf)) > 0 && !detector.isDone()) {
-				detector.handleData(buf, 0, nread);
-			}
-			detector.dataEnd();
-
-			inputStream.close();
-
-			if (detector.getDetectedCharset() != null) {
-				return detector.getDetectedCharset();
-			} else {
-				return Charset.defaultCharset().name();
-			}
-		} catch (FileNotFoundException e) {
-			throw new RuntimeException(e);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
 	}
 }

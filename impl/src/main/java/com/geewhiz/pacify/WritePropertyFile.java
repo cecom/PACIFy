@@ -26,20 +26,18 @@ import java.io.UnsupportedEncodingException;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.slf4j.Logger;
-
-import com.geewhiz.pacify.common.logger.Log;
 import com.geewhiz.pacify.property.PropertyResolveManager;
 import com.geewhiz.pacify.utils.Utils;
 import com.google.inject.Inject;
+import com.marzapower.loggable.Log;
+import com.marzapower.loggable.Loggable;
 
+@Loggable(loggerName = "com.geewhiz.pacify")
 public class WritePropertyFile {
 
 	public enum OutputType {
 		Stdout, File
 	}
-
-	private Logger logger = Log.getInstance();
 
 	private PropertyResolveManager propertyResolveManager;
 	private OutputType outputType;
@@ -52,11 +50,11 @@ public class WritePropertyFile {
 	}
 
 	public void writeTo() {
-		logger.info("== Executing WritePropertyFile [Version=" + Utils.getJarVersion() + "]");
-		logger.info("     [PropertyResolver=" + propertyResolveManager.toString() + "]");
+		Log.get().info("== Executing WritePropertyFile [Version=" + Utils.getJarVersion() + "]");
+		Log.get().info("   [PropertyResolver=" + propertyResolveManager.toString() + "]");
 
 		if (getOutputType() == OutputType.File) {
-			logger.info("     [TargetFile=" + getTargetFile().getPath() + "]");
+			Log.get().info("   [TargetFile=" + getTargetFile().getPath() + "]");
 		}
 
 		if (getOutputType() == OutputType.Stdout) {
@@ -66,6 +64,7 @@ public class WritePropertyFile {
 		} else {
 			throw new IllegalArgumentException("OutputType not implemented! [" + getOutputType() + "]");
 		}
+		Log.get().info("== Successfully finished");
 	}
 
 	private void writeToFile() {

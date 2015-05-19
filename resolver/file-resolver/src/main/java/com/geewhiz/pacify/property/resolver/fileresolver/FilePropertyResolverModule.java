@@ -65,6 +65,9 @@ public class FilePropertyResolverModule extends PropertyResolverModule {
 		if (commandLineParameters.containsKey("endToken")) {
 			filePropertyResolver.setEndToken(commandLineParameters.get("endToken"));
 		}
+		if (commandLineParameters.containsKey("encoding")) {
+			filePropertyResolver.setEncoding(commandLineParameters.get("encoding"));
+		}
 		return filePropertyResolver;
 	}
 }

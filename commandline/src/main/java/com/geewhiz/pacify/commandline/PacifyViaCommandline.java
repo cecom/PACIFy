@@ -2,8 +2,6 @@ package com.geewhiz.pacify.commandline;
 
 import java.util.List;
 
-import org.slf4j.Logger;
-
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 import com.geewhiz.pacify.Replacer;
@@ -15,10 +13,11 @@ import com.geewhiz.pacify.commandline.commands.ReplacerCommand;
 import com.geewhiz.pacify.commandline.commands.ValidateCommand;
 import com.geewhiz.pacify.commandline.commands.ValidateMarkerFilesCommand;
 import com.geewhiz.pacify.commandline.commands.WritePropertyFileCommand;
-import com.geewhiz.pacify.common.logger.Log;
 import com.geewhiz.pacify.resolver.PropertyResolverModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.marzapower.loggable.Log;
+import com.marzapower.loggable.Loggable;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -39,13 +38,12 @@ import com.google.inject.Injector;
  * under the License.
  */
 
+@Loggable(loggerName = "com.geewhiz.pacify")
 public class PacifyViaCommandline {
-
-	private static Logger logger = Log.getInstance();
 
 	public static void main(String... args) {
 		int resultValue = mainInternal(args);
-		logger.debug("Exiting with exit code {}", resultValue);
+		Log.get().debug("Exiting with exit code " + resultValue);
 		System.exit(resultValue);
 	}
 

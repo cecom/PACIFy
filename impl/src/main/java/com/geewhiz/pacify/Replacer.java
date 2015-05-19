@@ -25,9 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.slf4j.Logger;
 
-import com.geewhiz.pacify.common.logger.Log;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.DefectUtils;
 import com.geewhiz.pacify.model.EntityManager;
@@ -36,11 +34,13 @@ import com.geewhiz.pacify.property.PropertyResolveManager;
 import com.geewhiz.pacify.replacer.PropertyMarkerFileReplacer;
 import com.geewhiz.pacify.utils.Utils;
 import com.google.inject.Inject;
+import com.marzapower.loggable.Log;
+import com.marzapower.loggable.Loggable;
 
+@Loggable(loggerName = "com.geewhiz.pacify")
 public class Replacer {
 
 	private PropertyResolveManager propertyResolveManager;
-	private Logger logger = Log.getInstance();
 	private String envName;
 	private File packagePath;
 	private Boolean createCopy;
@@ -52,12 +52,12 @@ public class Replacer {
 	}
 
 	public void execute() {
-		logger.info("== Executing Replacer [Version=" + Utils.getJarVersion() + "]");
-		logger.info("     [PackagePath=" + getPackagePath().getAbsolutePath() + "]");
-		logger.info("     [EnvName=" + getEnvName() + "]");
-		logger.info("     [CreateCopy=" + isCreateCopy() + "]");
+		Log.get().info("== Executing Replacer [Version=" + Utils.getJarVersion() + "]");
+		Log.get().info("   [PackagePath=" + getPackagePath().getAbsolutePath() + "]");
+		Log.get().info("   [EnvName=" + getEnvName() + "]");
+		Log.get().info("   [CreateCopy=" + isCreateCopy() + "]");
 		if (isCreateCopy()) {
-			logger.info("     [Destination=" + getCopyDestination().getAbsolutePath() + "]");
+			Log.get().info("   [Destination=" + getCopyDestination().getAbsolutePath() + "]");
 		}
 
 		if (isCreateCopy()) {
@@ -68,17 +68,20 @@ public class Replacer {
 
 		EntityManager entityManager = new EntityManager(pathToConfigure);
 
-		logger.info("==== Found [" + entityManager.getPMarkerCount() + "] pacify files...");
-		logger.info("==== Validating ...");
+		Log.get().info("== Found [" + entityManager.getPMarkerCount() + "] pacify marker files");
+		for (PMarker pMarker : entityManager.getPMarkers()) {
+			Log.get().info("   [" + pMarker.getFile().getAbsolutePath() + "]");
+		}
+		Log.get().info("== Validating...");
 
 		List<Defect> defects = createValidator().validateInternal(entityManager);
 		DefectUtils.abortIfDefectExists(defects);
 
-		logger.info("==== Doing Replacement...");
+		Log.get().info("== Replacing...");
 		defects = doReplacement(entityManager);
 		DefectUtils.abortIfDefectExists(defects);
 
-		logger.info("== Successfully finished...");
+		Log.get().info("== Successfully finished");
 	}
 
 	public String getEnvName() {
@@ -124,9 +127,9 @@ public class Replacer {
 	public List<Defect> doReplacement(EntityManager entityManager) {
 		List<Defect> defects = new ArrayList<Defect>();
 		for (PMarker pMarker : entityManager.getPMarkers()) {
-			logger.info("====== Replacing stuff which is configured in [" + pMarker.getFile().getPath()
-			        + "] ...");
-			PropertyMarkerFileReplacer propertyReplacer = new PropertyMarkerFileReplacer(propertyResolveManager, pMarker);
+			Log.get().debug("   Processing Marker File [" + pMarker.getFile().getAbsolutePath() + "]");
+			PropertyMarkerFileReplacer propertyReplacer = new PropertyMarkerFileReplacer(propertyResolveManager,
+			        pMarker);
 			defects.addAll(propertyReplacer.replace());
 		}
 		return defects;

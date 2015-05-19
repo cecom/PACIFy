@@ -30,8 +30,6 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public abstract class BaseMojo extends AbstractMojo {
 
@@ -74,8 +72,6 @@ public abstract class BaseMojo extends AbstractMojo {
 	 * @required
 	 */
 	private String logLevel;
-
-	protected Logger logger = LoggerFactory.getLogger(BaseMojo.class);
 
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		if (skip) {

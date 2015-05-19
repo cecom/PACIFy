@@ -19,6 +19,7 @@ package com.geewhiz.pacify.checks.impl;
  * under the License.
  */
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -40,8 +41,8 @@ public class CheckPlaceholderExistsInTargetFile implements PMarkerCheck {
 
 		for (PProperty pproperty : pMarker.getProperties()) {
 			for (PFile pfile : pproperty.getFiles()) {
-				java.io.File file = pMarker.getAbsoluteFileFor(pfile);
-				boolean exists = doesPropertyExistInFile(pproperty, file);
+				File file = pMarker.getAbsoluteFileFor(pfile);
+				boolean exists = doesPropertyExistInFile(pproperty, file, pfile.getEncoding());
 				if (exists) {
 					continue;
 				}
@@ -53,8 +54,8 @@ public class CheckPlaceholderExistsInTargetFile implements PMarkerCheck {
 		return defects;
 	}
 
-	public boolean doesPropertyExistInFile(PProperty pproperty, java.io.File file) {
-		String fileContent = FileUtils.getFileInOneString(file);
+	public boolean doesPropertyExistInFile(PProperty pproperty, File file, String encoding) {
+		String fileContent = FileUtils.getFileInOneString(file, encoding);
 
 		// todo: das pattern muss raus, kann file spezifisch sein
 		Pattern pattern = PropertyMarkerFileReplacer.getPattern(pproperty.getName(), true);

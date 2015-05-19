@@ -35,7 +35,7 @@ import java.util.List;
 
 public class FileUtils {
 
-	public static String getFileInOneString(File file) {
+	public static String getFileInOneString(File file, String encoding) {
 		byte[] buffer;
 		try {
 			buffer = new byte[(int) file.length()];
@@ -54,7 +54,6 @@ public class FileUtils {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-		String encoding = Utils.getEncoding(file);
 		try {
 			return new String(buffer, encoding);
 		} catch (UnsupportedEncodingException e) {
@@ -62,11 +61,10 @@ public class FileUtils {
 		}
 	}
 
-	public static List<String> getFileAsLines(URL fileURL) {
+	public static List<String> getFileAsLines(URL fileURL, String encoding) {
 		InputStream is = null;
 		try {
 			is = fileURL.openStream();
-			String encoding = Utils.getEncoding(fileURL);
 			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(is, encoding));
 			List<String> lines = new ArrayList<String>();
 			String line;
