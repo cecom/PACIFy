@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <Pacify xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="..\..\..\..\..\..\model\src\main\resources\pacify.xsd">
     <Property Name="foobar1">
-        <File Path="wrongConf.txt"/>
+        <File RelativePath="wrongConf.txt"/>
     </Property>
     <Property Name="foobar2">
-        <File Path="wrongConf.txt"/>
+        <File RelativePath="wrongConf.txt"/>
     </Property>
 </Pacify>

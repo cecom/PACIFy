@@ -45,7 +45,7 @@ public abstract class PMarkerBase {
 	}
 
 	public java.io.File getAbsoluteFileFor(PFile pfile) {
-		return new java.io.File(getFolder(), pfile.getPath());
+		return new java.io.File(getFolder(), pfile.getRelativePath());
 	}
 
 	public abstract List<PProperty> getProperties();

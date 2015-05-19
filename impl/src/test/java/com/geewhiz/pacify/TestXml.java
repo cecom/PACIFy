@@ -43,9 +43,9 @@ public class TestXml {
 		assertEquals("foobar1", pMarker.getProperties().get(0).getName());
 		assertEquals("foobar2", pMarker.getProperties().get(1).getName());
 
-		assertEquals("someConf.conf", pMarker.getProperties().get(0).getFiles().get(0).getPath());
-		assertEquals("subfolder/someOtherConf.conf", pMarker.getProperties().get(0).getFiles().get(1).getPath());
-		assertEquals("someParentConf.conf", pMarker.getProperties().get(1).getFiles().get(0).getPath());
+		assertEquals("someConf.conf", pMarker.getProperties().get(0).getFiles().get(0).getRelativePath());
+		assertEquals("subfolder/someOtherConf.conf", pMarker.getProperties().get(0).getFiles().get(1).getRelativePath());
+		assertEquals("someParentConf.conf", pMarker.getProperties().get(1).getFiles().get(0).getRelativePath());
 
 	}
 }
