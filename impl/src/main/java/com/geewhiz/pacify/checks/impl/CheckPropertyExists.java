@@ -24,7 +24,9 @@ import java.util.List;
 
 import com.geewhiz.pacify.checks.PMarkerCheck;
 import com.geewhiz.pacify.defect.Defect;
+import com.geewhiz.pacify.defect.PropertyHasCycleDefect;
 import com.geewhiz.pacify.defect.PropertyNotDefinedDefect;
+import com.geewhiz.pacify.exceptions.CycleDetectRuntimeException;
 import com.geewhiz.pacify.managers.PropertyResolveManager;
 import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.model.PProperty;
@@ -37,17 +39,20 @@ public class CheckPropertyExists implements PMarkerCheck {
         this.propertyResolveManager = propertyResolveManager;
     }
 
-    public List<Defect> checkForErrors(PMarker pfListEntity) {
+    public List<Defect> checkForErrors(PMarker pMarker) {
         List<Defect> defects = new ArrayList<Defect>();
 
-        List<PProperty> pfPropertyEntities = pfListEntity.getProperties();
-        for (PProperty pfPropertyEntity : pfPropertyEntities) {
-            if (propertyResolveManager.containsProperty(pfPropertyEntity.getName())) {
-                propertyResolveManager.getPropertyValue(pfPropertyEntity.getName());
+        List<PProperty> pProperties = pMarker.getProperties();
+        for (PProperty pProperty : pProperties) {
+            if (propertyResolveManager.containsProperty(pProperty.getName())) {
+                try {
+                    propertyResolveManager.getPropertyValue(pProperty.getName());
+                } catch (CycleDetectRuntimeException ce) {
+                    defects.add(new PropertyHasCycleDefect(pMarker, ce.getProperty(), ce.getCycle()));
+                }
                 continue;
             }
-            Defect defect = new PropertyNotDefinedDefect(pfListEntity, pfPropertyEntity,
-                    propertyResolveManager.toString());
+            Defect defect = new PropertyNotDefinedDefect(pMarker, pProperty, propertyResolveManager.toString());
             defects.add(defect);
         }
 

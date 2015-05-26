@@ -98,10 +98,12 @@ public class CreatePropertyFile {
     }
 
     private Set<String> getPropertyLines() {
+        Log.get().debug("Resolved Properties:");
         Set<String> result = new TreeSet<String>();
         for (String property : propertyResolveManager.getProperties()) {
             String propertyValue = propertyResolveManager.getPropertyValue(property);
             String line = property + "=" + propertyValue;
+            Log.get().debug(line);
             result.add(line);
         }
         return result;

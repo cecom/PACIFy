@@ -3,12 +3,15 @@ package com.geewhiz.pacify.managers;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.tools.ant.types.FilterSet;
 
 import com.geewhiz.pacify.defect.Defect;
+import com.geewhiz.pacify.exceptions.CycleDetectRuntimeException;
 import com.geewhiz.pacify.resolver.PropertyResolver;
 import com.google.inject.Inject;
 
@@ -33,86 +36,86 @@ import com.google.inject.Inject;
 
 public class PropertyResolveManager {
 
-	Set<PropertyResolver> propertyResolverList;
+    Set<PropertyResolver> propertyResolverList;
 
-	@Inject
-	public PropertyResolveManager(Set<PropertyResolver> propertyResolverList) {
-		this.propertyResolverList = propertyResolverList;
-	}
+    @Inject
+    public PropertyResolveManager(Set<PropertyResolver> propertyResolverList) {
+        this.propertyResolverList = propertyResolverList;
+    }
 
-	@Override
-	public String toString() {
-		StringBuffer sb = new StringBuffer();
-		Iterator<PropertyResolver> iter = propertyResolverList.iterator();
-		while (iter.hasNext()) {
-			PropertyResolver propertyResolver = iter.next();
-			sb.append(propertyResolver.getPropertyResolverDescription());
-			if (iter.hasNext()) {
-				sb.append(",");
-			}
-		}
-		return sb.toString();
-	}
+    @Override
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        Iterator<PropertyResolver> iter = propertyResolverList.iterator();
+        while (iter.hasNext()) {
+            PropertyResolver propertyResolver = iter.next();
+            sb.append(propertyResolver.getPropertyResolverDescription());
+            if (iter.hasNext()) {
+                sb.append(",");
+            }
+        }
+        return sb.toString();
+    }
 
-	public Set<String> getProperties() {
-		Set<String> result = new TreeSet<String>();
+    public Set<String> getProperties() {
+        Set<String> result = new TreeSet<String>();
 
-		for (PropertyResolver propertyResolver : propertyResolverList) {
-			result.addAll(propertyResolver.getProperties());
-		}
+        for (PropertyResolver propertyResolver : propertyResolverList) {
+            result.addAll(propertyResolver.getProperties());
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	public String getPropertyValue(String property) {
-		return getPropertyValue(property, new TreeSet<String>());
-	}
+    public String getPropertyValue(String property) {
+        return getPropertyValue(property, new ArrayList<String>());
+    }
 
-	private String getPropertyValue(String property, Set<String> propertyCycleDetector) {
-		for (PropertyResolver propertyResolver : propertyResolverList) {
-			if (!propertyResolver.containsProperty(property)) {
-				continue;
-			}
+    private String getPropertyValue(String property, List<String> propertyCycleDetector) {
+        for (PropertyResolver propertyResolver : propertyResolverList) {
+            if (!propertyResolver.containsProperty(property)) {
+                continue;
+            }
 
-			if (propertyResolver.propertyUsesToken(property)) {
-				propertyCycleDetector.add(property);
-				return replaceTokens(propertyResolver, property, propertyCycleDetector);
-			}
-			return propertyResolver.getPropertyValue(property);
-		}
-		throw new IllegalArgumentException("Property [" + property + "] not found in any resolver!");
-	}
+            if (propertyResolver.propertyUsesToken(property)) {
+                return replaceTokens(propertyResolver, property, propertyCycleDetector);
+            }
+            return propertyResolver.getPropertyValue(property);
+        }
+        throw new IllegalArgumentException("Property [" + property + "] not found in any resolver!");
+    }
 
-	private String replaceTokens(PropertyResolver propertyResolver, String property, Set<String> propertyCycleDetector) {
-		FilterSet filterSet = propertyResolver.createFilterSet();
-		for (String reference : propertyResolver.getReferencedProperties(property)) {
-			if (propertyCycleDetector.contains(reference)) {
-				throw new RuntimeException("You have a cycle reference between property [" + property + "] and ["
-				        + reference + "].");
-			}
+    private String replaceTokens(PropertyResolver propertyResolver, String property, List<String> propertyCycleDetector) {
+        if (propertyCycleDetector.contains(property)) {
+            String message = StringUtils.join(propertyCycleDetector, "->") + "->" + property;
+            throw new CycleDetectRuntimeException(property, message);
+        }
 
-			propertyCycleDetector.add(reference);
-			filterSet.addFilter(reference, getPropertyValue(reference, propertyCycleDetector));
-		}
+        propertyCycleDetector.add(property);
 
-		String valueWithToken = propertyResolver.getPropertyValue(property);
-		return filterSet.replaceTokens(valueWithToken);
-	}
+        FilterSet filterSet = propertyResolver.createFilterSet();
+        for (String reference : propertyResolver.getReferencedProperties(property)) {
+            filterSet.addFilter(reference, getPropertyValue(reference, propertyCycleDetector));
+        }
 
-	public boolean containsProperty(String name) {
-		for (PropertyResolver propertyResolver : propertyResolverList) {
-			if (propertyResolver.containsProperty(name)) {
-				return true;
-			}
-		}
-		return false;
-	}
+        String valueWithToken = propertyResolver.getPropertyValue(property);
+        return filterSet.replaceTokens(valueWithToken);
+    }
 
-	public Collection<Defect> checkForDuplicateEntry() {
-		Collection<Defect> result = new ArrayList<Defect>();
-		for (PropertyResolver propertyResolver : propertyResolverList) {
-			result.addAll(propertyResolver.checkForDuplicateEntry());
-		}
-		return result;
-	}
-}
+    public boolean containsProperty(String name) {
+        for (PropertyResolver propertyResolver : propertyResolverList) {
+            if (propertyResolver.containsProperty(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public Collection<Defect> checkForDuplicateEntry() {
+        Collection<Defect> result = new ArrayList<Defect>();
+        for (PropertyResolver propertyResolver : propertyResolverList) {
+            result.addAll(propertyResolver.checkForDuplicateEntry());
+        }
+        return result;
+    }
+};
