@@ -28,10 +28,10 @@ import org.apache.commons.io.FileUtils;
 
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.DefectUtils;
-import com.geewhiz.pacify.model.EntityManager;
+import com.geewhiz.pacify.managers.EntityManager;
+import com.geewhiz.pacify.managers.MarkerFileManager;
+import com.geewhiz.pacify.managers.PropertyResolveManager;
 import com.geewhiz.pacify.model.PMarker;
-import com.geewhiz.pacify.property.PropertyResolveManager;
-import com.geewhiz.pacify.replacer.PropertyMarkerFileReplacer;
 import com.geewhiz.pacify.utils.Utils;
 import com.google.inject.Inject;
 import com.marzapower.loggable.Log;
@@ -128,9 +128,9 @@ public class Replacer {
 		List<Defect> defects = new ArrayList<Defect>();
 		for (PMarker pMarker : entityManager.getPMarkers()) {
 			Log.get().debug("   Processing Marker File [" + pMarker.getFile().getAbsolutePath() + "]");
-			PropertyMarkerFileReplacer propertyReplacer = new PropertyMarkerFileReplacer(propertyResolveManager,
+			MarkerFileManager propertyReplacer = new MarkerFileManager(propertyResolveManager,
 			        pMarker);
-			defects.addAll(propertyReplacer.replace());
+			defects.addAll(propertyReplacer.doFilter());
 		}
 		return defects;
 	}

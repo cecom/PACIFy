@@ -24,7 +24,7 @@ import java.io.File;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.geewhiz.pacify.model.EntityManager;
+import com.geewhiz.pacify.managers.EntityManager;
 import com.geewhiz.pacify.model.PMarker;
 
 public class TestXml {

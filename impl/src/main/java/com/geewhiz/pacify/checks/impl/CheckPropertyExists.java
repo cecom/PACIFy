@@ -25,31 +25,32 @@ import java.util.List;
 import com.geewhiz.pacify.checks.PMarkerCheck;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.PropertyNotDefinedDefect;
+import com.geewhiz.pacify.managers.PropertyResolveManager;
 import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.model.PProperty;
-import com.geewhiz.pacify.property.PropertyResolveManager;
 
 public class CheckPropertyExists implements PMarkerCheck {
 
-	private PropertyResolveManager propertyResolveManager;
+    private PropertyResolveManager propertyResolveManager;
 
-	public CheckPropertyExists(PropertyResolveManager propertyResolveManager) {
-		this.propertyResolveManager = propertyResolveManager;
-	}
+    public CheckPropertyExists(PropertyResolveManager propertyResolveManager) {
+        this.propertyResolveManager = propertyResolveManager;
+    }
 
-	public List<Defect> checkForErrors(PMarker pfListEntity) {
-		List<Defect> defects = new ArrayList<Defect>();
+    public List<Defect> checkForErrors(PMarker pfListEntity) {
+        List<Defect> defects = new ArrayList<Defect>();
 
-		List<PProperty> pfPropertyEntities = pfListEntity.getProperties();
-		for (PProperty pfPropertyEntity : pfPropertyEntities) {
-			if (propertyResolveManager.containsProperty(pfPropertyEntity.getName())) {
-				continue;
-			}
-			Defect defect = new PropertyNotDefinedDefect(pfListEntity, pfPropertyEntity,
-			        propertyResolveManager.toString());
-			defects.add(defect);
-		}
+        List<PProperty> pfPropertyEntities = pfListEntity.getProperties();
+        for (PProperty pfPropertyEntity : pfPropertyEntities) {
+            if (propertyResolveManager.containsProperty(pfPropertyEntity.getName())) {
+                propertyResolveManager.getPropertyValue(pfPropertyEntity.getName());
+                continue;
+            }
+            Defect defect = new PropertyNotDefinedDefect(pfListEntity, pfPropertyEntity,
+                    propertyResolveManager.toString());
+            defects.add(defect);
+        }
 
-		return defects;
-	}
+        return defects;
+    }
 }

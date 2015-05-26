@@ -28,39 +28,39 @@ import java.util.regex.Pattern;
 import com.geewhiz.pacify.checks.PMarkerCheck;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.PropertyDoesNotExistInTargetFileDefect;
+import com.geewhiz.pacify.managers.MarkerFileManager;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.model.PProperty;
-import com.geewhiz.pacify.replacer.PropertyMarkerFileReplacer;
 import com.geewhiz.pacify.utils.FileUtils;
 
 public class CheckPlaceholderExistsInTargetFile implements PMarkerCheck {
 
-	public List<Defect> checkForErrors(PMarker pMarker) {
-		List<Defect> defects = new ArrayList<Defect>();
+    public List<Defect> checkForErrors(PMarker pMarker) {
+        List<Defect> defects = new ArrayList<Defect>();
 
-		for (PProperty pproperty : pMarker.getProperties()) {
-			for (PFile pfile : pproperty.getFiles()) {
-				File file = pMarker.getAbsoluteFileFor(pfile);
-				boolean exists = doesPropertyExistInFile(pproperty, file, pfile.getEncoding());
-				if (exists) {
-					continue;
-				}
-				Defect defect = new PropertyDoesNotExistInTargetFileDefect(pMarker, pproperty, pfile);
-				defects.add(defect);
-			}
-		}
+        for (PProperty pproperty : pMarker.getProperties()) {
+            for (PFile pfile : pproperty.getFiles()) {
+                File file = pMarker.getAbsoluteFileFor(pfile);
+                boolean exists = doesPropertyExistInFile(pproperty, file, pfile.getEncoding());
+                if (exists) {
+                    continue;
+                }
+                Defect defect = new PropertyDoesNotExistInTargetFileDefect(pMarker, pproperty, pfile);
+                defects.add(defect);
+            }
+        }
 
-		return defects;
-	}
+        return defects;
+    }
 
-	public boolean doesPropertyExistInFile(PProperty pproperty, File file, String encoding) {
-		String fileContent = FileUtils.getFileInOneString(file, encoding);
+    public boolean doesPropertyExistInFile(PProperty pproperty, File file, String encoding) {
+        String fileContent = FileUtils.getFileInOneString(file, encoding);
 
-		// todo: das pattern muss raus, kann file spezifisch sein
-		Pattern pattern = PropertyMarkerFileReplacer.getPattern(pproperty.getName(), true);
-		Matcher matcher = pattern.matcher(fileContent);
+        // todo: das pattern muss raus, kann file spezifisch sein
+        Pattern pattern = MarkerFileManager.getPattern(pproperty.getName(), true);
+        Matcher matcher = pattern.matcher(fileContent);
 
-		return matcher.find();
-	}
+        return matcher.find();
+    }
 }

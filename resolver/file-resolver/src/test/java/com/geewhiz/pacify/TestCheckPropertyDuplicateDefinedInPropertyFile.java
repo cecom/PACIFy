@@ -31,7 +31,7 @@ import org.junit.Test;
 
 import com.geewhiz.pacify.checks.impl.CheckPropertyDuplicateInPropertyFile;
 import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.property.PropertyResolveManager;
+import com.geewhiz.pacify.managers.PropertyResolveManager;
 import com.geewhiz.pacify.property.resolver.fileresolver.FilePropertyResolver;
 import com.geewhiz.pacify.resolver.PropertyResolver;
 

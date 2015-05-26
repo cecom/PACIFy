@@ -30,8 +30,8 @@ import com.geewhiz.pacify.Replacer;
 import com.geewhiz.pacify.Validator;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.DefectUtils;
-import com.geewhiz.pacify.model.EntityManager;
-import com.geewhiz.pacify.property.PropertyResolveManager;
+import com.geewhiz.pacify.managers.EntityManager;
+import com.geewhiz.pacify.managers.PropertyResolveManager;
 import com.geewhiz.pacify.property.resolver.fileresolver.FilePropertyResolver;
 import com.geewhiz.pacify.resolver.PropertyResolver;
 

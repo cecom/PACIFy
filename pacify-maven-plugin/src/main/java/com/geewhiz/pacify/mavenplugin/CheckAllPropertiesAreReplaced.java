@@ -29,7 +29,7 @@ import org.apache.maven.project.MavenProject;
 
 import com.geewhiz.pacify.checks.impl.CheckForNotReplacedTokens;
 import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.model.EntityManager;
+import com.geewhiz.pacify.managers.EntityManager;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
 

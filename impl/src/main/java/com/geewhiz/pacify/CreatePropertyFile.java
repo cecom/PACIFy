@@ -26,7 +26,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Set;
 import java.util.TreeSet;
 
-import com.geewhiz.pacify.property.PropertyResolveManager;
+import com.geewhiz.pacify.managers.PropertyResolveManager;
 import com.geewhiz.pacify.utils.Utils;
 import com.google.inject.Inject;
 import com.marzapower.loggable.Log;

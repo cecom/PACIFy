@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.PropertyNotReplacedDefect;
-import com.geewhiz.pacify.replacer.PropertyMarkerFileReplacer;
+import com.geewhiz.pacify.managers.MarkerFileManager;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -37,7 +37,7 @@ public class CheckForNotReplacedTokens {
 		String fileContent = com.geewhiz.pacify.utils.FileUtils.getFileInOneString(file, encoding);
 
 		// todo: das pattern muss raus, kann file spezifisch sein
-		Pattern pattern = PropertyMarkerFileReplacer.getPattern("([^}]*)", false);
+		Pattern pattern = MarkerFileManager.getPattern("([^}]*)", false);
 		Matcher matcher = pattern.matcher(fileContent);
 
 		while (matcher.find()) {

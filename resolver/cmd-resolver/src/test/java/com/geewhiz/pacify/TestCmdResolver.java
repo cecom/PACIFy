@@ -27,7 +27,7 @@ import java.util.TreeSet;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.geewhiz.pacify.property.PropertyResolveManager;
+import com.geewhiz.pacify.managers.PropertyResolveManager;
 import com.geewhiz.pacify.property.resolver.cmdresolver.CmdPropertyResolver;
 import com.geewhiz.pacify.resolver.PropertyResolver;
 

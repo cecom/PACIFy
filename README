@@ -4,7 +4,6 @@
 
 - test resourcen aufräumen result files in unter ordner
 - Ausgabe vom replacen anpassen und schick machen
-- keinen Stacktrace werfen, eher verschiedene return codes
 - beim validieren müssen auch zyklische abhängigkeiten zu fehlern führen
 
 Tokens:

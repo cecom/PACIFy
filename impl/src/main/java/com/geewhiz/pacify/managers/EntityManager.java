@@ -1,4 +1,4 @@
-package com.geewhiz.pacify.model;
+package com.geewhiz.pacify.managers;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -27,6 +27,8 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+import com.geewhiz.pacify.model.ObjectFactory;
+import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.model.utils.PacifyFilesFinder;
 
 public class EntityManager {

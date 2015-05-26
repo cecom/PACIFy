@@ -25,7 +25,7 @@ import java.util.List;
 
 import com.geewhiz.pacify.checks.PMarkerCheck;
 import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.model.EntityManager;
+import com.geewhiz.pacify.managers.EntityManager;
 import com.geewhiz.pacify.model.PMarker;
 
 public abstract class TestBase {

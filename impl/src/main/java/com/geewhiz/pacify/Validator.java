@@ -13,9 +13,9 @@ import com.geewhiz.pacify.checks.impl.CheckPropertyExists;
 import com.geewhiz.pacify.checks.impl.CheckTargetFileExist;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.DefectUtils;
-import com.geewhiz.pacify.model.EntityManager;
+import com.geewhiz.pacify.managers.EntityManager;
+import com.geewhiz.pacify.managers.PropertyResolveManager;
 import com.geewhiz.pacify.model.PMarker;
-import com.geewhiz.pacify.property.PropertyResolveManager;
 import com.geewhiz.pacify.utils.Utils;
 import com.google.inject.Inject;
 import com.marzapower.loggable.Log;
@@ -43,82 +43,82 @@ import com.marzapower.loggable.Loggable;
 @Loggable(loggerName = "com.geewhiz.pacify")
 public class Validator {
 
-	File packagePath;
-	List<Check> checks = new ArrayList<Check>();
-	List<PMarkerCheck> pMarkerChecks = new ArrayList<PMarkerCheck>();
+    File                           packagePath;
+    List<Check>                    checks        = new ArrayList<Check>();
+    List<PMarkerCheck>             pMarkerChecks = new ArrayList<PMarkerCheck>();
 
-	private PropertyResolveManager propertyResolveManager;
+    private PropertyResolveManager propertyResolveManager;
 
-	@Inject
-	public Validator(PropertyResolveManager propertyResolveManager) {
-		this.propertyResolveManager = propertyResolveManager;
-	}
+    @Inject
+    public Validator(PropertyResolveManager propertyResolveManager) {
+        this.propertyResolveManager = propertyResolveManager;
+    }
 
-	public void enablePropertyResolveChecks() {
-		addCheck(new CheckPropertyDuplicateInPropertyFile(propertyResolveManager));
-		addPMarkerCheck(new CheckPropertyExists(propertyResolveManager));
-	}
+    public void enablePropertyResolveChecks() {
+        addCheck(new CheckPropertyDuplicateInPropertyFile(propertyResolveManager));
+        addPMarkerCheck(new CheckPropertyExists(propertyResolveManager));
+    }
 
-	public void enableMarkerFileChecks() {
-		addPMarkerCheck(new CheckTargetFileExist());
-		addPMarkerCheck(new CheckPropertyDuplicateDefinedInPacifyFile());
-		addPMarkerCheck(new CheckPlaceholderExistsInTargetFile());
-	}
+    public void enableMarkerFileChecks() {
+        addPMarkerCheck(new CheckTargetFileExist());
+        addPMarkerCheck(new CheckPropertyDuplicateDefinedInPacifyFile());
+        addPMarkerCheck(new CheckPlaceholderExistsInTargetFile());
+    }
 
-	public void addCheck(Check check) {
-		checks.add(check);
-	}
+    public void addCheck(Check check) {
+        checks.add(check);
+    }
 
-	public void addPMarkerCheck(PMarkerCheck check) {
-		pMarkerChecks.add(check);
-	}
+    public void addPMarkerCheck(PMarkerCheck check) {
+        pMarkerChecks.add(check);
+    }
 
-	public List<Check> getChecks() {
-		return checks;
-	}
+    public List<Check> getChecks() {
+        return checks;
+    }
 
-	public List<PMarkerCheck> getPMarkerChecks() {
-		return pMarkerChecks;
-	}
+    public List<PMarkerCheck> getPMarkerChecks() {
+        return pMarkerChecks;
+    }
 
-	public File getPackagePath() {
-		return packagePath;
-	}
+    public File getPackagePath() {
+        return packagePath;
+    }
 
-	public void setPackagePath(File packagePath) {
-		this.packagePath = packagePath;
-	}
+    public void setPackagePath(File packagePath) {
+        this.packagePath = packagePath;
+    }
 
-	public void execute() {
-		EntityManager entityManager = new EntityManager(getPackagePath());
+    public void execute() {
+        EntityManager entityManager = new EntityManager(getPackagePath());
 
-		Log.get().info("== Executing Validator [Version=" + Utils.getJarVersion() + "]");
+        Log.get().info("== Executing Validator [Version=" + Utils.getJarVersion() + "]");
 
-		Log.get().info("== Found [" + entityManager.getPMarkerCount() + "] pacify marker files");
-		for (PMarker pMarker : entityManager.getPMarkers()) {
-			Log.get().info("   [" + pMarker.getFile().getAbsolutePath() + "]");
-		}
-		Log.get().info("== Validating ...");
+        Log.get().info("== Found [" + entityManager.getPMarkerCount() + "] pacify marker files");
+        for (PMarker pMarker : entityManager.getPMarkers()) {
+            Log.get().info("   [" + pMarker.getFile().getAbsolutePath() + "]");
+        }
+        Log.get().info("== Validating ...");
 
-		List<Defect> defects = validateInternal(entityManager);
-		DefectUtils.abortIfDefectExists(defects);
+        List<Defect> defects = validateInternal(entityManager);
+        DefectUtils.abortIfDefectExists(defects);
 
-		Log.get().info("== Successfully finished");
-	}
+        Log.get().info("== Successfully finished");
+    }
 
-	public List<Defect> validateInternal(EntityManager entityManager) {
-		List<Defect> defects = new ArrayList<Defect>();
-		for (Check check : checks) {
-			defects.addAll(check.checkForErrors());
-		}
-		for (PMarker pMarker : entityManager.getPMarkers()) {
-			Log.get().debug("   Processing Marker File [" + pMarker.getFile().getAbsolutePath() + "]");
-			for (PMarkerCheck pMarkerCheck : pMarkerChecks) {
-				Log.get().debug("     Check [" + pMarkerCheck.getClass().getName() + "]");
-				defects.addAll(pMarkerCheck.checkForErrors(pMarker));
-			}
-		}
-		return defects;
-	}
+    public List<Defect> validateInternal(EntityManager entityManager) {
+        List<Defect> defects = new ArrayList<Defect>();
+        for (Check check : checks) {
+            defects.addAll(check.checkForErrors());
+        }
+        for (PMarker pMarker : entityManager.getPMarkers()) {
+            Log.get().debug("   Processing Marker File [" + pMarker.getFile().getAbsolutePath() + "]");
+            for (PMarkerCheck pMarkerCheck : pMarkerChecks) {
+                Log.get().debug("     Check [" + pMarkerCheck.getClass().getName() + "]");
+                defects.addAll(pMarkerCheck.checkForErrors(pMarker));
+            }
+        }
+        return defects;
+    }
 
 }

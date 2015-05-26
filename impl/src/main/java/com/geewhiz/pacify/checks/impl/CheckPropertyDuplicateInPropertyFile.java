@@ -24,7 +24,7 @@ import java.util.List;
 
 import com.geewhiz.pacify.checks.Check;
 import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.property.PropertyResolveManager;
+import com.geewhiz.pacify.managers.PropertyResolveManager;
 
 public class CheckPropertyDuplicateInPropertyFile implements Check {
 

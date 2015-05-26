@@ -1,4 +1,4 @@
-package com.geewhiz.pacify.replacer;
+package com.geewhiz.pacify.managers;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -34,22 +34,21 @@ import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.model.PProperty;
-import com.geewhiz.pacify.property.PropertyResolveManager;
 import com.marzapower.loggable.Log;
 import com.marzapower.loggable.Loggable;
 
 @Loggable(loggerName = "com.geewhiz.pacify")
-public class PropertyMarkerFileReplacer {
+public class MarkerFileManager {
 
 	private PropertyResolveManager propertyResolveManager;
 	private PMarker pMarker;
 
-	public PropertyMarkerFileReplacer(PropertyResolveManager propertyResolveManager, PMarker pMarker) {
+	public MarkerFileManager(PropertyResolveManager propertyResolveManager, PMarker pMarker) {
 		this.propertyResolveManager = propertyResolveManager;
 		this.pMarker = pMarker;
 	}
 
-	public List<Defect> replace() {
+	public List<Defect> doFilter() {
 		List<Defect> defects = new ArrayList<Defect>();
 		for (PFile pfile : pMarker.getPFiles()) {
 			File file = pMarker.getAbsoluteFileFor(pfile);
