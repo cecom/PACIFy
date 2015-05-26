@@ -2,11 +2,7 @@
 - export HTTPS_PROXY=...
 - GIT_SSL_NO_VERIFY=true  git push
 
--log level via commandline setzen
-
 - test resourcen aufräumen result files in unter ordner
-- logger : https://github.com/google/guice/wiki/BuiltInBindings
-- maven plugin auf 3.0 umstellen
 - Ausgabe vom replacen anpassen und schick machen
 - keinen Stacktrace werfen, eher verschiedene return codes
 - beim validieren müssen auch zyklische abhängigkeiten zu fehlern führen

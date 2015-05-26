@@ -34,6 +34,7 @@ public class TestCommandlineCall {
         String startPath = "target/test-classes/testReplace";
 
         int result = PacifyViaCommandline.mainInternal(new String[] {
+                "--info",
                 "replace",
                 "--envName=local",
                 "--resolvers=FileResolver",

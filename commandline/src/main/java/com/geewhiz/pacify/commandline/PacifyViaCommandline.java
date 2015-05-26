@@ -2,6 +2,8 @@ package com.geewhiz.pacify.commandline;
 
 import java.util.List;
 
+import org.apache.log4j.Level;
+
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 import com.geewhiz.pacify.CreatePropertyFile;
@@ -65,6 +67,14 @@ public class PacifyViaCommandline {
         } catch (ParameterException e) {
             System.err.println(e.getMessage());
             return 1;
+        }
+
+        if (mainCommand.isDebug()) {
+            Log.get().setLevel(Level.DEBUG);
+        } else if (mainCommand.isInfo()) {
+            Log.get().setLevel(Level.INFO);
+        } else {
+            Log.get().setLevel(Level.ERROR);
         }
 
         if ("replace".equals(jc.getParsedCommand())) {
