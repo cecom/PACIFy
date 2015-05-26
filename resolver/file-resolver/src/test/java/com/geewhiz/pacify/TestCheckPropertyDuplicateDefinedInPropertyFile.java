@@ -26,8 +26,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.Test;
 
 import com.geewhiz.pacify.checks.impl.CheckPropertyDuplicateInPropertyFile;
 import com.geewhiz.pacify.defect.Defect;
@@ -36,45 +36,45 @@ import com.geewhiz.pacify.property.resolver.fileresolver.FilePropertyResolver;
 import com.geewhiz.pacify.resolver.PropertyResolver;
 
 public class TestCheckPropertyDuplicateDefinedInPropertyFile {
-	@Test
-	public void checkForNotCorrect() {
-		File testStartPath = new File("target/test-classes/checkPropertyDuplicateDefinedInPropertyFile/wrong");
-		File file = new File(testStartPath, "myProperties.properties");
+    @Test
+    public void checkForNotCorrect() {
+        File testStartPath = new File("target/test-classes/checkPropertyDuplicateDefinedInPropertyFile/wrong");
+        File file = new File(testStartPath, "myProperties.properties");
 
-		URL fileUrl = TestUtil.getURLForFile(file);
-		FilePropertyResolver filePropertyResolver = new FilePropertyResolver(fileUrl);
+        URL fileUrl = TestUtil.getURLForFile(file);
+        FilePropertyResolver filePropertyResolver = new FilePropertyResolver(fileUrl);
 
-		Set<PropertyResolver> resolverList = new TreeSet<PropertyResolver>();
-		resolverList.add(filePropertyResolver);
+        Set<PropertyResolver> resolverList = new TreeSet<PropertyResolver>();
+        resolverList.add(filePropertyResolver);
 
-		PropertyResolveManager propertyResolveManager = new PropertyResolveManager(resolverList);
+        PropertyResolveManager propertyResolveManager = new PropertyResolveManager(resolverList);
 
-		CheckPropertyDuplicateInPropertyFile checker = new CheckPropertyDuplicateInPropertyFile(propertyResolveManager);
+        CheckPropertyDuplicateInPropertyFile checker = new CheckPropertyDuplicateInPropertyFile(propertyResolveManager);
 
-		List<Defect> defects = new ArrayList<Defect>();
-		defects.addAll(checker.checkForErrors());
+        List<Defect> defects = new ArrayList<Defect>();
+        defects.addAll(checker.checkForErrors());
 
-		Assert.assertEquals(2, defects.size());
-	}
+        Assert.assertEquals(2, defects.size());
+    }
 
-	@Test
-	public void checkForCorrect() {
-		File testStartPath = new File("target/test-classes/checkPropertyDuplicateDefinedInPropertyFile/correct");
-		File file = new File(testStartPath, "myProperties.properties");
+    @Test
+    public void checkForCorrect() {
+        File testStartPath = new File("target/test-classes/checkPropertyDuplicateDefinedInPropertyFile/correct");
+        File file = new File(testStartPath, "myProperties.properties");
 
-		URL fileUrl = TestUtil.getURLForFile(file);
-		FilePropertyResolver filePropertyResolver = new FilePropertyResolver(fileUrl);
+        URL fileUrl = TestUtil.getURLForFile(file);
+        FilePropertyResolver filePropertyResolver = new FilePropertyResolver(fileUrl);
 
-		Set<PropertyResolver> resolverList = new TreeSet<PropertyResolver>();
-		resolverList.add(filePropertyResolver);
+        Set<PropertyResolver> resolverList = new TreeSet<PropertyResolver>();
+        resolverList.add(filePropertyResolver);
 
-		PropertyResolveManager propertyResolveManager = new PropertyResolveManager(resolverList);
+        PropertyResolveManager propertyResolveManager = new PropertyResolveManager(resolverList);
 
-		CheckPropertyDuplicateInPropertyFile checker = new CheckPropertyDuplicateInPropertyFile(propertyResolveManager);
+        CheckPropertyDuplicateInPropertyFile checker = new CheckPropertyDuplicateInPropertyFile(propertyResolveManager);
 
-		List<Defect> defects = new ArrayList<Defect>();
-		defects.addAll(checker.checkForErrors());
+        List<Defect> defects = new ArrayList<Defect>();
+        defects.addAll(checker.checkForErrors());
 
-		Assert.assertEquals(0, defects.size());
-	}
+        Assert.assertEquals(0, defects.size());
+    }
 }

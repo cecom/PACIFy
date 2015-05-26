@@ -19,57 +19,56 @@ package com.geewhiz.pacify;
  * under the License.
  */
 
-import static org.testng.Assert.assertEquals;
-
 import java.net.URL;
 import java.util.Properties;
 
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 import com.geewhiz.pacify.property.resolver.fileresolver.FilePropertyResolver;
 
 public class TestRecursivePropertyFileLoader {
 
-	Properties allPropertiesShouldLookLike = new Properties();
-	Properties child1PropertiesShouldLookLike = new Properties();
-	Properties child2PropertiesShouldLookLike = new Properties();
-	Properties childOfChildPropertiesShouldLookLike = new Properties();
-	Properties basePropertiesShouldLookLike = new Properties();
+    Properties allPropertiesShouldLookLike          = new Properties();
+    Properties child1PropertiesShouldLookLike       = new Properties();
+    Properties child2PropertiesShouldLookLike       = new Properties();
+    Properties childOfChildPropertiesShouldLookLike = new Properties();
+    Properties basePropertiesShouldLookLike         = new Properties();
 
-	@BeforeTest
-	public void setUp() throws Exception {
-		basePropertiesShouldLookLike.put("env.name", "baseEnvName");
-		basePropertiesShouldLookLike.put("SomeBaseProperty", "SomeBasePropertyValue");
+    @Before
+    public void setUp() throws Exception {
+        basePropertiesShouldLookLike.put("env.name", "baseEnvName");
+        basePropertiesShouldLookLike.put("SomeBaseProperty", "SomeBasePropertyValue");
 
-		child1PropertiesShouldLookLike.put("env.name", "child1EnvName");
-		child1PropertiesShouldLookLike.put("SomeChild1Property", "SomeChild1PropertyValue");
+        child1PropertiesShouldLookLike.put("env.name", "child1EnvName");
+        child1PropertiesShouldLookLike.put("SomeChild1Property", "SomeChild1PropertyValue");
 
-		child2PropertiesShouldLookLike.put("env.name", "child2EnvName");
-		child2PropertiesShouldLookLike.put("SomeChild2Property", "SomeChild2PropertyValue");
+        child2PropertiesShouldLookLike.put("env.name", "child2EnvName");
+        child2PropertiesShouldLookLike.put("SomeChild2Property", "SomeChild2PropertyValue");
 
-		childOfChildPropertiesShouldLookLike.put("env.name", "ChildOfChildEnv");
-		childOfChildPropertiesShouldLookLike.put("SomeChildOfChildProperty", "SomeChildOfChildPropertyValue");
+        childOfChildPropertiesShouldLookLike.put("env.name", "ChildOfChildEnv");
+        childOfChildPropertiesShouldLookLike.put("SomeChildOfChildProperty", "SomeChildOfChildPropertyValue");
 
-		allPropertiesShouldLookLike.putAll(basePropertiesShouldLookLike);
-		allPropertiesShouldLookLike.putAll(child1PropertiesShouldLookLike);
-		allPropertiesShouldLookLike.putAll(child2PropertiesShouldLookLike);
-		allPropertiesShouldLookLike.putAll(childOfChildPropertiesShouldLookLike);
-	}
+        allPropertiesShouldLookLike.putAll(basePropertiesShouldLookLike);
+        allPropertiesShouldLookLike.putAll(child1PropertiesShouldLookLike);
+        allPropertiesShouldLookLike.putAll(child2PropertiesShouldLookLike);
+        allPropertiesShouldLookLike.putAll(childOfChildPropertiesShouldLookLike);
+    }
 
-	@Test
-	public void testWithClasspath() {
-		URL url = this.getClass().getClassLoader().getResource("properties/subfolder/ChildOfChilds.properties");
+    @Test
+    public void testWithClasspath() {
+        URL url = this.getClass().getClassLoader().getResource("properties/subfolder/ChildOfChilds.properties");
 
-		FilePropertyResolver filePropertyResolver = new FilePropertyResolver(url);
+        FilePropertyResolver filePropertyResolver = new FilePropertyResolver(url);
 
-		assertEquals(filePropertyResolver.getFileProperties(), allPropertiesShouldLookLike);
-		assertEquals(filePropertyResolver.getLocalProperties(), childOfChildPropertiesShouldLookLike);
-		assertEquals(filePropertyResolver.getParentPropertyFileProperties().get(0).getLocalProperties(),
-		        child1PropertiesShouldLookLike);
-		assertEquals(filePropertyResolver.getParentPropertyFileProperties().get(1)
-		        .getLocalProperties(), child2PropertiesShouldLookLike);
-		assertEquals(filePropertyResolver.getParentPropertyFileProperties().get(0)
-		        .getParentPropertyFileProperties().get(0).getLocalProperties(), basePropertiesShouldLookLike);
-	}
+        Assert.assertEquals(filePropertyResolver.getFileProperties(), allPropertiesShouldLookLike);
+        Assert.assertEquals(filePropertyResolver.getLocalProperties(), childOfChildPropertiesShouldLookLike);
+        Assert.assertEquals(filePropertyResolver.getParentPropertyFileProperties().get(0).getLocalProperties(),
+                child1PropertiesShouldLookLike);
+        Assert.assertEquals(filePropertyResolver.getParentPropertyFileProperties().get(1)
+                .getLocalProperties(), child2PropertiesShouldLookLike);
+        Assert.assertEquals(filePropertyResolver.getParentPropertyFileProperties().get(0)
+                .getParentPropertyFileProperties().get(0).getLocalProperties(), basePropertiesShouldLookLike);
+    }
 }

@@ -19,33 +19,32 @@ package com.geewhiz.pacify;
  * under the License.
  */
 
-import static org.testng.Assert.assertEquals;
-
 import java.io.File;
 
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.Test;
 
 import com.geewhiz.pacify.model.EntityManager;
 import com.geewhiz.pacify.model.PMarker;
 
 public class TestXml {
 
-	@Test
-	public void testAll() {
-		File source = new File("target/test-classes/testXml");
+    @Test
+    public void testAll() {
+        File source = new File("target/test-classes/testXml");
 
-		EntityManager entityManager = new EntityManager(source);
+        EntityManager entityManager = new EntityManager(source);
 
-		PMarker pMarker = entityManager.getPMarkers().get(0);
+        PMarker pMarker = entityManager.getPMarkers().get(0);
 
-		assertEquals(pMarker.getProperties().size(), 2);
+        Assert.assertEquals(pMarker.getProperties().size(), 2);
 
-		assertEquals("foobar1", pMarker.getProperties().get(0).getName());
-		assertEquals("foobar2", pMarker.getProperties().get(1).getName());
+        Assert.assertEquals("foobar1", pMarker.getProperties().get(0).getName());
+        Assert.assertEquals("foobar2", pMarker.getProperties().get(1).getName());
 
-		assertEquals("someConf.conf", pMarker.getProperties().get(0).getFiles().get(0).getRelativePath());
-		assertEquals("subfolder/someOtherConf.conf", pMarker.getProperties().get(0).getFiles().get(1).getRelativePath());
-		assertEquals("someParentConf.conf", pMarker.getProperties().get(1).getFiles().get(0).getRelativePath());
+        Assert.assertEquals("someConf.conf", pMarker.getProperties().get(0).getFiles().get(0).getRelativePath());
+        Assert.assertEquals("subfolder/someOtherConf.conf", pMarker.getProperties().get(0).getFiles().get(1).getRelativePath());
+        Assert.assertEquals("someParentConf.conf", pMarker.getProperties().get(1).getFiles().get(0).getRelativePath());
 
-	}
+    }
 }

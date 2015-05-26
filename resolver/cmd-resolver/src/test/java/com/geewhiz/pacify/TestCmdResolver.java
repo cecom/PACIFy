@@ -19,14 +19,13 @@ package com.geewhiz.pacify;
  * under the License.
  */
 
-import static org.testng.AssertJUnit.assertTrue;
-
 import java.io.File;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.Test;
 
 import com.geewhiz.pacify.property.PropertyResolveManager;
 import com.geewhiz.pacify.property.resolver.cmdresolver.CmdPropertyResolver;
@@ -34,38 +33,38 @@ import com.geewhiz.pacify.resolver.PropertyResolver;
 
 public class TestCmdResolver {
 
-	@Test
-	public void testAll() {
-		File startPath = new File("target/test-classes/TestCmdResolver");
-		assertTrue("StartPath [" + startPath.getPath() + "] doesn't exist!", startPath.exists());
+    @Test
+    public void testAll() {
+        File startPath = new File("target/test-classes/TestCmdResolver");
+        Assert.assertTrue("StartPath [" + startPath.getPath() + "] doesn't exist!", startPath.exists());
 
-		PropertyResolveManager propertyResolveManager = getPropertyResolveManager(startPath);
+        PropertyResolveManager propertyResolveManager = getPropertyResolveManager(startPath);
 
-		Replacer replacer = new Replacer(propertyResolveManager);
-		replacer.setPackagePath(startPath);
-		replacer.setCreateCopy(Boolean.FALSE);
-		replacer.execute();
+        Replacer replacer = new Replacer(propertyResolveManager);
+        replacer.setPackagePath(startPath);
+        replacer.setCreateCopy(Boolean.FALSE);
+        replacer.execute();
 
-		TestUtil.checkIfResultIsAsExpected(startPath);
-	}
+        TestUtil.checkIfResultIsAsExpected(startPath);
+    }
 
-	private PropertyResolveManager getPropertyResolveManager(File startPath) {
-		Properties properties = new Properties();
-		properties.put("foobar3", "%{foobar1}:%{foobar2}");
-		properties.put("foobar2", "6299äÖ9");
-		properties.put("foobar5", "%{foobar6}");
-		properties.put("foobar6", "%{foobar7}");
-		properties.put("foobar7", "someProperty");
-		properties.put("path", "d:\\tmp\\somefolder");
-		properties.put("foobar1", "http://0815");
-		properties.put("foobar4", "%{foobar2}/%{foobar1}/%{foobar5}");
+    private PropertyResolveManager getPropertyResolveManager(File startPath) {
+        Properties properties = new Properties();
+        properties.put("foobar3", "%{foobar1}:%{foobar2}");
+        properties.put("foobar2", "6299äÖ9");
+        properties.put("foobar5", "%{foobar6}");
+        properties.put("foobar6", "%{foobar7}");
+        properties.put("foobar7", "someProperty");
+        properties.put("path", "d:\\tmp\\somefolder");
+        properties.put("foobar1", "http://0815");
+        properties.put("foobar4", "%{foobar2}/%{foobar1}/%{foobar5}");
 
-		CmdPropertyResolver cmdPropertyResolver = new CmdPropertyResolver(properties);
+        CmdPropertyResolver cmdPropertyResolver = new CmdPropertyResolver(properties);
 
-		Set<PropertyResolver> resolverList = new TreeSet<PropertyResolver>();
-		resolverList.add(cmdPropertyResolver);
+        Set<PropertyResolver> resolverList = new TreeSet<PropertyResolver>();
+        resolverList.add(cmdPropertyResolver);
 
-		PropertyResolveManager propertyResolveManager = new PropertyResolveManager(resolverList);
-		return propertyResolveManager;
-	}
+        PropertyResolveManager propertyResolveManager = new PropertyResolveManager(resolverList);
+        return propertyResolveManager;
+    }
 }

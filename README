@@ -4,6 +4,7 @@
 
 -schema und platzhalter adden
 -writePropertyfile umbennen zu createPropertyFile
+-log level via commandline setzen
 
 - test resourcen aufräumen result files in unter ordner
 - test resourcen auf utf-8 umstellen

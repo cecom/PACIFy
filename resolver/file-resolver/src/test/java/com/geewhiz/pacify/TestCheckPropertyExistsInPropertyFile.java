@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.Test;
 
 import com.geewhiz.pacify.checks.impl.CheckPropertyExists;
 import com.geewhiz.pacify.defect.Defect;
@@ -36,39 +36,39 @@ import com.geewhiz.pacify.resolver.PropertyResolver;
 
 public class TestCheckPropertyExistsInPropertyFile extends TestBase {
 
-	@Test
-	public void checkForNotCorrect() {
-		File testStartPath = new File("target/test-classes/checkPropertyExistsTest/wrong");
-		File file = new File(testStartPath, "checkForMissingProperty.properties");
+    @Test
+    public void checkForNotCorrect() {
+        File testStartPath = new File("target/test-classes/checkPropertyExistsTest/wrong");
+        File file = new File(testStartPath, "checkForMissingProperty.properties");
 
-		URL fileUrl = TestUtil.getURLForFile(file);
-		FilePropertyResolver filePropertyResolver = new FilePropertyResolver(fileUrl);
+        URL fileUrl = TestUtil.getURLForFile(file);
+        FilePropertyResolver filePropertyResolver = new FilePropertyResolver(fileUrl);
 
-		Set<PropertyResolver> resolverList = new TreeSet<PropertyResolver>();
-		resolverList.add(filePropertyResolver);
+        Set<PropertyResolver> resolverList = new TreeSet<PropertyResolver>();
+        resolverList.add(filePropertyResolver);
 
-		PropertyResolveManager propertyResolveManager = new PropertyResolveManager(resolverList);
+        PropertyResolveManager propertyResolveManager = new PropertyResolveManager(resolverList);
 
-		List<Defect> defects = getDefects(new CheckPropertyExists(propertyResolveManager), testStartPath);
+        List<Defect> defects = getDefects(new CheckPropertyExists(propertyResolveManager), testStartPath);
 
-		Assert.assertEquals(2, defects.size());
-	}
+        Assert.assertEquals(2, defects.size());
+    }
 
-	@Test
-	public void checkForCorrect() {
-		File testStartPath = new File("target/test-classes/checkPropertyExistsTest/correct");
-		File file = new File(testStartPath, "checkForAllCorrect.properties");
+    @Test
+    public void checkForCorrect() {
+        File testStartPath = new File("target/test-classes/checkPropertyExistsTest/correct");
+        File file = new File(testStartPath, "checkForAllCorrect.properties");
 
-		URL fileUrl = TestUtil.getURLForFile(file);
-		FilePropertyResolver filePropertyResolver = new FilePropertyResolver(fileUrl);
+        URL fileUrl = TestUtil.getURLForFile(file);
+        FilePropertyResolver filePropertyResolver = new FilePropertyResolver(fileUrl);
 
-		Set<PropertyResolver> resolverList = new TreeSet<PropertyResolver>();
-		resolverList.add(filePropertyResolver);
+        Set<PropertyResolver> resolverList = new TreeSet<PropertyResolver>();
+        resolverList.add(filePropertyResolver);
 
-		PropertyResolveManager propertyResolveManager = new PropertyResolveManager(resolverList);
+        PropertyResolveManager propertyResolveManager = new PropertyResolveManager(resolverList);
 
-		List<Defect> defects = getDefects(new CheckPropertyExists(propertyResolveManager), testStartPath);
+        List<Defect> defects = getDefects(new CheckPropertyExists(propertyResolveManager), testStartPath);
 
-		Assert.assertEquals(0, defects.size());
-	}
+        Assert.assertEquals(0, defects.size());
+    }
 }

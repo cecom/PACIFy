@@ -21,50 +21,50 @@ package com.geewhiz.pacify.commandline;
 
 import java.io.File;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.Test;
 
 import com.geewhiz.pacify.TestUtil;
 
 public class TestMultipleResolvers {
 
-	@Test
-	public void testAll() {
+    @Test
+    public void testAll() {
 
-		String startPath = "target/test-classes/TestMultipleResolver";
+        String startPath = "target/test-classes/TestMultipleResolver";
 
-		int result = PacifyViaCommandline.mainInternal(new String[] {
-		        "replace",
-		        "--envName=local",
-		        "--resolvers=CmdResolver,FileResolver",
-		        "--package=" + startPath,
-		        "--createCopy=false",
-		        "-DFileResolver.file=" + startPath + "/myProperties.properties",
-		        "-DCmdResolver.foobar7=anotherValue"
-		});
+        int result = PacifyViaCommandline.mainInternal(new String[] {
+                "replace",
+                "--envName=local",
+                "--resolvers=CmdResolver,FileResolver",
+                "--package=" + startPath,
+                "--createCopy=false",
+                "-DFileResolver.file=" + startPath + "/myProperties.properties",
+                "-DCmdResolver.foobar7=anotherValue"
+        });
 
-		Assert.assertEquals(result, 0, "Configuration returned with errors.");
+        Assert.assertEquals("Configuration returned with errors.", 0, result);
 
-		TestUtil.checkIfResultIsAsExpected(new File(startPath));
-	}
+        TestUtil.checkIfResultIsAsExpected(new File(startPath));
+    }
 
-	@Test
-	public void testAllOnCopy() {
-		String startPath = "target/test-classes/TestMultipleResolverOnCopy";
-		String envName = "test";
+    @Test
+    public void testAllOnCopy() {
+        String startPath = "target/test-classes/TestMultipleResolverOnCopy";
+        String envName = "test";
 
-		int result = PacifyViaCommandline.mainInternal(new String[] {
-		        "replace",
-		        "--envName=" + envName,
-		        "--resolvers=CmdResolver,FileResolver",
-		        "--package=" + startPath,
-		        "-DFileResolver.file=" + startPath + "/myProperties.properties",
-		        "-DCmdResolver.foobar7=anotherValue"
-		});
+        int result = PacifyViaCommandline.mainInternal(new String[] {
+                "replace",
+                "--envName=" + envName,
+                "--resolvers=CmdResolver,FileResolver",
+                "--package=" + startPath,
+                "-DFileResolver.file=" + startPath + "/myProperties.properties",
+                "-DCmdResolver.foobar7=anotherValue"
+        });
 
-		Assert.assertEquals(result, 0, "Configuration returned with errors.");
+        Assert.assertEquals("Configuration returned with errors.", 0, result);
 
-		String copyPath = startPath + "_" + envName;
-		TestUtil.checkIfResultIsAsExpected(new File(copyPath));
-	}
+        String copyPath = startPath + "_" + envName;
+        TestUtil.checkIfResultIsAsExpected(new File(copyPath));
+    }
 }

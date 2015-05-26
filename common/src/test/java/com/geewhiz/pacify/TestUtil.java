@@ -19,9 +19,6 @@ package com.geewhiz.pacify;
  * under the License.
  */
 
-import static org.testng.Assert.fail;
-import static org.testng.AssertJUnit.assertTrue;
-
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -32,54 +29,55 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.tools.ant.util.FileUtils;
+import org.junit.Assert;
 
 import com.geewhiz.pacify.model.utils.DirFilter;
 
 public class TestUtil {
 
-	public static void checkIfResultIsAsExpected(File startPath) {
-		File dirWithFilesWhichTheyShouldLookLike = new File(startPath.getPath() + "_ResultFiles");
-		List<File> filesToCompare = getFiles(dirWithFilesWhichTheyShouldLookLike);
-		for (File resultFile : filesToCompare) {
-			String completeRelativePath = dirWithFilesWhichTheyShouldLookLike.getPath();
-			int index = resultFile.getPath().indexOf(completeRelativePath) + completeRelativePath.length();
-			String relativePath = resultFile.getPath().substring(index);
+    public static void checkIfResultIsAsExpected(File startPath) {
+        File dirWithFilesWhichTheyShouldLookLike = new File(startPath.getPath() + "_ResultFiles");
+        List<File> filesToCompare = getFiles(dirWithFilesWhichTheyShouldLookLike);
+        for (File resultFile : filesToCompare) {
+            String completeRelativePath = dirWithFilesWhichTheyShouldLookLike.getPath();
+            int index = resultFile.getPath().indexOf(completeRelativePath) + completeRelativePath.length();
+            String relativePath = resultFile.getPath().substring(index);
 
-			File filteredFile = new File(startPath, relativePath);
-			try {
-				assertTrue(
-				        "Filtered file does not have the expected result. The content of the File should look like ["
-				                + resultFile.getPath() + "] but is [" + filteredFile.getPath() + "]."
-				        , FileUtils.getFileUtils().contentEquals(resultFile, filteredFile));
+            File filteredFile = new File(startPath, relativePath);
+            try {
+                Assert.assertTrue(
+                        "Filtered file does not have the expected result. The content of the File should look like ["
+                                + resultFile.getPath() + "] but is [" + filteredFile.getPath() + "]."
+                        , FileUtils.getFileUtils().contentEquals(resultFile, filteredFile));
 
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-		}
-	}
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
 
-	public static URL getURLForFile(File file) {
-		try {
-			return file.toURI().toURL();
-		} catch (MalformedURLException e) {
-			fail();
-		}
-		throw new RuntimeException("Shouldn't reach this code!");
-	}
+    public static URL getURLForFile(File file) {
+        try {
+            return file.toURI().toURL();
+        } catch (MalformedURLException e) {
+            Assert.fail();
+        }
+        throw new RuntimeException("Shouldn't reach this code!");
+    }
 
-	private static List<File> getFiles(File folder) {
-		List<File> files = new ArrayList<File>();
+    private static List<File> getFiles(File folder) {
+        List<File> files = new ArrayList<File>();
 
-		Collections.addAll(files, folder.listFiles(new FileFilter() {
-			public boolean accept(File pathName) {
-				return pathName.isFile();
-			}
-		}));
+        Collections.addAll(files, folder.listFiles(new FileFilter() {
+            public boolean accept(File pathName) {
+                return pathName.isFile();
+            }
+        }));
 
-		for (File subFolder : folder.listFiles(new DirFilter())) {
-			files.addAll(getFiles(subFolder));
-		}
+        for (File subFolder : folder.listFiles(new DirFilter())) {
+            files.addAll(getFiles(subFolder));
+        }
 
-		return files;
-	}
+        return files;
+    }
 }

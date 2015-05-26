@@ -22,30 +22,30 @@ package com.geewhiz.pacify;
 import java.io.File;
 import java.util.List;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.Test;
 
 import com.geewhiz.pacify.checks.impl.CheckPropertyDuplicateDefinedInPacifyFile;
 import com.geewhiz.pacify.defect.Defect;
 
 public class TestCheckPropertyDuplicateDefinedInPMarkerFile extends TestBase {
 
-	@Test
-	public void checkForNotCorrect() {
-		File testStartPath = new File("target/test-classes/checkPropertyDuplicateDefinedInPfListCheck/wrong");
+    @Test
+    public void checkForNotCorrect() {
+        File testStartPath = new File("target/test-classes/checkPropertyDuplicateDefinedInPfListCheck/wrong");
 
-		List<Defect> defects = getDefects(new CheckPropertyDuplicateDefinedInPacifyFile(), testStartPath);
+        List<Defect> defects = getDefects(new CheckPropertyDuplicateDefinedInPacifyFile(), testStartPath);
 
-		Assert.assertEquals(1, defects.size());
-	}
+        Assert.assertEquals(1, defects.size());
+    }
 
-	@Test
-	public void checkForCorrect() {
-		File testStartPath = new File("target/test-classes/checkPropertyDuplicateDefinedInPfListCheck/correct");
+    @Test
+    public void checkForCorrect() {
+        File testStartPath = new File("target/test-classes/checkPropertyDuplicateDefinedInPfListCheck/correct");
 
-		List<Defect> defects = getDefects(new CheckPropertyDuplicateDefinedInPacifyFile(), testStartPath);
+        List<Defect> defects = getDefects(new CheckPropertyDuplicateDefinedInPacifyFile(), testStartPath);
 
-		Assert.assertEquals(0, defects.size());
-	}
+        Assert.assertEquals(0, defects.size());
+    }
 
 }

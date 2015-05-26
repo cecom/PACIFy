@@ -19,13 +19,12 @@ package com.geewhiz.pacify;
  * under the License.
  */
 
-import static org.testng.AssertJUnit.assertTrue;
-
 import java.io.File;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.Test;
 
 import com.geewhiz.pacify.property.PropertyResolveManager;
 import com.geewhiz.pacify.property.resolver.fileresolver.FilePropertyResolver;
@@ -33,30 +32,30 @@ import com.geewhiz.pacify.resolver.PropertyResolver;
 
 public class TestRecursivePropertyReplacement {
 
-	@Test
-	public void testAll() {
-		File startPath = new File("target/test-classes/recursePropertyReplacement");
-		File myTestProperty = new File(startPath, "myProperties.properties");
+    @Test
+    public void testAll() {
+        File startPath = new File("target/test-classes/recursePropertyReplacement");
+        File myTestProperty = new File(startPath, "myProperties.properties");
 
-		assertTrue("StartPath [" + startPath.getPath() + "] doesn't exist!", startPath.exists());
+        Assert.assertTrue("StartPath [" + startPath.getPath() + "] doesn't exist!", startPath.exists());
 
-		PropertyResolveManager propertyResolveManager = getPropertyResolveManager(myTestProperty);
+        PropertyResolveManager propertyResolveManager = getPropertyResolveManager(myTestProperty);
 
-		Replacer replacer = new Replacer(propertyResolveManager);
-		replacer.setPackagePath(startPath);
-		replacer.setCreateCopy(Boolean.FALSE);
-		replacer.execute();
+        Replacer replacer = new Replacer(propertyResolveManager);
+        replacer.setPackagePath(startPath);
+        replacer.setCreateCopy(Boolean.FALSE);
+        replacer.execute();
 
-		TestUtil.checkIfResultIsAsExpected(startPath);
-	}
+        TestUtil.checkIfResultIsAsExpected(startPath);
+    }
 
-	private PropertyResolveManager getPropertyResolveManager(File myTestProperty) {
-		FilePropertyResolver filePropertyResolver = new FilePropertyResolver(TestUtil.getURLForFile(myTestProperty));
+    private PropertyResolveManager getPropertyResolveManager(File myTestProperty) {
+        FilePropertyResolver filePropertyResolver = new FilePropertyResolver(TestUtil.getURLForFile(myTestProperty));
 
-		Set<PropertyResolver> resolverList = new TreeSet<PropertyResolver>();
-		resolverList.add(filePropertyResolver);
+        Set<PropertyResolver> resolverList = new TreeSet<PropertyResolver>();
+        resolverList.add(filePropertyResolver);
 
-		PropertyResolveManager propertyResolveManager = new PropertyResolveManager(resolverList);
-		return propertyResolveManager;
-	}
+        PropertyResolveManager propertyResolveManager = new PropertyResolveManager(resolverList);
+        return propertyResolveManager;
+    }
 }

@@ -21,57 +21,57 @@ package com.geewhiz.pacify.commandline;
 
 import java.io.File;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.Test;
 
 import com.geewhiz.pacify.TestUtil;
 
 public class TestCommandlineCall {
 
-	@Test
-	public void testReplace() {
+    @Test
+    public void testReplace() {
 
-		String startPath = "target/test-classes/testReplace";
+        String startPath = "target/test-classes/testReplace";
 
-		int result = PacifyViaCommandline.mainInternal(new String[] {
-		        "replace",
-		        "--envName=local",
-		        "--resolvers=FileResolver",
-		        "--package=" + startPath,
-		        "--createCopy=false",
-		        "-DFileResolver.file=" + startPath + "/myTest.properties"
-		});
+        int result = PacifyViaCommandline.mainInternal(new String[] {
+                "replace",
+                "--envName=local",
+                "--resolvers=FileResolver",
+                "--package=" + startPath,
+                "--createCopy=false",
+                "-DFileResolver.file=" + startPath + "/myTest.properties"
+        });
 
-		Assert.assertEquals(result, 0, "Configuration returned with errors.");
+        Assert.assertEquals("Configuration returned with errors.", 0, result);
 
-		TestUtil.checkIfResultIsAsExpected(new File(startPath));
-	}
+        TestUtil.checkIfResultIsAsExpected(new File(startPath));
+    }
 
-	@Test
-	public void testValidateMarkerFiles() {
+    @Test
+    public void testValidateMarkerFiles() {
 
-		String startPath = "target/test-classes/testValidate";
+        String startPath = "target/test-classes/testValidate";
 
-		int result = PacifyViaCommandline.mainInternal(new String[] {
-		        "validateMarkerFiles",
-		        "--package=" + startPath
-		});
+        int result = PacifyViaCommandline.mainInternal(new String[] {
+                "validateMarkerFiles",
+                "--package=" + startPath
+        });
 
-		Assert.assertEquals(result, 0, "Validate returned with errors.");
-	}
+        Assert.assertEquals("Validate returned with errors.", 0, result);
+    }
 
-	@Test
-	public void testValidateWithProperties() {
+    @Test
+    public void testValidateWithProperties() {
 
-		String startPath = "target/test-classes/testValidate";
+        String startPath = "target/test-classes/testValidate";
 
-		int result = PacifyViaCommandline.mainInternal(new String[] {
-		        "validate",
-		        "--resolvers=FileResolver",
-		        "--package=" + startPath,
-		        "-DFileResolver.file=" + startPath + "/myTest.properties"
-		});
+        int result = PacifyViaCommandline.mainInternal(new String[] {
+                "validate",
+                "--resolvers=FileResolver",
+                "--package=" + startPath,
+                "-DFileResolver.file=" + startPath + "/myTest.properties"
+        });
 
-		Assert.assertEquals(result, 0, "Validate returned with errors.");
-	}
+        Assert.assertEquals("Validate returned with errors.", 0, result);
+    }
 }

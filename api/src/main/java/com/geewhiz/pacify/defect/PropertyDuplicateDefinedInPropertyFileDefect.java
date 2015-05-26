@@ -21,16 +21,16 @@ package com.geewhiz.pacify.defect;
 import com.geewhiz.pacify.resolver.PropertyResolver;
 
 public class PropertyDuplicateDefinedInPropertyFileDefect implements Defect {
-    private String property;
-    private PropertyResolver propertyResolver;
+	private String property;
+	private PropertyResolver propertyResolver;
 
-    public PropertyDuplicateDefinedInPropertyFileDefect(String property, PropertyResolver propertyResolver) {
-        this.property = property;
-        this.propertyResolver = propertyResolver;
-    }
+	public PropertyDuplicateDefinedInPropertyFileDefect(String property, PropertyResolver propertyResolver) {
+		this.property = property;
+		this.propertyResolver = propertyResolver;
+	}
 
-    public String getDefectMessage() {
-        return "Property [" + property + "] is duplicate defined in property file ["
-                + propertyResolver.getPropertyResolverDescription() + "]";
-    }
+	public String getDefectMessage() {
+		return "Property [" + property + "] is duplicate defined in ["
+		        + propertyResolver.getPropertyResolverDescription() + "]";
+	}
 }

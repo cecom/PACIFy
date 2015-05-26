@@ -19,16 +19,14 @@ package com.geewhiz.pacify;
  * under the License.
  */
 
-import static org.testng.AssertJUnit.assertTrue;
-
 import java.io.File;
 import java.net.URL;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.Test;
 
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.model.EntityManager;
@@ -39,28 +37,28 @@ import com.geewhiz.pacify.utils.FileUtils;
 
 public class TestNotReplacedProperty extends TestBase {
 
-	@Test
-	public void checkForNotCorrect() {
-		File startPath = new File("target/test-classes/notReplacedPropertyTest");
-		File myTestProperty = new File(startPath, "myProperties.properties");
-		URL myTestPropertyURL = FileUtils.getFileUrl(myTestProperty);
+    @Test
+    public void checkForNotCorrect() {
+        File startPath = new File("target/test-classes/notReplacedPropertyTest");
+        File myTestProperty = new File(startPath, "myProperties.properties");
+        URL myTestPropertyURL = FileUtils.getFileUrl(myTestProperty);
 
-		assertTrue("StartPath [" + startPath.getPath() + "] doesn't exist!", startPath.exists());
+        Assert.assertTrue("StartPath [" + startPath.getPath() + "] doesn't exist!", startPath.exists());
 
-		PropertyResolveManager propertyResolveManager = createPropertyResolveManager(myTestPropertyURL);
+        PropertyResolveManager propertyResolveManager = createPropertyResolveManager(myTestPropertyURL);
 
-		Replacer replacer = new Replacer(propertyResolveManager);
-		List<Defect> defects = replacer.doReplacement(new EntityManager(startPath));
+        Replacer replacer = new Replacer(propertyResolveManager);
+        List<Defect> defects = replacer.doReplacement(new EntityManager(startPath));
 
-		Assert.assertEquals(defects.size(), 4);
-	}
+        Assert.assertEquals(defects.size(), 4);
+    }
 
-	private PropertyResolveManager createPropertyResolveManager(URL myTestPropertyURL) {
-		Set<PropertyResolver> resolverList = new TreeSet<PropertyResolver>();
-		FilePropertyResolver filePropertyResolver = new FilePropertyResolver(myTestPropertyURL);
-		resolverList.add(filePropertyResolver);
+    private PropertyResolveManager createPropertyResolveManager(URL myTestPropertyURL) {
+        Set<PropertyResolver> resolverList = new TreeSet<PropertyResolver>();
+        FilePropertyResolver filePropertyResolver = new FilePropertyResolver(myTestPropertyURL);
+        resolverList.add(filePropertyResolver);
 
-		PropertyResolveManager propertyResolveManager = new PropertyResolveManager(resolverList);
-		return propertyResolveManager;
-	}
+        PropertyResolveManager propertyResolveManager = new PropertyResolveManager(resolverList);
+        return propertyResolveManager;
+    }
 }

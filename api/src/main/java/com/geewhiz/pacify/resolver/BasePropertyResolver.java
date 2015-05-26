@@ -45,8 +45,8 @@ public abstract class BasePropertyResolver implements PropertyResolver {
 
 	protected Matcher getMatcher(String propertyValue) {
 		String searchPattern = Pattern.quote(getBeginToken()) + "([^"
-				+ Pattern.quote(getEndToken()) + "]*)"
-				+ Pattern.quote(getEndToken());
+		        + Pattern.quote(getEndToken()) + "]*)"
+		        + Pattern.quote(getEndToken());
 		Pattern pattern = Pattern.compile(searchPattern);
 
 		Matcher matcher = pattern.matcher(propertyValue);
@@ -69,7 +69,7 @@ public abstract class BasePropertyResolver implements PropertyResolver {
 	@Override
 	public int compareTo(PropertyResolver o) {
 		return getPropertyResolverDescription().compareTo(
-				o.getPropertyResolverDescription());
+		        o.getPropertyResolverDescription());
 	}
 
 }

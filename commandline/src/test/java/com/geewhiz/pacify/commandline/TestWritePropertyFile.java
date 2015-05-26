@@ -21,25 +21,25 @@ package com.geewhiz.pacify.commandline;
 
 import java.io.File;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.Test;
 
 import com.geewhiz.pacify.TestUtil;
 
 public class TestWritePropertyFile {
 
-	@Test
-	public void TestAll() {
-		File startPath = new File("target/test-classes/TestWritePropertyFile");
+    @Test
+    public void TestAll() {
+        File startPath = new File("target/test-classes/TestWritePropertyFile");
 
-		int result = PacifyViaCommandline.mainInternal(new String[] {
-		        "writePropertyFile",
-		        "--resolvers=FileResolver",
-		        "--destinationFile=" + startPath + "/result.properties",
-		        "-DFileResolver.file=" + startPath + "/subfolder/ChildOfChilds.properties" });
+        int result = PacifyViaCommandline.mainInternal(new String[] {
+                "writePropertyFile",
+                "--resolvers=FileResolver",
+                "--destinationFile=" + startPath + "/result.properties",
+                "-DFileResolver.file=" + startPath + "/subfolder/ChildOfChilds.properties" });
 
-		Assert.assertEquals(result, 0, "Resolver returned with errors.");
+        Assert.assertEquals("Resolver returned with errors.", 0, result);
 
-		TestUtil.checkIfResultIsAsExpected(startPath);
-	}
+        TestUtil.checkIfResultIsAsExpected(startPath);
+    }
 }
