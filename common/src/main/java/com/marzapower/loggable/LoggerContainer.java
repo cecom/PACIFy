@@ -8,25 +8,29 @@
  * 
  * "Loggable" is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Lesser General Public License for more details.
  * 
  * You should have received a copy of the GNU Lesser General Public License
- * along with "Loggable".  If not, see <http://www.gnu.org/licenses/>
+ * along with "Loggable". If not, see <http://www.gnu.org/licenses/>
  */
 package com.marzapower.loggable;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.LoggerConfig;
 
 import com.marzapower.loggable.Loggable.LogLevel;
 
 /**
- * The {@link Logger} container class. This class has an {@link HashMap}
- * instance that will contain all the references to {@link Logger} instances to
+ * The {@link Logger} container class. This class has an {@link HashMap} instance that will contain all the references
+ * to {@link Logger} instances to
  * be used by the application classes
  * 
  * @author Daniele Di Bernardo
@@ -36,205 +40,217 @@ import com.marzapower.loggable.Loggable.LogLevel;
 @Loggable(exclude = true)
 public class LoggerContainer {
 
-	private static Map<String, Logger> instances;
-	private static final String VOID_LOGGER = "";
-	private static final String ROOT_LOGGER = Object.class.getCanonicalName();
+    private static Map<String, Logger> instances;
+    private static final String        VOID_LOGGER = "";
+    private static final String        ROOT_LOGGER = Object.class.getCanonicalName();
 
-	/**
-	 * Loads in memory the void logger instance and the root logger instance
-	 */
-	static {
-		instances = new HashMap<String, Logger>();
-		
-		Logger voidLogger = Logger.getLogger(VOID_LOGGER);
-		voidLogger.setLevel(Level.OFF);
-		instances.put(VOID_LOGGER, voidLogger);
+    /**
+     * Loads in memory the void logger instance and the root logger instance
+     */
+    static {
+        instances = new HashMap<String, Logger>();
 
-		Logger rootLogger = Logger.getRootLogger();
-		instances.put(ROOT_LOGGER, rootLogger);
-	}
+        Logger voidLogger = LogManager.getLogger(VOID_LOGGER);
+        instances.put(VOID_LOGGER, voidLogger);
 
-	/**
-	 * All methods of the class should be accessed in a static way
-	 */
-	private LoggerContainer() {
-	}
-	
-	/**
-	 * Given a class returns a {@link Logger} instance with its default configuration.
-	 *
-	 * @param clazz
-	 *            the {@link Class} object that links to the caller class
-	 *
-	 * @return a {@link Logger} instance suitable for <code>clazz</code>,
-	 *         with its default configuration
-	 */
-	protected static Logger getInstance(Class<?> clazz) {
-		return getInstance(clazz, null);
-	}
+        Logger rootLogger = LogManager.getRootLogger();
+        instances.put(ROOT_LOGGER, rootLogger);
+    }
 
-	/**
-	 * Given an annotation, and a class, returns a {@link Logger} instance. If a
-	 * suitable instance already exists in the local container, that instances
-	 * is returned. Otherwise a new instance is created, added to the container
-	 * and then returned.
-	 * <p>
-	 * This approach permits to reduce the total number of objects created at
-	 * runtime to handle all the log request events.
-	 * 
-	 * @param clazz
-	 *            the {@link Class} object that links to the caller class
-	 * @param annotation
-	 *            the annotation that will be use to handle the logic of
-	 *            creation of the {@link Logger} instance
-	 * @return a {@link Logger} instance suitable for <code>clazz</code>,
-	 *         adapted as required by the annotation
-	 */
-	protected static Logger getInstance(Class<?> clazz, Loggable annotation) {
-		// This control avoids a strange NullPointerException when calling this method
-		if (instances == null) {
-			instances = new HashMap<String, Logger>();
-		}
-		
-		Logger logger = instances.get(clazz);
+    /**
+     * All methods of the class should be accessed in a static way
+     */
+    private LoggerContainer() {
+    }
 
-		if (logger == null) {
-			logger = createNewLoggerFor(clazz, annotation);
-			instances.put(clazz.getCanonicalName(), logger);
-		}
+    /**
+     * Given a class returns a {@link Logger} instance with its default configuration.
+     * 
+     * @param clazz
+     *            the {@link Class} object that links to the caller class
+     * 
+     * @return a {@link Logger} instance suitable for <code>clazz</code>,
+     *         with its default configuration
+     */
+    protected static Logger getInstance(Class<?> clazz) {
+        return getInstance(clazz, null);
+    }
 
-		return logger;
-	}
+    /**
+     * Given an annotation, and a class, returns a {@link Logger} instance. If a
+     * suitable instance already exists in the local container, that instances
+     * is returned. Otherwise a new instance is created, added to the container
+     * and then returned.
+     * <p>
+     * This approach permits to reduce the total number of objects created at
+     * runtime to handle all the log request events.
+     * 
+     * @param clazz
+     *            the {@link Class} object that links to the caller class
+     * @param annotation
+     *            the annotation that will be use to handle the logic of
+     *            creation of the {@link Logger} instance
+     * @return a {@link Logger} instance suitable for <code>clazz</code>,
+     *         adapted as required by the annotation
+     */
+    protected static Logger getInstance(Class<?> clazz, Loggable annotation) {
+        // This control avoids a strange NullPointerException when calling this method
+        if (instances == null) {
+            instances = new HashMap<String, Logger>();
+        }
 
-	/**
-	 * Given an annotation, and a <code>log4j</code> logger name, returns a
-	 * {@link Logger} instance. If a suitable instance already exists in the
-	 * local container, that instances is returned. Otherwise a new instance is
-	 * created, added to the container and then returned.
-	 * <p>
-	 * This approach permits to reduce the total number of objects created at
-	 * runtime to handle all the log request events.
-	 * 
-	 * @param loggerName
-	 *            the name of the <code>log4j</code> logger to be returned
-	 * @param annotation
-	 *            the annotation that will be use to handle the logic of
-	 *            creation of the {@link Logger} instance
-	 * @return a {@link Logger} instance whose name is <code>loggerName</code>,
-	 *         adapted as required by the annotation
-	 */
-	protected static Logger getInstance(String loggerName, Loggable annotation) {
-		Logger logger = instances.get(loggerName);
+        Logger logger = instances.get(clazz);
 
-		if (logger == null) {
-			logger = createNewLoggerFor(loggerName, annotation);
-			instances.put(loggerName, logger);
-		}
+        if (logger == null) {
+            logger = createNewLoggerFor(clazz, annotation);
+            instances.put(clazz.getCanonicalName(), logger);
+        }
 
-		return logger;
-	}
+        return logger;
+    }
 
-	/**
-	 * Returns a void logger, that is to say a logger that will print nothing.
-	 * 
-	 * @return a void logger
-	 */
-	public static Logger getVoidLogger() {
-		return instances.get(null);
-	}
+    /**
+     * Given an annotation, and a <code>log4j</code> logger name, returns a {@link Logger} instance. If a suitable
+     * instance already exists in the
+     * local container, that instances is returned. Otherwise a new instance is
+     * created, added to the container and then returned.
+     * <p>
+     * This approach permits to reduce the total number of objects created at
+     * runtime to handle all the log request events.
+     * 
+     * @param loggerName
+     *            the name of the <code>log4j</code> logger to be returned
+     * @param annotation
+     *            the annotation that will be use to handle the logic of
+     *            creation of the {@link Logger} instance
+     * @return a {@link Logger} instance whose name is <code>loggerName</code>,
+     *         adapted as required by the annotation
+     */
+    protected static Logger getInstance(String loggerName, Loggable annotation) {
+        Logger logger = instances.get(loggerName);
 
-	/**
-	 * Returns the log4j root logger
-	 * 
-	 * @return the log4j root logger
-	 */
-	public static Logger getRootLogger() {
-		return instances.get(ROOT_LOGGER);
-	}
+        if (logger == null) {
+            logger = createNewLoggerFor(loggerName, annotation);
+            instances.put(loggerName, logger);
+        }
 
-	/**
-	 * Locally creates an instance of {@link Logger}. This instance will be
-	 * created for the <code>clazz</code> object. Also, the annotation is taken
-	 * into account because of the {@link Loggable#logLevel()} parameter: the
-	 * new instance will be created with the correct required log level.
-	 * 
-	 * @param clazz
-	 *            the caller class
-	 * @param annotation
-	 *            the {@link Loggable} annotation of the caller class
-	 * @return the new instance of the required logger
-	 */
-	private static Logger createNewLoggerFor(Class<?> clazz, Loggable annotation) {
-		Logger logger = Logger.getLogger(clazz);
-		
-		if (annotation == null) {
-			return logger;
-		} else {
-			return implementLogic(logger, annotation);
-		}
-	}
+        return logger;
+    }
 
-	/**
-	 * Locally creates an instance of {@link Logger}. This instance will be the
-	 * log4j logger whose name is defined with the <code>loggerName</code>
-	 * parameter. Also, the annotation is taken into account because of the
-	 * {@link Loggable#logLevel()} parameter: the new instance will be created
-	 * with the correct required log level.
-	 * 
-	 * @param loggerName
-	 *            the name of the required logger
-	 * @param annotation
-	 *            the {@link Loggable} annotation of the caller class
-	 * @return the new instance of the required logger
-	 */
-	private static Logger createNewLoggerFor(String loggerName,
-			Loggable annotation) {
-		Logger logger = Logger.getLogger(loggerName);
-		return implementLogic(logger, annotation);
-	}
+    /**
+     * Returns a void logger, that is to say a logger that will print nothing.
+     * 
+     * @return a void logger
+     */
+    public static Logger getVoidLogger() {
+        return instances.get(null);
+    }
 
-	/**
-	 * Implements the logic for the retrieval of the logger instance.
-	 * 
-	 * @param logger
-	 *            the asked logger
-	 * @param annotation
-	 *            the {@link Loggable} annotation of the caller class
-	 * @return the adapted logger, coherent with the {@link Loggable} annotation
-	 */
-	private static Logger implementLogic(Logger logger, Loggable annotation) {
-		if (annotation == null || annotation.logLevel() == null)
-			return logger;
+    /**
+     * Returns the log4j root logger
+     * 
+     * @return the log4j root logger
+     */
+    public static Logger getRootLogger() {
+        return instances.get(ROOT_LOGGER);
+    }
 
-		LogLevel level = annotation.logLevel();
-		if (level == null || level == LogLevel.LOG4J)
-			return logger;
+    /**
+     * Locally creates an instance of {@link Logger}. This instance will be
+     * created for the <code>clazz</code> object. Also, the annotation is taken
+     * into account because of the {@link Loggable#logLevel()} parameter: the
+     * new instance will be created with the correct required log level.
+     * 
+     * @param clazz
+     *            the caller class
+     * @param annotation
+     *            the {@link Loggable} annotation of the caller class
+     * @return the new instance of the required logger
+     */
+    private static Logger createNewLoggerFor(Class<?> clazz, Loggable annotation) {
+        Logger logger = LogManager.getLogger(clazz);
 
-		setLogLevel(logger, annotation.logLevel());
-		return logger;
-	}
+        if (annotation == null) {
+            return logger;
+        } else {
+            return implementLogic(logger, annotation);
+        }
+    }
 
-	/**
-	 * Sets the correct log level for the logger
-	 * 
-	 * @param logger
-	 *            the retrieved logger
-	 * @param level
-	 *            the required custom log level
-	 */
-	private static void setLogLevel(Logger logger, LogLevel level) {
-		if (level == LogLevel.DEBUG)
-			logger.setLevel(Level.DEBUG);
-		else if (level == LogLevel.ERROR)
-			logger.setLevel(Level.ERROR);
-		else if (level == LogLevel.TRACE)
-			logger.setLevel(Level.TRACE);
-		else if (level == LogLevel.WARN)
-			logger.setLevel(Level.WARN);
-		else if (level == LogLevel.INFO)
-			logger.setLevel(Level.INFO);
-		else if (level == LogLevel.FATAL)
-			logger.setLevel(Level.FATAL);
-	}
+    /**
+     * Locally creates an instance of {@link Logger}. This instance will be the
+     * log4j logger whose name is defined with the <code>loggerName</code>
+     * parameter. Also, the annotation is taken into account because of the {@link Loggable#logLevel()} parameter: the
+     * new instance will be created
+     * with the correct required log level.
+     * 
+     * @param loggerName
+     *            the name of the required logger
+     * @param annotation
+     *            the {@link Loggable} annotation of the caller class
+     * @return the new instance of the required logger
+     */
+    private static Logger createNewLoggerFor(String loggerName,
+            Loggable annotation) {
+        Logger logger = LogManager.getLogger(loggerName);
+        return implementLogic(logger, annotation);
+    }
+
+    /**
+     * Implements the logic for the retrieval of the logger instance.
+     * 
+     * @param logger
+     *            the asked logger
+     * @param annotation
+     *            the {@link Loggable} annotation of the caller class
+     * @return the adapted logger, coherent with the {@link Loggable} annotation
+     */
+    private static Logger implementLogic(Logger logger, Loggable annotation) {
+        if (annotation == null || annotation.logLevel() == null) {
+            return logger;
+        }
+
+        LogLevel level = annotation.logLevel();
+        if (level == null || level == LogLevel.LOG4J) {
+            return logger;
+        }
+
+        setLogLevel(logger, annotation.logLevel());
+        return logger;
+    }
+
+    /**
+     * Sets the correct log level for the logger
+     * 
+     * @param logger
+     *            the retrieved logger
+     * @param level
+     *            the required custom log level
+     */
+    private static void setLogLevel(Logger logger, LogLevel level) {
+        if (level == LogLevel.DEBUG) {
+            setLevel(logger, Level.DEBUG);
+        } else if (level == LogLevel.ERROR) {
+            setLevel(logger, Level.ERROR);
+        } else if (level == LogLevel.TRACE) {
+            setLevel(logger, Level.TRACE);
+        } else if (level == LogLevel.WARN) {
+            setLevel(logger, Level.WARN);
+        } else if (level == LogLevel.INFO) {
+            setLevel(logger, Level.INFO);
+        } else if (level == LogLevel.FATAL) {
+            setLevel(logger, Level.FATAL);
+        }
+    }
+
+    public static Level setLevel(Logger log, Level level) {
+        LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
+        Configuration conf = ctx.getConfiguration();
+        LoggerConfig lconf = conf.getLoggerConfig(log.getName());
+        Level oldLevel = lconf.getLevel();
+        lconf.setLevel(level);
+        ctx.updateLoggers(conf);
+        return oldLevel;
+    }
 
 }

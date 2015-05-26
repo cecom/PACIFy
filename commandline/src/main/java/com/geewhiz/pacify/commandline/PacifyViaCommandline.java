@@ -2,7 +2,7 @@ package com.geewhiz.pacify.commandline;
 
 import java.util.List;
 
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.Level;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
@@ -20,6 +20,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.marzapower.loggable.Log;
 import com.marzapower.loggable.Loggable;
+import com.marzapower.loggable.LoggerContainer;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -70,11 +71,11 @@ public class PacifyViaCommandline {
         }
 
         if (mainCommand.isDebug()) {
-            Log.get().setLevel(Level.DEBUG);
+            LoggerContainer.setLevel(Log.get(), Level.DEBUG);
         } else if (mainCommand.isInfo()) {
-            Log.get().setLevel(Level.INFO);
+            LoggerContainer.setLevel(Log.get(), Level.INFO);
         } else {
-            Log.get().setLevel(Level.ERROR);
+            LoggerContainer.setLevel(Log.get(), Level.ERROR);
         }
 
         if ("replace".equals(jc.getParsedCommand())) {

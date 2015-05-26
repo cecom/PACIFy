@@ -2,10 +2,9 @@
 - export HTTPS_PROXY=...
 - GIT_SSL_NO_VERIFY=true  git push
 
-
 - araresolver sollte passwörter auflösen können. zieldatei beim schreiben der property datei sollte das recht Read für owner haben und mehr nicht.
 - test resourcen aufräumen result files in unter ordner
-- Ausgabe vom replacen anpassen und schick machen
+- alle files nochmal auf utf-8 prüfen, ob sie konvertiert wurden, vorallem test files
 
 Tokens:
 - Resolver kann eigenständige Tokens für die Ersetzung haben (implementiert)
