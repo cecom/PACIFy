@@ -26,6 +26,9 @@ import java.io.UnsupportedEncodingException;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.taskdefs.Chmod;
+
 import com.geewhiz.pacify.managers.PropertyResolveManager;
 import com.geewhiz.pacify.utils.Utils;
 import com.google.inject.Inject;
@@ -78,6 +81,9 @@ public class CreatePropertyFile {
             for (String line : getPropertyLines()) {
                 writer.println(line);
             }
+
+            setPermissionToOwnerReadOnly();
+
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         } catch (UnsupportedEncodingException e) {
@@ -89,6 +95,14 @@ public class CreatePropertyFile {
             }
         }
 
+    }
+
+    private void setPermissionToOwnerReadOnly() {
+        Chmod chmod = new Chmod();
+        chmod.setProject(new Project());
+        chmod.setFile(targetFile);
+        chmod.setPerm("400");
+        chmod.execute();
     }
 
     private void writeToStdout() {
