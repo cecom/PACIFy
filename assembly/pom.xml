@@ -11,5 +11,6 @@
     <packaging>pom</packaging>
     <modules>
         <module>full</module>
+	<module>shaded-jar</module>
     </modules>
 </project>
