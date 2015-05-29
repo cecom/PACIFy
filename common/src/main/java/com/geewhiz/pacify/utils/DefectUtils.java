@@ -1,7 +1,11 @@
-package com.geewhiz.pacify.defect;
+package com.geewhiz.pacify.utils;
 
-import com.geewhiz.pacify.model.PMarker;
-import com.geewhiz.pacify.model.PProperty;
+import java.util.List;
+
+import com.geewhiz.pacify.defect.Defect;
+import com.geewhiz.pacify.exceptions.DefectRuntimeException;
+import com.marzapower.loggable.Log;
+import com.marzapower.loggable.Loggable;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -22,18 +26,18 @@ import com.geewhiz.pacify.model.PProperty;
  * under the License.
  */
 
-public class PropertyDuplicateDefinedInPMarkerDefect implements Defect {
+@Loggable(loggerName = "com.geewhiz.pacify")
+public class DefectUtils {
 
-    private PMarker   pMarker;
-    private PProperty pproperty;
+    public static void abortIfDefectExists(List<Defect> defects) {
+        if (defects.isEmpty()) {
+            return;
+        }
 
-    public PropertyDuplicateDefinedInPMarkerDefect(PMarker pMarker, PProperty pproperty) {
-        this.pMarker = pMarker;
-        this.pproperty = pproperty;
-    }
-
-    public String getDefectMessage() {
-        return String.format("PropertyDuplicateDefinedInMarkerFile: \n\t[MarkerFile=%s]\n\t[Property=%s]", pMarker.getFile().getAbsolutePath(),
-                pproperty.getName());
+        Log.get().error("==== !!!!!! We got Errors !!!!! ...");
+        for (Defect defect : defects) {
+            Log.get().error(defect.getDefectMessage());
+        }
+        throw new DefectRuntimeException("We got errors... Aborting!");
     }
 }

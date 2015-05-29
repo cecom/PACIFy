@@ -29,11 +29,11 @@ import org.apache.maven.plugin.MojoExecutionException;
 import com.geewhiz.pacify.Replacer;
 import com.geewhiz.pacify.Validator;
 import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.defect.DefectUtils;
 import com.geewhiz.pacify.managers.EntityManager;
 import com.geewhiz.pacify.managers.PropertyResolveManager;
 import com.geewhiz.pacify.property.resolver.fileresolver.FilePropertyResolver;
 import com.geewhiz.pacify.resolver.PropertyResolver;
+import com.geewhiz.pacify.utils.DefectUtils;
 
 /**
  * @goal replace

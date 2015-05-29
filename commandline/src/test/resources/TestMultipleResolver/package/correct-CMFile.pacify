@@ -12,7 +12,11 @@
     <Property Name="foobar4">
         <File RelativePath="correctConf.txt"/>
     </Property>
+    <Property Name="foobar4">
+        <File RelativePath="correctConf123.txt"/>
+    </Property>
     <Property Name="path" ConvertBackslashToSlash="true">
         <File RelativePath="correctConf.txt"/>
     </Property>
+
 </Pacify>

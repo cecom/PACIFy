@@ -1,8 +1,5 @@
 package com.geewhiz.pacify.defect;
 
-import com.geewhiz.pacify.model.PMarker;
-import com.geewhiz.pacify.model.PProperty;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
@@ -22,18 +19,20 @@ import com.geewhiz.pacify.model.PProperty;
  * under the License.
  */
 
-public class PropertyDuplicateDefinedInPMarkerDefect implements Defect {
+import java.io.File;
 
-    private PMarker   pMarker;
-    private PProperty pproperty;
+public class NotReplacedPropertyDefect implements Defect {
 
-    public PropertyDuplicateDefinedInPMarkerDefect(PMarker pMarker, PProperty pproperty) {
-        this.pMarker = pMarker;
-        this.pproperty = pproperty;
+    File   file;
+    String propertyId;
+
+    public NotReplacedPropertyDefect(File file, String propertyId) {
+        this.file = file;
+        this.propertyId = propertyId;
     }
 
     public String getDefectMessage() {
-        return String.format("PropertyDuplicateDefinedInMarkerFile: \n\t[MarkerFile=%s]\n\t[Property=%s]", pMarker.getFile().getAbsolutePath(),
-                pproperty.getName());
+        return String.format("NotReplacedProperty: \n\t[Property=%s]\n\t[file=%s]", propertyId,
+                file.getAbsolutePath());
     }
 }

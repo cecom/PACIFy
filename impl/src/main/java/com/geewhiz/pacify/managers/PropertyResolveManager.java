@@ -12,6 +12,7 @@ import org.apache.tools.ant.types.FilterSet;
 
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.exceptions.CycleDetectRuntimeException;
+import com.geewhiz.pacify.exceptions.PropertyNotFoundException;
 import com.geewhiz.pacify.resolver.PropertyResolver;
 import com.google.inject.Inject;
 
@@ -48,10 +49,12 @@ public class PropertyResolveManager {
         StringBuffer sb = new StringBuffer();
         Iterator<PropertyResolver> iter = propertyResolverList.iterator();
         while (iter.hasNext()) {
+            sb.append("[");
             PropertyResolver propertyResolver = iter.next();
             sb.append(propertyResolver.getPropertyResolverDescription());
+            sb.append("]");
             if (iter.hasNext()) {
-                sb.append(",");
+                sb.append("|");
             }
         }
         return sb.toString();
@@ -82,7 +85,11 @@ public class PropertyResolveManager {
             }
             return propertyResolver.getPropertyValue(property);
         }
-        throw new IllegalArgumentException("Property [" + property + "] not found in any resolver!");
+
+        if (propertyCycleDetector.isEmpty()) {
+            throw new PropertyNotFoundException(property);
+        }
+        throw new PropertyNotFoundException(property, propertyCycleDetector.get(propertyCycleDetector.size() - 1));
     }
 
     private String replaceTokens(PropertyResolver propertyResolver, String property, List<String> propertyCycleDetector) {

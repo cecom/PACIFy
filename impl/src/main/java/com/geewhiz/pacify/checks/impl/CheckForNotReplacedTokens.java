@@ -7,7 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.defect.PropertyNotReplacedDefect;
+import com.geewhiz.pacify.defect.NotReplacedPropertyDefect;
 import com.geewhiz.pacify.managers.MarkerFileManager;
 
 /*
@@ -42,7 +42,7 @@ public class CheckForNotReplacedTokens {
 
 		while (matcher.find()) {
 			String propertyId = matcher.group(1);
-			Defect defect = new PropertyNotReplacedDefect(file, propertyId);
+			Defect defect = new NotReplacedPropertyDefect(file, propertyId);
 			defects.add(defect);
 		}
 		return defects;

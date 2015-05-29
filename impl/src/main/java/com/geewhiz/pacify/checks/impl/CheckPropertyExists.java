@@ -27,6 +27,7 @@ import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.PropertyHasCycleDefect;
 import com.geewhiz.pacify.defect.PropertyNotDefinedDefect;
 import com.geewhiz.pacify.exceptions.CycleDetectRuntimeException;
+import com.geewhiz.pacify.exceptions.PropertyNotFoundException;
 import com.geewhiz.pacify.managers.PropertyResolveManager;
 import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.model.PProperty;
@@ -49,6 +50,8 @@ public class CheckPropertyExists implements PMarkerCheck {
                     propertyResolveManager.getPropertyValue(pProperty.getName());
                 } catch (CycleDetectRuntimeException ce) {
                     defects.add(new PropertyHasCycleDefect(pMarker, ce.getProperty(), ce.getCycle()));
+                } catch (PropertyNotFoundException re) {
+                    defects.add(new PropertyNotDefinedDefect(pMarker, pProperty, propertyResolveManager.toString()));
                 }
                 continue;
             }

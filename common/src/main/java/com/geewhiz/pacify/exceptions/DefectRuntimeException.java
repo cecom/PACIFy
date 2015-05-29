@@ -1,7 +1,4 @@
-package com.geewhiz.pacify.defect;
-
-import com.geewhiz.pacify.model.PMarker;
-import com.geewhiz.pacify.model.PProperty;
+package com.geewhiz.pacify.exceptions;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -22,18 +19,12 @@ import com.geewhiz.pacify.model.PProperty;
  * under the License.
  */
 
-public class PropertyDuplicateDefinedInPMarkerDefect implements Defect {
+public class DefectRuntimeException extends RuntimeException {
 
-    private PMarker   pMarker;
-    private PProperty pproperty;
+    private static final long serialVersionUID = 7615443765307359648L;
 
-    public PropertyDuplicateDefinedInPMarkerDefect(PMarker pMarker, PProperty pproperty) {
-        this.pMarker = pMarker;
-        this.pproperty = pproperty;
+    public DefectRuntimeException(String message) {
+        super(message);
     }
 
-    public String getDefectMessage() {
-        return String.format("PropertyDuplicateDefinedInMarkerFile: \n\t[MarkerFile=%s]\n\t[Property=%s]", pMarker.getFile().getAbsolutePath(),
-                pproperty.getName());
-    }
 }

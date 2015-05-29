@@ -21,7 +21,7 @@ package com.geewhiz.pacify.exceptions;
 
 public class CycleDetectRuntimeException extends RuntimeException {
 
-    private static final long serialVersionUID = -6014384969742380652L;
+    private static final long serialVersionUID = 1L;
 
     private String            property;
     private String            cycle;

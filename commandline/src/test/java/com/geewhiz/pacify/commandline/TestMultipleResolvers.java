@@ -36,6 +36,7 @@ public class TestMultipleResolvers {
         File myResultPath = new File(testBasePath, "result");
 
         int result = PacifyViaCommandline.mainInternal(new String[] {
+                "--debug",
                 "replace",
                 "--envName=local",
                 "--resolvers=CmdResolver,FileResolver",

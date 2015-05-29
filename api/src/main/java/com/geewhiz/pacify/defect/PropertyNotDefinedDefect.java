@@ -24,19 +24,32 @@ import com.geewhiz.pacify.model.PProperty;
 
 public class PropertyNotDefinedDefect implements Defect {
 
-	private PMarker pMarker;
-	private PProperty pproperty;
-	private String resolver;
+    private PMarker   pMarker;
+    private PProperty pproperty;
+    private String    resolvers;
+    private String    referenceProperty;
 
-	public PropertyNotDefinedDefect(PMarker pMarker, PProperty pproperty, String resolver) {
-		this.pMarker = pMarker;
-		this.pproperty = pproperty;
-		this.resolver = resolver;
-	}
+    public PropertyNotDefinedDefect(PMarker pMarker, PProperty pproperty, String resolvers) {
+        this.pMarker = pMarker;
+        this.pproperty = pproperty;
+        this.resolvers = resolvers;
+    }
 
-	public String getDefectMessage() {
-		return "Property [" + pproperty.getName() + "] which is defined in [" + pMarker.getFile().getPath()
-		        + "] is not defined in the given resolver(s)  [" + resolver + "].";
-	}
+    public PropertyNotDefinedDefect(PMarker pMarker, PProperty pproperty, String referenceProperty, String resolvers) {
+        this.pMarker = pMarker;
+        this.pproperty = pproperty;
+        this.resolvers = resolvers;
+        this.referenceProperty = referenceProperty;
+    }
+
+    public String getDefectMessage() {
+        if (referenceProperty != null) {
+            return String.format("PropertyNotDefined: \n\t[MarkerFile=%s]\n\t[Property=%s]\n\t[ReferencedByProperty=%s]\n\t[resolvers=%s]", pMarker.getFile()
+                    .getAbsolutePath(), referenceProperty,
+                    pproperty.getName(), resolvers);
+        }
+        return String.format("PropertyNotDefined: \n\t[MarkerFile=%s] \n\t[Property=%s] \n\t[resolvers=%s]", pMarker.getFile().getAbsolutePath(),
+                pproperty.getName(), resolvers);
+    }
 
 }

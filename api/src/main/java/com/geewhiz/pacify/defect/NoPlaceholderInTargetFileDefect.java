@@ -1,8 +1,5 @@
 package com.geewhiz.pacify.defect;
 
-import com.geewhiz.pacify.model.PMarker;
-import com.geewhiz.pacify.model.PProperty;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
@@ -22,18 +19,25 @@ import com.geewhiz.pacify.model.PProperty;
  * under the License.
  */
 
-public class PropertyDuplicateDefinedInPMarkerDefect implements Defect {
+import com.geewhiz.pacify.model.PFile;
+import com.geewhiz.pacify.model.PMarker;
+import com.geewhiz.pacify.model.PProperty;
+
+public class NoPlaceholderInTargetFileDefect implements Defect {
 
     private PMarker   pMarker;
     private PProperty pproperty;
+    private PFile     pfile;
 
-    public PropertyDuplicateDefinedInPMarkerDefect(PMarker pMarker, PProperty pproperty) {
+    public NoPlaceholderInTargetFileDefect(PMarker pMarker, PProperty pproperty,
+        PFile pfile) {
         this.pMarker = pMarker;
         this.pproperty = pproperty;
+        this.pfile = pfile;
     }
 
     public String getDefectMessage() {
-        return String.format("PropertyDuplicateDefinedInMarkerFile: \n\t[MarkerFile=%s]\n\t[Property=%s]", pMarker.getFile().getAbsolutePath(),
-                pproperty.getName());
+        return String.format("NoPlaceholderInTargetFile: \n\t[MarkerFile=%s]\n\t[Property=%s]\n\t[TargetFile=%s]", pMarker.getFile().getAbsolutePath(),
+                pproperty.getName(), pMarker.getAbsoluteFileFor(pfile).getAbsolutePath());
     }
 }

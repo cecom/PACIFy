@@ -34,8 +34,8 @@ public class PropertyHasCycleDefect implements Defect {
     }
 
     public String getDefectMessage() {
-        return "Property [" + getProperty() + "] which is defined in [" + pMarker.getFile().getPath()
-                + "] has a cycle reference [" + getCycle() + "].";
+        return String.format("PropertyHasCycle: \n\t[MarkerFile=%s]\n\t[Property=%s]\n\t[cycle=%s]", pMarker.getFile().getAbsolutePath(),
+                getProperty(), getCycle());
     }
 
     public String getCycle() {

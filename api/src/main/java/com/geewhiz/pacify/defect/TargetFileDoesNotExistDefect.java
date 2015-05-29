@@ -20,26 +20,25 @@ package com.geewhiz.pacify.defect;
  */
 
 import com.geewhiz.pacify.model.PFile;
-import com.geewhiz.pacify.model.PProperty;
 import com.geewhiz.pacify.model.PMarker;
+import com.geewhiz.pacify.model.PProperty;
 
 public class TargetFileDoesNotExistDefect implements Defect {
 
-	private PMarker pMarker;
-	private PProperty pproperty;
-	private PFile pfile;
+    private PMarker   pMarker;
+    private PProperty pproperty;
+    private PFile     pfile;
 
-	public TargetFileDoesNotExistDefect(PMarker pMarker, PProperty pproperty,
-	    PFile pfile) {
-		this.pMarker = pMarker;
-		this.pproperty = pproperty;
-		this.pfile = pfile;
-	}
+    public TargetFileDoesNotExistDefect(PMarker pMarker, PProperty pproperty,
+        PFile pfile) {
+        this.pMarker = pMarker;
+        this.pproperty = pproperty;
+        this.pfile = pfile;
+    }
 
-	public String getDefectMessage() {
-		return "File [" + pMarker.getAbsoluteFileFor(pfile).getPath() + "] which is defined in ["
-		        + pMarker.getFile().getPath()
-		        + "] property [" + pproperty.getName() + "] " + "does not exist.";
-	}
+    public String getDefectMessage() {
+        return String.format("TargetFileDoesNotExist: \n\t[MarkerFile=%s]\n\t[property=%s]\n\t[file=%s]", pMarker.getFile().getAbsolutePath(),
+                pproperty.getName(), pMarker.getAbsoluteFileFor(pfile).getAbsolutePath());
+    }
 
 }

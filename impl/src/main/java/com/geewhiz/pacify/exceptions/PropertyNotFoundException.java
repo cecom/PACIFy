@@ -1,4 +1,4 @@
-package com.geewhiz.pacify.defect;
+package com.geewhiz.pacify.exceptions;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -18,20 +18,32 @@ package com.geewhiz.pacify.defect;
  * specific language governing permissions and limitations
  * under the License.
  */
-import com.geewhiz.pacify.resolver.PropertyResolver;
 
-public class PropertyDuplicateDefinedInPropertyFileDefect implements Defect {
-    private String           property;
-    private PropertyResolver propertyResolver;
+public class PropertyNotFoundException extends RuntimeException {
 
-    public PropertyDuplicateDefinedInPropertyFileDefect(String property, PropertyResolver propertyResolver) {
+    private static final long serialVersionUID = 1L;
+
+    private String            property;
+    private String            reference;
+
+    public PropertyNotFoundException(String property) {
+        super("Property [" + property + "] not found in any resolver!");
         this.property = property;
-        this.propertyResolver = propertyResolver;
     }
 
-    public String getDefectMessage() {
-        return String.format("PropertyDuplicateDefinedInPropertyResolver: \n\t[Resolver=[%s]]\n\t[Property=%s]",
-                propertyResolver.getPropertyResolverDescription(),
-                property);
+    public PropertyNotFoundException(String property, String reference) {
+        super("Property [" + property + "] references property [" + reference + "] and couldnt find ["
+                + reference + "] in any resolver!");
+        this.property = property;
+        this.reference = reference;
     }
+
+    public String getProperty() {
+        return property;
+    }
+
+    public String getReference() {
+        return reference;
+    }
+
 }

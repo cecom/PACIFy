@@ -27,11 +27,11 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 
 import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.defect.DefectUtils;
 import com.geewhiz.pacify.managers.EntityManager;
 import com.geewhiz.pacify.managers.MarkerFileManager;
 import com.geewhiz.pacify.managers.PropertyResolveManager;
 import com.geewhiz.pacify.model.PMarker;
+import com.geewhiz.pacify.utils.DefectUtils;
 import com.geewhiz.pacify.utils.Utils;
 import com.google.inject.Inject;
 import com.marzapower.loggable.Log;

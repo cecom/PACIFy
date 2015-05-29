@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
 
 import com.geewhiz.pacify.checks.PMarkerCheck;
 import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.defect.PropertyDoesNotExistInTargetFileDefect;
+import com.geewhiz.pacify.defect.NoPlaceholderInTargetFileDefect;
 import com.geewhiz.pacify.managers.MarkerFileManager;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
@@ -46,7 +46,7 @@ public class CheckPlaceholderExistsInTargetFile implements PMarkerCheck {
                 if (exists) {
                     continue;
                 }
-                Defect defect = new PropertyDoesNotExistInTargetFileDefect(pMarker, pproperty, pfile);
+                Defect defect = new NoPlaceholderInTargetFileDefect(pMarker, pproperty, pfile);
                 defects.add(defect);
             }
         }
