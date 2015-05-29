@@ -2,9 +2,6 @@
 - export HTTPS_PROXY=...
 - GIT_SSL_NO_VERIFY=true  git push
 
-- test resourcen aufräumen result files in unter ordner
-- alle files nochmal auf utf-8 prüfen, ob sie konvertiert wurden, vorallem test files
-
 Tokens:
 - Resolver kann eigenständige Tokens für die Ersetzung haben (implementiert)
 - In der zu ersetzenden Datei kann es eigenständige Tokens geben
