@@ -30,41 +30,48 @@ public class TestMultipleResolvers {
 
     @Test
     public void testAll() {
-
-        String startPath = "target/test-classes/TestMultipleResolver";
+        File testBasePath = new File("target/test-classes/TestMultipleResolver");
+        File myTestProperty = new File(testBasePath, "properties/myProperties.properties");
+        File myPackagePath = new File(testBasePath, "package");
+        File myResultPath = new File(testBasePath, "result");
 
         int result = PacifyViaCommandline.mainInternal(new String[] {
                 "replace",
                 "--envName=local",
                 "--resolvers=CmdResolver,FileResolver",
-                "--package=" + startPath,
+                "--package=" + myPackagePath,
                 "--createCopy=false",
-                "-DFileResolver.file=" + startPath + "/myProperties.properties",
+                "-DFileResolver.file=" + myTestProperty.getAbsolutePath(),
                 "-DCmdResolver.foobar7=anotherValue"
         });
 
         Assert.assertEquals("Configuration returned with errors.", 0, result);
 
-        TestUtil.checkIfResultIsAsExpected(new File(startPath));
+        TestUtil.checkIfResultIsAsExpected(myPackagePath, myResultPath);
     }
 
     @Test
     public void testAllOnCopy() {
-        String startPath = "target/test-classes/TestMultipleResolverOnCopy";
         String envName = "test";
+
+        File testBasePath = new File("target/test-classes/TestMultipleResolverOnCopy");
+        File myTestProperty = new File(testBasePath, "properties/myProperties.properties");
+        File myPackagePath = new File(testBasePath, "package");
+        File myResultPath = new File(testBasePath, "result");
+
+        File destinationPath = new File(myPackagePath.getAbsolutePath() + "_" + envName);
 
         int result = PacifyViaCommandline.mainInternal(new String[] {
                 "replace",
                 "--envName=" + envName,
                 "--resolvers=CmdResolver,FileResolver",
-                "--package=" + startPath,
-                "-DFileResolver.file=" + startPath + "/myProperties.properties",
+                "--package=" + myPackagePath.getAbsolutePath(),
+                "-DFileResolver.file=" + myTestProperty.getAbsolutePath(),
                 "-DCmdResolver.foobar7=anotherValue"
         });
 
         Assert.assertEquals("Configuration returned with errors.", 0, result);
 
-        String copyPath = startPath + "_" + envName;
-        TestUtil.checkIfResultIsAsExpected(new File(copyPath));
+        TestUtil.checkIfResultIsAsExpected(destinationPath, myResultPath);
     }
 }

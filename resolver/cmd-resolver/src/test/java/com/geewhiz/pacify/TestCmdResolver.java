@@ -35,20 +35,23 @@ public class TestCmdResolver {
 
     @Test
     public void testAll() {
-        File startPath = new File("target/test-classes/TestCmdResolver");
-        Assert.assertTrue("StartPath [" + startPath.getPath() + "] doesn't exist!", startPath.exists());
+        File testBasePath = new File("target/test-classes/TestCmdResolver");
+        File myPackagePath = new File(testBasePath, "package");
+        File myResultPath = new File(testBasePath, "result");
 
-        PropertyResolveManager propertyResolveManager = getPropertyResolveManager(startPath);
+        Assert.assertTrue("TestBasePath [" + testBasePath.getPath() + "] doesn't exist!", testBasePath.exists());
+
+        PropertyResolveManager propertyResolveManager = getPropertyResolveManager();
 
         Replacer replacer = new Replacer(propertyResolveManager);
-        replacer.setPackagePath(startPath);
+        replacer.setPackagePath(myPackagePath);
         replacer.setCreateCopy(Boolean.FALSE);
         replacer.execute();
 
-        TestUtil.checkIfResultIsAsExpected(startPath);
+        TestUtil.checkIfResultIsAsExpected(myPackagePath, myResultPath);
     }
 
-    private PropertyResolveManager getPropertyResolveManager(File startPath) {
+    private PropertyResolveManager getPropertyResolveManager() {
         Properties properties = new Properties();
         properties.put("foobar3", "%{foobar1}:%{foobar2}");
         properties.put("foobar2", "6299äÖ9");

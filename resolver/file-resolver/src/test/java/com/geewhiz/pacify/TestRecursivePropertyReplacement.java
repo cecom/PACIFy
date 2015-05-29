@@ -34,19 +34,21 @@ public class TestRecursivePropertyReplacement {
 
     @Test
     public void testAll() {
-        File startPath = new File("target/test-classes/recursePropertyReplacement");
-        File myTestProperty = new File(startPath, "myProperties.properties");
+        File testBasePath = new File("target/test-classes/recursePropertyReplacement");
+        File myTestProperty = new File(testBasePath, "properties/myProperties.properties");
+        File myPackagePath = new File(testBasePath, "package");
+        File myResultPath = new File(testBasePath, "result");
 
-        Assert.assertTrue("StartPath [" + startPath.getPath() + "] doesn't exist!", startPath.exists());
+        Assert.assertTrue("TestBasePath [" + testBasePath.getPath() + "] doesn't exist!", testBasePath.exists());
 
         PropertyResolveManager propertyResolveManager = getPropertyResolveManager(myTestProperty);
 
         Replacer replacer = new Replacer(propertyResolveManager);
-        replacer.setPackagePath(startPath);
+        replacer.setPackagePath(myPackagePath);
         replacer.setCreateCopy(Boolean.FALSE);
         replacer.execute();
 
-        TestUtil.checkIfResultIsAsExpected(startPath);
+        TestUtil.checkIfResultIsAsExpected(myPackagePath, myResultPath);
     }
 
     private PropertyResolveManager getPropertyResolveManager(File myTestProperty) {

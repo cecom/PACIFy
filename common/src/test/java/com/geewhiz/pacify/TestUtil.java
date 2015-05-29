@@ -35,15 +35,21 @@ import com.geewhiz.pacify.model.utils.DirFilter;
 
 public class TestUtil {
 
-    public static void checkIfResultIsAsExpected(File startPath) {
-        File dirWithFilesWhichTheyShouldLookLike = new File(startPath.getPath() + "_ResultFiles");
-        List<File> filesToCompare = getFiles(dirWithFilesWhichTheyShouldLookLike);
-        for (File resultFile : filesToCompare) {
-            String completeRelativePath = dirWithFilesWhichTheyShouldLookLike.getPath();
+    public static void checkIfResultIsAsExpected(File checkFolder, File resultFolder) {
+        if (!checkFolder.isDirectory()) {
+            throw new IllegalArgumentException("checkFoler [" + checkFolder.getAbsolutePath() + "] not a folder");
+        }
+
+        if (!resultFolder.isDirectory()) {
+            throw new IllegalArgumentException("resultFolder [" + resultFolder.getAbsolutePath() + "] not a folder");
+        }
+
+        for (File resultFile : getFiles(resultFolder)) {
+            String completeRelativePath = resultFolder.getPath();
             int index = resultFile.getPath().indexOf(completeRelativePath) + completeRelativePath.length();
             String relativePath = resultFile.getPath().substring(index);
 
-            File filteredFile = new File(startPath, relativePath);
+            File filteredFile = new File(checkFolder, relativePath);
             try {
                 Assert.assertTrue(
                         "Filtered file does not have the expected result. The content of the File should look like ["

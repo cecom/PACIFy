@@ -2,7 +2,6 @@
 - export HTTPS_PROXY=...
 - GIT_SSL_NO_VERIFY=true  git push
 
-- araresolver sollte passwörter auflösen können
 - test resourcen aufräumen result files in unter ordner
 - alle files nochmal auf utf-8 prüfen, ob sie konvertiert wurden, vorallem test files
 

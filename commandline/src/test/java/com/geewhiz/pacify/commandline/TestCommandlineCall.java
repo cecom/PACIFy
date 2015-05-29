@@ -31,31 +31,33 @@ public class TestCommandlineCall {
     @Test
     public void testReplace() {
 
-        String startPath = "target/test-classes/testReplace";
+        File testBasePath = new File("target/test-classes/testReplace");
+        File myTestProperty = new File(testBasePath, "properties/myTest.properties");
+        File myPackagePath = new File(testBasePath, "package");
+        File myResultPath = new File(testBasePath, "result");
 
         int result = PacifyViaCommandline.mainInternal(new String[] {
                 "--info",
                 "replace",
                 "--envName=local",
                 "--resolvers=FileResolver",
-                "--package=" + startPath,
+                "--package=" + myPackagePath.getAbsolutePath(),
                 "--createCopy=false",
-                "-DFileResolver.file=" + startPath + "/myTest.properties"
+                "-DFileResolver.file=" + myTestProperty.getAbsolutePath()
         });
 
         Assert.assertEquals("Configuration returned with errors.", 0, result);
 
-        TestUtil.checkIfResultIsAsExpected(new File(startPath));
+        TestUtil.checkIfResultIsAsExpected(myPackagePath, myResultPath);
     }
 
     @Test
     public void testValidateMarkerFiles() {
-
-        String startPath = "target/test-classes/testValidate";
+        File testBasePath = new File("target/test-classes/testValidate");
 
         int result = PacifyViaCommandline.mainInternal(new String[] {
                 "validateMarkerFiles",
-                "--package=" + startPath
+                "--package=" + testBasePath
         });
 
         Assert.assertEquals("Validate returned with errors.", 0, result);
@@ -63,14 +65,14 @@ public class TestCommandlineCall {
 
     @Test
     public void testValidateWithProperties() {
-
-        String startPath = "target/test-classes/testValidate";
+        File testBasePath = new File("target/test-classes/testValidate");
+        File myTestProperty = new File(testBasePath, "properties/myTest.properties");
 
         int result = PacifyViaCommandline.mainInternal(new String[] {
                 "validate",
                 "--resolvers=FileResolver",
-                "--package=" + startPath,
-                "-DFileResolver.file=" + startPath + "/myTest.properties"
+                "--package=" + testBasePath,
+                "-DFileResolver.file=" + myTestProperty.getAbsolutePath()
         });
 
         Assert.assertEquals("Validate returned with errors.", 0, result);
