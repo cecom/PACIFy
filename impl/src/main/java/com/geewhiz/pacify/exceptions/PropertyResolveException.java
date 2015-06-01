@@ -19,19 +19,26 @@ package com.geewhiz.pacify.exceptions;
  * under the License.
  */
 
-public class PropertyNotFoundException extends RuntimeException {
+public class PropertyResolveException extends RuntimeException {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private String property;
+    private String            property;
+    private String            resolvePath;
 
-	public PropertyNotFoundException(String property) {
-		super("Property [" + property + "] not found in any resolver!");
-		this.property = property;
-	}
+    public PropertyResolveException(String property, String resolvePath) {
+        super("Property [" + property + "] references property [" + resolvePath + "] and couldnt find ["
+                + resolvePath + "] in any resolver!");
+        this.property = property;
+        this.resolvePath = resolvePath;
+    }
 
-	public String getProperty() {
-		return property;
-	}
+    public String getProperty() {
+        return property;
+    }
+
+    public String getResolvePath() {
+        return resolvePath;
+    }
 
 }

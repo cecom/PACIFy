@@ -1,4 +1,4 @@
-package com.geewhiz.pacify.exceptions;
+package com.geewhiz.pacify.defect;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,19 +19,30 @@ package com.geewhiz.pacify.exceptions;
  * under the License.
  */
 
-public class PropertyNotFoundException extends RuntimeException {
+import com.geewhiz.pacify.model.PMarker;
+import com.geewhiz.pacify.model.PProperty;
 
-	private static final long serialVersionUID = 1L;
+public class PropertyResolveDefect implements Defect {
 
-	private String property;
+	private PMarker pMarker;
+	private PProperty pproperty;
+	private String resolvers;
+	private String referenceProperty;
 
-	public PropertyNotFoundException(String property) {
-		super("Property [" + property + "] not found in any resolver!");
-		this.property = property;
+	public PropertyResolveDefect(PMarker pMarker, PProperty pproperty,
+			String referenceProperty, String resolvers) {
+		this.pMarker = pMarker;
+		this.pproperty = pproperty;
+		this.resolvers = resolvers;
+		this.referenceProperty = referenceProperty;
 	}
 
-	public String getProperty() {
-		return property;
+	public String getDefectMessage() {
+		return String
+				.format("PropertyTokensCouldNotBeResolved: \n\t[MarkerFile=%s]\n\t[Property=%s]\n\t[ResolvePath=%s]\n\t[resolvers=%s]",
+						pMarker.getFile().getAbsolutePath(),
+						pproperty.getName(), referenceProperty, resolvers);
+
 	}
 
 }

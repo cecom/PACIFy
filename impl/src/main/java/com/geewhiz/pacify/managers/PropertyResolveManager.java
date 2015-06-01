@@ -13,6 +13,7 @@ import org.apache.tools.ant.types.FilterSet;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.exceptions.CycleDetectRuntimeException;
 import com.geewhiz.pacify.exceptions.PropertyNotFoundException;
+import com.geewhiz.pacify.exceptions.PropertyResolveException;
 import com.geewhiz.pacify.resolver.PropertyResolver;
 import com.google.inject.Inject;
 
@@ -89,7 +90,7 @@ public class PropertyResolveManager {
         if (propertyCycleDetector.isEmpty()) {
             throw new PropertyNotFoundException(property);
         }
-        throw new PropertyNotFoundException(property, propertyCycleDetector.get(propertyCycleDetector.size() - 1));
+        throw new PropertyResolveException(property, StringUtils.join(propertyCycleDetector, "->") + "->" + property);
     }
 
     private String replaceTokens(PropertyResolver propertyResolver, String property, List<String> propertyCycleDetector) {

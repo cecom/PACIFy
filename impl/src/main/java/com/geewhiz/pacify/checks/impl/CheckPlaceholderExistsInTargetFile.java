@@ -42,6 +42,12 @@ public class CheckPlaceholderExistsInTargetFile implements PMarkerCheck {
         for (PProperty pproperty : pMarker.getProperties()) {
             for (PFile pfile : pproperty.getFiles()) {
                 File file = pMarker.getAbsoluteFileFor(pfile);
+                
+                if(!file.exists()){
+                	//is checked before, so don'‚t throw any exception.
+                	continue;
+                }
+                
                 boolean exists = doesPropertyExistInFile(pproperty, file, pfile.getEncoding());
                 if (exists) {
                     continue;

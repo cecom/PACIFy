@@ -1,4 +1,5 @@
 - jdk >1.6
+asdf
 - export HTTPS_PROXY=...
 - GIT_SSL_NO_VERIFY=true  git push
 
