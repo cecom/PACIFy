@@ -16,6 +16,7 @@ import com.geewhiz.pacify.commandline.commands.ReplacerCommand;
 import com.geewhiz.pacify.commandline.commands.ValidateCommand;
 import com.geewhiz.pacify.commandline.commands.ValidateMarkerFilesCommand;
 import com.geewhiz.pacify.resolver.PropertyResolverModule;
+import com.geewhiz.pacify.utils.Utils;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.marzapower.loggable.Log;
@@ -45,6 +46,8 @@ import com.marzapower.loggable.LoggerContainer;
 public class PacifyViaCommandline {
 
     public static void main(String... args) {
+        System.out.println("PACIFy Version: " + Utils.getJarVersion());
+
         int resultValue = mainInternal(args);
         Log.get().debug("Exiting with exit code " + resultValue);
         System.exit(resultValue);
