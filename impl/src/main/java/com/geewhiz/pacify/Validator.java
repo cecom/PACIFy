@@ -109,6 +109,7 @@ public class Validator {
     public List<Defect> validateInternal(EntityManager entityManager) {
         List<Defect> defects = new ArrayList<Defect>();
         for (Check check : checks) {
+            Log.get().debug("     Check [" + check.getClass().getName() + "]");
             defects.addAll(check.checkForErrors());
         }
         for (PMarker pMarker : entityManager.getPMarkers()) {

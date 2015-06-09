@@ -88,6 +88,9 @@ public class PacifyViaCommandline {
             return executeValidateMarkerFiles(validateMarkerFilesCommand);
         } else {
             jc.usage();
+            if (mainCommand.isHelp()) {
+                return 0;
+            }
         }
         return 1;
     }

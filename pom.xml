@@ -209,10 +209,6 @@
                     <version>2.6</version>
                 </plugin>
                 <plugin>
-                    <artifactId>maven-assembly-plugin</artifactId>
-                    <version>2.2.1</version>
-                </plugin>
-                <plugin>
                     <groupId>org.jvnet.jaxb2_commons</groupId>
                     <artifactId>jaxb2-basics</artifactId>
                     <version>${org.jvnet.jaxb2_commons_jaxb2-basics_version}</version>

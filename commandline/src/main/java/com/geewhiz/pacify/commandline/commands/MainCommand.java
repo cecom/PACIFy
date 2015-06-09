@@ -8,9 +8,9 @@ package com.geewhiz.pacify.commandline.commands;
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License. You may obtain a copy of the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -30,7 +30,7 @@ public class MainCommand {
     private boolean debug = false;
 
     @Parameter(names = "--info", description = "Info mode")
-    private boolean info = false;
+    private boolean info  = false;
 
     public boolean isDebug() {
         return debug;
@@ -46,6 +46,10 @@ public class MainCommand {
 
     public void setInfo(boolean info) {
         this.info = info;
+    }
+
+    public boolean isHelp() {
+        return help;
     }
 
 }

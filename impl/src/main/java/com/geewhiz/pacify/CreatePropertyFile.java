@@ -56,13 +56,10 @@ public class CreatePropertyFile {
         Log.get().info("== Executing CreatePropertyFile [Version=" + Utils.getJarVersion() + "]");
         Log.get().info("   [PropertyResolver=" + propertyResolveManager.toString() + "]");
 
-        if (getOutputType() == OutputType.File) {
-            Log.get().info("   [TargetFile=" + getTargetFile().getPath() + "]");
-        }
-
         if (getOutputType() == OutputType.Stdout) {
             writeToStdout();
         } else if (getOutputType() == OutputType.File) {
+            Log.get().info("   [TargetFile=" + getTargetFile().getPath() + "]");
             writeToFile();
         } else {
             throw new IllegalArgumentException("OutputType not implemented! [" + getOutputType() + "]");

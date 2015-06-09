@@ -77,4 +77,13 @@ public class TestCommandlineCall {
 
         Assert.assertEquals("Validate returned with errors.", 0, result);
     }
+
+    @Test
+    public void testHelp() {
+        int result = PacifyViaCommandline.mainInternal(new String[] {
+                "--help"
+        });
+
+        Assert.assertEquals("Call should return 0.", 0, result);
+    }
 }

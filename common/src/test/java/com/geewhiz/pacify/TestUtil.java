@@ -30,9 +30,11 @@ import java.util.List;
 
 import org.apache.tools.ant.util.FileUtils;
 import org.junit.Assert;
+import org.junit.Ignore;
 
 import com.geewhiz.pacify.model.utils.DirFilter;
 
+@Ignore
 public class TestUtil {
 
     public static void checkIfResultIsAsExpected(File checkFolder, File resultFolder) {
