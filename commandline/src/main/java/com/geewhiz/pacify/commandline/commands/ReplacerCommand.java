@@ -28,26 +28,26 @@ import com.geewhiz.pacify.Replacer;
 @Parameters(separators = "=", commandDescription = "Used to configure a package.")
 public class ReplacerCommand extends BasePropertyResolverCommand {
 
-	@Parameter(names = { "-env", "--envName" }, description = "The name of the Environment which the package is configured for.", required = true)
-	private String envName;
+    @Parameter(names = { "-env", "--envName" }, description = "The name of the Environment which the package is configured for.", required = true)
+    private String  envName;
 
-	@Parameter(names = { "-p", "--package" }, description = "The package path which you want to configure.", required = true)
-	private File packagePath;
+    @Parameter(names = { "-p", "--packagePath" }, description = "The package path which you want to configure.", required = true)
+    private File    packagePath;
 
-	@Parameter(names = { "-cc", "--createCopy" }, description = "Create a copy and configure the copy.", required = false, arity = 1)
-	private Boolean createCopy = Boolean.TRUE;
+    @Parameter(names = { "-cc", "--createCopy" }, description = "Create a copy and configure the copy.", required = false, arity = 1)
+    private Boolean createCopy = Boolean.TRUE;
 
-	@Parameter(names = { "-cd", "--copyDestination" }, description = "Where to write the copy of the original package to. If not specified a folder with name of the package + _ + envName is created.", required = false)
-	private File copyDestination;
+    @Parameter(names = { "-cd", "--copyDestination" }, description = "Where to write the copy of the original package to. If not specified a folder with name of the package + _ + envName is created.", required = false)
+    private File    copyDestination;
 
-	public void configureReplacer(Replacer replacer) {
-		replacer.setEnvName(envName);
-		replacer.setPackagePath(packagePath);
-		replacer.setCreateCopy(createCopy);
-		replacer.setCopyDestination(copyDestination);
-		if (createCopy && copyDestination == null) {
-			copyDestination = new File(packagePath.getParentFile(), packagePath.getName() + "_" + envName);
-			replacer.setCopyDestination(copyDestination);
-		}
-	}
+    public void configureReplacer(Replacer replacer) {
+        replacer.setEnvName(envName);
+        replacer.setPackagePath(packagePath);
+        replacer.setCreateCopy(createCopy);
+        replacer.setCopyDestination(copyDestination);
+        if (createCopy && copyDestination == null) {
+            copyDestination = new File(packagePath.getParentFile(), packagePath.getName() + "_" + envName);
+            replacer.setCopyDestination(copyDestination);
+        }
+    }
 }

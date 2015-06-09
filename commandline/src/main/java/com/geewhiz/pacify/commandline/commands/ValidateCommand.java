@@ -28,12 +28,12 @@ import com.geewhiz.pacify.Validator;
 @Parameters(separators = "=", commandDescription = "Used to validate the pacify marker files and the property resolution.")
 public class ValidateCommand extends BasePropertyResolverCommand {
 
-	@Parameter(names = { "-p", "--package" }, description = "The package path which you want to verify.", required = true)
-	public File packagePath;
+    @Parameter(names = { "-p", "--packagePath" }, description = "The package path which you want to verify.", required = true)
+    public File packagePath;
 
-	public void configureValidator(Validator validator) {
-		validator.setPackagePath(packagePath);
-		validator.enableMarkerFileChecks();
-		validator.enablePropertyResolveChecks();
-	}
+    public void configureValidator(Validator validator) {
+        validator.setPackagePath(packagePath);
+        validator.enableMarkerFileChecks();
+        validator.enablePropertyResolveChecks();
+    }
 }

@@ -41,7 +41,7 @@ public class TestCommandlineCall {
                 "replace",
                 "--envName=local",
                 "--resolvers=FileResolver",
-                "--package=" + myPackagePath.getAbsolutePath(),
+                "--packagePath=" + myPackagePath.getAbsolutePath(),
                 "--createCopy=false",
                 "-DFileResolver.file=" + myTestProperty.getAbsolutePath()
         });
@@ -57,7 +57,7 @@ public class TestCommandlineCall {
 
         int result = PacifyViaCommandline.mainInternal(new String[] {
                 "validateMarkerFiles",
-                "--package=" + testBasePath
+                "--packagePath=" + testBasePath
         });
 
         Assert.assertEquals("Validate returned with errors.", 0, result);
@@ -71,7 +71,7 @@ public class TestCommandlineCall {
         int result = PacifyViaCommandline.mainInternal(new String[] {
                 "validate",
                 "--resolvers=FileResolver",
-                "--package=" + testBasePath,
+                "--packagePath=" + testBasePath,
                 "-DFileResolver.file=" + myTestProperty.getAbsolutePath()
         });
 

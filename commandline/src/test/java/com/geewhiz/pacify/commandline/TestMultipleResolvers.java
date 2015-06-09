@@ -40,7 +40,7 @@ public class TestMultipleResolvers {
                 "replace",
                 "--envName=local",
                 "--resolvers=CmdResolver,FileResolver",
-                "--package=" + myPackagePath,
+                "--packagePath=" + myPackagePath,
                 "--createCopy=false",
                 "-DFileResolver.file=" + myTestProperty.getAbsolutePath(),
                 "-DCmdResolver.foobar7=anotherValue"
@@ -66,7 +66,7 @@ public class TestMultipleResolvers {
                 "replace",
                 "--envName=" + envName,
                 "--resolvers=CmdResolver,FileResolver",
-                "--package=" + myPackagePath.getAbsolutePath(),
+                "--packagePath=" + myPackagePath.getAbsolutePath(),
                 "-DFileResolver.file=" + myTestProperty.getAbsolutePath(),
                 "-DCmdResolver.foobar7=anotherValue"
         });
