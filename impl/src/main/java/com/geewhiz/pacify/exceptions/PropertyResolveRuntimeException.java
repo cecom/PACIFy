@@ -19,16 +19,15 @@ package com.geewhiz.pacify.exceptions;
  * under the License.
  */
 
-public class PropertyResolveException extends RuntimeException {
+public class PropertyResolveRuntimeException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 
     private String            property;
     private String            resolvePath;
 
-    public PropertyResolveException(String property, String resolvePath) {
-        super("Property [" + property + "] references property [" + resolvePath + "] and couldnt find ["
-                + resolvePath + "] in any resolver!");
+    public PropertyResolveRuntimeException(String property, String resolvePath) {
+        super("Property [" + property + "] referenced by [" + resolvePath + "] couldn't be found in any resolver!");
         this.property = property;
         this.resolvePath = resolvePath;
     }

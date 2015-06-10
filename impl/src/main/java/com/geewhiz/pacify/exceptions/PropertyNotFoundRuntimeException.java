@@ -19,13 +19,13 @@ package com.geewhiz.pacify.exceptions;
  * under the License.
  */
 
-public class PropertyNotFoundException extends RuntimeException {
+public class PropertyNotFoundRuntimeException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
 
 	private String property;
 
-	public PropertyNotFoundException(String property) {
+	public PropertyNotFoundRuntimeException(String property) {
 		super("Property [" + property + "] not found in any resolver!");
 		this.property = property;
 	}

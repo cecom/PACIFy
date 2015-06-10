@@ -12,8 +12,8 @@ import org.apache.tools.ant.types.FilterSet;
 
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.exceptions.CycleDetectRuntimeException;
-import com.geewhiz.pacify.exceptions.PropertyNotFoundException;
-import com.geewhiz.pacify.exceptions.PropertyResolveException;
+import com.geewhiz.pacify.exceptions.PropertyNotFoundRuntimeException;
+import com.geewhiz.pacify.exceptions.PropertyResolveRuntimeException;
 import com.geewhiz.pacify.resolver.PropertyResolver;
 import com.google.inject.Inject;
 
@@ -88,9 +88,9 @@ public class PropertyResolveManager {
         }
 
         if (propertyCycleDetector.isEmpty()) {
-            throw new PropertyNotFoundException(property);
+            throw new PropertyNotFoundRuntimeException(property);
         }
-        throw new PropertyResolveException(property, StringUtils.join(propertyCycleDetector, "->") + "->" + property);
+        throw new PropertyResolveRuntimeException(property, StringUtils.join(propertyCycleDetector, "->") + "->" + property);
     }
 
     private String replaceTokens(PropertyResolver propertyResolver, String property, List<String> propertyCycleDetector) {
