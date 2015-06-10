@@ -24,25 +24,39 @@ import java.net.JarURLConnection;
 import java.net.URL;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
+import java.util.regex.Pattern;
+
+import com.geewhiz.pacify.model.PFile;
+import com.geewhiz.pacify.model.PMarker;
 
 public class Utils {
 
-	public static String getJarVersion() {
-		URL jarURL = Utils.class.getResource("/" + Utils.class.getName().replace(".", "/") + ".class");
-		Manifest mf;
-		try {
-			JarURLConnection jurlConn;
-			if (jarURL.getProtocol().equals("file")) {
-				return "Not a Jar";
-			} else {
-				jurlConn = (JarURLConnection) jarURL.openConnection();
-			}
-			mf = jurlConn.getManifest();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+    public static String getJarVersion() {
+        URL jarURL = Utils.class.getResource("/" + Utils.class.getName().replace(".", "/") + ".class");
+        Manifest mf;
+        try {
+            JarURLConnection jurlConn;
+            if (jarURL.getProtocol().equals("file")) {
+                return "Not a Jar";
+            } else {
+                jurlConn = (JarURLConnection) jarURL.openConnection();
+            }
+            mf = jurlConn.getManifest();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
-		Attributes attr = mf.getMainAttributes();
-		return attr.getValue("Implementation-Version");
-	}
+        Attributes attr = mf.getMainAttributes();
+        return attr.getValue("Implementation-Version");
+    }
+
+    public static Pattern getPattern(PMarker pMarker, PFile pFile, String match, boolean quoteIt) {
+        String beginToken = pMarker.getBeginTokenFor(pFile);
+        String endToken = pMarker.getEndTokenFor(pFile);
+
+        String searchPattern = Pattern.quote(beginToken)
+                + (quoteIt ? Pattern.quote(match) : match) + Pattern.quote(endToken);
+
+        return Pattern.compile(searchPattern);
+    }
 }

@@ -8,6 +8,8 @@
         <xs:sequence maxOccurs="unbounded">
             <xs:element name="Property" type="PProperty"/>
         </xs:sequence>
+        <xs:attribute name="BeginToken" type="xs:string" default="%{"/>
+        <xs:attribute name="EndToken" type="xs:string" default="}"/>
     </xs:complexType>
     <xs:complexType name="PProperty">
         <xs:sequence maxOccurs="unbounded">
@@ -19,5 +21,7 @@
     <xs:complexType name="PFile">
         <xs:attribute name="RelativePath" type="xs:string" use="required"/>
         <xs:attribute name="Encoding" type="xs:string" default="UTF-8"/>
+        <xs:attribute name="BeginToken" type="xs:string"/>
+        <xs:attribute name="EndToken" type="xs:string"/>
     </xs:complexType>
 </xs:schema>

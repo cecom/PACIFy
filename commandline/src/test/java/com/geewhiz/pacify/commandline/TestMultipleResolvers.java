@@ -52,6 +52,29 @@ public class TestMultipleResolvers {
     }
 
     @Test
+    public void testAllWithCustomTokens() {
+        File testBasePath = new File("target/test-classes/TestMultipleResolverWithCustomTokens");
+        File myTestProperty = new File(testBasePath, "properties/myProperties.properties");
+        File myPackagePath = new File(testBasePath, "package");
+        File myResultPath = new File(testBasePath, "result");
+
+        int result = PacifyViaCommandline.mainInternal(new String[] {
+                "--debug",
+                "replace",
+                "--envName=local",
+                "--resolvers=CmdResolver,FileResolver",
+                "--packagePath=" + myPackagePath,
+                "--createCopy=false",
+                "-DFileResolver.file=" + myTestProperty.getAbsolutePath(),
+                "-DCmdResolver.foobar7=anotherValue"
+        });
+
+        Assert.assertEquals("Configuration returned with errors.", 0, result);
+
+        TestUtil.checkIfResultIsAsExpected(myPackagePath, myResultPath);
+    }
+
+    @Test
     public void testAllOnCopy() {
         String envName = "test";
 

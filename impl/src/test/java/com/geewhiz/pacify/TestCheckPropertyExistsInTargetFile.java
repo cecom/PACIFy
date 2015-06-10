@@ -31,7 +31,7 @@ import com.geewhiz.pacify.defect.Defect;
 public class TestCheckPropertyExistsInTargetFile extends TestBase {
     @Test
     public void checkForNotCorrect() {
-        File testStartPath = new File("target/test-classes/checkPropertyExistsInTargetFileTest/wrong");
+        File testStartPath = new File("target/test-classes/checkPropertyExistsInTargetFileTest/wrong/package");
 
         List<Defect> defects = getDefects(new CheckPlaceholderExistsInTargetFile(), testStartPath);
 
@@ -40,10 +40,28 @@ public class TestCheckPropertyExistsInTargetFile extends TestBase {
 
     @Test
     public void checkForCorrect() {
-        File testStartPath = new File("target/test-classes/checkPropertyExistsInTargetFileTest/correct");
+        File testStartPath = new File("target/test-classes/checkPropertyExistsInTargetFileTest/correct/package");
 
         List<Defect> defects = getDefects(new CheckPlaceholderExistsInTargetFile(), testStartPath);
 
         Assert.assertEquals(0, defects.size());
+    }
+
+    @Test
+    public void checkForCorrectWithCustomTokens() {
+        File testStartPath = new File("target/test-classes/checkPropertyExistsInTargetFileCustomPlaceholderTest/correct/package");
+
+        List<Defect> defects = getDefects(new CheckPlaceholderExistsInTargetFile(), testStartPath);
+
+        Assert.assertEquals(0, defects.size());
+    }
+
+    @Test
+    public void checkForNotCorrectWithCustomTokens() {
+        File testStartPath = new File("target/test-classes/checkPropertyExistsInTargetFileCustomPlaceholderTest/wrong/package");
+
+        List<Defect> defects = getDefects(new CheckPlaceholderExistsInTargetFile(), testStartPath);
+
+        Assert.assertEquals(2, defects.size());
     }
 }

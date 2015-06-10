@@ -1,8 +1,52 @@
 - jdk >1.6
-asdf
 - export HTTPS_PROXY=...
 - GIT_SSL_NO_VERIFY=true  git push
 
-Tokens:
-- Resolver kann eigenständige Tokens für die Ersetzung haben (implementiert)
-- In der zu ersetzenden Datei kann es eigenständige Tokens geben
+- Araresolver webservice aufrufe hart hinterlegen. nur hostname wird übergeben.
+
+
+============================================
+
+Hilfe:
+  pacify\pacify-full\bin\pacify.cmd --help
+
+validate:
+  pacify\pacify-full\bin\pacify.cmd validate  --packagePath=KIWI\15.01.00.00\01.00\03_Server --resolver=FileResolvers -DFileResolver.file=properties\kiwi_pint.properties
+
+validateMarkerFiles:
+  pacify\pacify-full\bin\pacify.cmd validateMarkerFiles --packagePath=KIWI\15.01.00.00\01.00\03_Server
+
+writePropertyFile to stdout:
+  pacify\pacify-full\bin\pacify.cmd writePropertyFile --resolvers=FileResolver -DFileResolver.file=properties\kiwi_pint.properties
+
+writePropertyFile to file:
+  pacify\pacify-full\bin\pacify.cmd writePropertyFile --resolvers=FileResolver -DFileResolver.file=properties\kiwi_pint.properties --destinationFile=result.txt
+
+replace:
+  pacify\pacify-full\bin\pacify.cmd replace --resolvers=FileResolver -DFileResolver.file=properties\kiwi_pint.properties --envName=pint --packagePath=KIWI\15.01.00.00\01.00\03_Server
+  pacify\pacify-full\bin\pacify.cmd replace --resolvers=FileResolver -DFileResolver.file=properties\kiwi_pint.properties --envName=pint --packagePath=KIWI\15.01.00.00\01.00\03_Server  --createCopy=false
+
+property parameter:
+  pacify\pacify-full\bin\pacify.cmd replace @replace.properties
+
+
+pacify.cmd replace
+    --resolvers=AraResolver
+    -DAraResolver.araUrl=
+    -DAraResolver.username=
+    -DAraResolver.password=
+    -DAraResolver.runId=
+    -DAraResolver.target=
+    -DAraResolver.component=
+    -DAraResolver.namespace=
+
+    --envName=pint
+    --package=KIWI\15.01.00.00\01.00\03_Server
+
+    http://n4956022.idst.ibaintern.de/service/deploymentservice.svc?wsdl
+
+ 1.Service GetDeploymentDescriptor aufrufen:
+ https://n4956022.idst.ibaintern.de/service/DeploymentService.svc
+
+ 2.DeploymentXML CDData auslesen
+ 3.key=processFlowModification/task[@component="<component>"]/modification/generateTask[@alias=.*<target>]/variables/variable[@name=^<namespace>.*]

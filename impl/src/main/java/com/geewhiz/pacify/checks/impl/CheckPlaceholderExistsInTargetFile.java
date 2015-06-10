@@ -28,7 +28,6 @@ import java.util.regex.Pattern;
 import com.geewhiz.pacify.checks.PMarkerCheck;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.NoPlaceholderInTargetFileDefect;
-import com.geewhiz.pacify.managers.MarkerFileManager;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.model.PProperty;
@@ -40,19 +39,19 @@ public class CheckPlaceholderExistsInTargetFile implements PMarkerCheck {
         List<Defect> defects = new ArrayList<Defect>();
 
         for (PProperty pproperty : pMarker.getProperties()) {
-            for (PFile pfile : pproperty.getFiles()) {
-                File file = pMarker.getAbsoluteFileFor(pfile);
-                
-                if(!file.exists()){
-                	//is checked before, so don'‚t throw any exception.
-                	continue;
+            for (PFile pFile : pproperty.getFiles()) {
+                File file = pMarker.getAbsoluteFileFor(pFile);
+
+                if (!file.exists()) {
+                    // is checked before, so don'‚t throw any exception.
+                    continue;
                 }
-                
-                boolean exists = doesPropertyExistInFile(pproperty, file, pfile.getEncoding());
+
+                boolean exists = doesPropertyExistInFile(pMarker, pFile, pproperty);
                 if (exists) {
                     continue;
                 }
-                Defect defect = new NoPlaceholderInTargetFileDefect(pMarker, pproperty, pfile);
+                Defect defect = new NoPlaceholderInTargetFileDefect(pMarker, pproperty, pFile);
                 defects.add(defect);
             }
         }
@@ -60,11 +59,17 @@ public class CheckPlaceholderExistsInTargetFile implements PMarkerCheck {
         return defects;
     }
 
-    public boolean doesPropertyExistInFile(PProperty pproperty, File file, String encoding) {
-        String fileContent = FileUtils.getFileInOneString(file, encoding);
+    private boolean doesPropertyExistInFile(PMarker pMarker, PFile pFile, PProperty pproperty) {
+        File file = pMarker.getAbsoluteFileFor(pFile);
 
-        // todo: das pattern muss raus, kann file spezifisch sein
-        Pattern pattern = MarkerFileManager.getPattern(pproperty.getName(), true);
+        String fileContent = FileUtils.getFileInOneString(file, pFile.getEncoding());
+
+        String beginToken = pMarker.getBeginTokenFor(pFile);
+        String endToken = pMarker.getEndTokenFor(pFile);
+
+        String searchPattern = Pattern.quote(beginToken) + Pattern.quote(pproperty.getName()) + Pattern.quote(endToken);
+
+        Pattern pattern = Pattern.compile(searchPattern);
         Matcher matcher = pattern.matcher(fileContent);
 
         return matcher.find();

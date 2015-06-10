@@ -31,7 +31,7 @@ public class TestXml {
 
     @Test
     public void testAll() {
-        File source = new File("target/test-classes/testXml");
+        File source = new File("target/test-classes/testXml/package");
 
         EntityManager entityManager = new EntityManager(source);
 

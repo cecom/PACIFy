@@ -8,7 +8,9 @@ import java.util.regex.Pattern;
 
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.NotReplacedPropertyDefect;
-import com.geewhiz.pacify.managers.MarkerFileManager;
+import com.geewhiz.pacify.model.PFile;
+import com.geewhiz.pacify.model.PMarker;
+import com.geewhiz.pacify.utils.FileUtils;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -31,21 +33,26 @@ import com.geewhiz.pacify.managers.MarkerFileManager;
 
 public class CheckForNotReplacedTokens {
 
-	public List<Defect> checkForErrors(File file, String encoding) {
-		List<Defect> defects = new ArrayList<Defect>();
+    public List<Defect> checkForErrors(PMarker pMarker, PFile pFile) {
+        List<Defect> defects = new ArrayList<Defect>();
 
-		String fileContent = com.geewhiz.pacify.utils.FileUtils.getFileInOneString(file, encoding);
+        File file = pMarker.getAbsoluteFileFor(pFile);
+        String fileContent = FileUtils.getFileInOneString(file, pFile.getEncoding());
 
-		// todo: das pattern muss raus, kann file spezifisch sein
-		Pattern pattern = MarkerFileManager.getPattern("([^}]*)", false);
-		Matcher matcher = pattern.matcher(fileContent);
+        String beginToken = pMarker.getBeginTokenFor(pFile);
+        String endToken = pMarker.getEndTokenFor(pFile);
 
-		while (matcher.find()) {
-			String propertyId = matcher.group(1);
-			Defect defect = new NotReplacedPropertyDefect(file, propertyId);
-			defects.add(defect);
-		}
-		return defects;
-	}
+        String searchPattern = Pattern.quote(beginToken)
+                + "([^" + Pattern.quote(endToken) + "]*)" + Pattern.quote(endToken);
 
+        Pattern pattern = Pattern.compile(searchPattern);
+        Matcher matcher = pattern.matcher(fileContent);
+
+        while (matcher.find()) {
+            String propertyId = matcher.group(1);
+            Defect defect = new NotReplacedPropertyDefect(file, propertyId);
+            defects.add(defect);
+        }
+        return defects;
+    }
 }

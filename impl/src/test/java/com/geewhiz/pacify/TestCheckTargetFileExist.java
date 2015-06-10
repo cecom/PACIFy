@@ -31,7 +31,7 @@ public class TestCheckTargetFileExist extends TestBase {
 
     @Test
     public void checkForNotCorrect() {
-        File testStartPath = new File("target/test-classes/checkTargetFileExistTest/wrong");
+        File testStartPath = new File("target/test-classes/checkTargetFileExistTest/wrong/package");
 
         List<Defect> defects = getDefects(new com.geewhiz.pacify.checks.impl.CheckTargetFileExist(), testStartPath);
 
@@ -40,7 +40,7 @@ public class TestCheckTargetFileExist extends TestBase {
 
     @Test
     public void checkForCorrect() {
-        File testStartPath = new File("target/test-classes/checkTargetFileExistTest/correct");
+        File testStartPath = new File("target/test-classes/checkTargetFileExistTest/correct/package");
 
         List<Defect> defects = getDefects(new com.geewhiz.pacify.checks.impl.CheckTargetFileExist(), testStartPath);
 

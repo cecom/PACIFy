@@ -30,61 +30,73 @@ import org.jvnet.jaxb2_commons.locator.ObjectLocator;
 
 public abstract class PMarkerBase {
 
-	private File file;
+    private File file;
 
-	public void setFile(java.io.File file) {
-		this.file = file;
-	}
+    public void setFile(java.io.File file) {
+        this.file = file;
+    }
 
-	public java.io.File getFile() {
-		return file;
-	}
+    public File getFile() {
+        return file;
+    }
 
-	public java.io.File getFolder() {
-		return file.getParentFile();
-	}
+    public File getFolder() {
+        return file.getParentFile();
+    }
 
-	public java.io.File getAbsoluteFileFor(PFile pfile) {
-		return new java.io.File(getFolder(), pfile.getRelativePath());
-	}
+    public File getAbsoluteFileFor(PFile pfile) {
+        return new File(getFolder(), pfile.getRelativePath());
+    }
 
-	public abstract List<PProperty> getProperties();
+    public String getBeginTokenFor(PFile pfile) {
+        return pfile.getBeginToken() != null ? pfile.getBeginToken() : getBeginToken();
+    }
 
-	public List<PFile> getPFiles() {
-		List<PFile> result = new ArrayList<PFile>();
-		for (PProperty pproperty : getProperties()) {
-			for (PFile pfile : pproperty.getFiles()) {
-				if (result.contains(pfile)) {
-					continue;
-				}
-				result.add(pfile);
-			}
-		}
-		return result;
-	}
+    public String getEndTokenFor(PFile pfile) {
+        return pfile.getBeginToken() != null ? pfile.getEndToken() : getEndToken();
+    }
 
-	public List<PProperty> getPPropertiesForFile(PFile pfile) {
-		List<PProperty> result = new ArrayList<PProperty>();
-		for (PProperty pproperty : getProperties()) {
-			if (pproperty.getFiles().contains(pfile)) {
-				result.add(pproperty);
-			}
-		}
-		return result;
-	}
+    public abstract String getEndToken();
 
-	public boolean equals(ObjectLocator thisLocator, ObjectLocator thatLocator, Object object, EqualsStrategy strategy) {
-		return file.equals(((PMarker) object).getFile());
-	}
+    public abstract String getBeginToken();
 
-	public int hashCode(ObjectLocator locator, HashCodeStrategy strategy) {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((file == null) ? 0 : file.hashCode());
-		return result;
-	}
+    public abstract List<PProperty> getProperties();
 
-	public StringBuilder appendFields(ObjectLocator locator, StringBuilder buffer, ToStringStrategy strategy) {
-		return strategy.appendField(locator, this, "file", buffer, file);
-	}
+    public List<PFile> getPFiles() {
+        List<PFile> result = new ArrayList<PFile>();
+        for (PProperty pproperty : getProperties()) {
+            for (PFile pfile : pproperty.getFiles()) {
+                if (result.contains(pfile)) {
+                    continue;
+                }
+                result.add(pfile);
+            }
+        }
+        return result;
+    }
+
+    public List<PProperty> getPPropertiesForFile(PFile pfile) {
+        List<PProperty> result = new ArrayList<PProperty>();
+        for (PProperty pproperty : getProperties()) {
+            if (pproperty.getFiles().contains(pfile)) {
+                result.add(pproperty);
+            }
+        }
+        return result;
+    }
+
+    public boolean equals(ObjectLocator thisLocator, ObjectLocator thatLocator, Object object, EqualsStrategy strategy) {
+        return file.equals(((PMarker) object).getFile());
+    }
+
+    public int hashCode(ObjectLocator locator, HashCodeStrategy strategy) {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((file == null) ? 0 : file.hashCode());
+        return result;
+    }
+
+    public StringBuilder appendFields(ObjectLocator locator, StringBuilder buffer, ToStringStrategy strategy) {
+        return strategy.appendField(locator, this, "file", buffer, file);
+    }
 }
