@@ -31,53 +31,62 @@ import com.geewhiz.pacify.resolver.BasePropertyResolver;
 
 public class CmdPropertyResolver extends BasePropertyResolver {
 
-	private Properties properties;
+    private static final String END_TOKEN   = "endToken";
+    private static final String BEGIN_TOKEN = "beginToken";
+    private Properties          properties;
 
-	public CmdPropertyResolver(Properties properties) {
-		this.properties = properties;
-	}
+    public CmdPropertyResolver(Properties properties) {
+        this.properties = properties;
+    }
 
-	@Override
-	public boolean containsProperty(String key) {
-		return properties.containsKey(key);
-	}
+    @Override
+    public boolean containsProperty(String key) {
+        return properties.containsKey(key);
+    }
 
-	@Override
-	public String getPropertyValue(String key) {
-		return properties.getProperty(key);
-	}
+    @Override
+    public String getPropertyValue(String key) {
+        return properties.getProperty(key);
+    }
 
-	@Override
-	public List<Defect> checkForDuplicateEntry() {
-		return new ArrayList<Defect>();
-	}
+    @Override
+    public List<Defect> checkForDuplicateEntry() {
+        return new ArrayList<Defect>();
+    }
 
-	@Override
-	public Set<String> getProperties() {
-		Set<String> result = new TreeSet<String>();
+    @Override
+    public Set<String> getProperties() {
+        Set<String> result = new TreeSet<String>();
 
-		for (Enumeration<Object> enumerator = properties.keys(); enumerator.hasMoreElements();) {
-			result.add((String) enumerator.nextElement());
-		}
+        for (Enumeration<Object> enumerator = properties.keys(); enumerator.hasMoreElements();) {
+            String property = (String) enumerator.nextElement();
+            if (BEGIN_TOKEN.equals(property)) {
+                continue;
+            }
+            if (END_TOKEN.equals(property)) {
+                continue;
+            }
+            result.add(property);
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	@Override
-	public String getEncoding() {
-		return "utf-8";
-	}
+    @Override
+    public String getEncoding() {
+        return "utf-8";
+    }
 
-	@Override
-	public String getPropertyResolverDescription() {
-		return "CommandLine";
-	}
+    @Override
+    public String getPropertyResolverDescription() {
+        return "CommandLine";
+    }
 
-	public String getBeginToken() {
-		return properties.getProperty("beginToken", "%{");
-	}
+    public String getBeginToken() {
+        return properties.getProperty(BEGIN_TOKEN, "%{");
+    }
 
-	public String getEndToken() {
-		return properties.getProperty("endToken", "}");
-	}
+    public String getEndToken() {
+        return properties.getProperty(END_TOKEN, "}");
+    }
 }

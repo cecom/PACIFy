@@ -68,14 +68,14 @@ Validate that the given marker files are correct, that all defined placeholder e
 Validate that the given marker files are correct and that all defined placeholder exists.
 ```java -jar pacify.jar validateMarkerFiles  --packagePath=/share/app/v1.0```
 
-###### writePropertyFile
+###### createPropertyFile
 Use the given resolvers and create the final property file with all tokens replaced.
 Write to stdout:
-```java -jar pacify.jar writePropertyFile    --resolvers=FileResolver             -DFileResolver.file=production.properties```
-```java -jar pacify.jar writePropertyFile    --resolvers=CmdResolver,FileResolver -DCmdResolver.log.level=DEBUG -DFileResolver.file=production.properties```
+```java -jar pacify.jar createPropertyFile   --resolvers=FileResolver             -DFileResolver.file=production.properties```
+```java -jar pacify.jar createPropertyFile   --resolvers=CmdResolver,FileResolver -DCmdResolver.log.level=DEBUG -DFileResolver.file=production.properties```
 
 Write to a file:
-```java -jar pacify.jar writePropertyFile    --resolvers=FileResolver -DFileResolver.file=production.properties --destinationFile=productionAllPropertiesResolved.properties```
+```java -jar pacify.jar createPropertyFile   --resolvers=FileResolver -DFileResolver.file=production.properties --destinationFile=productionAllPropertiesResolved.properties```
 
 ###### replace
 Copy the original package to */share/app/v1.0_production*, replace all configuration elements using the given properties.
