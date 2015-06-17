@@ -43,7 +43,7 @@ public class TestCommandlineCall {
                 "--resolvers=FileResolver",
                 "--packagePath=" + myPackagePath.getAbsolutePath(),
                 "--createCopy=false",
-                "-DFileResolver.file=" + myTestProperty.getAbsolutePath()
+                "-RFileResolver.file=" + myTestProperty.getAbsolutePath()
         });
 
         Assert.assertEquals("Configuration returned with errors.", 0, result);
@@ -72,7 +72,7 @@ public class TestCommandlineCall {
                 "validate",
                 "--resolvers=FileResolver",
                 "--packagePath=" + testBasePath,
-                "-DFileResolver.file=" + myTestProperty.getAbsolutePath()
+                "-RFileResolver.file=" + myTestProperty.getAbsolutePath()
         });
 
         Assert.assertEquals("Validate returned with errors.", 0, result);

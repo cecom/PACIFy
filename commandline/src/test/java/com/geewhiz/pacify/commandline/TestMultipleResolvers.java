@@ -42,8 +42,8 @@ public class TestMultipleResolvers {
                 "--resolvers=CmdResolver,FileResolver",
                 "--packagePath=" + myPackagePath,
                 "--createCopy=false",
-                "-DFileResolver.file=" + myTestProperty.getAbsolutePath(),
-                "-DCmdResolver.foobar7=anotherValue"
+                "-RFileResolver.file=" + myTestProperty.getAbsolutePath(),
+                "-RCmdResolver.foobar7=anotherValue"
         });
 
         Assert.assertEquals("Configuration returned with errors.", 0, result);
@@ -65,8 +65,8 @@ public class TestMultipleResolvers {
                 "--resolvers=CmdResolver,FileResolver",
                 "--packagePath=" + myPackagePath,
                 "--createCopy=false",
-                "-DFileResolver.file=" + myTestProperty.getAbsolutePath(),
-                "-DCmdResolver.foobar7=anotherValue"
+                "-RFileResolver.file=" + myTestProperty.getAbsolutePath(),
+                "-RCmdResolver.foobar7=anotherValue"
         });
 
         Assert.assertEquals("Configuration returned with errors.", 0, result);
@@ -90,8 +90,8 @@ public class TestMultipleResolvers {
                 "--envName=" + envName,
                 "--resolvers=CmdResolver,FileResolver",
                 "--packagePath=" + myPackagePath.getAbsolutePath(),
-                "-DFileResolver.file=" + myTestProperty.getAbsolutePath(),
-                "-DCmdResolver.foobar7=anotherValue"
+                "-RFileResolver.file=" + myTestProperty.getAbsolutePath(),
+                "-RCmdResolver.foobar7=anotherValue"
         });
 
         Assert.assertEquals("Configuration returned with errors.", 0, result);

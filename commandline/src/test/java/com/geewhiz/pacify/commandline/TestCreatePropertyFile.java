@@ -43,7 +43,7 @@ public class TestCreatePropertyFile {
                 "createPropertyFile",
                 "--resolvers=FileResolver",
                 "--destinationFile=" + destinationFile.getAbsolutePath(),
-                "-DFileResolver.file=" + myTestProperty.getAbsolutePath() });
+                "-RFileResolver.file=" + myTestProperty.getAbsolutePath() });
 
         Assert.assertEquals("Resolver returned with errors.", 0, result);
 

@@ -31,51 +31,51 @@ import com.geewhiz.pacify.resolver.PropertyResolverModule;
 
 public abstract class BasePropertyResolverCommand {
 
-	@Parameter(names = { "-r", "--resolvers" }, description = "Where to get the Property values from. Provided ones: FileResolver and CmdResolver (can be chained). Example --resolvers=CmdResolver,FileResolver", required = true)
-	private String resolvers;
+    @Parameter(names = { "-r", "--resolvers" }, description = "Where to get the Property values from. Provided ones: FileResolver and CmdResolver (can be chained). Example --resolvers=CmdResolver,FileResolver", required = true)
+    private String              resolvers;
 
-	@DynamicParameter(names = "-D", description = "dynamic property resolver paramerters")
-	private Map<String, String> resolverParameter = new HashMap<String, String>();
+    @DynamicParameter(names = "-R", description = "Properties which will be forwarded to the resolver")
+    private Map<String, String> resolverParameter = new HashMap<String, String>();
 
-	public List<PropertyResolverModule> getPropertyResolverModules() {
-		List<PropertyResolverModule> result = new ArrayList<PropertyResolverModule>();
-		for (String resolver : resolvers.split(",")) {
-			result.add(getModuleForId(resolver));
-		}
-		return result;
-	}
+    public List<PropertyResolverModule> getPropertyResolverModules() {
+        List<PropertyResolverModule> result = new ArrayList<PropertyResolverModule>();
+        for (String resolver : resolvers.split(",")) {
+            result.add(getModuleForId(resolver));
+        }
+        return result;
+    }
 
-	private PropertyResolverModule getModuleForId(String resolver) {
-		for (PropertyResolverModule module : ServiceLoader.load(PropertyResolverModule.class)) {
-			if (module.getResolverId().equals(resolver)) {
-				module.setParameters(getModuleProperties(module));
-				return module;
-			}
-		}
-		throw new IllegalArgumentException("Resolver [" + resolver + "] not found!");
-	}
+    private PropertyResolverModule getModuleForId(String resolver) {
+        for (PropertyResolverModule module : ServiceLoader.load(PropertyResolverModule.class)) {
+            if (module.getResolverId().equals(resolver)) {
+                module.setParameters(getModuleProperties(module));
+                return module;
+            }
+        }
+        throw new IllegalArgumentException("Resolver [" + resolver + "] not found!");
+    }
 
-	private Map<String, String> getModuleProperties(PropertyResolverModule module) {
-		Map<String, String> result = new HashMap<String, String>();
+    private Map<String, String> getModuleProperties(PropertyResolverModule module) {
+        Map<String, String> result = new HashMap<String, String>();
 
-		String propertyResolverId = module.getResolverId();
-		for (Map.Entry<String, String> entry : resolverParameter.entrySet()) {
-			String key = entry.getKey();
+        String propertyResolverId = module.getResolverId();
+        for (Map.Entry<String, String> entry : resolverParameter.entrySet()) {
+            String key = entry.getKey();
 
-			if (!key.contains(".")) {
-				continue;
-			}
+            if (!key.contains(".")) {
+                continue;
+            }
 
-			int idx = key.indexOf(".");
+            int idx = key.indexOf(".");
 
-			if (!propertyResolverId.equals(key.substring(0, idx))) {
-				continue;
-			}
+            if (!propertyResolverId.equals(key.substring(0, idx))) {
+                continue;
+            }
 
-			result.put(key.substring(idx + 1), entry.getValue());
-		}
+            result.put(key.substring(idx + 1), entry.getValue());
+        }
 
-		return result;
-	}
+        return result;
+    }
 
 }
