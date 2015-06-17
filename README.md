@@ -40,7 +40,7 @@ Instead of writing a document where the dev team describes what placeholder have
 and is a part of your package. For the ops team it's now really easy to configure that package for a specific environment. They call PACIFy via:
 
     ```sh
-    pacify replace --resolvers=FileResolver -DFileResolver.file=prod.properties --envName=production --packagePath=/share/app/v1.0
+    pacify replace --resolvers=FileResolver -RFileResolver.file=prod.properties --envName=production --packagePath=/share/app/v1.0
     ```
 
 After that call, the package under `/share/app/v1.0` is now configured for production.
@@ -62,7 +62,7 @@ Show the usage of PACIFy.
 
 ###### validate
 Validate that the given marker files are correct, that all defined placeholder exists and that all needed properties are defined in the production.properties.
-```java -jar pacify.jar validate             --packagePath=/share/app/v1.0 --resolvers=FileResolver -DFileResolver.file=production.properties```
+```java -jar pacify.jar validate             --packagePath=/share/app/v1.0 --resolvers=FileResolver -RFileResolver.file=production.properties```
 
 ###### validateMarkerFiles
 Validate that the given marker files are correct and that all defined placeholder exists.
@@ -71,18 +71,18 @@ Validate that the given marker files are correct and that all defined placeholde
 ###### createPropertyFile
 Use the given resolvers and create the final property file with all tokens replaced.
 Write to stdout:
-```java -jar pacify.jar createPropertyFile   --resolvers=FileResolver             -DFileResolver.file=production.properties```
-```java -jar pacify.jar createPropertyFile   --resolvers=CmdResolver,FileResolver -DCmdResolver.log.level=DEBUG -DFileResolver.file=production.properties```
+```java -jar pacify.jar createPropertyFile   --resolvers=FileResolver             -RFileResolver.file=production.properties```
+```java -jar pacify.jar createPropertyFile   --resolvers=CmdResolver,FileResolver -RCmdResolver.log.level=DEBUG -RFileResolver.file=production.properties```
 
 Write to a file:
-```java -jar pacify.jar createPropertyFile   --resolvers=FileResolver -DFileResolver.file=production.properties --destinationFile=productionAllPropertiesResolved.properties```
+```java -jar pacify.jar createPropertyFile   --resolvers=FileResolver -RFileResolver.file=production.properties --RestinationFile=productionAllPropertiesResolved.properties```
 
 ###### replace
 Copy the original package to */share/app/v1.0_production*, replace all configuration elements using the given properties.
-```java -jar pacify.jar replace  --resolvers=FileResolver -DFileResolver.file=production.properties --envName=production --packagePath=/share/app/v1.0```
+```java -jar pacify.jar replace  --resolvers=FileResolver -RFileResolver.file=production.properties --envName=production --packagePath=/share/app/v1.0```
 
 Replace all configuration elements using the given properties and don't copy it.
-```java -jar pacify.jar replace  --resolvers=FileResolver -DFileResolver.file=production.properties --envName=production --packagePath=/share/app/v1.0 --createCopy=false```
+```java -jar pacify.jar replace  --resolvers=FileResolver -RFileResolver.file=production.properties --envName=production --packagePath=/share/app/v1.0 --createCopy=false```
 
 ###### Commandline Parameter
 You can specify the parameters for a command in a file via *@*, e.g.:
