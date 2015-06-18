@@ -2,10 +2,11 @@ package com.geewhiz.pacify.utils;
 
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.exceptions.DefectRuntimeException;
-import com.marzapower.loggable.Log;
-import com.marzapower.loggable.Loggable;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -26,17 +27,18 @@ import com.marzapower.loggable.Loggable;
  * under the License.
  */
 
-@Loggable(loggerName = "com.geewhiz.pacify")
 public class DefectUtils {
+
+    private static Logger logger = LogManager.getLogger(DefectUtils.class.getName());
 
     public static void abortIfDefectExists(List<Defect> defects) {
         if (defects.isEmpty()) {
             return;
         }
 
-        Log.get().error("==== !!!!!! We got Errors !!!!! ...");
+        logger.error("==== !!!!!! We got Errors !!!!! ...");
         for (Defect defect : defects) {
-            Log.get().error(defect.getDefectMessage());
+            logger.error(defect.getDefectMessage());
         }
         throw new DefectRuntimeException("We got errors... Aborting!");
     }

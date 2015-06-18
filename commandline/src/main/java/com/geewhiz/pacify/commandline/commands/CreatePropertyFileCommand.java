@@ -34,10 +34,14 @@ public class CreatePropertyFileCommand extends BasePropertyResolverCommand {
     @Parameter(names = { "-e", "--targetEncoding" }, description = "Which encoding do you want in the created file", required = false)
     private String targetEncoding = "utf-8";
 
+    @Parameter(names = { "-m", "--fileMode" }, description = "If you write the properties to a file, which filemode should the file have?", required = false)
+    private String fileMode       = "400";
+
     public void configure(CreatePropertyFile createPropertyFile) {
         createPropertyFile.setTargetFile(targetFile);
         createPropertyFile.setOutputEncoding(targetEncoding);
         createPropertyFile.setOutputType(targetFile != null ? CreatePropertyFile.OutputType.File
                 : CreatePropertyFile.OutputType.Stdout);
+        createPropertyFile.setFilemode(fileMode);
     }
 }

@@ -26,26 +26,28 @@ import java.io.UnsupportedEncodingException;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Chmod;
 
 import com.geewhiz.pacify.managers.PropertyResolveManager;
 import com.geewhiz.pacify.utils.Utils;
 import com.google.inject.Inject;
-import com.marzapower.loggable.Log;
-import com.marzapower.loggable.Loggable;
 
-@Loggable(loggerName = "com.geewhiz.pacify")
 public class CreatePropertyFile {
 
     public enum OutputType {
         Stdout, File
     }
 
+    private Logger                 logger = LogManager.getLogger(CreatePropertyFile.class.getName());
+
     private PropertyResolveManager propertyResolveManager;
     private OutputType             outputType;
     private File                   targetFile;
     private String                 outputEncoding;
+    private String                 filemode;
 
     @Inject
     public CreatePropertyFile(PropertyResolveManager propertyResolveManager) {
@@ -53,18 +55,18 @@ public class CreatePropertyFile {
     }
 
     public void writeTo() {
-        Log.get().info("== Executing CreatePropertyFile [Version=" + Utils.getJarVersion() + "]");
-        Log.get().info("   [PropertyResolver=" + propertyResolveManager.toString() + "]");
+        logger.info("== Executing CreatePropertyFile [Version={}]", Utils.getJarVersion());
+        logger.info("   [PropertyResolver={}]", propertyResolveManager.toString());
 
         if (getOutputType() == OutputType.Stdout) {
             writeToStdout();
         } else if (getOutputType() == OutputType.File) {
-            Log.get().info("   [TargetFile=" + getTargetFile().getPath() + "]");
+            logger.info("   [TargetFile={}]", getTargetFile().getPath());
             writeToFile();
         } else {
             throw new IllegalArgumentException("OutputType not implemented! [" + getOutputType() + "]");
         }
-        Log.get().info("== Successfully finished");
+        logger.info("== Successfully finished");
     }
 
     private void writeToFile() {
@@ -79,7 +81,7 @@ public class CreatePropertyFile {
                 writer.println(line);
             }
 
-            setPermissionToOwnerReadOnly();
+            setPermission();
 
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
@@ -94,11 +96,12 @@ public class CreatePropertyFile {
 
     }
 
-    private void setPermissionToOwnerReadOnly() {
+    private void setPermission() {
+        logger.debug("Changing file mode to {}", filemode);
         Chmod chmod = new Chmod();
         chmod.setProject(new Project());
         chmod.setFile(targetFile);
-        chmod.setPerm("400");
+        chmod.setPerm(filemode);
         chmod.execute();
     }
 
@@ -109,12 +112,12 @@ public class CreatePropertyFile {
     }
 
     private Set<String> getPropertyLines() {
-        Log.get().debug("Resolved Properties:");
+        logger.debug("Resolved Properties:");
         Set<String> result = new TreeSet<String>();
         for (String property : propertyResolveManager.getProperties()) {
             String propertyValue = propertyResolveManager.getPropertyValue(property);
             String line = property + "=" + propertyValue;
-            Log.get().debug(line);
+            logger.debug(line);
             result.add(line);
         }
         return result;
@@ -142,6 +145,14 @@ public class CreatePropertyFile {
 
     public void setTargetFile(File file) {
         this.targetFile = file;
+    }
+
+    public String getFilemode() {
+        return filemode;
+    }
+
+    public void setFilemode(String filemode) {
+        this.filemode = filemode;
     }
 
 }

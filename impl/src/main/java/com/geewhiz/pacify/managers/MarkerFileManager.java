@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.tools.ant.types.FilterSet;
 import org.apache.tools.ant.types.FilterSetCollection;
 import org.apache.tools.ant.util.FileUtils;
@@ -33,11 +35,10 @@ import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.model.PProperty;
-import com.marzapower.loggable.Log;
-import com.marzapower.loggable.Loggable;
 
-@Loggable(loggerName = "com.geewhiz.pacify")
 public class MarkerFileManager {
+
+    private Logger                 logger = LogManager.getLogger(MarkerFileManager.class.getName());
 
     private PropertyResolveManager propertyResolveManager;
     private PMarker                pMarker;
@@ -53,7 +54,7 @@ public class MarkerFileManager {
             File file = pMarker.getAbsoluteFileFor(pfile);
             String encoding = pfile.getEncoding();
 
-            Log.get().debug("     Filtering [" + file.getAbsolutePath() + "] using encoding [" + encoding + "]");
+            logger.debug("     Filtering [{}] using encoding [{}]", file.getAbsolutePath(), encoding);
 
             FilterSetCollection filterSetCollection = getFilterSetCollection(pfile);
 
@@ -104,12 +105,11 @@ public class MarkerFileManager {
             if (pproperty.isConvertBackslashToSlash()) {
                 String convertedString = propertyValue;
                 convertedString = propertyValue.replace('\\', '/');
-                Log.get().debug(
-                        "       Using property [" + propertyName + "] original value [" + propertyValue
-                                + "] with backslash convertion to [" + convertedString + "]");
+                logger.debug(
+                        "       Using property [{}] original value [{}] with backslash convertion to [{}]", propertyName, propertyValue, convertedString);
                 propertyValue = convertedString;
             } else {
-                Log.get().debug("       Using property [" + propertyName + "] with value [" + propertyValue + "] ");
+                logger.debug("       Using property [{}] with value [{}]", propertyName, propertyValue);
             }
 
             filterSet.addFilter(propertyName, propertyValue);

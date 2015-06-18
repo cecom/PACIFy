@@ -4,6 +4,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.geewhiz.pacify.checks.Check;
 import com.geewhiz.pacify.checks.PMarkerCheck;
 import com.geewhiz.pacify.checks.impl.CheckPlaceholderExistsInTargetFile;
@@ -18,8 +21,6 @@ import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.utils.DefectUtils;
 import com.geewhiz.pacify.utils.Utils;
 import com.google.inject.Inject;
-import com.marzapower.loggable.Log;
-import com.marzapower.loggable.Loggable;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -40,8 +41,9 @@ import com.marzapower.loggable.Loggable;
  * under the License.
  */
 
-@Loggable(loggerName = "com.geewhiz.pacify")
 public class Validator {
+
+    private Logger                 logger        = LogManager.getLogger(Validator.class.getName());
 
     File                           packagePath;
     List<Check>                    checks        = new ArrayList<Check>();
@@ -92,30 +94,30 @@ public class Validator {
     public void execute() {
         EntityManager entityManager = new EntityManager(getPackagePath());
 
-        Log.get().info("== Executing Validator [Version=" + Utils.getJarVersion() + "]");
+        logger.info("== Executing Validator [Version={}]", Utils.getJarVersion());
 
-        Log.get().info("== Found [" + entityManager.getPMarkerCount() + "] pacify marker files");
+        logger.info("== Found [{}] pacify marker files", entityManager.getPMarkerCount());
         for (PMarker pMarker : entityManager.getPMarkers()) {
-            Log.get().info("   [" + pMarker.getFile().getAbsolutePath() + "]");
+            logger.info("   [{}]", pMarker.getFile().getAbsolutePath());
         }
-        Log.get().info("== Validating ...");
+        logger.info("== Validating ...");
 
         List<Defect> defects = validateInternal(entityManager);
         DefectUtils.abortIfDefectExists(defects);
 
-        Log.get().info("== Successfully finished");
+        logger.info("== Successfully finished");
     }
 
     public List<Defect> validateInternal(EntityManager entityManager) {
         List<Defect> defects = new ArrayList<Defect>();
         for (Check check : checks) {
-            Log.get().debug("     Check [" + check.getClass().getName() + "]");
+            logger.debug("     Check [{}]", check.getClass().getName());
             defects.addAll(check.checkForErrors());
         }
         for (PMarker pMarker : entityManager.getPMarkers()) {
-            Log.get().debug("   Processing Marker File [" + pMarker.getFile().getAbsolutePath() + "]");
+            logger.debug("   Processing Marker File [{}]", pMarker.getFile().getAbsolutePath());
             for (PMarkerCheck pMarkerCheck : pMarkerChecks) {
-                Log.get().debug("     Check [" + pMarkerCheck.getClass().getName() + "]");
+                logger.debug("     Check [{}]", pMarkerCheck.getClass().getName());
                 defects.addAll(pMarkerCheck.checkForErrors(pMarker));
             }
         }

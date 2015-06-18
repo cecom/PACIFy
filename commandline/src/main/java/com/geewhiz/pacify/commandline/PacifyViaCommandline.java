@@ -3,6 +3,11 @@ package com.geewhiz.pacify.commandline;
 import java.util.List;
 
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.LoggerConfig;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
@@ -19,9 +24,6 @@ import com.geewhiz.pacify.resolver.PropertyResolverModule;
 import com.geewhiz.pacify.utils.Utils;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.marzapower.loggable.Log;
-import com.marzapower.loggable.Loggable;
-import com.marzapower.loggable.LoggerContainer;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -42,14 +44,16 @@ import com.marzapower.loggable.LoggerContainer;
  * under the License.
  */
 
-@Loggable(loggerName = "com.geewhiz.pacify")
 public class PacifyViaCommandline {
 
+    private static Logger logger = LogManager.getLogger(PacifyViaCommandline.class.getName());
+
     public static void main(String... args) {
-        System.out.println("PACIFy Version: " + Utils.getJarVersion());
+        System.err.println("PACIFy Version: " + Utils.getJarVersion());
 
         int resultValue = mainInternal(args);
-        Log.get().debug("Exiting with exit code " + resultValue);
+
+        logger.debug("Exiting with exit code " + resultValue);
         System.exit(resultValue);
     }
 
@@ -74,11 +78,11 @@ public class PacifyViaCommandline {
         }
 
         if (mainCommand.isDebug()) {
-            LoggerContainer.setLevel(Log.get(), Level.DEBUG);
+            setLogLevel(Level.DEBUG);
         } else if (mainCommand.isInfo()) {
-            LoggerContainer.setLevel(Log.get(), Level.INFO);
+            setLogLevel(Level.INFO);
         } else {
-            LoggerContainer.setLevel(Log.get(), Level.ERROR);
+            setLogLevel(Level.ERROR);
         }
 
         if ("replace".equals(jc.getParsedCommand())) {
@@ -96,6 +100,14 @@ public class PacifyViaCommandline {
             }
         }
         return 1;
+    }
+
+    private static void setLogLevel(Level level) {
+        LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
+        Configuration conf = ctx.getConfiguration();
+        LoggerConfig lconf = conf.getLoggerConfig(logger.getName());
+        lconf.setLevel(level);
+        ctx.updateLoggers(conf);
     }
 
     private static int executeValidateMarkerFiles(ValidateMarkerFilesCommand validateMarkerFilesCommand) {
