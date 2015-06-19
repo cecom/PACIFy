@@ -31,8 +31,9 @@ import com.geewhiz.pacify.resolver.BasePropertyResolver;
 
 public class CmdPropertyResolver extends BasePropertyResolver {
 
-    private static final String END_TOKEN   = "endToken";
-    private static final String BEGIN_TOKEN = "beginToken";
+    private static final String END_TOKEN      = "endToken";
+    private static final String BEGIN_TOKEN    = "beginToken";
+    private static final String ENCODING_TOKEN = "encoding";
     private Properties          properties;
 
     public CmdPropertyResolver(Properties properties) {
@@ -66,6 +67,9 @@ public class CmdPropertyResolver extends BasePropertyResolver {
             if (END_TOKEN.equals(property)) {
                 continue;
             }
+            if (ENCODING_TOKEN.equals(property)) {
+                continue;
+            }
             result.add(property);
         }
 
@@ -74,7 +78,7 @@ public class CmdPropertyResolver extends BasePropertyResolver {
 
     @Override
     public String getEncoding() {
-        return "utf-8";
+        return properties.getProperty(ENCODING_TOKEN, "utf-8");
     }
 
     @Override
