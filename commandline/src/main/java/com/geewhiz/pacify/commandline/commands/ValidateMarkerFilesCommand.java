@@ -31,7 +31,7 @@ public class ValidateMarkerFilesCommand {
     @Parameter(names = { "-p", "--packagePath" }, description = "The package path which you want to verify.", required = true)
     public File packagePath;
 
-    public void configureValidator(Validator validator) {
+    public void configure(Validator validator) {
         validator.setPackagePath(packagePath);
         validator.enableMarkerFileChecks();
     }

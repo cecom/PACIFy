@@ -4,7 +4,7 @@ import java.io.File;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
-import com.geewhiz.pacify.Validator;
+import com.geewhiz.pacify.ShowUsedProperties;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -25,15 +25,13 @@ import com.geewhiz.pacify.Validator;
  * under the License.
  */
 
-@Parameters(separators = "=", commandDescription = "Used to validate the pacify marker files and the property resolution.")
-public class ValidateCommand extends BasePropertyResolverCommand {
+@Parameters(separators = "=", commandDescription = "Used to show which properties will be used within the pacify marker files without resolving them.")
+public class ShowUsedPropertiesCommand {
 
-    @Parameter(names = { "-p", "--packagePath" }, description = "The package path which you want to verify.", required = true)
+    @Parameter(names = { "-p", "--packagePath" }, description = "The package path.", required = true)
     public File packagePath;
 
-    public void configure(Validator validator) {
-        validator.setPackagePath(packagePath);
-        validator.enableMarkerFileChecks();
-        validator.enablePropertyResolveChecks();
+    public void configure(ShowUsedProperties showUsedProperties) {
+        showUsedProperties.setPackagePath(packagePath);
     }
 }

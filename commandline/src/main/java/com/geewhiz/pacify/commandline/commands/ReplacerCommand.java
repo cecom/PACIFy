@@ -40,7 +40,7 @@ public class ReplacerCommand extends BasePropertyResolverCommand {
     @Parameter(names = { "-cd", "--copyDestination" }, description = "Where to write the copy of the original package to. If not specified a folder with name of the package + _ + envName is created.", required = false)
     private File    copyDestination;
 
-    public void configureReplacer(Replacer replacer) {
+    public void configure(Replacer replacer) {
         replacer.setEnvName(envName);
         replacer.setPackagePath(packagePath);
         replacer.setCreateCopy(createCopy);
