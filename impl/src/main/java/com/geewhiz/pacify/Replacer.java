@@ -119,6 +119,14 @@ public class Replacer {
 
     private void createCopy() {
         try {
+            if (getCopyDestination().exists()) {
+                if (!getCopyDestination().isDirectory()) {
+                    throw new IllegalArgumentException("destination directory [" + getCopyDestination().getAbsolutePath() + "] is not a directory.");
+                }
+                if (getCopyDestination().list().length > 0) {
+                    throw new IllegalArgumentException("destination directory [" + getCopyDestination().getAbsolutePath() + "] is not empty.");
+                }
+            }
             FileUtils.copyDirectory(getPackagePath(), getCopyDestination());
         } catch (IOException e) {
             throw new RuntimeException(e);
