@@ -34,7 +34,7 @@ public class CheckTargetFileExist implements PMarkerCheck {
 	public List<Defect> checkForErrors(PMarker pfListEntity) {
 		List<Defect> defects = new ArrayList<Defect>();
 
-		for (PProperty pproperty : pfListEntity.getProperties()) {
+		for (PProperty pproperty : pfListEntity.getPProperties()) {
 			for (PFile pfile : pproperty.getFiles()) {
 				java.io.File file = pfListEntity.getAbsoluteFileFor(pfile);
 				if (file.exists() && file.isFile()) {

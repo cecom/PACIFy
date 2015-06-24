@@ -36,14 +36,14 @@ import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.model.PProperty;
 
-public class MarkerFileManager {
+public class CMFileManager {
 
-    private Logger                 logger = LogManager.getLogger(MarkerFileManager.class.getName());
+    private Logger                 logger = LogManager.getLogger(CMFileManager.class.getName());
 
     private PropertyResolveManager propertyResolveManager;
     private PMarker                pMarker;
 
-    public MarkerFileManager(PropertyResolveManager propertyResolveManager, PMarker pMarker) {
+    public CMFileManager(PropertyResolveManager propertyResolveManager, PMarker pMarker) {
         this.propertyResolveManager = propertyResolveManager;
         this.pMarker = pMarker;
     }
