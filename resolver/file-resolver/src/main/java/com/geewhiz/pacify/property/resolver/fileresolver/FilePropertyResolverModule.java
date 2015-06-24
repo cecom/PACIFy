@@ -1,5 +1,6 @@
 package com.geewhiz.pacify.property.resolver.fileresolver;
 
+import java.io.File;
 import java.net.URL;
 import java.util.Map;
 
@@ -30,44 +31,64 @@ import com.google.inject.multibindings.Multibinder;
 
 public class FilePropertyResolverModule extends PropertyResolverModule {
 
-	Map<String, String> commandLineParameters;
+    Map<String, String> commandLineParameters;
 
-	@Override
-	public String getResolverId() {
-		return "FileResolver";
-	}
+    @Override
+    public String getResolverId() {
+        return "FileResolver";
+    }
 
-	@Override
-	protected void configure() {
-		Multibinder<PropertyResolver> resolveBinder = Multibinder.newSetBinder(binder(), PropertyResolver.class);
-		resolveBinder.addBinding().to(FilePropertyResolver.class);
-	}
+    @Override
+    protected void configure() {
+        Multibinder<PropertyResolver> resolveBinder = Multibinder.newSetBinder(binder(), PropertyResolver.class);
+        resolveBinder.addBinding().to(FilePropertyResolver.class);
+    }
 
-	@Override
-	public void setParameters(Map<String, String> commandLineParameters) {
-		this.commandLineParameters = commandLineParameters;
-	}
+    @Override
+    public void setParameters(Map<String, String> commandLineParameters) {
+        this.commandLineParameters = commandLineParameters;
+    }
 
-	@Provides
-	public FilePropertyResolver createFilePropertyResolver() {
-		String file = commandLineParameters.get("file");
+    @Provides
+    public FilePropertyResolver createFilePropertyResolver() {
+        String file = commandLineParameters.get("file");
 
-		if (file == null) {
-			throw new IllegalArgumentException(
-			        "The FileResolver need's the file where to read the properties from. Specify it via -DFileResolver.file=<path>");
-		}
+        if (file == null) {
+            throw new IllegalArgumentException(
+                    "The FileResolver need's the file where to read the properties from. Specify it via -DFileResolver.file=<path>");
+        }
 
-		URL fileUrl = FileUtils.getFileUrl(commandLineParameters.get("file"));
-		FilePropertyResolver filePropertyResolver = new FilePropertyResolver(fileUrl);
-		if (commandLineParameters.containsKey("beginToken")) {
-			filePropertyResolver.setBeginToken(commandLineParameters.get("beginToken"));
-		}
-		if (commandLineParameters.containsKey("endToken")) {
-			filePropertyResolver.setEndToken(commandLineParameters.get("endToken"));
-		}
-		if (commandLineParameters.containsKey("encoding")) {
-			filePropertyResolver.setEncoding(commandLineParameters.get("encoding"));
-		}
-		return filePropertyResolver;
-	}
+        URL fileUrl = getFileUrl(commandLineParameters.get("file"));
+        FilePropertyResolver filePropertyResolver = new FilePropertyResolver(fileUrl);
+        if (commandLineParameters.containsKey("beginToken")) {
+            filePropertyResolver.setBeginToken(commandLineParameters.get("beginToken"));
+        }
+        if (commandLineParameters.containsKey("endToken")) {
+            filePropertyResolver.setEndToken(commandLineParameters.get("endToken"));
+        }
+        if (commandLineParameters.containsKey("encoding")) {
+            filePropertyResolver.setEncoding(commandLineParameters.get("encoding"));
+        }
+        return filePropertyResolver;
+    }
+
+    private URL getFileUrl(String filePath) {
+        File file = new File(filePath);
+        if (file.exists()) {
+            if (file.isFile()) {
+                return FileUtils.getFileUrl(file);
+            }
+            throw new RuntimeException("You specified a property file [" + filePath
+                    + "] which is not a file... Aborting!");
+        }
+
+        URL url = FileUtils.class.getClassLoader().getResource(filePath);
+        if (url != null) {
+            return url;
+        }
+
+        throw new RuntimeException("Couldn't find property File [" + filePath
+                + "] in Classpath nor absolute... Aborting!");
+
+    }
 }
