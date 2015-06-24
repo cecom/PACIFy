@@ -42,9 +42,7 @@ public class Replacer {
     private Logger                 logger = LogManager.getLogger(Replacer.class.getName());
 
     private PropertyResolveManager propertyResolveManager;
-    private String                 envName;
     private File                   packagePath;
-    private Boolean                createCopy;
     private File                   copyDestination;
 
     @Inject
@@ -55,17 +53,14 @@ public class Replacer {
     public void execute() {
         logger.info("== Executing Replacer [Version={}]", Utils.getJarVersion());
         logger.info("   [PackagePath={}]", getPackagePath().getAbsolutePath());
-        logger.info("   [EnvName={}]", getEnvName());
-        logger.info("   [CreateCopy={}]", isCreateCopy());
-        if (isCreateCopy()) {
+
+        File pathToConfigure = getPackagePath();
+
+        if (copyDestination != null) {
             logger.info("   [Destination={}]", getCopyDestination().getAbsolutePath());
-        }
-
-        if (isCreateCopy()) {
             createCopy();
+            pathToConfigure = getCopyDestination();
         }
-
-        File pathToConfigure = isCreateCopy() ? getCopyDestination() : getPackagePath();
 
         EntityManager entityManager = new EntityManager(pathToConfigure);
 
@@ -85,28 +80,12 @@ public class Replacer {
         logger.info("== Successfully finished");
     }
 
-    public String getEnvName() {
-        return envName;
-    }
-
-    public void setEnvName(String envName) {
-        this.envName = envName;
-    }
-
     public File getPackagePath() {
         return packagePath;
     }
 
     public void setPackagePath(File packagePath) {
         this.packagePath = packagePath;
-    }
-
-    public Boolean isCreateCopy() {
-        return createCopy;
-    }
-
-    public void setCreateCopy(Boolean createCopy) {
-        this.createCopy = createCopy;
     }
 
     public File getCopyDestination() {

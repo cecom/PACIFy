@@ -100,8 +100,6 @@
             <dependency>
                 <groupId>com.beust</groupId>
                 <artifactId>jcommander</artifactId>
-                <!-- testng uses jcommander too, got problems of failing ,
-                    when using a different version than testng -->
                 <version>1.27</version>
             </dependency>
             <dependency>
@@ -192,7 +190,8 @@
                             <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
                         </manifest>
                         <manifestEntries>
-                            <git-SHA-1>${buildNumber}</git-SHA-1>
+                            <GIT-BRANCH>${scmBranch}</GIT-BRANCH>
+                            <GIT-SHA1>${buildNumber}</GIT-SHA1>
                         </manifestEntries>
 
                     </archive>
@@ -261,21 +260,4 @@
             </plugins>
         </pluginManagement>
     </build>
-
-    <profiles>
-
-        <profile>
-            <id>Eclipse-IDE</id>
-            <activation>
-                <property>
-                    <name>m2e.version</name>
-                </property>
-            </activation>
-            <build>
-                <!-- Put the IDE's build output in a folder other than target, so that IDE builds don't interact with Maven builds -->
-                <directory>target-ide</directory>
-            </build>
-        </profile>
-
-    </profiles>
 </project>

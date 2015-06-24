@@ -42,10 +42,8 @@ public class TestCommandlineCall {
         int result = PacifyViaCommandline.mainInternal(new String[] {
                 "--info",
                 "replace",
-                "--envName=local",
                 "--resolvers=FileResolver",
                 "--packagePath=" + myPackagePath.getAbsolutePath(),
-                "--createCopy=false",
                 "-RFileResolver.file=" + myTestProperty.getAbsolutePath()
         });
 

@@ -58,7 +58,7 @@ public class ShowUsedProperties {
         for (PMarker pMarker : entityManager.getPMarkers()) {
             logger.info("   [{}]", pMarker.getFile().getAbsolutePath());
 
-            for (PProperty pProperty : pMarker.getPProperties()) {
+            for (PProperty pProperty : pMarker.getProperties()) {
                 allUsedProperties.add(pProperty.getName());
             }
         }

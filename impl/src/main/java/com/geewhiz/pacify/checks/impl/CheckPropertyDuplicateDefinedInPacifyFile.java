@@ -35,7 +35,7 @@ public class CheckPropertyDuplicateDefinedInPacifyFile implements PMarkerCheck {
 
 		List<String> properties = new ArrayList<String>();
 
-		for (PProperty property : pMarker.getPProperties()) {
+		for (PProperty property : pMarker.getProperties()) {
 			if (properties.contains(property.getName())) {
 				Defect defect = new PropertyDuplicateDefinedInPMarkerDefect(pMarker, property);
 				defects.add(defect);

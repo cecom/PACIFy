@@ -45,7 +45,7 @@ public class CheckPropertyExists implements PMarkerCheck {
     public List<Defect> checkForErrors(PMarker pMarker) {
         List<Defect> defects = new ArrayList<Defect>();
 
-        List<PProperty> pProperties = pMarker.getPProperties();
+        List<PProperty> pProperties = pMarker.getProperties();
         for (PProperty pProperty : pProperties) {
             if (propertyResolveManager.containsProperty(pProperty.getName())) {
                 try {

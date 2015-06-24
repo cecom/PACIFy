@@ -45,7 +45,6 @@ public class TestCmdResolver {
 
         Replacer replacer = new Replacer(propertyResolveManager);
         replacer.setPackagePath(myPackagePath);
-        replacer.setCreateCopy(Boolean.FALSE);
         replacer.execute();
 
         TestUtil.checkIfResultIsAsExpected(myPackagePath, myResultPath);

@@ -38,10 +38,8 @@ public class TestMultipleResolvers {
         int result = PacifyViaCommandline.mainInternal(new String[] {
                 "--debug",
                 "replace",
-                "--envName=local",
-                "--resolvers=CmdResolver,FileResolver",
                 "--packagePath=" + myPackagePath,
-                "--createCopy=false",
+                "--resolvers=CmdResolver,FileResolver",
                 "-RFileResolver.file=" + myTestProperty.getAbsolutePath(),
                 "-RCmdResolver.foobar7=anotherValue"
         });
@@ -61,10 +59,8 @@ public class TestMultipleResolvers {
         int result = PacifyViaCommandline.mainInternal(new String[] {
                 "--debug",
                 "replace",
-                "--envName=local",
-                "--resolvers=CmdResolver,FileResolver",
                 "--packagePath=" + myPackagePath,
-                "--createCopy=false",
+                "--resolvers=CmdResolver,FileResolver",
                 "-RFileResolver.file=" + myTestProperty.getAbsolutePath(),
                 "-RCmdResolver.foobar7=anotherValue"
         });
@@ -76,20 +72,17 @@ public class TestMultipleResolvers {
 
     @Test
     public void testAllOnCopy() {
-        String envName = "test";
-
         File testBasePath = new File("target/test-classes/TestMultipleResolverOnCopy");
         File myTestProperty = new File(testBasePath, "properties/myProperties.properties");
         File myPackagePath = new File(testBasePath, "package");
         File myResultPath = new File(testBasePath, "result");
-
-        File destinationPath = new File(myPackagePath.getAbsolutePath() + "_" + envName);
+        File destinationPath = new File(testBasePath, "copyOfOriginal");
 
         int result = PacifyViaCommandline.mainInternal(new String[] {
                 "replace",
-                "--envName=" + envName,
-                "--resolvers=CmdResolver,FileResolver",
                 "--packagePath=" + myPackagePath.getAbsolutePath(),
+                "--copyTo=" + destinationPath.getAbsolutePath(),
+                "--resolvers=CmdResolver,FileResolver",
                 "-RFileResolver.file=" + myTestProperty.getAbsolutePath(),
                 "-RCmdResolver.foobar7=anotherValue"
         });

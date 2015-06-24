@@ -60,11 +60,11 @@ public abstract class PMarkerBase {
 
     public abstract String getBeginToken();
 
-    public abstract List<PProperty> getPProperties();
+    public abstract List<PProperty> getProperties();
 
     public List<PFile> getPFiles() {
         List<PFile> result = new ArrayList<PFile>();
-        for (PProperty pproperty : getPProperties()) {
+        for (PProperty pproperty : getProperties()) {
             for (PFile pfile : pproperty.getFiles()) {
                 if (result.contains(pfile)) {
                     continue;
@@ -77,7 +77,7 @@ public abstract class PMarkerBase {
 
     public List<PProperty> getPPropertiesForFile(PFile pfile) {
         List<PProperty> result = new ArrayList<PProperty>();
-        for (PProperty pproperty : getPProperties()) {
+        for (PProperty pproperty : getProperties()) {
             if (pproperty.getFiles().contains(pfile)) {
                 result.add(pproperty);
             }
