@@ -29,9 +29,20 @@ import com.geewhiz.pacify.ShowUsedProperties;
 public class ShowUsedPropertiesCommand {
 
     @Parameter(names = { "-p", "--packagePath" }, description = "The package path.", required = true)
-    public File packagePath;
+    public File    packagePath;
+
+    @Parameter(names = { "-d", "--destinationFile" }, description = "Where to write the result to. If not given, it will be printed to stdout", required = false)
+    private File   targetFile;
+
+    @Parameter(names = { "-e", "--targetEncoding" }, description = "Which encoding do you want in the created file", required = false)
+    private String targetEncoding = "utf-8";
 
     public void configure(ShowUsedProperties showUsedProperties) {
         showUsedProperties.setPackagePath(packagePath);
+        showUsedProperties.setTargetFile(targetFile);
+        showUsedProperties.setOutputEncoding(targetEncoding);
+        showUsedProperties.setOutputType(targetFile != null ? ShowUsedProperties.OutputType.File
+                : ShowUsedProperties.OutputType.Stdout);
+
     }
 }

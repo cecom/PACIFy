@@ -1,6 +1,9 @@
 package com.geewhiz.pacify;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -33,27 +36,65 @@ import com.geewhiz.pacify.utils.Utils;
 
 public class ShowUsedProperties {
 
-    private Logger logger = LogManager.getLogger(ShowUsedProperties.class.getName());
-
-    File           packagePath;
-
-    public File getPackagePath() {
-        return packagePath;
+    public enum OutputType {
+        Stdout, File
     }
 
-    public void setPackagePath(File packagePath) {
-        this.packagePath = packagePath;
-    }
+    private Logger     logger = LogManager.getLogger(ShowUsedProperties.class.getName());
+
+    private File       packagePath;
+    private File       targetFile;
+    private String     targetEncoding;
+    private OutputType outputType;
 
     public void execute() {
         EntityManager entityManager = new EntityManager(getPackagePath());
 
         logger.info("== Executing ShowUsedProperties [Version={}]", Utils.getJarVersion());
-
         logger.info("== Found [{}] pacify marker files", entityManager.getPMarkerCount());
 
-        logger.info("== Getting Properties...");
+        if (getOutputType() == OutputType.Stdout) {
+            logger.info("== Getting Properties...");
+            writeToStdout(entityManager);
+        } else if (getOutputType() == OutputType.File) {
+            logger.info("   [TargetFile={}]", getTargetFile().getPath());
+            logger.info("== Getting Properties...");
+            writeToFile(entityManager);
+        } else {
+            throw new IllegalArgumentException("OutputType not implemented! [" + getOutputType() + "]");
+        }
 
+        logger.info("== Successfully finished");
+    }
+
+    private void writeToFile(EntityManager entityManager) {
+        if (getTargetFile().exists()) {
+            throw new IllegalArgumentException("File [" + getTargetFile().getAbsolutePath() + "] allready exists.");
+        }
+
+        if (getTargetFile().getParentFile() != null) {
+            getTargetFile().getParentFile().mkdirs();
+        }
+
+        PrintWriter writer = null;
+        try {
+            writer = new PrintWriter(targetFile, getOutputEncoding());
+            for (String property : getAllProperties(entityManager)) {
+                writer.println(property);
+            }
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+        finally {
+            if (writer != null) {
+                writer.close();
+            }
+        }
+    }
+
+    private Set<String> getAllProperties(EntityManager entityManager) {
         Set<String> allUsedProperties = new TreeSet<String>();
         for (PMarker pMarker : entityManager.getPMarkers()) {
             logger.info("   [{}]", pMarker.getFile().getAbsolutePath());
@@ -62,11 +103,44 @@ public class ShowUsedProperties {
                 allUsedProperties.add(pProperty.getName());
             }
         }
+        return allUsedProperties;
+    }
 
-        for (String usedProperty : allUsedProperties) {
+    private void writeToStdout(EntityManager entityManager) {
+        for (String usedProperty : getAllProperties(entityManager)) {
             System.out.println(usedProperty);
         }
+    }
 
-        logger.info("== Successfully finished");
+    public void setOutputEncoding(String targetEncoding) {
+        this.targetEncoding = targetEncoding;
+    }
+
+    public String getOutputEncoding() {
+        return targetEncoding;
+    }
+
+    public void setTargetFile(File targetFile) {
+        this.targetFile = targetFile;
+    }
+
+    public File getTargetFile() {
+        return targetFile;
+    }
+
+    private OutputType getOutputType() {
+        return outputType;
+    }
+
+    public void setOutputType(OutputType outputType) {
+        this.outputType = outputType;
+    }
+
+    public File getPackagePath() {
+        return packagePath;
+    }
+
+    public void setPackagePath(File packagePath) {
+        this.packagePath = packagePath;
     }
 }

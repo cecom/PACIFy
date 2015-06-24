@@ -76,7 +76,7 @@ public class CreatePropertyFile {
 
         PrintWriter writer = null;
         try {
-            writer = new PrintWriter(targetFile, "utf-8");
+            writer = new PrintWriter(targetFile, getOutputEncoding());
             for (String line : getPropertyLines()) {
                 writer.println(line);
             }
@@ -123,7 +123,7 @@ public class CreatePropertyFile {
         return result;
     }
 
-    public String getOutputEncodingType() {
+    public String getOutputEncoding() {
         return outputEncoding;
     }
 

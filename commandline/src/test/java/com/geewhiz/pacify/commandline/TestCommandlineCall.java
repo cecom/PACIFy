@@ -19,11 +19,8 @@ package com.geewhiz.pacify.commandline;
  * under the License.
  */
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.PrintStream;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -86,26 +83,6 @@ public class TestCommandlineCall {
         });
 
         Assert.assertEquals("Call should return 0.", 0, result);
-    }
-
-    @Test
-    public void testShowUsedProperties() throws Exception {
-        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
-        PrintStream oldStdOut = System.out;
-        System.setOut(new PrintStream(outContent));
-
-        File testBasePath = new File("target/test-classes/testShowUsedProperties");
-
-        int result = PacifyViaCommandline.mainInternal(new String[] {
-                "showUsedProperties",
-                "--packagePath=" + testBasePath
-        });
-
-        Assert.assertEquals("ShowUsedProperties returned with errors.", 0, result);
-
-        Assert.assertEquals(FileUtils.readFileToString(new File(testBasePath + "/result/result.txt")), outContent.toString().trim());
-
-        System.setOut(oldStdOut);
     }
 
 }
