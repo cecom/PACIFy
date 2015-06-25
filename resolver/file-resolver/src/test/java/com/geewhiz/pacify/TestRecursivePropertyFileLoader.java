@@ -40,6 +40,7 @@ public class TestRecursivePropertyFileLoader {
     public void setUp() throws Exception {
         basePropertiesShouldLookLike.put("env.name", "baseEnvName");
         basePropertiesShouldLookLike.put("SomeBaseProperty", "SomeBasePropertyValue");
+        basePropertiesShouldLookLike.put("aPropertyWithSlash", "temp\\asdf");
 
         child1PropertiesShouldLookLike.put("env.name", "child1EnvName");
         child1PropertiesShouldLookLike.put("SomeChild1Property", "SomeChild1PropertyValue");
@@ -54,6 +55,7 @@ public class TestRecursivePropertyFileLoader {
         allPropertiesShouldLookLike.putAll(child1PropertiesShouldLookLike);
         allPropertiesShouldLookLike.putAll(child2PropertiesShouldLookLike);
         allPropertiesShouldLookLike.putAll(childOfChildPropertiesShouldLookLike);
+
     }
 
     @Test
@@ -62,13 +64,11 @@ public class TestRecursivePropertyFileLoader {
 
         FilePropertyResolver filePropertyResolver = new FilePropertyResolver(url);
 
-        Assert.assertEquals(filePropertyResolver.getFileProperties(), allPropertiesShouldLookLike);
-        Assert.assertEquals(filePropertyResolver.getLocalProperties(), childOfChildPropertiesShouldLookLike);
-        Assert.assertEquals(filePropertyResolver.getParentPropertyFileProperties().get(0).getLocalProperties(),
-                child1PropertiesShouldLookLike);
-        Assert.assertEquals(filePropertyResolver.getParentPropertyFileProperties().get(1)
-                .getLocalProperties(), child2PropertiesShouldLookLike);
-        Assert.assertEquals(filePropertyResolver.getParentPropertyFileProperties().get(0)
-                .getParentPropertyFileProperties().get(0).getLocalProperties(), basePropertiesShouldLookLike);
+        Assert.assertEquals(allPropertiesShouldLookLike, filePropertyResolver.getFileProperties());
+        Assert.assertEquals(childOfChildPropertiesShouldLookLike, filePropertyResolver.getLocalProperties());
+        Assert.assertEquals(child1PropertiesShouldLookLike, filePropertyResolver.getParentPropertyFileProperties().get(0).getLocalProperties());
+        Assert.assertEquals(child2PropertiesShouldLookLike, filePropertyResolver.getParentPropertyFileProperties().get(1).getLocalProperties());
+        Assert.assertEquals(basePropertiesShouldLookLike, filePropertyResolver.getParentPropertyFileProperties().get(0).getParentPropertyFileProperties()
+                .get(0).getLocalProperties());
     }
 }

@@ -5,9 +5,6 @@ import java.util.List;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.LoggerContext;
-import org.apache.logging.log4j.core.config.Configuration;
-import org.apache.logging.log4j.core.config.LoggerConfig;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
@@ -23,6 +20,7 @@ import com.geewhiz.pacify.commandline.commands.ShowUsedPropertiesCommand;
 import com.geewhiz.pacify.commandline.commands.ValidateCommand;
 import com.geewhiz.pacify.commandline.commands.ValidateMarkerFilesCommand;
 import com.geewhiz.pacify.resolver.PropertyResolverModule;
+import com.geewhiz.pacify.utils.LoggingUtils;
 import com.geewhiz.pacify.utils.Utils;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -82,11 +80,11 @@ public class PacifyViaCommandline {
         }
 
         if (mainCommand.isDebug()) {
-            setLogLevel(Level.DEBUG);
+            LoggingUtils.setLogLevel(logger, Level.DEBUG);
         } else if (mainCommand.isInfo()) {
-            setLogLevel(Level.INFO);
+            LoggingUtils.setLogLevel(logger, Level.INFO);
         } else {
-            setLogLevel(Level.ERROR);
+            LoggingUtils.setLogLevel(logger, Level.ERROR);
         }
 
         if ("replace".equals(jc.getParsedCommand())) {
@@ -106,14 +104,6 @@ public class PacifyViaCommandline {
             }
         }
         return 1;
-    }
-
-    private static void setLogLevel(Level level) {
-        LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
-        Configuration conf = ctx.getConfiguration();
-        LoggerConfig lconf = conf.getLoggerConfig(logger.getName());
-        lconf.setLevel(level);
-        ctx.updateLoggers(conf);
     }
 
     private static int executeValidateMarkerFiles(ValidateMarkerFilesCommand validateMarkerFilesCommand) {
