@@ -1,4 +1,4 @@
-package com.geewhiz.pacify.resolver;
+package com.geewhiz.pacify.property.resolver.fileresolver.exceptions;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,35 +19,26 @@ package com.geewhiz.pacify.resolver;
  * under the License.
  */
 
-import java.util.List;
-import java.util.Set;
+public class WrongPropertyLineRuntimeException extends RuntimeException {
 
-import org.apache.tools.ant.types.FilterSet;
+    private static final long serialVersionUID = 1L;
 
-import com.geewhiz.pacify.defect.Defect;
+    private String            line;
 
-public interface PropertyResolver extends Comparable<PropertyResolver>{
+    public WrongPropertyLineRuntimeException() {
+        super();
+    }
 
-	boolean containsProperty(String property);
+    public WrongPropertyLineRuntimeException(String line) {
+        super("Property line isn't correct [" + line + "]. Format has to be <property>=<value>.");
+        this.setLine(line);
+    }
 
-	String getPropertyValue(String key);
+    public String getLine() {
+        return line;
+    }
 
-	Set<String> getReferencedProperties(String property);
-
-	Set<String> getPropertyKeys();
-
-	String getEncoding();
-
-	String getPropertyResolverDescription();
-
-	List<Defect> checkForDuplicateEntry();
-
-	FilterSet createFilterSet();
-
-	boolean propertyUsesToken(String property);
-
-	String getBeginToken();
-
-	String getEndToken();
-
+    private void setLine(String property) {
+        this.line = property;
+    }
 }

@@ -65,7 +65,7 @@ public class PropertyResolveManager {
         Set<String> result = new TreeSet<String>();
 
         for (PropertyResolver propertyResolver : propertyResolverList) {
-            result.addAll(propertyResolver.getProperties());
+            result.addAll(propertyResolver.getPropertyKeys());
         }
 
         return result;

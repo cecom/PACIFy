@@ -19,12 +19,8 @@ package com.geewhiz.pacify.property.resolver.fileresolver;
  * under the License.
  */
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -35,27 +31,30 @@ import java.util.regex.Pattern;
 
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.PropertyDuplicateDefinedInPropertyFileDefect;
+import com.geewhiz.pacify.property.resolver.fileresolver.exceptions.WrongPropertyLineRuntimeException;
 import com.geewhiz.pacify.resolver.BasePropertyResolver;
 import com.geewhiz.pacify.utils.FileUtils;
 
 public class FilePropertyResolver extends BasePropertyResolver {
 
-    public static final String         IMPORT_STRING        = "#!import";
-    public static final String         SEPARATOR_STRING     = "=";
-    public static final String         COMMENT_STRING       = "#";
+    public static final String         IMPORT_STRING       = "#!import";
+    public static final String         SEPARATOR_STRING    = "=";
+    public static final String         COMMENT_STRING      = "#";
 
-    public static final String         SEARCH_PATTERN       = "([^" + Pattern.quote(SEPARATOR_STRING) + "]*)" + Pattern.quote(SEPARATOR_STRING) + "?(.*)";
-    public static final Pattern        PROPERTY_PATTERN     = Pattern.compile(SEARCH_PATTERN);
+    public static final String         SEARCH_PATTERN      = "([^" + Pattern.quote(SEPARATOR_STRING) + "]*)" + Pattern.quote(SEPARATOR_STRING) + "?(.*)";
+    public static final Pattern        PROPERTY_PATTERN    = Pattern.compile(SEARCH_PATTERN);
+
+    private boolean                    initialized         = false;
 
     private URL                        propertyFileURL;
-
-    private boolean                    initialized          = false;
-    private Map<String, String>        localProperties;
+    private Map<String, String>        localProperties     = new TreeMap<String, String>();
     private Map<String, String>        properties;
-    private String                     fileEncoding         = "utf-8";
-    private List<FilePropertyResolver> parentFileProperties = new ArrayList<FilePropertyResolver>();
-    private String                     beginToken           = "%{";
-    private String                     endToken             = "}";
+    private String                     fileEncoding        = "utf-8";
+    private List<FilePropertyResolver> parents             = new ArrayList<FilePropertyResolver>();
+    private String                     beginToken          = "%{";
+    private String                     endToken            = "}";
+
+    private Set<String>                duplicateProperties = new TreeSet<String>();
 
     public FilePropertyResolver(URL propertyFileURL) {
         this.propertyFileURL = propertyFileURL;
@@ -71,11 +70,11 @@ public class FilePropertyResolver extends BasePropertyResolver {
     }
 
     public String getPropertyValue(String key) {
-        return getFileProperties().get(key);
+        return getProperties().get(key);
     }
 
     /**
-     * @return the localProperties for this instance
+     * @return the localProperties for this instance, without the parents
      */
     public Map<String, String> getLocalProperties() {
         if (!initialized) {
@@ -84,24 +83,18 @@ public class FilePropertyResolver extends BasePropertyResolver {
         return localProperties;
     }
 
-    public Set<String> getProperties() {
+    public Set<String> getPropertyKeys() {
         if (!initialized) {
             initialize();
         }
 
-        Set<String> result = new TreeSet<String>();
-
-        for (String key : properties.keySet()) {
-            result.add(key);
-        }
-
-        return result;
+        return properties.keySet();
     }
 
     /**
      * @return the localProperties for this instance and its parents.
      */
-    public Map<String, String> getFileProperties() {
+    public Map<String, String> getProperties() {
         if (!initialized) {
             initialize();
         }
@@ -113,30 +106,21 @@ public class FilePropertyResolver extends BasePropertyResolver {
     }
 
     public List<Defect> checkForDuplicateEntry() {
+        if (!initialized) {
+            initialize();
+        }
+
         List<Defect> defects = new ArrayList<Defect>();
 
-        Set<String> propertyIds = new HashSet<String>();
-
-        for (String line : FileUtils.getFileAsLines(getPropertyFileURL(), fileEncoding)) {
-            if (line.startsWith("#")) {
-                continue;
-            }
-            if (line.trim().isEmpty()) {
-                continue;
-            }
-
-            String[] split = line.split("=");
-            String propertyId = split[0];
-            boolean couldBeAdded = propertyIds.add(propertyId);
-            if (!couldBeAdded) {
-                Defect defect = new PropertyDuplicateDefinedInPropertyFileDefect(propertyId, this);
-                defects.add(defect);
-            }
-        }
-
-        for (FilePropertyResolver parentFilePropertyContainer : getParentPropertyFileProperties()) {
+        for (FilePropertyResolver parentFilePropertyContainer : getParents()) {
             defects.addAll(parentFilePropertyContainer.checkForDuplicateEntry());
         }
+
+        for (String duplicate : duplicateProperties) {
+            Defect defect = new PropertyDuplicateDefinedInPropertyFileDefect(duplicate, this);
+            defects.add(defect);
+        }
+
         return defects;
     }
 
@@ -144,87 +128,65 @@ public class FilePropertyResolver extends BasePropertyResolver {
         return propertyFileURL;
     }
 
-    public List<FilePropertyResolver> getParentPropertyFileProperties() {
-        return parentFileProperties;
+    public List<FilePropertyResolver> getParents() {
+        return parents;
     }
 
     private void initialize() {
         initialized = true;
-        loadPropertyFile(this);
 
         properties = new TreeMap<String, String>();
-        for (FilePropertyResolver parentFilePropertyContainer : getParentPropertyFileProperties()) {
-            Map<String, String> parentProperties = parentFilePropertyContainer.getFileProperties();
+
+        parsePropertyFile();
+
+        for (FilePropertyResolver parents : getParents()) {
+            Map<String, String> parentProperties = parents.getProperties();
             properties.putAll(parentProperties);
         }
-        properties.putAll(localProperties);
+
+        properties.putAll(getLocalProperties());
     }
 
     protected void setLocalProperties(Map<String, String> localProperties) {
         this.localProperties = localProperties;
     }
 
-    protected void addParentPropertyFile(FilePropertyResolver parent) {
+    protected void addParent(FilePropertyResolver parent) {
+        parents.add(parent);
         parent.initialize();
-        parentFileProperties.add(parent);
     }
 
-    public void loadPropertyFile(FilePropertyResolver filePropertyResolver) {
-        InputStreamReader isr = null;
-        try {
-            URL propertyFileURL = filePropertyResolver.getPropertyFileURL();
-
-            isr = getInputStreamReaderFor(propertyFileURL);
-            BufferedReader br = new BufferedReader(isr);
-            Map<String, String> properties = new TreeMap<String, String>();
-
-            for (String line; (line = br.readLine()) != null;) {
-                if (line.length() == 0) {
-                    continue;
-                }
-                if (line.startsWith(FilePropertyResolver.IMPORT_STRING)) {
-                    String[] includes = line.substring(FilePropertyResolver.IMPORT_STRING.length()).trim().split(" ");
-                    for (String include : includes) {
-                        URL parentPropertyFileURL = new URL(propertyFileURL, include);
-                        FilePropertyResolver parentFilePropertyContainer = new FilePropertyResolver(
-                                parentPropertyFileURL);
-                        filePropertyResolver.addParentPropertyFile(parentFilePropertyContainer);
-                    }
-                    continue;
-                }
-                if (line.startsWith(FilePropertyResolver.COMMENT_STRING)) {
-                    continue;
-                }
-
-                Matcher matcher = PROPERTY_PATTERN.matcher(line);
-                matcher.find();
-                if (matcher.groupCount() != 2) {
-                    throw new IllegalArgumentException("Property line isn't correct [" + line + "]");
-                }
-                properties.put(matcher.group(1), matcher.group(2));
+    private void parsePropertyFile() {
+        for (String line : FileUtils.getFileAsLines(getPropertyFileURL(), getEncoding())) {
+            if (line.length() == 0) {
+                continue;
             }
-            filePropertyResolver.setLocalProperties(properties);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        finally {
-            if (isr != null) {
-                try {
-                    isr.close();
-                } catch (IOException ignored) {
+
+            if (line.startsWith(FilePropertyResolver.IMPORT_STRING)) {
+                String[] parents = line.substring(FilePropertyResolver.IMPORT_STRING.length()).trim().split(" ");
+                for (String parentAsString : parents) {
+                    URL parentUrl = FileUtils.getFileUrl(getPropertyFileURL(), parentAsString);
+                    FilePropertyResolver parent = new FilePropertyResolver(parentUrl);
+                    addParent(parent);
                 }
+                continue;
+            }
+            if (line.startsWith(FilePropertyResolver.COMMENT_STRING)) {
+                continue;
+            }
+
+            Matcher matcher = PROPERTY_PATTERN.matcher(line);
+            matcher.find();
+            if (matcher.groupCount() != 2) {
+                throw new WrongPropertyLineRuntimeException(line);
+            }
+            String key = matcher.group(1);
+            String value = matcher.group(2);
+            String allreadyAdded = localProperties.put(key, value);
+            if (allreadyAdded != null) {
+                duplicateProperties.add(key);
             }
         }
-    }
-
-    private InputStreamReader getInputStreamReaderFor(URL propertyFilePathURL) {
-        InputStreamReader result;
-        try {
-            result = new InputStreamReader(propertyFilePathURL.openStream(), getEncoding());
-        } catch (IOException e) {
-            throw new RuntimeException("Couldn't find resource [" + propertyFilePathURL + "] in classpath.", e);
-        }
-        return result;
     }
 
     public void setEncoding(String encoding) {

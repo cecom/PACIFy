@@ -56,7 +56,7 @@ public class CmdPropertyResolver extends BasePropertyResolver {
     }
 
     @Override
-    public Set<String> getProperties() {
+    public Set<String> getPropertyKeys() {
         Set<String> result = new TreeSet<String>();
 
         for (Enumeration<Object> enumerator = properties.keys(); enumerator.hasMoreElements();) {

@@ -19,45 +19,29 @@ package com.geewhiz.pacify.utils;
  * under the License.
  */
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.io.Charsets;
+import org.apache.commons.io.IOUtils;
 
 public class FileUtils {
 
     public static String getFileInOneString(File file, String encoding) {
-        byte[] buffer;
+        InputStream is = null;
         try {
-            buffer = new byte[(int) file.length()];
-            BufferedInputStream f = null;
-            try {
-                f = new BufferedInputStream(new FileInputStream(file));
-                f.read(buffer);
-            }
-            finally {
-                if (f != null) {
-                    f.close();
-                }
-            }
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
+            is = new FileInputStream(file);
+            return IOUtils.toString(is, Charsets.toCharset(encoding));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        try {
-            return new String(buffer, encoding);
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
+        finally {
+            IOUtils.closeQuietly(is);
         }
     }
 
@@ -65,30 +49,26 @@ public class FileUtils {
         InputStream is = null;
         try {
             is = fileURL.openStream();
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(is, encoding));
-            List<String> lines = new ArrayList<String>();
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
-                lines.add(line);
-            }
-            bufferedReader.close();
-            return lines;
+            return IOUtils.readLines(is, Charsets.toCharset(encoding));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         finally {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (IOException ignored) {
-                }
-            }
+            IOUtils.closeQuietly(is);
         }
     }
 
     public static URL getFileUrl(File file) {
         try {
             return file.toURI().toURL();
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static URL getFileUrl(URL url, String file) {
+        try {
+            return new URL(url, file);
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
