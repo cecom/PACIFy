@@ -49,4 +49,27 @@ public class TestCreatePropertyFile {
 
         TestUtil.checkIfResultIsAsExpected(new File(testBasePath, "output"), myResultPath);
     }
+
+    @Test
+    public void TestWithOutputPrefix() {
+        File testBasePath = new File("target/test-classes/TestCreatePropertyFileWithPrefix");
+        File myTestProperty = new File(testBasePath, "properties/subfolder/ChildOfChilds.properties");
+        File myResultPath = new File(testBasePath, "result");
+
+        File destinationFile = new File(testBasePath, "output/result.properties");
+
+        destinationFile.delete();
+        destinationFile.getParentFile().mkdirs();
+
+        int result = PacifyViaCommandline.mainInternal(new String[] {
+                "createPropertyFile",
+                "--outputPrefix=###",
+                "--resolvers=FileResolver",
+                "--destinationFile=" + destinationFile.getAbsolutePath(),
+                "-RFileResolver.file=" + myTestProperty.getAbsolutePath() });
+
+        Assert.assertEquals("Resolver returned with errors.", 0, result);
+
+        TestUtil.checkIfResultIsAsExpected(new File(testBasePath, "output"), myResultPath);
+    }
 }

@@ -46,6 +46,7 @@ public class ShowUsedProperties {
     private File       targetFile;
     private String     targetEncoding;
     private OutputType outputType;
+    private String     outputPrefix;
 
     public void execute() {
         EntityManager entityManager = new EntityManager(getPackagePath());
@@ -80,7 +81,7 @@ public class ShowUsedProperties {
         try {
             writer = new PrintWriter(targetFile, getOutputEncoding());
             for (String property : getAllProperties(entityManager)) {
-                writer.println(property);
+                writer.println(getOutputPrefix() + property);
             }
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
@@ -94,6 +95,12 @@ public class ShowUsedProperties {
         }
     }
 
+    private void writeToStdout(EntityManager entityManager) {
+        for (String usedProperty : getAllProperties(entityManager)) {
+            System.out.println(getOutputPrefix() + usedProperty);
+        }
+    }
+
     private Set<String> getAllProperties(EntityManager entityManager) {
         Set<String> allUsedProperties = new TreeSet<String>();
         for (PMarker pMarker : entityManager.getPMarkers()) {
@@ -104,12 +111,6 @@ public class ShowUsedProperties {
             }
         }
         return allUsedProperties;
-    }
-
-    private void writeToStdout(EntityManager entityManager) {
-        for (String usedProperty : getAllProperties(entityManager)) {
-            System.out.println(usedProperty);
-        }
     }
 
     public void setOutputEncoding(String targetEncoding) {
@@ -142,5 +143,13 @@ public class ShowUsedProperties {
 
     public void setPackagePath(File packagePath) {
         this.packagePath = packagePath;
+    }
+
+    public void setOutputPrefix(String outputPrefix) {
+        this.outputPrefix = outputPrefix;
+    }
+
+    public String getOutputPrefix() {
+        return outputPrefix;
     }
 }

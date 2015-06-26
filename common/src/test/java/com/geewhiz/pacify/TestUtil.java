@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.tools.ant.util.FileUtils;
+import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Ignore;
 
@@ -53,10 +53,9 @@ public class TestUtil {
 
             File filteredFile = new File(checkFolder, relativePath);
             try {
-                Assert.assertTrue(
-                        "Filtered file does not have the expected result. The content of the File should look like ["
-                                + resultFile.getPath() + "] but is [" + filteredFile.getPath() + "]."
-                        , FileUtils.getFileUtils().contentEquals(resultFile, filteredFile));
+
+                Assert.assertEquals("File [" + filteredFile.getPath() + "] doesnt look like [" + resultFile.getPath() + "].\n",
+                        FileUtils.readFileToString(resultFile), FileUtils.readFileToString(filteredFile));
 
             } catch (IOException e) {
                 throw new RuntimeException(e);

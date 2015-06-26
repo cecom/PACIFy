@@ -48,6 +48,7 @@ public class CreatePropertyFile {
     private File                   targetFile;
     private String                 outputEncoding;
     private String                 filemode;
+    private String                 outputPrefix;
 
     @Inject
     public CreatePropertyFile(PropertyResolveManager propertyResolveManager) {
@@ -78,7 +79,7 @@ public class CreatePropertyFile {
         try {
             writer = new PrintWriter(targetFile, getOutputEncoding());
             for (String line : getPropertyLines()) {
-                writer.println(line);
+                writer.println(getOutputPrefix() + line);
             }
 
             setPermission();
@@ -96,6 +97,12 @@ public class CreatePropertyFile {
 
     }
 
+    private void writeToStdout() {
+        for (String line : getPropertyLines()) {
+            System.out.println(getOutputPrefix() + line);
+        }
+    }
+
     private void setPermission() {
         logger.debug("Changing file mode to {}", filemode);
         Chmod chmod = new Chmod();
@@ -103,12 +110,6 @@ public class CreatePropertyFile {
         chmod.setFile(targetFile);
         chmod.setPerm(filemode);
         chmod.execute();
-    }
-
-    private void writeToStdout() {
-        for (String line : getPropertyLines()) {
-            System.out.println(line);
-        }
     }
 
     private Set<String> getPropertyLines() {
@@ -153,6 +154,14 @@ public class CreatePropertyFile {
 
     public void setFilemode(String filemode) {
         this.filemode = filemode;
+    }
+
+    public void setOutputPrefix(String outputPrefix) {
+        this.outputPrefix = outputPrefix;
+    }
+
+    public String getOutputPrefix() {
+        return outputPrefix;
     }
 
 }

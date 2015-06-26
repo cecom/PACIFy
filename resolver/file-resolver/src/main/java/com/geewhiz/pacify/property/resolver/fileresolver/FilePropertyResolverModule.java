@@ -55,7 +55,7 @@ public class FilePropertyResolverModule extends PropertyResolverModule {
 
         if (file == null) {
             throw new IllegalArgumentException(
-                    "The FileResolver need's the file where to read the properties from. Specify it via -DFileResolver.file=<path>");
+                    "The FileResolver need's the file where to read the properties from. Specify it via -RFileResolver.file=<path>");
         }
 
         URL fileUrl = getFileUrl(commandLineParameters.get("file"));

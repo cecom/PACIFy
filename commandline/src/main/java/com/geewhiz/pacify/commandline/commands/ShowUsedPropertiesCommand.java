@@ -37,12 +37,16 @@ public class ShowUsedPropertiesCommand {
     @Parameter(names = { "-e", "--targetEncoding" }, description = "Which encoding do you want in the created file", required = false)
     private String targetEncoding = "utf-8";
 
+    @Parameter(names = { "-op", "--outputPrefix" }, description = "If you want to prefix every line on the output, set this value. Useful if you have to parse the output.", required = false)
+    private String outputPrefix   = "";
+
     public void configure(ShowUsedProperties showUsedProperties) {
         showUsedProperties.setPackagePath(packagePath);
         showUsedProperties.setTargetFile(targetFile);
         showUsedProperties.setOutputEncoding(targetEncoding);
         showUsedProperties.setOutputType(targetFile != null ? ShowUsedProperties.OutputType.File
                 : ShowUsedProperties.OutputType.Stdout);
+        showUsedProperties.setOutputPrefix(outputPrefix);
 
     }
 }

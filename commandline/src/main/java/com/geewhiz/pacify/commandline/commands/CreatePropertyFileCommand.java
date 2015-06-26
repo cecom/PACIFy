@@ -37,11 +37,15 @@ public class CreatePropertyFileCommand extends BasePropertyResolverCommand {
     @Parameter(names = { "-m", "--fileMode" }, description = "If you write the properties to a file, which filemode should the file have?", required = false)
     private String fileMode       = "400";
 
+    @Parameter(names = { "-op", "--outputPrefix" }, description = "If you want to prefix every line on the output, set this value. Useful if you have to parse the output.", required = false)
+    private String outputPrefix   = "";
+
     public void configure(CreatePropertyFile createPropertyFile) {
         createPropertyFile.setTargetFile(targetFile);
         createPropertyFile.setOutputEncoding(targetEncoding);
         createPropertyFile.setOutputType(targetFile != null ? CreatePropertyFile.OutputType.File
                 : CreatePropertyFile.OutputType.Stdout);
         createPropertyFile.setFilemode(fileMode);
+        createPropertyFile.setOutputPrefix(outputPrefix);
     }
 }

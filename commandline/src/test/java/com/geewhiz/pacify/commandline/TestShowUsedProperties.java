@@ -51,6 +51,28 @@ public class TestShowUsedProperties {
     }
 
     @Test
+    public void writeToStdoutWithPrefix() throws Exception {
+        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+        PrintStream oldStdOut = System.out;
+        System.setOut(new PrintStream(outContent));
+
+        File testBasePath = new File("target/test-classes/testShowUsedProperties");
+        File packagePath = new File(testBasePath, "package");
+
+        int result = PacifyViaCommandline.mainInternal(new String[] {
+                "showUsedProperties",
+                "--packagePath=" + packagePath,
+                "--outputPrefix=###"
+        });
+
+        Assert.assertEquals("ShowUsedProperties returned with errors.", 0, result);
+
+        Assert.assertEquals(FileUtils.readFileToString(new File(testBasePath + "/result/resultWithPrefix.txt")), outContent.toString());
+
+        System.setOut(oldStdOut);
+    }
+
+    @Test
     public void writeToFile() throws Exception {
         File testBasePath = new File("target/test-classes/testShowUsedProperties");
         File packagePath = new File(testBasePath, "package");
@@ -62,6 +84,26 @@ public class TestShowUsedProperties {
         int result = PacifyViaCommandline.mainInternal(new String[] {
                 "showUsedProperties",
                 "--packagePath=" + packagePath,
+                "--destinationFile=" + destinationFile
+        });
+
+        Assert.assertEquals("ShowUsedProperties returned with errors.", 0, result);
+        Assert.assertTrue("Content is same", FileUtils.contentEquals(resultFile, destinationFile));
+    }
+
+    @Test
+    public void writeToFileWithPrefix() throws Exception {
+        File testBasePath = new File("target/test-classes/testShowUsedProperties");
+        File packagePath = new File(testBasePath, "package");
+        File resultFile = new File(testBasePath, "result/resultWithPrefix.txt");
+        File destinationFile = new File(testBasePath, "output/outputWithPrefix.txt");
+
+        destinationFile.delete();
+
+        int result = PacifyViaCommandline.mainInternal(new String[] {
+                "showUsedProperties",
+                "--packagePath=" + packagePath,
+                "--outputPrefix=###",
                 "--destinationFile=" + destinationFile
         });
 
