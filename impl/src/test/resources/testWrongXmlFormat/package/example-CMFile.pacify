@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Pacify>
+    <WrongPropertyElement RelativePath="someConf.conf">
+        <Property Name="foobar1"/>
+    </WrongPropertyElement>
+</Pacify>

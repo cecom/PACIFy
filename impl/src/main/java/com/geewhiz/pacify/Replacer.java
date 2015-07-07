@@ -65,9 +65,6 @@ public class Replacer {
         EntityManager entityManager = new EntityManager(pathToConfigure);
 
         logger.info("== Found [{}] pacify marker files", entityManager.getPMarkerCount());
-        for (PMarker pMarker : entityManager.getPMarkers()) {
-            logger.info("   [{}]", pMarker.getFile().getAbsolutePath());
-        }
         logger.info("== Validating...");
 
         List<Defect> defects = createValidator().validateInternal(entityManager);

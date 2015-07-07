@@ -48,7 +48,11 @@ public class TestNotReplacedProperty extends TestBase {
         PropertyResolveManager propertyResolveManager = createPropertyResolveManager(myTestPropertyURL);
 
         Replacer replacer = new Replacer(propertyResolveManager);
-        List<Defect> defects = replacer.doReplacement(new EntityManager(startPath));
+
+        EntityManager entityManager = new EntityManager(startPath);
+        entityManager.initialize();
+
+        List<Defect> defects = replacer.doReplacement(entityManager);
 
         Assert.assertEquals(defects.size(), 4);
     }

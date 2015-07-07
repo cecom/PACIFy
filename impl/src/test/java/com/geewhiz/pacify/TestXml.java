@@ -34,6 +34,8 @@ public class TestXml {
         File source = new File("target/test-classes/testXml/package");
 
         EntityManager entityManager = new EntityManager(source);
+        entityManager.initialize();
+
         PMarker pMarker = entityManager.getPMarkers().get(0);
 
         Assert.assertEquals(3, pMarker.getPFiles().size());

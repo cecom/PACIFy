@@ -23,54 +23,77 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.geewhiz.pacify.defect.Defect;
+import com.geewhiz.pacify.defect.XMLValidationDefect;
 import com.geewhiz.pacify.model.ObjectFactory;
 import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.model.utils.PacifyFilesFinder;
 
 public class EntityManager {
 
-	private File startPath;
-	private List<PMarker> pMarkers;
+    private Logger        logger = LogManager.getLogger(EntityManager.class.getName());
 
-	public EntityManager(File startPath) {
-		this.startPath = startPath;
-	}
+    private File          startPath;
+    private List<PMarker> pMarkers;
 
-	public int getPMarkerCount() {
-		return getPMarkers().size();
-	}
+    private JAXBContext   jaxbContext;
+    private Schema        schema;
 
-	public List<PMarker> getPMarkers() {
-		if (pMarkers != null) {
-			return pMarkers;
-		}
+    public EntityManager(File startPath) {
+        this.startPath = startPath;
 
-		pMarkers = new ArrayList<PMarker>();
+        try {
+            jaxbContext = JAXBContext.newInstance(ObjectFactory.class);
 
-		List<File> pacifyFiles = new PacifyFilesFinder(startPath).getPacifyFiles();
+            SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            schema = factory.newSchema(new StreamSource(EntityManager.class.getClassLoader().getResourceAsStream("pacify.xsd")));
+        } catch (Exception e) {
+            throw new RuntimeException("Couldn't instanciate jaxb.", e);
+        }
+    }
 
-		JAXBContext jaxbContext;
-		try {
-			jaxbContext = JAXBContext.newInstance(ObjectFactory.class);
-		} catch (JAXBException e) {
-			throw new RuntimeException("Couldn't create jaxbContext", e);
-		}
+    public int getPMarkerCount() {
+        return (new PacifyFilesFinder(startPath).getPacifyFiles()).size();
+    }
 
-		for (File file : pacifyFiles) {
-			try {
-				Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-				PMarker pMarker = (PMarker) jaxbUnmarshaller.unmarshal(file);
-				pMarker.setFile(file);
-				pMarkers.add(pMarker);
-			} catch (Exception e) {
-				throw new RuntimeException("Couldn't read xml file [" + file.getPath() + "].", e);
-			}
-		}
+    public List<Defect> initialize() {
+        pMarkers = new ArrayList<PMarker>();
+        List<Defect> defects = new ArrayList<Defect>();
+        for (File markerFile : new PacifyFilesFinder(startPath).getPacifyFiles()) {
+            try {
+                PMarker pMarker = unmarshal(markerFile);
+                pMarker.setFile(markerFile);
+                pMarkers.add(pMarker);
+            } catch (JAXBException e) {
+                defects.add(new XMLValidationDefect(markerFile));
+                logger.debug("Error while parsing file [" + markerFile.getAbsolutePath() + "]", e);
+            }
+        }
+        return defects;
+    }
 
-		return pMarkers;
-	}
+    public List<PMarker> getPMarkers() {
+        if (pMarkers == null) {
+            throw new RuntimeException("You didn't initialize the EntityManager. Call initialize().");
+        }
+        return pMarkers;
+    }
+
+    private PMarker unmarshal(File file) throws JAXBException {
+        Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+        jaxbUnmarshaller.setSchema(schema);
+
+        return (PMarker) jaxbUnmarshaller.unmarshal(file);
+    }
 }

@@ -4,16 +4,19 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.managers.EntityManager;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.model.PProperty;
+import com.geewhiz.pacify.utils.DefectUtils;
 import com.geewhiz.pacify.utils.Utils;
 
 /*
@@ -54,6 +57,9 @@ public class ShowUsedProperties {
 
         logger.info("== Executing ShowUsedProperties [Version={}]", Utils.getJarVersion());
         logger.info("== Found [{}] pacify marker files", entityManager.getPMarkerCount());
+
+        List<Defect> defects = entityManager.initialize();
+        DefectUtils.abortIfDefectExists(defects);
 
         if (getOutputType() == OutputType.Stdout) {
             logger.info("== Getting Properties...");

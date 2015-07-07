@@ -97,9 +97,6 @@ public class Validator {
         logger.info("== Executing Validator [Version={}]", Utils.getJarVersion());
 
         logger.info("== Found [{}] pacify marker files", entityManager.getPMarkerCount());
-        for (PMarker pMarker : entityManager.getPMarkers()) {
-            logger.info("   [{}]", pMarker.getFile().getAbsolutePath());
-        }
         logger.info("== Validating ...");
 
         List<Defect> defects = validateInternal(entityManager);
@@ -110,10 +107,14 @@ public class Validator {
 
     public List<Defect> validateInternal(EntityManager entityManager) {
         List<Defect> defects = new ArrayList<Defect>();
+
+        defects.addAll(entityManager.initialize());
+
         for (Check check : checks) {
             logger.debug("     Check [{}]", check.getClass().getName());
             defects.addAll(check.checkForErrors());
         }
+
         for (PMarker pMarker : entityManager.getPMarkers()) {
             logger.debug("   Processing Marker File [{}]", pMarker.getFile().getAbsolutePath());
             for (PMarkerCheck pMarkerCheck : pMarkerChecks) {
