@@ -49,7 +49,7 @@ public class CheckPropertyExists implements PMarkerCheck {
             for (PProperty pProperty : pFile.getPProperties()) {
                 if (propertyResolveManager.containsProperty(pProperty.getName())) {
                     try {
-                        propertyResolveManager.getPropertyValue(pProperty.getName());
+                        propertyResolveManager.getPropertyValue(pProperty);
                     } catch (CycleDetectRuntimeException ce) {
                         defects.add(new PropertyHasCycleDefect(pMarker, ce.getProperty(), ce.getCycle()));
                     } catch (PropertyResolveRuntimeException re) {

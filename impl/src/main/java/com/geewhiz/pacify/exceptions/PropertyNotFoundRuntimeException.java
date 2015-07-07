@@ -21,17 +21,17 @@ package com.geewhiz.pacify.exceptions;
 
 public class PropertyNotFoundRuntimeException extends RuntimeException {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private String property;
+    private String            property;
 
-	public PropertyNotFoundRuntimeException(String property) {
-		super("Property [" + property + "] not found in any resolver!");
-		this.property = property;
-	}
+    public PropertyNotFoundRuntimeException(String property) {
+        super("Property [" + property + "] not found in any resolver!");
+        this.property = property;
+    }
 
-	public String getProperty() {
-		return property;
-	}
+    public String getProperty() {
+        return property;
+    }
 
 }

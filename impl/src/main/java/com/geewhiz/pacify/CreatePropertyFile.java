@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -115,9 +116,8 @@ public class CreatePropertyFile {
     private Set<String> getPropertyLines() {
         logger.debug("Resolved Properties:");
         Set<String> result = new TreeSet<String>();
-        for (String property : propertyResolveManager.getProperties()) {
-            String propertyValue = propertyResolveManager.getPropertyValue(property);
-            String line = property + "=" + propertyValue;
+        for (Map.Entry<String, String> entry : propertyResolveManager.getProperties().entrySet()) {
+            String line = entry.getKey() + "=" + entry.getValue();
             logger.debug(line);
             result.add(line);
         }

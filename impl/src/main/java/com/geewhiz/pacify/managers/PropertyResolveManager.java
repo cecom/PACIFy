@@ -4,16 +4,21 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.tools.ant.types.FilterSet;
 
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.exceptions.CycleDetectRuntimeException;
 import com.geewhiz.pacify.exceptions.PropertyNotFoundRuntimeException;
 import com.geewhiz.pacify.exceptions.PropertyResolveRuntimeException;
+import com.geewhiz.pacify.model.PProperty;
 import com.geewhiz.pacify.resolver.PropertyResolver;
 import com.google.inject.Inject;
 
@@ -38,6 +43,8 @@ import com.google.inject.Inject;
 
 public class PropertyResolveManager {
 
+    private Logger        logger = LogManager.getLogger(PropertyResolveManager.class.getName());
+
     Set<PropertyResolver> propertyResolverList;
 
     @Inject
@@ -61,18 +68,33 @@ public class PropertyResolveManager {
         return sb.toString();
     }
 
-    public Set<String> getProperties() {
-        Set<String> result = new TreeSet<String>();
+    public Map<String, String> getProperties() {
 
+        Set<String> propertyKeys = new TreeSet<String>();
         for (PropertyResolver propertyResolver : propertyResolverList) {
-            result.addAll(propertyResolver.getPropertyKeys());
+            propertyKeys.addAll(propertyResolver.getPropertyKeys());
+        }
+
+        Map<String, String> result = new TreeMap<String, String>();
+        for (String propertyKey : propertyKeys) {
+            result.put(propertyKey, getPropertyValue(propertyKey, new ArrayList<String>()));
         }
 
         return result;
     }
 
-    public String getPropertyValue(String property) {
-        return getPropertyValue(property, new ArrayList<String>());
+    public String getPropertyValue(PProperty pProperty) {
+        String property = pProperty.getName();
+        String value = getPropertyValue(property, new ArrayList<String>());
+
+        if (!pProperty.isConvertBackslashToSlash()) {
+            logger.debug("       Using property [{}] with value [{}]", property, value);
+            return value;
+        }
+
+        String convertedString = value.replace('\\', '/');
+        logger.debug("       Using property [{}] original value [{}] with backslash convertion to [{}]", property, value, convertedString);
+        return convertedString;
     }
 
     private String getPropertyValue(String property, List<String> propertyCycleDetector) {

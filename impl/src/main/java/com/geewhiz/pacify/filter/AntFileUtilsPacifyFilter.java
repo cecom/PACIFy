@@ -75,17 +75,7 @@ public class AntFileUtilsPacifyFilter implements PacifyFilter {
 
         for (PProperty pProperty : pFile.getPProperties()) {
             String propertyName = pProperty.getName();
-            String propertyValue = propertyResolveManager.getPropertyValue(propertyName);
-
-            if (pProperty.isConvertBackslashToSlash()) {
-                String convertedString = propertyValue;
-                convertedString = propertyValue.replace('\\', '/');
-                logger.debug(
-                        "       Using property [{}] original value [{}] with backslash convertion to [{}]", propertyName, propertyValue, convertedString);
-                propertyValue = convertedString;
-            } else {
-                logger.debug("       Using property [{}] with value [{}]", propertyName, propertyValue);
-            }
+            String propertyValue = propertyResolveManager.getPropertyValue(pProperty);
 
             filterSet.addFilter(propertyName, propertyValue);
         }
