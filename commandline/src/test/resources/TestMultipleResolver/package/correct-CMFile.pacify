@@ -1,19 +1,10 @@
 <?xml version="1.0"?>
-<Pacify xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="..\..\..\..\..\model\src\main\resources\pacify.xsd">
-    <Property Name="foobar1">
-        <File RelativePath="correctConf.txt"/>
-    </Property>
-    <Property Name="foobar2">
-        <File RelativePath="correctConf.txt"/>
-    </Property>
-    <Property Name="foobar3">
-        <File RelativePath="correctConf.txt"/>
-    </Property>
-    <Property Name="foobar4">
-        <File RelativePath="correctConf.txt"/>
-    </Property>
-    <Property Name="path" ConvertBackslashToSlash="true">
-        <File RelativePath="correctConf.txt"/>
-    </Property>
-
+<Pacify xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="..\..\..\..\..\..\model\src\main\resources\pacify.xsd">
+    <File RelativePath="correctConf.txt">
+        <Property Name="foobar1"/>
+        <Property Name="foobar2"/>
+        <Property Name="foobar3"/>
+        <Property Name="foobar4"/>
+        <Property Name="path" ConvertBackslashToSlash="true"/>
+    </File>
 </Pacify>

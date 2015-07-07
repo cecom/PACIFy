@@ -26,9 +26,9 @@ import com.geewhiz.pacify.model.PMarker;
 
 public interface PMarkerCheck {
 
-	/**
-	 * @param pmarker which pfList should be checked?
-	 * @return if there are defects, return a list with the defects.
-	 */
-	List<Defect> checkForErrors(PMarker pmarker);
+    /**
+     * @param pmarker which should be checked?
+     * @return if there are defects, return a list with the defects.
+     */
+    List<Defect> checkForErrors(PMarker pmarker);
 }

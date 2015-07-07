@@ -20,8 +20,6 @@ package com.geewhiz.pacify.model;
  */
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.jvnet.jaxb2_commons.lang.EqualsStrategy;
 import org.jvnet.jaxb2_commons.lang.HashCodeStrategy;
@@ -59,31 +57,6 @@ public abstract class PMarkerBase {
     public abstract String getEndToken();
 
     public abstract String getBeginToken();
-
-    public abstract List<PProperty> getProperties();
-
-    public List<PFile> getPFiles() {
-        List<PFile> result = new ArrayList<PFile>();
-        for (PProperty pproperty : getProperties()) {
-            for (PFile pfile : pproperty.getFiles()) {
-                if (result.contains(pfile)) {
-                    continue;
-                }
-                result.add(pfile);
-            }
-        }
-        return result;
-    }
-
-    public List<PProperty> getPPropertiesForFile(PFile pfile) {
-        List<PProperty> result = new ArrayList<PProperty>();
-        for (PProperty pproperty : getProperties()) {
-            if (pproperty.getFiles().contains(pfile)) {
-                result.add(pproperty);
-            }
-        }
-        return result;
-    }
 
     public boolean equals(ObjectLocator thisLocator, ObjectLocator thatLocator, Object object, EqualsStrategy strategy) {
         return file.equals(((PMarker) object).getFile());

@@ -6,22 +6,22 @@
             <xs:documentation>Configuration File for PACIFy</xs:documentation>
         </xs:annotation>
         <xs:sequence maxOccurs="unbounded">
-            <xs:element name="Property" type="PProperty"/>
+            <xs:element name="File" type="PFile"/>
         </xs:sequence>
         <xs:attribute name="BeginToken" type="xs:string" default="%{"/>
         <xs:attribute name="EndToken" type="xs:string" default="}"/>
     </xs:complexType>
-    <xs:complexType name="PProperty">
-        <xs:sequence maxOccurs="unbounded">
-            <xs:element name="File" type="PFile"/>
-        </xs:sequence>
-        <xs:attribute name="Name" type="xs:string" use="required"/>
-        <xs:attribute name="ConvertBackslashToSlash" type="xs:boolean" default="false"/>
-    </xs:complexType>
     <xs:complexType name="PFile">
+        <xs:sequence maxOccurs="unbounded">
+            <xs:element name="Property" type="PProperty"/>
+        </xs:sequence>
         <xs:attribute name="RelativePath" type="xs:string" use="required"/>
         <xs:attribute name="Encoding" type="xs:string" default="UTF-8"/>
         <xs:attribute name="BeginToken" type="xs:string"/>
         <xs:attribute name="EndToken" type="xs:string"/>
+    </xs:complexType>
+    <xs:complexType name="PProperty">
+        <xs:attribute name="Name" type="xs:string" use="required"/>
+        <xs:attribute name="ConvertBackslashToSlash" type="xs:boolean" default="false"/>
     </xs:complexType>
 </xs:schema>

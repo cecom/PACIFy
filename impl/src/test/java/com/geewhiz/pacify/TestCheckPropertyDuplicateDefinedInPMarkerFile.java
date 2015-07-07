@@ -32,7 +32,7 @@ public class TestCheckPropertyDuplicateDefinedInPMarkerFile extends TestBase {
 
     @Test
     public void checkForNotCorrect() {
-        File testStartPath = new File("target/test-classes/checkPropertyDuplicateDefinedInPfListCheck/wrong/package");
+        File testStartPath = new File("target/test-classes/checkPropertyDuplicateDefinedInPMarkerFile/wrong/package");
 
         List<Defect> defects = getDefects(new CheckPropertyDuplicateDefinedInPacifyFile(), testStartPath);
 
@@ -41,7 +41,7 @@ public class TestCheckPropertyDuplicateDefinedInPMarkerFile extends TestBase {
 
     @Test
     public void checkForCorrect() {
-        File testStartPath = new File("target/test-classes/checkPropertyDuplicateDefinedInPfListCheck/correct/package");
+        File testStartPath = new File("target/test-classes/checkPropertyDuplicateDefinedInPMarkerFile/correct/package");
 
         List<Defect> defects = getDefects(new CheckPropertyDuplicateDefinedInPacifyFile(), testStartPath);
 

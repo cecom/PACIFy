@@ -19,6 +19,7 @@ package com.geewhiz.pacify.checks.impl;
  * under the License.
  */
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,25 +28,22 @@ import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.TargetFileDoesNotExistDefect;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
-import com.geewhiz.pacify.model.PProperty;
 
 public class CheckTargetFileExist implements PMarkerCheck {
 
-	public List<Defect> checkForErrors(PMarker pfListEntity) {
-		List<Defect> defects = new ArrayList<Defect>();
+    public List<Defect> checkForErrors(PMarker pMarker) {
+        List<Defect> defects = new ArrayList<Defect>();
 
-		for (PProperty pproperty : pfListEntity.getProperties()) {
-			for (PFile pfile : pproperty.getFiles()) {
-				java.io.File file = pfListEntity.getAbsoluteFileFor(pfile);
-				if (file.exists() && file.isFile()) {
-					continue;
-				}
-				Defect defect = new TargetFileDoesNotExistDefect(pfListEntity, pproperty, pfile);
-				defects.add(defect);
-			}
-		}
+        for (PFile pFile : pMarker.getPFiles()) {
+            File file = pMarker.getAbsoluteFileFor(pFile);
+            if (file.exists() && file.isFile()) {
+                continue;
+            }
+            Defect defect = new TargetFileDoesNotExistDefect(pMarker, pFile);
+            defects.add(defect);
+        }
 
-		return defects;
-	}
+        return defects;
+    }
 
 }

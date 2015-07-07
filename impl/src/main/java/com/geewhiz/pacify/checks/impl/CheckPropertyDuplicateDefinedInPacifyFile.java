@@ -8,9 +8,9 @@ package com.geewhiz.pacify.checks.impl;
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License. You may obtain a copy of the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -25,24 +25,26 @@ import java.util.List;
 import com.geewhiz.pacify.checks.PMarkerCheck;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.PropertyDuplicateDefinedInPMarkerDefect;
-import com.geewhiz.pacify.model.PProperty;
+import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
+import com.geewhiz.pacify.model.PProperty;
 
 public class CheckPropertyDuplicateDefinedInPacifyFile implements PMarkerCheck {
 
-	public List<Defect> checkForErrors(PMarker pMarker) {
-		List<Defect> defects = new ArrayList<Defect>();
+    public List<Defect> checkForErrors(PMarker pMarker) {
+        List<Defect> defects = new ArrayList<Defect>();
 
-		List<String> properties = new ArrayList<String>();
-
-		for (PProperty property : pMarker.getProperties()) {
-			if (properties.contains(property.getName())) {
-				Defect defect = new PropertyDuplicateDefinedInPMarkerDefect(pMarker, property);
-				defects.add(defect);
-				continue;
-			}
-			properties.add(property.getName());
-		}
-		return defects;
-	}
+        for (PFile pFile : pMarker.getPFiles()) {
+            List<String> properties = new ArrayList<String>();
+            for (PProperty pProperty : pFile.getPProperties()) {
+                if (properties.contains(pProperty.getName())) {
+                    Defect defect = new PropertyDuplicateDefinedInPMarkerDefect(pMarker, pProperty);
+                    defects.add(defect);
+                    continue;
+                }
+                properties.add(pProperty.getName());
+            }
+        }
+        return defects;
+    }
 }

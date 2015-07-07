@@ -90,19 +90,17 @@ public class CMFileManager {
         return executionFilters;
     }
 
-    private FilterSet getFilterSet(PFile pfile) {
+    private FilterSet getFilterSet(PFile pFile) {
         FilterSet filterSet = new FilterSet();
 
-        filterSet.setBeginToken(pfile.getBeginToken() == null ? pMarker.getBeginToken() : pfile.getBeginToken());
-        filterSet.setEndToken(pfile.getEndToken() == null ? pMarker.getEndToken() : pfile.getEndToken());
+        filterSet.setBeginToken(pMarker.getBeginTokenFor(pFile));
+        filterSet.setEndToken(pMarker.getEndTokenFor(pFile));
 
-        List<PProperty> pproperties = pMarker.getPPropertiesForFile(pfile);
-
-        for (PProperty pproperty : pproperties) {
-            String propertyName = pproperty.getName();
+        for (PProperty pProperty : pFile.getPProperties()) {
+            String propertyName = pProperty.getName();
             String propertyValue = propertyResolveManager.getPropertyValue(propertyName);
 
-            if (pproperty.isConvertBackslashToSlash()) {
+            if (pProperty.isConvertBackslashToSlash()) {
                 String convertedString = propertyValue;
                 convertedString = propertyValue.replace('\\', '/');
                 logger.debug(

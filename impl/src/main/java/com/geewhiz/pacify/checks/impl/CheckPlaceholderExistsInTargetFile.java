@@ -38,8 +38,8 @@ public class CheckPlaceholderExistsInTargetFile implements PMarkerCheck {
     public List<Defect> checkForErrors(PMarker pMarker) {
         List<Defect> defects = new ArrayList<Defect>();
 
-        for (PProperty pproperty : pMarker.getProperties()) {
-            for (PFile pFile : pproperty.getFiles()) {
+        for (PFile pFile : pMarker.getPFiles()) {
+            for (PProperty pproperty : pFile.getPProperties()) {
                 File file = pMarker.getAbsoluteFileFor(pFile);
 
                 if (!file.exists()) {

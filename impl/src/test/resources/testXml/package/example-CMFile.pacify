@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Pacify xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="..\..\..\..\..\..\model\src\main\resources\pacify.xsd">
-    <Property Name="foobar1">
-        <File RelativePath="someConf.conf"/>
-        <File RelativePath="subfolder/someOtherConf.conf"/>
-    </Property>
-    <Property Name="foobar2">
-        <File RelativePath="someParentConf.conf"/>
-    </Property>
+    <File RelativePath="someConf.conf">
+        <Property Name="foobar1"/>
+    </File>
+    <File RelativePath="subfolder/someOtherConf.conf">
+        <Property Name="foobar1"/>
+    </File>
+    <File RelativePath="someParentConf.conf">
+        <Property Name="foobar2"/>
+    </File>
 </Pacify>

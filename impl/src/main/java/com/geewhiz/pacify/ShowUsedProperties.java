@@ -11,6 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.geewhiz.pacify.managers.EntityManager;
+import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.model.PProperty;
 import com.geewhiz.pacify.utils.Utils;
@@ -105,9 +106,11 @@ public class ShowUsedProperties {
         Set<String> allUsedProperties = new TreeSet<String>();
         for (PMarker pMarker : entityManager.getPMarkers()) {
             logger.info("   [{}]", pMarker.getFile().getAbsolutePath());
-
-            for (PProperty pProperty : pMarker.getProperties()) {
-                allUsedProperties.add(pProperty.getName());
+            for (PFile pFile : pMarker.getPFiles()) {
+                logger.debug("      [Getting properties for file {}]", pFile.getRelativePath());
+                for (PProperty pProperty : pFile.getPProperties()) {
+                    allUsedProperties.add(pProperty.getName());
+                }
             }
         }
         return allUsedProperties;

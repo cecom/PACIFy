@@ -35,7 +35,7 @@ public class TestCheckTargetFileExist extends TestBase {
 
         List<Defect> defects = getDefects(new com.geewhiz.pacify.checks.impl.CheckTargetFileExist(), testStartPath);
 
-        Assert.assertEquals(2, defects.size());
+        Assert.assertEquals(1, defects.size());
     }
 
     @Test

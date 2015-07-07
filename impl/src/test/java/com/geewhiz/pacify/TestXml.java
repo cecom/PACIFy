@@ -34,17 +34,21 @@ public class TestXml {
         File source = new File("target/test-classes/testXml/package");
 
         EntityManager entityManager = new EntityManager(source);
-
         PMarker pMarker = entityManager.getPMarkers().get(0);
 
-        Assert.assertEquals(pMarker.getProperties().size(), 2);
+        Assert.assertEquals(3, pMarker.getPFiles().size());
 
-        Assert.assertEquals("foobar1", pMarker.getProperties().get(0).getName());
-        Assert.assertEquals("foobar2", pMarker.getProperties().get(1).getName());
+        Assert.assertEquals("someConf.conf", pMarker.getPFiles().get(0).getRelativePath());
+        Assert.assertEquals("subfolder/someOtherConf.conf", pMarker.getPFiles().get(1).getRelativePath());
+        Assert.assertEquals("someParentConf.conf", pMarker.getPFiles().get(2).getRelativePath());
 
-        Assert.assertEquals("someConf.conf", pMarker.getProperties().get(0).getFiles().get(0).getRelativePath());
-        Assert.assertEquals("subfolder/someOtherConf.conf", pMarker.getProperties().get(0).getFiles().get(1).getRelativePath());
-        Assert.assertEquals("someParentConf.conf", pMarker.getProperties().get(1).getFiles().get(0).getRelativePath());
+        Assert.assertEquals(1, pMarker.getPFiles().get(0).getPProperties().size());
+        Assert.assertEquals(1, pMarker.getPFiles().get(1).getPProperties().size());
+        Assert.assertEquals(1, pMarker.getPFiles().get(2).getPProperties().size());
+
+        Assert.assertEquals("foobar1", pMarker.getPFiles().get(0).getPProperties().get(0).getName());
+        Assert.assertEquals("foobar1", pMarker.getPFiles().get(1).getPProperties().get(0).getName());
+        Assert.assertEquals("foobar2", pMarker.getPFiles().get(2).getPProperties().get(0).getName());
 
     }
 }
