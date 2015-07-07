@@ -29,7 +29,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.managers.CMFileManager;
+import com.geewhiz.pacify.managers.FilterManager;
 import com.geewhiz.pacify.managers.EntityManager;
 import com.geewhiz.pacify.managers.PropertyResolveManager;
 import com.geewhiz.pacify.model.PMarker;
@@ -113,9 +113,9 @@ public class Replacer {
         List<Defect> defects = new ArrayList<Defect>();
         for (PMarker pMarker : entityManager.getPMarkers()) {
             logger.debug("   Processing Marker File [{}],", pMarker.getFile().getAbsolutePath());
-            CMFileManager cMFileManager = new CMFileManager(propertyResolveManager,
+            FilterManager filterManager = new FilterManager(propertyResolveManager,
                     pMarker);
-            defects.addAll(cMFileManager.doFilter());
+            defects.addAll(filterManager.doFilter());
         }
         return defects;
     }
