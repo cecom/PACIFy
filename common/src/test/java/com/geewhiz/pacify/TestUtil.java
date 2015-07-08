@@ -91,4 +91,23 @@ public class TestUtil {
 
         return files;
     }
+
+    public static void removeOldTestResourcesAndCopyAgain() {
+        File testClassesFolder = new File("target/test-classes");
+        if (testClassesFolder.exists()) {
+            for (File file : testClassesFolder.listFiles()) {
+                if ("com".equals(file.getName())) {
+                    continue;
+                }
+                FileUtils.deleteQuietly(file);
+            }
+        }
+
+        try {
+            FileUtils.copyDirectory(new File("src/test/resources"), testClassesFolder);
+        } catch (IOException e) {
+            throw new RuntimeException("error while copy test-resources", e);
+        }
+
+    }
 }

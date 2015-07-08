@@ -6,7 +6,10 @@ import java.io.PrintStream;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
+
+import com.geewhiz.pacify.TestUtil;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -28,6 +31,11 @@ import org.junit.Test;
  */
 
 public class TestShowUsedProperties {
+
+    @BeforeClass
+    public static void removeOldData() {
+        TestUtil.removeOldTestResourcesAndCopyAgain();
+    }
 
     @Test
     public void writeToStdout() throws Exception {

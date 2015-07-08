@@ -22,11 +22,17 @@ package com.geewhiz.pacify.commandline;
 import java.io.File;
 
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.geewhiz.pacify.TestUtil;
 
 public class TestCommandlineCall {
+
+    @BeforeClass
+    public static void removeOldData() {
+        TestUtil.removeOldTestResourcesAndCopyAgain();
+    }
 
     @Test
     public void testReplace() {
