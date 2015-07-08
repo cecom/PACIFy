@@ -17,7 +17,7 @@
         </xs:sequence>
         <xs:attribute name="RelativePath" type="xs:string" use="required"/>
         <xs:attribute name="Encoding" type="xs:string" default="UTF-8"/>
-        <xs:attribute name="FilterClass" type="xs:string" default="com.geewhiz.pacify.filter.AntFileUtilsPacifyFilter"/>
+        <xs:attribute name="FilterClass" type="xs:string" default="com.geewhiz.pacify.filter.PacifyTokenFilter"/>
         <xs:attribute name="BeginToken" type="xs:string"/>
         <xs:attribute name="EndToken" type="xs:string"/>
     </xs:complexType>

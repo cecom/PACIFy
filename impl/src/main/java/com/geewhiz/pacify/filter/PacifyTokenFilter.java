@@ -33,9 +33,9 @@ import com.geewhiz.pacify.model.PProperty;
  * under the License.
  */
 
-public class AntFileUtilsPacifyFilter implements PacifyFilter {
+public class PacifyTokenFilter implements PacifyFilter {
 
-    private Logger logger = LogManager.getLogger(AntFileUtilsPacifyFilter.class.getName());
+    private Logger logger = LogManager.getLogger(PacifyTokenFilter.class.getName());
 
     @Override
     public void filter(PropertyResolveManager propertyResolveManager, PMarker pMarker, PFile pFile) {
