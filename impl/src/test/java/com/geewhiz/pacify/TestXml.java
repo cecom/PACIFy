@@ -20,10 +20,12 @@ package com.geewhiz.pacify;
  */
 
 import java.io.File;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.managers.EntityManager;
 import com.geewhiz.pacify.model.PMarker;
 
@@ -53,4 +55,16 @@ public class TestXml {
         Assert.assertEquals("foobar2", pMarker.getPFiles().get(2).getPProperties().get(0).getName());
 
     }
+
+    @Test
+    public void wrongXml() {
+        File source = new File("target/test-classes/testWrongXmlFormat/package");
+
+        EntityManager entityManager = new EntityManager(source);
+        List<Defect> defects = entityManager.initialize();
+        Assert.assertEquals(1, defects.size());
+        Assert.assertEquals("com.geewhiz.pacify.defect.XMLValidationDefect", defects.get(0).getClass().getName());
+
+    }
+
 }
