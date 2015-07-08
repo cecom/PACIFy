@@ -94,6 +94,7 @@ public class PropertyResolveManager {
 
         String convertedString = value.replace('\\', '/');
         logger.debug("       Using property [{}] original value [{}] with backslash convertion to [{}]", property, value, convertedString);
+
         return convertedString;
     }
 

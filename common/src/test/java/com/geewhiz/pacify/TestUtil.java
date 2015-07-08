@@ -38,6 +38,10 @@ import com.geewhiz.pacify.model.utils.DirFilter;
 public class TestUtil {
 
     public static void checkIfResultIsAsExpected(File checkFolder, File resultFolder) {
+        checkIfResultIsAsExpected(checkFolder, resultFolder, "UTF-8");
+    }
+
+    public static void checkIfResultIsAsExpected(File checkFolder, File resultFolder, String encoding) {
         if (!checkFolder.isDirectory()) {
             throw new IllegalArgumentException("checkFoler [" + checkFolder.getAbsolutePath() + "] not a folder");
         }
@@ -55,7 +59,7 @@ public class TestUtil {
             try {
 
                 Assert.assertEquals("File [" + filteredFile.getPath() + "] doesnt look like [" + resultFile.getPath() + "].\n",
-                        FileUtils.readFileToString(resultFile), FileUtils.readFileToString(filteredFile));
+                        FileUtils.readFileToString(filteredFile, encoding), FileUtils.readFileToString(resultFile, encoding));
 
             } catch (IOException e) {
                 throw new RuntimeException(e);

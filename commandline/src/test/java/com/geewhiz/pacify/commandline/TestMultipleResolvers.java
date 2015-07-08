@@ -91,4 +91,27 @@ public class TestMultipleResolvers {
 
         TestUtil.checkIfResultIsAsExpected(destinationPath, myResultPath);
     }
+
+    @Test
+    public void testDifferentEncodings() {
+        File testBasePath = new File("target/test-classes/TestDifferentEncodings");
+        File myTestProperty = new File(testBasePath, "properties/utf16.properties");
+        File myPackagePath = new File(testBasePath, "package");
+        File myResultPath = new File(testBasePath, "result");
+
+        int result = PacifyViaCommandline.mainInternal(new String[] {
+                "--debug",
+                "replace",
+                "--packagePath=" + myPackagePath,
+                "--resolvers=CmdResolver,FileResolver",
+                "-RFileResolver.file=" + myTestProperty.getAbsolutePath(),
+                "-RFileResolver.encoding=UTF-16",
+                "-RCmdResolver.foobar7=anotherValue"
+        });
+
+        Assert.assertEquals("Configuration returned with errors.", 0, result);
+
+        TestUtil.checkIfResultIsAsExpected(myPackagePath, myResultPath, "ASCII");
+    }
+
 }

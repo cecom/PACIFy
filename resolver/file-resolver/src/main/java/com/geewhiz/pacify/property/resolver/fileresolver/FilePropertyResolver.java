@@ -167,6 +167,9 @@ public class FilePropertyResolver extends BasePropertyResolver {
                 for (String parentAsString : parents) {
                     URL parentUrl = FileUtils.getFileUrl(getPropertyFileURL(), parentAsString);
                     FilePropertyResolver parent = new FilePropertyResolver(parentUrl);
+                    parent.setEncoding(getEncoding());
+                    parent.setBeginToken(getBeginToken());
+                    parent.setEndToken(getEndToken());
                     addParent(parent);
                 }
                 continue;
