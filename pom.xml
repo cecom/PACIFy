@@ -112,6 +112,11 @@
                 <artifactId>guice-multibindings</artifactId>
                 <version>${com.google.inject_version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.velocity</groupId>
+                <artifactId>velocity</artifactId>
+                <version>1.7</version>
+            </dependency>
 
             <dependency>
                 <groupId>junit</groupId>

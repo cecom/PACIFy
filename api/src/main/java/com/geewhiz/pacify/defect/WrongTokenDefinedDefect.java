@@ -22,19 +22,21 @@ import com.geewhiz.pacify.model.PMarker;
  * under the License.
  */
 
-public class FilterNotFoundDefect implements Defect {
+public class WrongTokenDefinedDefect implements Defect {
 
     private PMarker pMarker;
     private PFile   pFile;
+    private String  errorMessage;
 
-    public FilterNotFoundDefect(PMarker pMarker, PFile pFile) {
+    public WrongTokenDefinedDefect(PMarker pMarker, PFile pFile, String errorMessage) {
         this.pMarker = pMarker;
         this.pFile = pFile;
+        this.errorMessage = errorMessage;
     }
 
     public String getDefectMessage() {
-        return String.format("FilterNotFoundFound: \n\t[MarkerFile=%s]\n\t[File=%s]\n\t[FilterClass=%s]", pMarker.getFile().getAbsolutePath(),
-                pFile.getRelativePath(), pFile.getFilterClass());
+        return String.format("WrongTokenDefined: \n\t[MarkerFile=%s]\n\t[File=%s]\n\t[FilterClass=%s]\n\t[ErrorMessage=%s]",
+                pMarker.getFile().getAbsolutePath(),
+                pFile.getRelativePath(), pFile.getFilterClass(), errorMessage);
     }
-
 }

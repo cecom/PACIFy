@@ -1,5 +1,8 @@
 package com.geewhiz.pacify.filter;
 
+import java.util.List;
+
+import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.managers.PropertyResolveManager;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
@@ -25,6 +28,6 @@ import com.geewhiz.pacify.model.PMarker;
 
 public interface PacifyFilter {
 
-    void filter(PropertyResolveManager propertyResolveManager, PMarker pMarker, PFile pFile);
+    List<Defect> filter(PropertyResolveManager propertyResolveManager, PMarker pMarker, PFile pFile);
 
 }

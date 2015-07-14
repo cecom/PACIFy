@@ -2,6 +2,8 @@ package com.geewhiz.pacify.filter;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -9,6 +11,7 @@ import org.apache.tools.ant.types.FilterSet;
 import org.apache.tools.ant.types.FilterSetCollection;
 import org.apache.tools.ant.util.FileUtils;
 
+import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.managers.PropertyResolveManager;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
@@ -38,7 +41,7 @@ public class PacifyTokenFilter implements PacifyFilter {
     private Logger logger = LogManager.getLogger(PacifyTokenFilter.class.getName());
 
     @Override
-    public void filter(PropertyResolveManager propertyResolveManager, PMarker pMarker, PFile pFile) {
+    public List<Defect> filter(PropertyResolveManager propertyResolveManager, PMarker pMarker, PFile pFile) {
         File file = pMarker.getAbsoluteFileFor(pFile);
         FilterSetCollection filterSetCollection = getFilterSetCollection(propertyResolveManager, pMarker, pFile);
 
@@ -56,6 +59,8 @@ public class PacifyTokenFilter implements PacifyFilter {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+        return new ArrayList<Defect>();
     }
 
     private FilterSetCollection getFilterSetCollection(PropertyResolveManager propertyResolveManager, PMarker pMarker, PFile pFile) {

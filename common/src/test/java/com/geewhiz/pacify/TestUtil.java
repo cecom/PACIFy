@@ -37,27 +37,29 @@ import com.geewhiz.pacify.model.utils.DirFilter;
 @Ignore
 public class TestUtil {
 
-    public static void checkIfResultIsAsExpected(File checkFolder, File resultFolder) {
-        checkIfResultIsAsExpected(checkFolder, resultFolder, "UTF-8");
+    public static void checkIfResultIsAsExpected(File actual, File expected) {
+        checkIfResultIsAsExpected(actual, expected, "UTF-8");
     }
 
-    public static void checkIfResultIsAsExpected(File checkFolder, File resultFolder, String encoding) {
-        if (!checkFolder.isDirectory()) {
-            throw new IllegalArgumentException("checkFoler [" + checkFolder.getAbsolutePath() + "] not a folder");
+    public static void checkIfResultIsAsExpected(File actual, File expected, String encoding) {
+        if (!actual.isDirectory()) {
+            throw new IllegalArgumentException("checkFoler [" + actual.getAbsolutePath() + "] not a folder");
         }
 
-        if (!resultFolder.isDirectory()) {
-            throw new IllegalArgumentException("resultFolder [" + resultFolder.getAbsolutePath() + "] not a folder");
+        if (!expected.isDirectory()) {
+            throw new IllegalArgumentException("resultFolder [" + expected.getAbsolutePath() + "] not a folder");
         }
 
-        for (File resultFile : getFiles(resultFolder)) {
-            String completeRelativePath = resultFolder.getPath();
+        // Look that the files exists and are like we want it
+        for (File resultFile : getFiles(expected)) {
+            String completeRelativePath = expected.getPath();
             int index = resultFile.getPath().indexOf(completeRelativePath) + completeRelativePath.length();
             String relativePath = resultFile.getPath().substring(index);
 
-            File filteredFile = new File(checkFolder, relativePath);
+            File filteredFile = new File(actual, relativePath);
             try {
 
+                Assert.assertEquals("Both files exists.", resultFile.exists(), filteredFile.exists());
                 Assert.assertEquals("File [" + filteredFile.getPath() + "] doesnt look like [" + resultFile.getPath() + "].\n",
                         FileUtils.readFileToString(filteredFile, encoding), FileUtils.readFileToString(resultFile, encoding));
 
@@ -65,6 +67,17 @@ public class TestUtil {
                 throw new RuntimeException(e);
             }
         }
+
+        // Check if there are more files than expected
+        for (File actualFile : getFiles(actual)) {
+            String completeRelativePath = actual.getPath();
+            int index = actualFile.getPath().indexOf(completeRelativePath) + completeRelativePath.length();
+            String relativePath = actualFile.getPath().substring(index);
+
+            File expectedFile = new File(expected, relativePath);
+            Assert.assertEquals("Both files exists.", expectedFile.exists(), actualFile.exists());
+        }
+
     }
 
     public static URL getURLForFile(File file) {

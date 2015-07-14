@@ -56,7 +56,7 @@ public class FilterManager {
             if (pacifyFilter == null) {
                 defects.add(new FilterNotFoundDefect(pMarker, pfile));
             } else {
-                pacifyFilter.filter(propertyResolveManager, pMarker, pfile);
+                defects.addAll(pacifyFilter.filter(propertyResolveManager, pMarker, pfile));
 
                 CheckForNotReplacedTokens checker = new CheckForNotReplacedTokens();
                 defects.addAll(checker.checkForErrors(pMarker, pfile));
@@ -64,7 +64,7 @@ public class FilterManager {
         }
 
         if (defects.isEmpty()) {
-            pMarker.getFile().deleteOnExit();
+            pMarker.getFile().delete();
         }
         return defects;
     }
