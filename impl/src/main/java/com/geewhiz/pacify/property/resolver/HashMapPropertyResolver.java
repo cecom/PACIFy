@@ -1,4 +1,4 @@
-package com.geewhiz.pacify;
+package com.geewhiz.pacify.property.resolver;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -6,10 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.tools.ant.types.FilterSet;
-
 import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.resolver.PropertyResolver;
+import com.geewhiz.pacify.resolver.BasePropertyResolver;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -30,22 +28,12 @@ import com.geewhiz.pacify.resolver.PropertyResolver;
  * under the License.
  */
 
-public class SimplePropertyResolver implements PropertyResolver {
+public class HashMapPropertyResolver extends BasePropertyResolver {
 
     Map<String, String> properties = new HashMap<String, String>();
 
-    public SimplePropertyResolver() {
-
-    }
-
     public void addProperty(String key, String value) {
         properties.put(key, value);
-    }
-
-    @Override
-    public int compareTo(PropertyResolver o) {
-        return getPropertyResolverDescription().compareTo(
-                o.getPropertyResolverDescription());
     }
 
     @Override
@@ -56,11 +44,6 @@ public class SimplePropertyResolver implements PropertyResolver {
     @Override
     public String getPropertyValue(String key) {
         return properties.get(key);
-    }
-
-    @Override
-    public Set<String> getReferencedProperties(String property) {
-        return Collections.emptySet();
     }
 
     @Override
@@ -75,23 +58,12 @@ public class SimplePropertyResolver implements PropertyResolver {
 
     @Override
     public String getPropertyResolverDescription() {
-        return "SimpleTestResolver";
+        return HashMapPropertyResolver.class.getSimpleName();
     }
 
     @Override
     public List<Defect> checkForDuplicateEntry() {
         return Collections.emptyList();
-    }
-
-    @Override
-    public FilterSet createFilterSet() {
-        // TODO: Methode ist schrott
-        return null;
-    }
-
-    @Override
-    public boolean propertyUsesToken(String property) {
-        return false;
     }
 
     @Override

@@ -12,6 +12,7 @@ import org.junit.Test;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.managers.EntityManager;
 import com.geewhiz.pacify.managers.PropertyResolveManager;
+import com.geewhiz.pacify.property.resolver.HashMapPropertyResolver;
 import com.geewhiz.pacify.resolver.PropertyResolver;
 
 /*
@@ -44,8 +45,8 @@ public class TestVelocityFilter {
     public void testWrongToken() throws Exception {
         File source = new File("target/test-classes/testVelocityFilter/wrong/wrongToken/package");
 
-        SimplePropertyResolver spr = new SimplePropertyResolver();
-        PropertyResolveManager prm = getPropertyResolveManager(spr);
+        HashMapPropertyResolver hpr = new HashMapPropertyResolver();
+        PropertyResolveManager prm = getPropertyResolveManager(hpr);
 
         Replacer replacer = new Replacer(prm);
         EntityManager entityManager = new EntityManager(source);
@@ -62,7 +63,7 @@ public class TestVelocityFilter {
     public void testNotReplacedProperty() throws Exception {
         File source = new File("target/test-classes/testVelocityFilter/wrong/notReplacedProperty/package");
 
-        SimplePropertyResolver spr = new SimplePropertyResolver();
+        HashMapPropertyResolver spr = new HashMapPropertyResolver();
         PropertyResolveManager prm = getPropertyResolveManager(spr);
 
         Replacer replacer = new Replacer(prm);
@@ -80,7 +81,7 @@ public class TestVelocityFilter {
     public void testSimpleReplacement() throws Exception {
         File source = new File("target/test-classes/testVelocityFilter/correct/simple/package");
 
-        SimplePropertyResolver spr = new SimplePropertyResolver();
+        HashMapPropertyResolver spr = new HashMapPropertyResolver();
 
         PropertyResolveManager prm = getPropertyResolveManager(spr);
 
@@ -99,7 +100,7 @@ public class TestVelocityFilter {
     public void testWithIfReplacement() throws Exception {
         File source = new File("target/test-classes/testVelocityFilter/correct/ifCondition/package");
 
-        SimplePropertyResolver spr = new SimplePropertyResolver();
+        HashMapPropertyResolver spr = new HashMapPropertyResolver();
         spr.addProperty("use.jdbc", "true");
         PropertyResolveManager prm = getPropertyResolveManager(spr);
 
@@ -118,7 +119,7 @@ public class TestVelocityFilter {
     public void testWithIfElseReplacement() throws Exception {
         File source = new File("target/test-classes/testVelocityFilter/correct/ifElseCondition/package");
 
-        SimplePropertyResolver spr = new SimplePropertyResolver();
+        HashMapPropertyResolver spr = new HashMapPropertyResolver();
         spr.addProperty("use.jdbc", "false");
         PropertyResolveManager prm = getPropertyResolveManager(spr);
 
@@ -137,7 +138,7 @@ public class TestVelocityFilter {
     public void testForEach() throws Exception {
         File source = new File("target/test-classes/testVelocityFilter/correct/forEachCondition/package");
 
-        SimplePropertyResolver spr = new SimplePropertyResolver();
+        HashMapPropertyResolver spr = new HashMapPropertyResolver();
         spr.addProperty("a.list", "1,2,3,foo,bar");
         PropertyResolveManager prm = getPropertyResolveManager(spr);
 
@@ -152,14 +153,14 @@ public class TestVelocityFilter {
         TestUtil.checkIfResultIsAsExpected(source, new File(source, "../result"));
     }
 
-    private PropertyResolveManager getPropertyResolveManager(SimplePropertyResolver spr) {
-        spr.addProperty("foobar1", "foobar1Value");
-        spr.addProperty("foobar2", "foobar2Value");
-        spr.addProperty("jdbc.host.url", "123.123.123.133");
-        spr.addProperty("jdbc.host.port", "1234");
+    private PropertyResolveManager getPropertyResolveManager(HashMapPropertyResolver hpr) {
+        hpr.addProperty("foobar1", "foobar1Value");
+        hpr.addProperty("foobar2", "foobar2Value");
+        hpr.addProperty("jdbc.host.url", "123.123.123.133");
+        hpr.addProperty("jdbc.host.port", "1234");
 
         Set<PropertyResolver> propertyResolverList = new TreeSet<PropertyResolver>();
-        propertyResolverList.add(spr);
+        propertyResolverList.add(hpr);
         PropertyResolveManager prm = new PropertyResolveManager(propertyResolverList);
         return prm;
     }
