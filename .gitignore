@@ -5,3 +5,5 @@
 *.ipr
 *.iws
 target/
+target-ide/
+dependency-reduced-pom.xml

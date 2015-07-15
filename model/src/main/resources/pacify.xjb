@@ -1,0 +1,21 @@
+<jaxb:bindings xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc" xmlns:inheritance="http://jaxb2-commons.dev.java.net/basic/inheritance" xmlns:annox="http://annox.dev.java.net" jaxb:extensionBindingPrefixes="inheritance xjc annox" jaxb:version="2.1">
+>
+    <jaxb:bindings schemaLocation="pacify.xsd" node="/xsd:schema">
+        <jaxb:globalBindings>
+            <xjc:simple/>
+        </jaxb:globalBindings>
+        <jaxb:bindings node="xsd:complexType[@name='PMarker']">
+            <inheritance:extends>PMarkerBase</inheritance:extends>
+            <jaxb:class name="PMarker"/>
+            <annox:annotate>
+                <annox:annotate annox:class="javax.xml.bind.annotation.XmlRootElement" name="Pacify"/>
+            </annox:annotate>
+        </jaxb:bindings>
+        <jaxb:bindings node="xsd:complexType[@name='PMarker']/*/xsd:element[@name='File']">
+            <jaxb:property name="PFiles"/>
+        </jaxb:bindings>
+        <jaxb:bindings node="xsd:complexType[@name='PFile']/*/xsd:element[@name='Property']">
+            <jaxb:property name="PProperties"/>
+        </jaxb:bindings>
+    </jaxb:bindings>
+</jaxb:bindings>

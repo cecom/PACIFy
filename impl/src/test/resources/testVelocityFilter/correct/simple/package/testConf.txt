@@ -1,0 +1,5 @@
+lajdfgaklösdföasdfas a ${foobar1} adflökaösldfjpqwuerq	2394uoiklf,.s
+lajdfgaklösdföasdfas a ${foobar1} adflökaösldfjpqwuerq	2394uoiklf,.s
+lajdfgaklösdföasdfas a ${foobar2} adflökaösldfjpqwuerq	2394uoiklf,.s
+lajdfgaklösdföasdfas a ${jdbc.host.url} adflökaösldfjpqwuerq   2394uoiklf,.s
+lajdfgaklösdföasdfas a ${jdbc.host.port} adflökaösldfjpqwuerq   2394uoiklf,.s

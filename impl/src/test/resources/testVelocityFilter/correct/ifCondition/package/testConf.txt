@@ -1,0 +1,9 @@
+lajdfgaklösdföasdfas a ${foobar1} adflökaösldfjpqwuerq	2394uoiklf,.s
+lajdfgaklösdföasdfas a ${foobar1} adflökaösldfjpqwuerq	2394uoiklf,.s
+lajdfgaklösdföasdfas a ${foobar2} adflökaösldfjpqwuerq	2394uoiklf,.s
+
+#if(${use.jdbc}=="true")
+${jdbc.host.url} ${jdbc.host.port}
+#{else}
+using Mock
+#end

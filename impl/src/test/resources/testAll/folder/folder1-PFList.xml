@@ -1,7 +1,0 @@
-<?xml version="1.0"?>
-<property_file_list>
-    <property id="foo">
-        <file relative_path="someFolderConf.conf"/>
-        <file relative_path="subfolder/someSubFolderConf.conf"/>
-    </property>
-</property_file_list>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.geewhiz.pacify</groupId>
+        <artifactId>pacify</artifactId>
+        <version>1.0.0</version>
+    </parent>
+    <artifactId>pacify.commandline</artifactId>
+    <name>com.geewhiz.pacify.commandline</name>
+    <packaging>jar</packaging>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.geewhiz.pacify</groupId>
+            <artifactId>pacify.api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.geewhiz.pacify</groupId>
+            <artifactId>pacify.common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.geewhiz.pacify</groupId>
+            <artifactId>pacify.impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.beust</groupId>
+            <artifactId>jcommander</artifactId>
+        </dependency>
+
+        <!-- TEST Dependencies -->
+        <dependency>
+            <groupId>com.geewhiz.pacify</groupId>
+            <artifactId>pacify.resolver.file-resolver</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+         <dependency>
+            <groupId>com.geewhiz.pacify</groupId>
+            <artifactId>pacify.resolver.cmd-resolver</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.geewhiz.pacify</groupId>
+            <artifactId>pacify.common</artifactId>
+            <version>${project.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>false</addClasspath>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            <mainClass>com.geewhiz.pacify.commandline.PacifyViaCommandline</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
