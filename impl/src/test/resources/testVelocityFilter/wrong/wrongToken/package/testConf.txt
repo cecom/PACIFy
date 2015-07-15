@@ -1,7 +1,3 @@
 lajdfgaklösdföasdfas a ${foobar1} adflökaösldfjpqwuerq	2394uoiklf,.s
 lajdfgaklösdföasdfas a ${foobar1} adflökaösldfjpqwuerq	2394uoiklf,.s
 lajdfgaklösdföasdfas a ${foobar2} adflökaösldfjpqwuerq	2394uoiklf,.s
-
-#foreach( $entry in $a.list.split(",") )
-  Entry $entry
-#end

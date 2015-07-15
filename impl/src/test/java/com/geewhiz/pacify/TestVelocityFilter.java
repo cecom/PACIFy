@@ -42,7 +42,7 @@ public class TestVelocityFilter {
 
     @Test
     public void testWrongToken() throws Exception {
-        File source = new File("target/test-classes/testVelocityFilter/wrong/simple/package");
+        File source = new File("target/test-classes/testVelocityFilter/wrong/wrongToken/package");
 
         SimplePropertyResolver spr = new SimplePropertyResolver();
         PropertyResolveManager prm = getPropertyResolveManager(spr);
@@ -56,6 +56,24 @@ public class TestVelocityFilter {
 
         Assert.assertEquals(1, defects.size());
         Assert.assertEquals("com.geewhiz.pacify.defect.WrongTokenDefinedDefect", defects.get(0).getClass().getName());
+    }
+
+    @Test
+    public void testNotReplacedProperty() throws Exception {
+        File source = new File("target/test-classes/testVelocityFilter/wrong/notReplacedProperty/package");
+
+        SimplePropertyResolver spr = new SimplePropertyResolver();
+        PropertyResolveManager prm = getPropertyResolveManager(spr);
+
+        Replacer replacer = new Replacer(prm);
+        EntityManager entityManager = new EntityManager(source);
+
+        replacer.setPackagePath(source);
+        List<Defect> defects = entityManager.initialize();
+        defects.addAll(replacer.doReplacement(entityManager));
+
+        Assert.assertEquals(1, defects.size());
+        Assert.assertEquals("com.geewhiz.pacify.defect.NotReplacedPropertyDefect", defects.get(0).getClass().getName());
     }
 
     @Test
@@ -120,7 +138,7 @@ public class TestVelocityFilter {
         File source = new File("target/test-classes/testVelocityFilter/correct/forEachCondition/package");
 
         SimplePropertyResolver spr = new SimplePropertyResolver();
-        spr.addProperty("list", "1,2,3,hans,wurst");
+        spr.addProperty("a.list", "1,2,3,foo,bar");
         PropertyResolveManager prm = getPropertyResolveManager(spr);
 
         Replacer replacer = new Replacer(prm);

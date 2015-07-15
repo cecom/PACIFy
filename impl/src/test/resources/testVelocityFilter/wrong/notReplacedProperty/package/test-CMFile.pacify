@@ -3,8 +3,5 @@
     <File RelativePath="testConf.txt" FilterClass="com.geewhiz.pacify.filter.PacifyVelocityFilter">
         <Property Name="foobar1"/>
         <Property Name="foobar2"/>
-        <Property Name="jdbc.host.url"/>
-        <Property Name="jdbc.host.port"/>
-        <Property Name="a.list"/>
     </File>
 </Pacify>
