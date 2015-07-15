@@ -17,7 +17,13 @@
         </xs:sequence>
         <xs:attribute name="RelativePath" type="xs:string" use="required"/>
         <xs:attribute name="Encoding" type="xs:string" default="UTF-8"/>
-        <xs:attribute name="FilterClass" type="xs:string" default="com.geewhiz.pacify.filter.PacifyTokenFilter"/>
+        <xs:attribute name="FilterClass" type="xs:string" default="com.geewhiz.pacify.filter.PacifyTokenFilter">
+                    <xs:annotation>
+                        <xs:documentation xml:lang="en">
+                             Define the class which should filter your file. Default is "com.geewhiz.pacify.filter.PacifyTokenFilter". This filter handles only placeholders. There is another filter "com.geewhiz.pacify.filter.PacifyVelocityFilter". This filter can handle velocity template files. Have a look at the documentation for more information.
+                        </xs:documentation>
+                    </xs:annotation>
+        </xs:attribute>
         <xs:attribute name="BeginToken" type="xs:string"/>
         <xs:attribute name="EndToken" type="xs:string"/>
     </xs:complexType>
