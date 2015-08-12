@@ -1,11 +1,10 @@
 package com.geewhiz.pacify.filter;
 
+import java.io.File;
 import java.util.List;
+import java.util.Map;
 
 import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.managers.PropertyResolveManager;
-import com.geewhiz.pacify.model.PFile;
-import com.geewhiz.pacify.model.PMarker;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -28,6 +27,6 @@ import com.geewhiz.pacify.model.PMarker;
 
 public interface PacifyFilter {
 
-    List<Defect> filter(PropertyResolveManager propertyResolveManager, PMarker pMarker, PFile pFile);
+    List<Defect> filter(Map<String, String> propertyValues, String beginToken, String endToken, File file, String encoding);
 
 }

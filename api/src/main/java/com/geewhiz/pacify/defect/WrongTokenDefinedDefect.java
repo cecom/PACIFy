@@ -24,6 +24,7 @@ import com.geewhiz.pacify.model.PMarker;
 
 public class WrongTokenDefinedDefect implements Defect {
 
+    // TODO: Not used anymore
     private PMarker pMarker;
     private PFile   pFile;
     private String  errorMessage;

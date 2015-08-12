@@ -19,8 +19,11 @@ package com.geewhiz.pacify.managers;
  * under the License.
  */
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,6 +34,7 @@ import com.geewhiz.pacify.defect.FilterNotFoundDefect;
 import com.geewhiz.pacify.filter.PacifyFilter;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
+import com.geewhiz.pacify.model.PProperty;
 
 public class FilterManager {
 
@@ -47,19 +51,25 @@ public class FilterManager {
     public List<Defect> doFilter() {
         List<Defect> defects = new ArrayList<Defect>();
 
-        for (PFile pfile : pMarker.getPFiles()) {
-            logger.debug("     Filtering [{}] using encoding [{}] and filter [{}]", pMarker.getAbsoluteFileFor(pfile).getAbsolutePath(), pfile.getEncoding(),
-                    pfile.getFilterClass());
+        for (PFile pFile : pMarker.getPFiles()) {
+            logger.debug("     Filtering [{}] using encoding [{}] and filter [{}]", pMarker.getAbsoluteFileFor(pFile).getAbsolutePath(), pFile.getEncoding(),
+                    pFile.getFilterClass());
 
-            PacifyFilter pacifyFilter = getFilterForPFile(pfile);
+            PacifyFilter pacifyFilter = getFilterForPFile(pFile);
 
             if (pacifyFilter == null) {
-                defects.add(new FilterNotFoundDefect(pMarker, pfile));
+                defects.add(new FilterNotFoundDefect(pMarker, pFile));
             } else {
-                defects.addAll(pacifyFilter.filter(propertyResolveManager, pMarker, pfile));
+                Map<String, String> propertyValues = getPropertyValues(pFile);
+                String beginToken = pMarker.getBeginTokenFor(pFile);
+                String endToken = pMarker.getEndTokenFor(pFile);
+                File file = pMarker.getAbsoluteFileFor(pFile);
+                String encoding = pFile.getEncoding();
+
+                defects.addAll(pacifyFilter.filter(propertyValues, beginToken, endToken, file, encoding));
 
                 CheckForNotReplacedTokens checker = new CheckForNotReplacedTokens();
-                defects.addAll(checker.checkForErrors(pMarker, pfile));
+                defects.addAll(checker.checkForErrors(pMarker, pFile));
             }
         }
 
@@ -67,6 +77,18 @@ public class FilterManager {
             pMarker.getFile().delete();
         }
         return defects;
+    }
+
+    private Map<String, String> getPropertyValues(PFile pFile) {
+        HashMap<String, String> result = new HashMap<String, String>();
+
+        for (PProperty pProperty : pFile.getPProperties()) {
+            String propertyName = pProperty.getName();
+            String propertyValue = propertyResolveManager.getPropertyValue(pProperty);
+            result.put(propertyName, propertyValue);
+        }
+
+        return result;
     }
 
     private PacifyFilter getFilterForPFile(PFile pFile) {
