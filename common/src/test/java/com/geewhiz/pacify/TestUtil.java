@@ -105,6 +105,7 @@ public class TestUtil {
         return files;
     }
 
+    // TODO: es sollten nur die Testdaten gelöscht werden, die für die jeweilige Klasse relevant sind, nicht alle
     public static void removeOldTestResourcesAndCopyAgain() {
         File testClassesFolder = new File("target/test-classes");
         if (testClassesFolder.exists()) {

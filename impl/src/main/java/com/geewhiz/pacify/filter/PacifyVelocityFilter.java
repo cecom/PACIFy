@@ -56,12 +56,7 @@ public class PacifyVelocityFilter implements PacifyFilter {
         // "If you use the PacifyVelocityFilter class, only \"" + END_TOKEN + "\" is allowed as end token."));
         // }
 
-        File tmpFile;
-        try {
-            tmpFile = File.createTempFile(file.getName(), "tmp", file.getParentFile());
-        } catch (IOException e) {
-            throw new RuntimeException("Couldn't create tmp file!", e);
-        }
+        File tmpFile = com.geewhiz.pacify.utils.FileUtils.createTempFile(file.getParentFile(), file.getName());
 
         Template template = getTemplate(file, encoding);
         Context context = getContext(propertyValues, file);

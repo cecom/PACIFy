@@ -74,4 +74,12 @@ public class FileUtils {
         }
     }
 
+    public static File createTempFile(File folder, String prefix) {
+        try {
+            return File.createTempFile(prefix, "tmp", folder);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }

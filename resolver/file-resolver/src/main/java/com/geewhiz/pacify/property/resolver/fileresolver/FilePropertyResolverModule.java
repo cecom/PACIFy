@@ -78,6 +78,8 @@ public class FilePropertyResolverModule extends PropertyResolverModule {
             if (file.isFile()) {
                 return FileUtils.getFileUrl(file);
             }
+
+            // TODO: keine Runtime werfen, sondern einen Defect
             throw new RuntimeException("You specified a property file [" + filePath
                     + "] which is not a file... Aborting!");
         }
@@ -87,6 +89,7 @@ public class FilePropertyResolverModule extends PropertyResolverModule {
             return url;
         }
 
+        // TODO: keine Runtime werfen, sondern einen Defect
         throw new RuntimeException("Couldn't find property File [" + filePath
                 + "] in Classpath nor absolute... Aborting!");
 

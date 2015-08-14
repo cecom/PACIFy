@@ -1,7 +1,6 @@
 package com.geewhiz.pacify.defect;
 
 import com.geewhiz.pacify.model.PArchive;
-import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
 
 /*
@@ -23,32 +22,19 @@ import com.geewhiz.pacify.model.PMarker;
  * under the License.
  */
 
-public class FilterNotFoundDefect implements Defect {
+public class ArchiveTypeNotImplementedDefect implements Defect {
 
     private PMarker  pMarker;
-    private PFile    pFile;
     private PArchive pArchive;
 
-    public FilterNotFoundDefect(PMarker pMarker, PFile pFile) {
-        this(pMarker, null, pFile);
-    }
-
-    public FilterNotFoundDefect(PMarker pMarker, PArchive pArchive, PFile pFile) {
+    public ArchiveTypeNotImplementedDefect(PMarker pMarker, PArchive pArchive) {
         this.pMarker = pMarker;
         this.pArchive = pArchive;
-        this.pFile = pFile;
     }
 
     public String getDefectMessage() {
-        if (pArchive == null) {
-            return String.format("FilterNotFoundFound: \n\t[MarkerFile=%s]\n\t[File=%s]\n\t[FilterClass=%s]", pMarker.getFile().getAbsolutePath(),
-                    pFile.getRelativePath(), pFile.getFilterClass());
-        } else {
-            return String.format("FilterNotFoundFound: \n\t[MarkerFile=%s]\n\t[Archive=%s]\n\t[File=%s]\n\t[FilterClass=%s]", pMarker.getFile()
-                    .getAbsolutePath(),
-                    pArchive.getRelativePath(), pFile.getRelativePath(), pFile.getFilterClass());
-        }
-
+        return String.format("ArchiveTypeNotImplemented: \n\t[MarkerFile=%s]\n\t[Archive=%s]\n\t[Type=%s]", pMarker.getFile().getAbsolutePath(),
+                pArchive.getRelativePath(), pArchive.getType());
     }
 
 }
