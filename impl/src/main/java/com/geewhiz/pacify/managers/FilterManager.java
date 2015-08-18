@@ -141,19 +141,15 @@ public class FilterManager {
     }
 
     private File extractFile(PArchive pArchive, PFile pFile) {
-        InputStream is = null;
-        ArchiveInputStream in = null;
-
+        ArchiveInputStream ais = null;
         try {
             ArchiveStreamFactory factory = new ArchiveStreamFactory();
 
             File archiveFile = pMarker.getAbsoluteFileFor(pArchive);
-
-            is = new FileInputStream(archiveFile);
-            in = factory.createArchiveInputStream(pArchive.getType(), is);
+            ais = factory.createArchiveInputStream(pArchive.getType(), new FileInputStream(archiveFile));
 
             ArchiveEntry entry;
-            while ((entry = in.getNextEntry()) != null) {
+            while ((entry = ais.getNextEntry()) != null) {
                 if (!pFile.getRelativePath().equals(entry.getName())) {
                     continue;
                 }
@@ -164,7 +160,7 @@ public class FilterManager {
                 BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(result));
 
                 int len;
-                while ((len = in.read(content)) != -1)
+                while ((len = ais.read(content)) != -1)
                 {
                     bos.write(content, 0, len);
                 }
@@ -185,17 +181,16 @@ public class FilterManager {
             throw new RuntimeException(e);
         }
         finally {
-            IOUtils.closeQuietly(in);
-            IOUtils.closeQuietly(is);
+            IOUtils.closeQuietly(ais);
         }
     }
 
     private void replaceFileInArchive(PArchive pArchive, PFile pFile, File replaceWith) {
         ArchiveStreamFactory factory = new ArchiveStreamFactory();
 
-        InputStream is = null;
-        ArchiveInputStream in = null;
-        ArchiveOutputStream out = null;
+        InputStream archiveInputStream = null;
+        ArchiveInputStream ais = null;
+        ArchiveOutputStream aos = null;
 
         File archiveFile = pMarker.getAbsoluteFileFor(pArchive);
         File tmpZip = FileUtils.createTempFile(archiveFile.getParentFile(), archiveFile.getName());
@@ -205,17 +200,17 @@ public class FilterManager {
 
             String fileToReplace = pFile.getRelativePath();
 
-            out = factory.createArchiveOutputStream(pArchive.getType(), new FileOutputStream(tmpZip));
-            entry = out.createArchiveEntry(replaceWith, fileToReplace);
+            aos = factory.createArchiveOutputStream(pArchive.getType(), new FileOutputStream(tmpZip));
+            entry = aos.createArchiveEntry(replaceWith, fileToReplace);
 
             ChangeSet changes = new ChangeSet();
             changes.add(entry, new FileInputStream(replaceWith), true);
 
-            is = new FileInputStream(archiveFile);
-            in = factory.createArchiveInputStream(pArchive.getType(), is);
+            archiveInputStream = new FileInputStream(archiveFile);
+            ais = factory.createArchiveInputStream(pArchive.getType(), archiveInputStream);
 
             ChangeSetPerformer performer = new ChangeSetPerformer(changes);
-            performer.perform(in, out);
+            performer.perform(ais, aos);
         } catch (IOException e) {
             // TODO: eigene exception
             throw new RuntimeException(e);
@@ -224,9 +219,9 @@ public class FilterManager {
             throw new RuntimeException(e);
         }
         finally {
-            IOUtils.closeQuietly(out);
-            IOUtils.closeQuietly(in);
-            IOUtils.closeQuietly(is);
+            IOUtils.closeQuietly(aos);
+            IOUtils.closeQuietly(ais);
+            IOUtils.closeQuietly(archiveInputStream);
         }
 
         if (!archiveFile.delete()) {

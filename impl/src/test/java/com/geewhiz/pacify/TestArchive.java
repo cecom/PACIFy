@@ -1,10 +1,20 @@
 package com.geewhiz.pacify;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.ArchiveException;
+import org.apache.commons.compress.archivers.ArchiveInputStream;
+import org.apache.commons.compress.archivers.ArchiveStreamFactory;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -41,48 +51,72 @@ public class TestArchive {
     }
 
     @Test
-    public void checkJar() {
-        File testStartPath = new File("target/test-classes/testArchive/correct/jar/package");
+    public void checkJar() throws ArchiveException, IOException {
+        File basePath = new File("target/test-classes/testArchive/correct/jar");
+        File packagePath = new File(basePath, "package");
 
         HashMapPropertyResolver hpr = new HashMapPropertyResolver();
         PropertyResolveManager prm = getPropertyResolveManager(hpr);
 
         Replacer replacer = new Replacer(prm);
-        EntityManager entityManager = new EntityManager(testStartPath);
+        EntityManager entityManager = new EntityManager(packagePath);
 
-        replacer.setPackagePath(testStartPath);
+        replacer.setPackagePath(packagePath);
         List<Defect> defects = entityManager.initialize();
         defects.addAll(replacer.doReplacement(entityManager));
+
+        Assert.assertEquals("We shouldnt get any defects.", 0, defects.size());
+
+        File expectedArchive = new File(basePath, "result/archive.jar");
+        File outputArchive = new File(basePath, "package/archive.jar");
+
+        resultIsAsExpected(outputArchive, expectedArchive);
     }
 
     @Test
-    public void checkTar() {
-        File testStartPath = new File("target/test-classes/testArchive/correct/tar/package");
+    public void checkTar() throws ArchiveException, IOException {
+        File basePath = new File("target/test-classes/testArchive/correct/tar");
+        File packagePath = new File(basePath, "package");
 
         HashMapPropertyResolver hpr = new HashMapPropertyResolver();
         PropertyResolveManager prm = getPropertyResolveManager(hpr);
 
         Replacer replacer = new Replacer(prm);
-        EntityManager entityManager = new EntityManager(testStartPath);
+        EntityManager entityManager = new EntityManager(packagePath);
 
-        replacer.setPackagePath(testStartPath);
+        replacer.setPackagePath(packagePath);
         List<Defect> defects = entityManager.initialize();
         defects.addAll(replacer.doReplacement(entityManager));
+
+        Assert.assertEquals("We shouldnt get any defects.", 0, defects.size());
+
+        File expectedArchive = new File(basePath, "result/archive.tar");
+        File outputArchive = new File(basePath, "package/archive.tar");
+
+        resultIsAsExpected(outputArchive, expectedArchive);
     }
 
     @Test
-    public void checkZip() {
-        File testStartPath = new File("target/test-classes/testArchive/correct/zip/package");
+    public void checkZip() throws ArchiveException, IOException {
+        File basePath = new File("target/test-classes/testArchive/correct/zip");
+        File packagePath = new File(basePath, "package");
 
         HashMapPropertyResolver hpr = new HashMapPropertyResolver();
         PropertyResolveManager prm = getPropertyResolveManager(hpr);
 
         Replacer replacer = new Replacer(prm);
-        EntityManager entityManager = new EntityManager(testStartPath);
+        EntityManager entityManager = new EntityManager(packagePath);
 
-        replacer.setPackagePath(testStartPath);
+        replacer.setPackagePath(packagePath);
         List<Defect> defects = entityManager.initialize();
         defects.addAll(replacer.doReplacement(entityManager));
+
+        Assert.assertEquals("We shouldnt get any defects.", 0, defects.size());
+
+        File expectedArchive = new File(basePath, "result/archive.zip");
+        File outputArchive = new File(basePath, "package/archive.zip");
+
+        resultIsAsExpected(outputArchive, expectedArchive);
     }
 
     private PropertyResolveManager getPropertyResolveManager(HashMapPropertyResolver hpr) {
@@ -95,4 +129,51 @@ public class TestArchive {
         return prm;
     }
 
+    private boolean resultIsAsExpected(File replacedArchive, File expectedArchive) throws ArchiveException, IOException {
+        ArchiveStreamFactory factory = new ArchiveStreamFactory();
+
+        FileInputStream replacedIS = new FileInputStream(replacedArchive);
+        FileInputStream expectedIS = new FileInputStream(expectedArchive);
+
+        ArchiveInputStream replacedAIS = factory.createArchiveInputStream(new BufferedInputStream(replacedIS));
+        ArchiveInputStream expectedAIS = factory.createArchiveInputStream(new BufferedInputStream(expectedIS));
+
+        ArchiveEntry expectedEntry = null;
+        while ((expectedEntry = expectedAIS.getNextEntry()) != null) {
+            ArchiveEntry replacedEntry = replacedAIS.getNextEntry();
+            Assert.assertNotNull("We expect an entry.", replacedEntry);
+
+            Assert.assertEquals(expectedEntry.getName(), replacedEntry.getName());
+
+            if (expectedEntry.isDirectory()) {
+                continue;
+            }
+
+            ByteArrayOutputStream expectedContent = readContent(expectedAIS);
+            ByteArrayOutputStream replacedContent = readContent(replacedAIS);
+
+            Assert.assertEquals(expectedContent.toString("UTF-8"), replacedContent.toString("UTF-8"));
+        }
+
+        replacedIS.close();
+        expectedIS.close();
+
+        return true;
+    }
+
+    private ByteArrayOutputStream readContent(ArchiveInputStream ais) throws IOException {
+        byte[] content = new byte[2048];
+        ByteArrayOutputStream result = new ByteArrayOutputStream();
+        BufferedOutputStream bos = new BufferedOutputStream(result);
+
+        int len;
+        while ((len = ais.read(content)) != -1)
+        {
+            bos.write(content, 0, len);
+        }
+        bos.close();
+        content = null;
+
+        return result;
+    }
 }
