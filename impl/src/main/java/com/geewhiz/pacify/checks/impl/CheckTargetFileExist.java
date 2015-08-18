@@ -25,7 +25,7 @@ import java.util.List;
 
 import com.geewhiz.pacify.checks.PMarkerCheck;
 import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.defect.TargetFileDoesNotExistDefect;
+import com.geewhiz.pacify.defect.FileDoesNotExistDefect;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
 
@@ -39,7 +39,7 @@ public class CheckTargetFileExist implements PMarkerCheck {
             if (file.exists() && file.isFile()) {
                 continue;
             }
-            Defect defect = new TargetFileDoesNotExistDefect(pMarker, pFile);
+            Defect defect = new FileDoesNotExistDefect(pMarker, pFile);
             defects.add(defect);
         }
 

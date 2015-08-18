@@ -1,5 +1,6 @@
 package com.geewhiz.pacify.defect;
 
+import com.geewhiz.pacify.model.PArchive;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
 
@@ -25,19 +26,36 @@ import com.geewhiz.pacify.model.PMarker;
 public class WrongTokenDefinedDefect implements Defect {
 
     // TODO: Not used anymore
-    private PMarker pMarker;
-    private PFile   pFile;
-    private String  errorMessage;
+    private PMarker  pMarker;
+    private PArchive pArchive;
+    private PFile    pFile;
+    private String   errorMessage;
 
     public WrongTokenDefinedDefect(PMarker pMarker, PFile pFile, String errorMessage) {
+
         this.pMarker = pMarker;
         this.pFile = pFile;
         this.errorMessage = errorMessage;
     }
 
+    public WrongTokenDefinedDefect(PMarker pMarker, PArchive pArchive, PFile pFile, String errorMessage) {
+        this(pMarker, pFile, errorMessage);
+        this.pArchive = pArchive;
+    }
+
     public String getDefectMessage() {
-        return String.format("WrongTokenDefined: \n\t[MarkerFile=%s]\n\t[File=%s]\n\t[FilterClass=%s]\n\t[ErrorMessage=%s]",
-                pMarker.getFile().getAbsolutePath(),
-                pFile.getRelativePath(), pFile.getFilterClass(), errorMessage);
+        StringBuffer result = new StringBuffer();
+        result.append(String.format("WrongTokenDefined: \n\t[MarkerFile=%s]", pMarker.getFile().getAbsolutePath()));
+        if (pArchive != null) {
+            result.append(String.format("\n\t[Archive=%s]", pMarker.getAbsoluteFileFor(pArchive)));
+            if (pFile != null) {
+                result.append(String.format("\n\t[Archive File=%s]", pFile.getRelativePath()));
+            }
+        } else {
+            result.append(String.format("\n\t[File=%s]", pMarker.getAbsoluteFileFor(pFile)));
+        }
+
+        result.append(String.format("\n\t[ErrorMessage=%s]", errorMessage));
+        return result.toString();
     }
 }

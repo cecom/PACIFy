@@ -12,6 +12,9 @@ import org.apache.tools.ant.types.FilterSetCollection;
 import org.apache.tools.ant.util.FileUtils;
 
 import com.geewhiz.pacify.defect.Defect;
+import com.geewhiz.pacify.model.PArchive;
+import com.geewhiz.pacify.model.PFile;
+import com.geewhiz.pacify.model.PMarker;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -33,6 +36,10 @@ import com.geewhiz.pacify.defect.Defect;
  */
 
 public class PacifyTokenFilter implements PacifyFilter {
+
+    public PacifyTokenFilter(PMarker pMarker, PArchive pArchive, PFile pFile) {
+        // this filter doesn't need this parameters, but this constructor is needed.
+    }
 
     @Override
     public List<Defect> filter(Map<String, String> propertyValues, String beginToken, String endToken, File file, String encoding) {

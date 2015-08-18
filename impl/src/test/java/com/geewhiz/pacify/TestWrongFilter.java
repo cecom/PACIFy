@@ -29,6 +29,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.geewhiz.pacify.defect.Defect;
+import com.geewhiz.pacify.defect.FileDoesNotExistDefect;
 import com.geewhiz.pacify.managers.FilterManager;
 import com.geewhiz.pacify.model.ObjectFactory;
 import com.geewhiz.pacify.model.PMarker;
@@ -48,6 +49,6 @@ public class TestWrongFilter {
         List<Defect> defects = manager.doFilter();
 
         Assert.assertEquals(1, defects.size());
-        Assert.assertEquals("com.geewhiz.pacify.defect.FilterNotFoundDefect", defects.get(0).getClass().getName());
+        Assert.assertEquals(FileDoesNotExistDefect.class.getName(), defects.get(0).getClass().getName());
     }
 }

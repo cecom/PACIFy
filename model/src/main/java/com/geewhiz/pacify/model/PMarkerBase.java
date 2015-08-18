@@ -76,12 +76,32 @@ public abstract class PMarkerBase {
         return new File(getFolder(), pArchive.getRelativePath());
     }
 
-    public String getBeginTokenFor(PFile pfile) {
-        return pfile.getBeginToken() != null ? pfile.getBeginToken() : getBeginToken();
+    public String getBeginTokenFor(PFile pFile) {
+        return pFile.getBeginToken() != null ? pFile.getBeginToken() : getBeginToken();
     }
 
-    public String getEndTokenFor(PFile pfile) {
-        return pfile.getBeginToken() != null ? pfile.getEndToken() : getEndToken();
+    public String getBeginTokenFor(PArchive pArchive, PFile pFile) {
+        if (pFile.getBeginToken() != null) {
+            return pFile.getBeginToken();
+        }
+        if (pArchive.getBeginToken() != null) {
+            return pArchive.getBeginToken();
+        }
+        return getBeginToken();
+    }
+
+    public String getEndTokenFor(PFile pFile) {
+        return pFile.getEndToken() != null ? pFile.getEndToken() : getEndToken();
+    }
+
+    public String getEndTokenFor(PArchive pArchive, PFile pFile) {
+        if (pFile.getEndToken() != null) {
+            return pFile.getEndToken();
+        }
+        if (pArchive.getEndToken() != null) {
+            return pArchive.getEndToken();
+        }
+        return getEndToken();
     }
 
     public abstract String getEndToken();

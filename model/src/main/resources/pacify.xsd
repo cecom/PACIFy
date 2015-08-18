@@ -16,16 +16,15 @@
         <xs:sequence maxOccurs="unbounded">
             <xs:element name="File" type="PFile"/>
         </xs:sequence>
-        <xs:attribute name="RelativePath" type="xs:string" use="required"/>
-        <xs:attribute name="Type">
-            <xs:simpleType>
-                <xs:restriction base="xs:string">
-                    <xs:enumeration value="jar"/>
-                    <xs:enumeration value="tar"/>
-                    <xs:enumeration value="zip"/>
-                </xs:restriction>
-            </xs:simpleType>
+        <xs:attribute name="RelativePath" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation xml:lang="en">
+                             Currently supported file name extension are zip, jar, war, ear and tar. 
+                        </xs:documentation>
+            </xs:annotation>
         </xs:attribute>
+        <xs:attribute name="BeginToken" type="xs:string"/>
+        <xs:attribute name="EndToken" type="xs:string"/>
     </xs:complexType>
     <xs:complexType name="PFile">
         <xs:sequence maxOccurs="unbounded">

@@ -47,6 +47,7 @@ import org.apache.logging.log4j.Logger;
 import com.geewhiz.pacify.checks.impl.CheckForNotReplacedTokens;
 import com.geewhiz.pacify.defect.ArchiveTypeNotImplementedDefect;
 import com.geewhiz.pacify.defect.Defect;
+import com.geewhiz.pacify.defect.FileDoesNotExistDefect;
 import com.geewhiz.pacify.defect.FilterNotFoundDefect;
 import com.geewhiz.pacify.filter.PacifyFilter;
 import com.geewhiz.pacify.model.PArchive;
@@ -90,6 +91,11 @@ public class FilterManager {
         logger.debug("     Filtering [{}] using encoding [{}] and filter [{}]", pMarker.getAbsoluteFileFor(pFile).getAbsolutePath(), pFile.getEncoding(),
                 pFile.getFilterClass());
 
+        File file = pMarker.getAbsoluteFileFor(pFile);
+        if (!file.exists()) {
+            return Arrays.asList(new FileDoesNotExistDefect(pMarker, pFile));
+        }
+
         PacifyFilter pacifyFilter = getFilterForPFile(pFile);
 
         if (pacifyFilter == null) {
@@ -99,7 +105,6 @@ public class FilterManager {
         Map<String, String> propertyValues = getPropertyValues(pFile);
         String beginToken = pMarker.getBeginTokenFor(pFile);
         String endToken = pMarker.getEndTokenFor(pFile);
-        File file = pMarker.getAbsoluteFileFor(pFile);
         String encoding = pFile.getEncoding();
 
         List<Defect> defects = new ArrayList<Defect>();
@@ -112,7 +117,13 @@ public class FilterManager {
     }
 
     private List<? extends Defect> filterPArchive(PArchive pArchive) {
-        if (!checkArchiveType(pArchive)) {
+        File file = pMarker.getAbsoluteFileFor(pArchive);
+        if (!file.exists()) {
+            return Arrays.asList(new FileDoesNotExistDefect(pMarker, pArchive));
+        }
+
+        String archiveType = getArchiveType(pArchive);
+        if (archiveType == null) {
             return Arrays.asList(new ArchiveTypeNotImplementedDefect(pMarker, pArchive));
         }
 
@@ -129,8 +140,8 @@ public class FilterManager {
             }
 
             Map<String, String> propertyValues = getPropertyValues(pFile);
-            String beginToken = pMarker.getBeginTokenFor(pFile);
-            String endToken = pMarker.getEndTokenFor(pFile);
+            String beginToken = pMarker.getBeginTokenFor(pArchive, pFile);
+            String endToken = pMarker.getEndTokenFor(pArchive, pFile);
             String encoding = pFile.getEncoding();
 
             defects.addAll(pacifyFilter.filter(propertyValues, beginToken, endToken, extractedFile, encoding));
@@ -155,6 +166,7 @@ public class FilterManager {
                 }
 
                 File result = FileUtils.createTempFile(archiveFile.getParentFile(), archiveFile.getName());
+                result.deleteOnExit();
 
                 byte[] content = new byte[2048];
                 BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(result));
@@ -171,13 +183,10 @@ public class FilterManager {
             }
             return null;
         } catch (ArchiveException e) {
-            // TODO: eigene exception
             throw new RuntimeException(e);
         } catch (FileNotFoundException e) {
-            // TODO: eigene exception
             throw new RuntimeException(e);
         } catch (IOException e) {
-            // TODO: eigene exception
             throw new RuntimeException(e);
         }
         finally {
@@ -212,10 +221,8 @@ public class FilterManager {
             ChangeSetPerformer performer = new ChangeSetPerformer(changes);
             performer.perform(ais, aos);
         } catch (IOException e) {
-            // TODO: eigene exception
             throw new RuntimeException(e);
         } catch (ArchiveException e) {
-            // TODO: eigene exception
             throw new RuntimeException(e);
         }
         finally {
@@ -233,18 +240,23 @@ public class FilterManager {
         }
     }
 
-    private boolean checkArchiveType(PArchive pArchive) {
-        String type = pArchive.getType();
-        if (ArchiveStreamFactory.JAR.equals(type)) {
-            return true;
+    private String getArchiveType(PArchive pArchive) {
+        if ("jar".equalsIgnoreCase(pArchive.getType())) {
+            return ArchiveStreamFactory.JAR;
         }
-        if (ArchiveStreamFactory.ZIP.equals(type)) {
-            return true;
+        if ("war".equalsIgnoreCase(pArchive.getType())) {
+            return ArchiveStreamFactory.JAR;
         }
-        if (ArchiveStreamFactory.TAR.equals(type)) {
-            return true;
+        if ("ear".equalsIgnoreCase(pArchive.getType())) {
+            return ArchiveStreamFactory.JAR;
         }
-        return false;
+        if ("zip".equalsIgnoreCase(pArchive.getType())) {
+            return ArchiveStreamFactory.ZIP;
+        }
+        if ("tar".equalsIgnoreCase(pArchive.getType())) {
+            return ArchiveStreamFactory.TAR;
+        }
+        return null;
     }
 
     private Map<String, String> getPropertyValues(PFile pFile) {
@@ -260,10 +272,14 @@ public class FilterManager {
     }
 
     private PacifyFilter getFilterForPFile(PFile pFile) {
+        return getFilterForPFile(null, pFile);
+    }
+
+    private PacifyFilter getFilterForPFile(PArchive pArchive, PFile pFile) {
         String filterClass = pFile.getFilterClass();
 
         try {
-            return (PacifyFilter) Class.forName(filterClass).newInstance();
+            return (PacifyFilter) Class.forName(filterClass).getConstructor(PMarker.class, PArchive.class, PFile.class).newInstance(pMarker, pArchive, pFile);
         } catch (Exception e) {
             logger.debug("Error while instantiate filter class [" + filterClass + "]", e);
             return null;

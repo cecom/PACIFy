@@ -16,6 +16,10 @@ import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.context.Context;
 
 import com.geewhiz.pacify.defect.Defect;
+import com.geewhiz.pacify.defect.WrongTokenDefinedDefect;
+import com.geewhiz.pacify.model.PArchive;
+import com.geewhiz.pacify.model.PFile;
+import com.geewhiz.pacify.model.PMarker;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -41,20 +45,29 @@ public class PacifyVelocityFilter implements PacifyFilter {
     private static final String BEGIN_TOKEN = "${";
     private static final String END_TOKEN   = "}";
 
+    private PMarker             pMarker;
+    private PArchive            pArchive;
+    private PFile               pFile;
+
+    public PacifyVelocityFilter(PMarker pMarker, PArchive pArchive, PFile pFile) {
+        this.pMarker = pMarker;
+        this.pArchive = pArchive;
+        this.pFile = pFile;
+    }
+
     @Override
     public List<Defect> filter(Map<String, String> propertyValues, String beginToken, String endToken, File file, String encoding) {
         List<Defect> defects = new ArrayList<Defect>();
 
-        // TODO:
-        // if (!BEGIN_TOKEN.equals(beginToken)) {
-        // defects.add(new WrongTokenDefinedDefect(file,
-        // "If you use the PacifyVelocityFilter class, only \"" + BEGIN_TOKEN + "\" is allowed as start token."));
-        // }
-        //
-        // if (!END_TOKEN.equals(pMarker.getEndTokenFor(pFile))) {
-        // defects.add(new WrongTokenDefinedDefect(pMarker, pFile,
-        // "If you use the PacifyVelocityFilter class, only \"" + END_TOKEN + "\" is allowed as end token."));
-        // }
+        if (!BEGIN_TOKEN.equals(beginToken)) {
+            defects.add(new WrongTokenDefinedDefect(pMarker, pArchive, pFile,
+                    "If you use the PacifyVelocityFilter class, only \"" + BEGIN_TOKEN + "\" is allowed as start token."));
+        }
+
+        if (!END_TOKEN.equals(pMarker.getEndTokenFor(pFile))) {
+            defects.add(new WrongTokenDefinedDefect(pMarker, pArchive, pFile,
+                    "If you use the PacifyVelocityFilter class, only \"" + END_TOKEN + "\" is allowed as end token."));
+        }
 
         File tmpFile = com.geewhiz.pacify.utils.FileUtils.createTempFile(file.getParentFile(), file.getName());
 

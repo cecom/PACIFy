@@ -33,8 +33,9 @@ public class ArchiveTypeNotImplementedDefect implements Defect {
     }
 
     public String getDefectMessage() {
+        int idx = pArchive.getRelativePath().lastIndexOf(".");
+        String type = pArchive.getRelativePath().substring(idx);
         return String.format("ArchiveTypeNotImplemented: \n\t[MarkerFile=%s]\n\t[Archive=%s]\n\t[Type=%s]", pMarker.getFile().getAbsolutePath(),
-                pArchive.getRelativePath(), pArchive.getType());
+                pArchive.getRelativePath(), type);
     }
-
 }
