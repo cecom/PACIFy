@@ -1,5 +1,6 @@
 package com.geewhiz.pacify.commandline;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.logging.log4j.Level;
@@ -19,7 +20,9 @@ import com.geewhiz.pacify.commandline.commands.ReplacerCommand;
 import com.geewhiz.pacify.commandline.commands.ShowUsedPropertiesCommand;
 import com.geewhiz.pacify.commandline.commands.ValidateCommand;
 import com.geewhiz.pacify.commandline.commands.ValidateMarkerFilesCommand;
+import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.resolver.PropertyResolverModule;
+import com.geewhiz.pacify.utils.DefectUtils;
 import com.geewhiz.pacify.utils.LoggingUtils;
 import com.geewhiz.pacify.utils.Utils;
 import com.google.inject.Guice;
@@ -87,21 +90,26 @@ public class PacifyViaCommandline {
             LoggingUtils.setLogLevel(logger, Level.ERROR);
         }
 
-        if ("replace".equals(jc.getParsedCommand())) {
-            return executeReplacer(replacerCommand);
-        } else if ("createPropertyFile".equals(jc.getParsedCommand())) {
-            return executeCreatePropertyFile(createPropertyFileCommand);
-        } else if ("validate".equals(jc.getParsedCommand())) {
-            return executeValidate(validateCommand);
-        } else if ("validateMarkerFiles".equals(jc.getParsedCommand())) {
-            return executeValidateMarkerFiles(validateMarkerFilesCommand);
-        } else if ("showUsedProperties".equals(jc.getParsedCommand())) {
-            return executeShowUsedProperties(showUsedPropertiesCommand);
-        } else {
-            jc.usage();
-            if (mainCommand.isHelp()) {
-                return 0;
+        try {
+            if ("replace".equals(jc.getParsedCommand())) {
+                return executeReplacer(replacerCommand);
+            } else if ("createPropertyFile".equals(jc.getParsedCommand())) {
+                return executeCreatePropertyFile(createPropertyFileCommand);
+            } else if ("validate".equals(jc.getParsedCommand())) {
+                return executeValidate(validateCommand);
+            } else if ("validateMarkerFiles".equals(jc.getParsedCommand())) {
+                return executeValidateMarkerFiles(validateMarkerFilesCommand);
+            } else if ("showUsedProperties".equals(jc.getParsedCommand())) {
+                return executeShowUsedProperties(showUsedPropertiesCommand);
+            } else {
+                jc.usage();
+                if (mainCommand.isHelp()) {
+                    return 0;
+                }
             }
+        } catch (Exception e) {
+            logger.debug("We got an Exception.", e);
+            return 1;
         }
         return 1;
     }
@@ -155,8 +163,14 @@ public class PacifyViaCommandline {
     private static Injector getInjector(BasePropertyResolverCommand command) {
         List<PropertyResolverModule> propertyResolverModules = command.getPropertyResolverModules();
 
+        List<Defect> defects = new ArrayList<Defect>();
+        for (PropertyResolverModule propertyResolverModule : propertyResolverModules) {
+            defects.addAll(propertyResolverModule.getDefects());
+        }
+
+        DefectUtils.abortIfDefectExists(defects);
+
         Injector injector = Guice.createInjector(propertyResolverModules);
         return injector;
     }
-
 }

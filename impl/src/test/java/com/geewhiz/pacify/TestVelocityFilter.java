@@ -10,6 +10,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.geewhiz.pacify.defect.Defect;
+import com.geewhiz.pacify.defect.WrongTokenDefinedDefect;
 import com.geewhiz.pacify.managers.EntityManager;
 import com.geewhiz.pacify.managers.PropertyResolveManager;
 import com.geewhiz.pacify.property.resolver.HashMapPropertyResolver;
@@ -54,10 +55,10 @@ public class TestVelocityFilter {
         replacer.setPackagePath(source);
         List<Defect> defects = entityManager.initialize();
         defects.addAll(replacer.doReplacement(entityManager));
-        // TODO:
-        // Assert.assertEquals(1, defects.size());
-        // Assert.assertEquals("com.geewhiz.pacify.defect.WrongTokenDefinedDefect",
-        // defects.get(0).getClass().getName());
+
+        Assert.assertEquals(1, defects.size());
+        Assert.assertEquals(WrongTokenDefinedDefect.class.getName(),
+                defects.get(0).getClass().getName());
     }
 
     @Test

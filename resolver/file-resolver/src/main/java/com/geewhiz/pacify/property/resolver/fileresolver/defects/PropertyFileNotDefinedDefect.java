@@ -1,10 +1,4 @@
-package com.geewhiz.pacify.resolver;
-
-import java.util.List;
-import java.util.Map;
-
-import com.geewhiz.pacify.defect.Defect;
-import com.google.inject.AbstractModule;
+package com.geewhiz.pacify.property.resolver.fileresolver.defects;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -25,17 +19,11 @@ import com.google.inject.AbstractModule;
  * under the License.
  */
 
-/**
- * 
- * a marker class for ServiceLoader.
- * 
- */
-public abstract class PropertyResolverModule extends AbstractModule {
+import com.geewhiz.pacify.defect.Defect;
 
-    public abstract String getResolverId();
+public class PropertyFileNotDefinedDefect implements Defect {
 
-    public abstract void setParameters(Map<String, String> parameters);
-
-    public abstract List<Defect> getDefects();
-
+    public String getDefectMessage() {
+        return String.format("PropertyFileNotDefined: \n\t[Message=%s]", "You have to define the parameter -RFileResolver.file=<path>.");
+    }
 }

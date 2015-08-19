@@ -19,7 +19,11 @@ package com.geewhiz.pacify.commandline;
  * under the License.
  */
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.PrintStream;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -120,4 +124,34 @@ public class TestMultipleResolvers {
         TestUtil.checkIfResultIsAsExpected(myPackagePath, myResultPath, "ASCII");
     }
 
+    @Test
+    public void testMissingPropertyParameter() {
+        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+        PrintStream oldStdOut = System.out;
+        System.setOut(new PrintStream(outContent));
+
+        File testBasePath = new File("target/test-classes/MissingPackage");
+        File myTestProperty = new File(testBasePath, "properties/MissingProperty.properties");
+        File myPackagePath = new File(testBasePath, "package");
+
+        int result = 0;
+
+        result = PacifyViaCommandline.mainInternal(new String[] {
+                "replace",
+                "--packagePath=" + myPackagePath,
+                "--resolvers=FileResolver",
+                "-RFileResolver.file=" + myTestProperty.getAbsolutePath()
+        });
+
+        Assert.assertEquals("We expect an error.", 1, result);
+
+        Pattern p = Pattern.compile("ERROR (.*):");
+        Matcher m = p.matcher(outContent.toString());
+
+        Assert.assertTrue("We expect a defect", m.find());
+        Assert.assertEquals("We expect the defect PropertyFileNotFound.", "PropertyFileNotFound", m.group(1));
+
+        Assert.assertFalse("There should be no other defect.", m.find());
+        System.setOut(oldStdOut);
+    }
 }

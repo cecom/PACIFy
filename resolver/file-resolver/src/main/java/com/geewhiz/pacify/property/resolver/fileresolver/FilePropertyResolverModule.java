@@ -2,8 +2,13 @@ package com.geewhiz.pacify.property.resolver.fileresolver;
 
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
+import com.geewhiz.pacify.defect.Defect;
+import com.geewhiz.pacify.property.resolver.fileresolver.defects.PropertyFileNotDefinedDefect;
+import com.geewhiz.pacify.property.resolver.fileresolver.defects.PropertyFileNotFoundDefect;
 import com.geewhiz.pacify.resolver.PropertyResolver;
 import com.geewhiz.pacify.resolver.PropertyResolverModule;
 import com.geewhiz.pacify.utils.FileUtils;
@@ -30,8 +35,9 @@ import com.google.inject.multibindings.Multibinder;
  */
 
 public class FilePropertyResolverModule extends PropertyResolverModule {
-
-    Map<String, String> commandLineParameters;
+    private Map<String, String> commandLineParameters;
+    private URL                 fileUrl;
+    private List<Defect>        defects = new ArrayList<Defect>();
 
     @Override
     public String getResolverId() {
@@ -47,18 +53,27 @@ public class FilePropertyResolverModule extends PropertyResolverModule {
     @Override
     public void setParameters(Map<String, String> commandLineParameters) {
         this.commandLineParameters = commandLineParameters;
+
+        String propertyFile = commandLineParameters.get("file");
+        if (propertyFile == null) {
+            defects.add(new PropertyFileNotDefinedDefect());
+            return;
+        }
+
+        this.fileUrl = getFileUrl(propertyFile);
+        if (fileUrl == null) {
+            defects.add(new PropertyFileNotFoundDefect(propertyFile));
+            return;
+        }
+    }
+
+    @Override
+    public List<Defect> getDefects() {
+        return defects;
     }
 
     @Provides
     public FilePropertyResolver createFilePropertyResolver() {
-        String file = commandLineParameters.get("file");
-
-        if (file == null) {
-            throw new IllegalArgumentException(
-                    "The FileResolver need's the file where to read the properties from. Specify it via -RFileResolver.file=<path>");
-        }
-
-        URL fileUrl = getFileUrl(commandLineParameters.get("file"));
         FilePropertyResolver filePropertyResolver = new FilePropertyResolver(fileUrl);
         if (commandLineParameters.containsKey("beginToken")) {
             filePropertyResolver.setBeginToken(commandLineParameters.get("beginToken"));
@@ -78,20 +93,15 @@ public class FilePropertyResolverModule extends PropertyResolverModule {
             if (file.isFile()) {
                 return FileUtils.getFileUrl(file);
             }
-
-            // TODO: keine Runtime werfen, sondern einen Defect
-            throw new RuntimeException("You specified a property file [" + filePath
-                    + "] which is not a file... Aborting!");
+            return null;
         }
 
-        URL url = FileUtils.class.getClassLoader().getResource(filePath);
+        URL url = this.getClass().getClassLoader().getResource(filePath);
         if (url != null) {
             return url;
         }
 
-        // TODO: keine Runtime werfen, sondern einen Defect
-        throw new RuntimeException("Couldn't find property File [" + filePath
-                + "] in Classpath nor absolute... Aborting!");
-
+        return null;
     }
+
 }

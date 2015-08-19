@@ -25,14 +25,12 @@ import com.geewhiz.pacify.model.PMarker;
 
 public class WrongTokenDefinedDefect implements Defect {
 
-    // TODO: Not used anymore
     private PMarker  pMarker;
     private PArchive pArchive;
     private PFile    pFile;
     private String   errorMessage;
 
     public WrongTokenDefinedDefect(PMarker pMarker, PFile pFile, String errorMessage) {
-
         this.pMarker = pMarker;
         this.pFile = pFile;
         this.errorMessage = errorMessage;
