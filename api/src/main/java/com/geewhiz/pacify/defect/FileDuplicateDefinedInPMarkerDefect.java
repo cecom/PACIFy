@@ -1,5 +1,6 @@
 package com.geewhiz.pacify.defect;
 
+import com.geewhiz.pacify.model.PArchive;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
 
@@ -24,16 +25,29 @@ import com.geewhiz.pacify.model.PMarker;
 
 public class FileDuplicateDefinedInPMarkerDefect implements Defect {
 
-    private PMarker pMarker;
-    private PFile   pFile;
+    private PMarker  pMarker;
+    private PArchive pArchive;
+    private PFile    pFile;
 
     public FileDuplicateDefinedInPMarkerDefect(PMarker pMarker, PFile pFile) {
+        this(pMarker, null, pFile);
+    }
+
+    public FileDuplicateDefinedInPMarkerDefect(PMarker pMarker, PArchive pArchive, PFile pFile) {
         this.pMarker = pMarker;
+        this.pArchive = pArchive;
         this.pFile = pFile;
     }
 
     public String getDefectMessage() {
-        return String.format("FileDuplicateDefinedInMarkerFile: \n\t[MarkerFile=%s]\n\t[File=%s]", pMarker.getFile().getAbsolutePath(),
-                pFile.getRelativePath());
+        StringBuffer message = new StringBuffer();
+        message.append(String.format("FileDuplicateDefinedInMarkerFile:\n\t[MarkerFile=%s]", pMarker.getFile().getAbsolutePath()));
+        if (pArchive != null) {
+            message.append(String.format("\n\t[Archive=%s]", pArchive.getRelativePath()));
+            message.append(String.format("\n\t[Archive File=%s]", pFile.getRelativePath()));
+        } else {
+            message.append(String.format("\n\t[File=%s]", pFile.getRelativePath()));
+        }
+        return message.toString();
     }
 }

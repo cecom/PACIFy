@@ -6,10 +6,10 @@ import java.io.PrintStream;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.geewhiz.pacify.TestUtil;
+import com.geewhiz.pacify.test.ListAppender;
+import com.geewhiz.pacify.test.TestUtil;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -32,83 +32,104 @@ import com.geewhiz.pacify.TestUtil;
 
 public class TestShowUsedProperties {
 
-    @BeforeClass
-    public static void removeOldData() {
-        TestUtil.removeOldTestResourcesAndCopyAgain();
-    }
-
     @Test
     public void writeToStdout() throws Exception {
-        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+
+        ListAppender stringAppender = TestUtil.createListAppender();
+
         PrintStream oldStdOut = System.out;
+
+        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outContent));
 
         File testBasePath = new File("target/test-classes/testShowUsedProperties");
         File packagePath = new File(testBasePath, "package");
 
-        int result = PacifyViaCommandline.mainInternal(new String[] {
-                "showUsedProperties",
-                "--packagePath=" + packagePath
-        });
+        int result = 0;
+        try {
+            PacifyViaCommandline pacifyViaCommandline = new PacifyViaCommandline();
+            result = pacifyViaCommandline.mainInternal(new String[] {
+                    "showUsedProperties",
+                    "--packagePath=" + packagePath
+            });
+        }
+        finally {
+            System.setOut(oldStdOut);
+        }
 
-        Assert.assertEquals("ShowUsedProperties returned with errors.", 0, result);
+        outContent.close();
 
-        Assert.assertEquals(FileUtils.readFileToString(new File(testBasePath + "/result/result.txt")), outContent.toString());
-
-        System.setOut(oldStdOut);
+        Assert.assertEquals("ShowUsedProperties should not return an error.", 0, result);
+        Assert.assertEquals(FileUtils.readFileToString(new File(testBasePath + "/expectedResult/result.txt")),
+                outContent.toString());
     }
 
     @Test
     public void writeToStdoutWithPrefix() throws Exception {
-        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
         PrintStream oldStdOut = System.out;
+
+        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outContent));
 
         File testBasePath = new File("target/test-classes/testShowUsedProperties");
         File packagePath = new File(testBasePath, "package");
 
-        int result = PacifyViaCommandline.mainInternal(new String[] {
-                "showUsedProperties",
-                "--packagePath=" + packagePath,
-                "--outputPrefix=###"
-        });
+        int result = 0;
+        try {
+            PacifyViaCommandline pacifyViaCommandline = new PacifyViaCommandline();
 
-        Assert.assertEquals("ShowUsedProperties returned with errors.", 0, result);
+            result = pacifyViaCommandline.mainInternal(new String[] {
+                    "showUsedProperties",
+                    "--packagePath=" + packagePath,
+                    "--outputPrefix=###"
+            });
+        }
+        finally {
+            System.setOut(oldStdOut);
+        }
 
-        Assert.assertEquals(FileUtils.readFileToString(new File(testBasePath + "/result/resultWithPrefix.txt")), outContent.toString());
+        outContent.close();
 
-        System.setOut(oldStdOut);
+        Assert.assertEquals("ShowUsedProperties should not return an error.", 0, result);
+        Assert.assertEquals(FileUtils.readFileToString(new File(testBasePath + "/expectedResult/resultWithPrefix.txt")),
+                outContent.toString());
     }
 
     @Test
     public void writeToFile() throws Exception {
-        File testBasePath = new File("target/test-classes/testShowUsedProperties");
-        File packagePath = new File(testBasePath, "package");
-        File resultFile = new File(testBasePath, "result/result.txt");
-        File destinationFile = new File(testBasePath, "output/output.txt");
+        File targetResourceFolder = new File("target/test-classes/testShowUsedProperties");
+
+        File packagePath = new File(targetResourceFolder, "package");
+        File expectedResult = new File(targetResourceFolder, "expectedResult/result.txt");
+        File destinationFile = new File(targetResourceFolder, "result/result.txt");
 
         destinationFile.delete();
 
-        int result = PacifyViaCommandline.mainInternal(new String[] {
+        PacifyViaCommandline pacifyViaCommandline = new PacifyViaCommandline();
+
+        int result = pacifyViaCommandline.mainInternal(new String[] {
                 "showUsedProperties",
                 "--packagePath=" + packagePath,
                 "--destinationFile=" + destinationFile
         });
 
-        Assert.assertEquals("ShowUsedProperties returned with errors.", 0, result);
-        Assert.assertTrue("Content is same", FileUtils.contentEquals(resultFile, destinationFile));
+        Assert.assertEquals("ShowUsedProperties should not return an error.", 0, result);
+        Assert.assertTrue("Content is same", FileUtils.contentEquals(expectedResult, destinationFile));
     }
 
     @Test
     public void writeToFileWithPrefix() throws Exception {
-        File testBasePath = new File("target/test-classes/testShowUsedProperties");
-        File packagePath = new File(testBasePath, "package");
-        File resultFile = new File(testBasePath, "result/resultWithPrefix.txt");
-        File destinationFile = new File(testBasePath, "output/outputWithPrefix.txt");
+        File targetResourceFolder = new File("target/test-classes/testShowUsedProperties");
+
+        File packagePath = new File(targetResourceFolder, "package");
+        File resultFile = new File(targetResourceFolder, "expectedResult/resultWithPrefix.txt");
+        File destinationFile = new File(targetResourceFolder, "result/resultWithPrefix.txt");
 
         destinationFile.delete();
 
-        int result = PacifyViaCommandline.mainInternal(new String[] {
+        PacifyViaCommandline pacifyViaCommandline = new PacifyViaCommandline();
+
+        int result = pacifyViaCommandline.mainInternal(new String[] {
                 "showUsedProperties",
                 "--packagePath=" + packagePath,
                 "--outputPrefix=###",

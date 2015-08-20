@@ -35,6 +35,8 @@ import com.geewhiz.pacify.utils.FileUtils;
 
 public class CheckPlaceholderExistsInTargetFile implements PMarkerCheck {
 
+    // TODO: für Archive auch nutzbar machen.
+
     public List<Defect> checkForErrors(PMarker pMarker) {
         List<Defect> defects = new ArrayList<Defect>();
 

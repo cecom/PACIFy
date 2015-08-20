@@ -24,22 +24,22 @@ import com.geewhiz.pacify.model.PProperty;
 
 public class PropertyNotDefinedDefect implements Defect {
 
-	private PMarker pMarker;
-	private PProperty pproperty;
-	private String resolvers;
+    private PMarker   pMarker;
+    private PProperty pproperty;
+    private String    resolvers;
 
-	public PropertyNotDefinedDefect(PMarker pMarker, PProperty pproperty,
-			String resolvers) {
-		this.pMarker = pMarker;
-		this.pproperty = pproperty;
-		this.resolvers = resolvers;
-	}
+    public PropertyNotDefinedDefect(PMarker pMarker, PProperty pproperty,
+        String resolvers) {
+        this.pMarker = pMarker;
+        this.pproperty = pproperty;
+        this.resolvers = resolvers;
+    }
 
-	public String getDefectMessage() {
-		return String
-				.format("PropertyNotDefined: \n\t[MarkerFile=%s] \n\t[Property=%s] \n\t[resolvers=%s]",
-						pMarker.getFile().getAbsolutePath(),
-						pproperty.getName(), resolvers);
-	}
+    public String getDefectMessage() {
+        return String
+                .format("PropertyNotDefined:\n\t[MarkerFile=%s] \n\t[Property=%s] \n\t[resolvers=%s]",
+                        pMarker.getFile().getAbsolutePath(),
+                        pproperty.getName(), resolvers);
+    }
 
 }

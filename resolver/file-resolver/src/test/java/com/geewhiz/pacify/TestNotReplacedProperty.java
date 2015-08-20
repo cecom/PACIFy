@@ -33,23 +33,28 @@ import com.geewhiz.pacify.managers.EntityManager;
 import com.geewhiz.pacify.managers.PropertyResolveManager;
 import com.geewhiz.pacify.property.resolver.fileresolver.FilePropertyResolver;
 import com.geewhiz.pacify.resolver.PropertyResolver;
+import com.geewhiz.pacify.test.TestUtil;
 import com.geewhiz.pacify.utils.FileUtils;
 
 public class TestNotReplacedProperty extends TestBase {
 
     @Test
     public void checkForNotCorrect() {
-        File startPath = new File("target/test-classes/notReplacedPropertyTest");
-        File myTestProperty = new File(startPath, "myProperties.properties");
+        File testResourceFolder = new File("src/test/resources/notReplacedPropertyTest");
+        File targetResourceFolder = new File("target/test-resources/notReplacedPropertyTest");
+
+        TestUtil.removeOldTestResourcesAndCopyAgain(testResourceFolder, targetResourceFolder);
+
+        File myTestProperty = new File(targetResourceFolder, "properties/myProperties.properties");
         URL myTestPropertyURL = FileUtils.getFileUrl(myTestProperty);
 
-        Assert.assertTrue("StartPath [" + startPath.getPath() + "] doesn't exist!", startPath.exists());
+        Assert.assertTrue("StartPath [" + targetResourceFolder.getPath() + "] doesn't exist!", targetResourceFolder.exists());
 
         PropertyResolveManager propertyResolveManager = createPropertyResolveManager(myTestPropertyURL);
 
         Replacer replacer = new Replacer(propertyResolveManager);
 
-        EntityManager entityManager = new EntityManager(startPath);
+        EntityManager entityManager = new EntityManager(targetResourceFolder);
         entityManager.initialize();
 
         List<Defect> defects = replacer.doReplacement(entityManager);

@@ -31,6 +31,8 @@ import com.geewhiz.pacify.model.PMarker;
 
 public class CheckTargetFileExist implements PMarkerCheck {
 
+    // TODO: für Archive auch nutzbar machen.
+
     public List<Defect> checkForErrors(PMarker pMarker) {
         List<Defect> defects = new ArrayList<Defect>();
 

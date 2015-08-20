@@ -49,18 +49,23 @@ import com.google.inject.Injector;
 
 public class PacifyViaCommandline {
 
-    private static Logger logger = LogManager.getLogger(PacifyViaCommandline.class.getName());
-
     public static void main(String... args) {
         System.err.println("PACIFy Version: " + Utils.getJarVersion());
 
-        int resultValue = mainInternal(args);
+        int resultValue = new PacifyViaCommandline().mainInternal(args);
 
-        logger.debug("Exiting with exit code " + resultValue);
         System.exit(resultValue);
     }
 
-    protected static int mainInternal(String[] args) {
+    private Logger logger = LogManager.getLogger(PacifyViaCommandline.class.getName());
+
+    protected int mainInternal(String[] args) {
+        int resultValue = execute(args);
+        logger.debug("Exiting with exit code " + resultValue);
+        return resultValue;
+    }
+
+    private int execute(String[] args) {
         MainCommand mainCommand = new MainCommand();
         ReplacerCommand replacerCommand = new ReplacerCommand();
         CreatePropertyFileCommand createPropertyFileCommand = new CreatePropertyFileCommand();
@@ -114,7 +119,7 @@ public class PacifyViaCommandline {
         return 1;
     }
 
-    private static int executeValidateMarkerFiles(ValidateMarkerFilesCommand validateMarkerFilesCommand) {
+    private int executeValidateMarkerFiles(ValidateMarkerFilesCommand validateMarkerFilesCommand) {
         Validator validator = new Validator(null);
         validateMarkerFilesCommand.configure(validator);
         validator.execute();
@@ -122,7 +127,7 @@ public class PacifyViaCommandline {
         return 0;
     }
 
-    private static int executeValidate(ValidateCommand validateCommand) {
+    private int executeValidate(ValidateCommand validateCommand) {
         Injector injector = getInjector(validateCommand);
 
         Validator validator = injector.getInstance(Validator.class);
@@ -132,7 +137,7 @@ public class PacifyViaCommandline {
         return 0;
     }
 
-    private static int executeCreatePropertyFile(CreatePropertyFileCommand createPropertyFileCommand) {
+    private int executeCreatePropertyFile(CreatePropertyFileCommand createPropertyFileCommand) {
         Injector injector = getInjector(createPropertyFileCommand);
 
         CreatePropertyFile createPropertyFile = injector.getInstance(CreatePropertyFile.class);
@@ -142,7 +147,7 @@ public class PacifyViaCommandline {
         return 0;
     }
 
-    private static int executeReplacer(ReplacerCommand replacerCommand) {
+    private int executeReplacer(ReplacerCommand replacerCommand) {
         Injector injector = getInjector(replacerCommand);
 
         Replacer replacer = injector.getInstance(Replacer.class);
@@ -152,7 +157,7 @@ public class PacifyViaCommandline {
         return 0;
     }
 
-    private static int executeShowUsedProperties(ShowUsedPropertiesCommand showUsedPropertiesCommand) {
+    private int executeShowUsedProperties(ShowUsedPropertiesCommand showUsedPropertiesCommand) {
         ShowUsedProperties showUsedProperties = new ShowUsedProperties();
         showUsedPropertiesCommand.configure(showUsedProperties);
         showUsedProperties.execute();
@@ -160,7 +165,7 @@ public class PacifyViaCommandline {
         return 0;
     }
 
-    private static Injector getInjector(BasePropertyResolverCommand command) {
+    private Injector getInjector(BasePropertyResolverCommand command) {
         List<PropertyResolverModule> propertyResolverModules = command.getPropertyResolverModules();
 
         List<Defect> defects = new ArrayList<Defect>();

@@ -1,4 +1,7 @@
-package com.geewhiz.pacify.property.resolver.fileresolver.defects;
+package com.geewhiz.pacify.defect;
+
+import com.geewhiz.pacify.model.PArchive;
+import com.geewhiz.pacify.model.PMarker;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,18 +22,18 @@ package com.geewhiz.pacify.property.resolver.fileresolver.defects;
  * under the License.
  */
 
-import com.geewhiz.pacify.defect.Defect;
+public class ArchiveDuplicateDefinedInPMarkerDefect implements Defect {
 
-public class PropertyFileNotFoundDefect implements Defect {
+    private PMarker  pMarker;
+    private PArchive pArchive;
 
-    private String propertyFile;
-
-    public PropertyFileNotFoundDefect(String propertyFile) {
-        this.propertyFile = propertyFile;
+    public ArchiveDuplicateDefinedInPMarkerDefect(PMarker pMarker, PArchive pArchive) {
+        this.pMarker = pMarker;
+        this.pArchive = pArchive;
     }
 
     public String getDefectMessage() {
-        return String.format("PropertyFileNotFound:\n\t[File=%s]\n\t[Message=%s]", propertyFile,
-                "The given file isn't a file or couldn't be found in the classpath nor absolute.");
+        return String.format("ArchiveDuplicateDefinedInPMarker: \n\t[MarkerFile=%s]\n\t[Archive=%s]", pMarker.getFile().getAbsolutePath(),
+                pArchive.getRelativePath());
     }
 }

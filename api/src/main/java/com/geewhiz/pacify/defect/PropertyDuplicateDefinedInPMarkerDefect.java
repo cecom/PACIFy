@@ -1,5 +1,7 @@
 package com.geewhiz.pacify.defect;
 
+import com.geewhiz.pacify.model.PArchive;
+import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.model.PProperty;
 
@@ -25,15 +27,31 @@ import com.geewhiz.pacify.model.PProperty;
 public class PropertyDuplicateDefinedInPMarkerDefect implements Defect {
 
     private PMarker   pMarker;
-    private PProperty pproperty;
+    private PArchive  pArchive;
+    private PFile     pFile;
+    private PProperty pProperty;
 
-    public PropertyDuplicateDefinedInPMarkerDefect(PMarker pMarker, PProperty pproperty) {
+    public PropertyDuplicateDefinedInPMarkerDefect(PMarker pMarker, PFile pFile, PProperty pProperty) {
+        this(pMarker, null, pFile, pProperty);
+    }
+
+    public PropertyDuplicateDefinedInPMarkerDefect(PMarker pMarker, PArchive pArchive, PFile pFile, PProperty pProperty) {
         this.pMarker = pMarker;
-        this.pproperty = pproperty;
+        this.pArchive = pArchive;
+        this.pFile = pFile;
+        this.pProperty = pProperty;
     }
 
     public String getDefectMessage() {
-        return String.format("PropertyDuplicateDefinedInMarkerFile: \n\t[MarkerFile=%s]\n\t[Property=%s]", pMarker.getFile().getAbsolutePath(),
-                pproperty.getName());
+        StringBuffer message = new StringBuffer();
+        message.append(String.format("PropertyDuplicateDefinedInMarkerFile:\n\t[MarkerFile=%s]", pMarker.getFile().getAbsolutePath()));
+        if (pArchive != null) {
+            message.append(String.format("\n\t[Archive=%s]", pArchive.getRelativePath()));
+            message.append(String.format("\n\t[Archive File=%s]", pFile.getRelativePath()));
+        } else {
+            message.append(String.format("\n\t[File=%s]", pFile.getRelativePath()));
+        }
+        message.append(String.format("\n\t[Property=%s]", pProperty.getName()));
+        return message.toString();
     }
 }

@@ -15,14 +15,16 @@ import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.geewhiz.pacify.defect.ArchiveDuplicateDefinedInPMarkerDefect;
+import com.geewhiz.pacify.defect.ArchiveTypeNotImplementedDefect;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.managers.EntityManager;
 import com.geewhiz.pacify.managers.PropertyResolveManager;
 import com.geewhiz.pacify.property.resolver.HashMapPropertyResolver;
 import com.geewhiz.pacify.resolver.PropertyResolver;
+import com.geewhiz.pacify.test.TestUtil;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -45,15 +47,14 @@ import com.geewhiz.pacify.resolver.PropertyResolver;
 
 public class TestArchive {
 
-    @BeforeClass
-    public static void removeOldData() {
-        TestUtil.removeOldTestResourcesAndCopyAgain();
-    }
-
     @Test
     public void checkJar() throws ArchiveException, IOException {
-        File basePath = new File("target/test-classes/testArchive/correct/jar");
-        File packagePath = new File(basePath, "package");
+        File testResourceFolder = new File("src/test/resources/testArchive/correct/jar");
+        File targetResourceFolder = new File("target/test-resources/testArchive/correct/jar");
+
+        TestUtil.removeOldTestResourcesAndCopyAgain(testResourceFolder, targetResourceFolder);
+
+        File packagePath = new File(targetResourceFolder, "package");
 
         HashMapPropertyResolver hpr = new HashMapPropertyResolver();
         PropertyResolveManager prm = getPropertyResolveManager(hpr);
@@ -67,16 +68,20 @@ public class TestArchive {
 
         Assert.assertEquals("We shouldnt get any defects.", 0, defects.size());
 
-        File expectedArchive = new File(basePath, "result/archive.jar");
-        File outputArchive = new File(basePath, "package/archive.jar");
+        File expectedArchive = new File(targetResourceFolder, "expectedResult/archive.jar");
+        File outputArchive = new File(targetResourceFolder, "package/archive.jar");
 
         resultIsAsExpected(outputArchive, expectedArchive);
     }
 
     @Test
     public void checkTar() throws ArchiveException, IOException {
-        File basePath = new File("target/test-classes/testArchive/correct/tar");
-        File packagePath = new File(basePath, "package");
+        File testResourceFolder = new File("src/test/resources/testArchive/correct/tar");
+        File targetResourceFolder = new File("target/test-resources/testArchive/correct/tar");
+
+        TestUtil.removeOldTestResourcesAndCopyAgain(testResourceFolder, targetResourceFolder);
+
+        File packagePath = new File(targetResourceFolder, "package");
 
         HashMapPropertyResolver hpr = new HashMapPropertyResolver();
         PropertyResolveManager prm = getPropertyResolveManager(hpr);
@@ -90,16 +95,20 @@ public class TestArchive {
 
         Assert.assertEquals("We shouldnt get any defects.", 0, defects.size());
 
-        File expectedArchive = new File(basePath, "result/archive.tar");
-        File outputArchive = new File(basePath, "package/archive.tar");
+        File expectedArchive = new File(targetResourceFolder, "expectedResult/archive.tar");
+        File outputArchive = new File(targetResourceFolder, "package/archive.tar");
 
         resultIsAsExpected(outputArchive, expectedArchive);
     }
 
     @Test
     public void checkZip() throws ArchiveException, IOException {
-        File basePath = new File("target/test-classes/testArchive/correct/zip");
-        File packagePath = new File(basePath, "package");
+        File testResourceFolder = new File("src/test/resources/testArchive/correct/zip");
+        File targetResourceFolder = new File("target/test-resources/testArchive/correct/zip");
+
+        TestUtil.removeOldTestResourcesAndCopyAgain(testResourceFolder, targetResourceFolder);
+
+        File packagePath = new File(targetResourceFolder, "package");
 
         HashMapPropertyResolver hpr = new HashMapPropertyResolver();
         PropertyResolveManager prm = getPropertyResolveManager(hpr);
@@ -113,10 +122,48 @@ public class TestArchive {
 
         Assert.assertEquals("We shouldnt get any defects.", 0, defects.size());
 
-        File expectedArchive = new File(basePath, "result/archive.zip");
-        File outputArchive = new File(basePath, "package/archive.zip");
+        File expectedArchive = new File(targetResourceFolder, "expectedResult/archive.zip");
+        File outputArchive = new File(targetResourceFolder, "package/archive.zip");
 
         resultIsAsExpected(outputArchive, expectedArchive);
+    }
+
+    @Test
+    public void checkUnkownArchiveType() {
+        File packagePath = new File("target/test-classes/testArchive/wrong/unkownArchiveType/package");
+
+        HashMapPropertyResolver hpr = new HashMapPropertyResolver();
+        PropertyResolveManager prm = getPropertyResolveManager(hpr);
+
+        Replacer replacer = new Replacer(prm);
+        EntityManager entityManager = new EntityManager(packagePath);
+
+        replacer.setPackagePath(packagePath);
+        List<Defect> defects = entityManager.initialize();
+        defects.addAll(replacer.doReplacement(entityManager));
+
+        Assert.assertEquals("We should get a defect.", 1, defects.size());
+        Assert.assertEquals("We expect ArchiveTypeNotImplementedDefect", ArchiveTypeNotImplementedDefect.class, defects.get(0).getClass());
+    }
+
+    @Test
+    public void checkDuplicateArchiveEntry() {
+        File packagePath = new File("target/test-classes/testArchive/wrong/duplicateEntry/package");
+
+        HashMapPropertyResolver hpr = new HashMapPropertyResolver();
+        PropertyResolveManager prm = getPropertyResolveManager(hpr);
+
+        EntityManager entityManager = new EntityManager(packagePath);
+        Validator validator = new Validator(prm);
+        validator.enableMarkerFileChecks();
+
+        validator.setPackagePath(packagePath);
+
+        List<Defect> defects = entityManager.initialize();
+        defects.addAll(validator.validateInternal(entityManager));
+
+        Assert.assertEquals("We should get a defect.", 1, defects.size());
+        Assert.assertEquals("We expect ArchiveTypeNotImplementedDefect", ArchiveDuplicateDefinedInPMarkerDefect.class, defects.get(0).getClass());
     }
 
     private PropertyResolveManager getPropertyResolveManager(HashMapPropertyResolver hpr) {

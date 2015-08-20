@@ -27,7 +27,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.geewhiz.pacify.checks.impl.CheckPropertyDuplicateInPropertyFile;
@@ -35,13 +34,9 @@ import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.managers.PropertyResolveManager;
 import com.geewhiz.pacify.property.resolver.fileresolver.FilePropertyResolver;
 import com.geewhiz.pacify.resolver.PropertyResolver;
+import com.geewhiz.pacify.test.TestUtil;
 
 public class TestCheckPropertyDuplicateDefinedInPropertyFile {
-
-    @BeforeClass
-    public static void removeOldData() {
-        TestUtil.removeOldTestResourcesAndCopyAgain();
-    }
 
     @Test
     public void checkForNotCorrect() {

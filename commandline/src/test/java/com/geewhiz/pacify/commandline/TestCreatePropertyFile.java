@@ -22,30 +22,30 @@ package com.geewhiz.pacify.commandline;
 import java.io.File;
 
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.geewhiz.pacify.TestUtil;
+import com.geewhiz.pacify.test.TestUtil;
 
 public class TestCreatePropertyFile {
 
-    @BeforeClass
-    public static void removeOldData() {
-        TestUtil.removeOldTestResourcesAndCopyAgain();
-    }
-
     @Test
     public void TestAll() {
-        File testBasePath = new File("target/test-classes/TestCreatePropertyFile");
-        File myTestProperty = new File(testBasePath, "properties/subfolder/ChildOfChilds.properties");
-        File myResultPath = new File(testBasePath, "result");
+        File testResourceFolder = new File("src/test/resources/TestCreatePropertyFile");
+        File targetResourceFolder = new File("target/test-resources/TestCreatePropertyFile");
 
-        File destinationFile = new File(testBasePath, "output/result.properties");
+        TestUtil.removeOldTestResourcesAndCopyAgain(testResourceFolder, targetResourceFolder);
+
+        File myTestProperty = new File(targetResourceFolder, "properties/subfolder/ChildOfChilds.properties");
+        File myExpectedResultPath = new File(targetResourceFolder, "expectedResult");
+
+        File destinationFile = new File(targetResourceFolder, "result/result.properties");
 
         destinationFile.delete();
         destinationFile.getParentFile().mkdirs();
 
-        int result = PacifyViaCommandline.mainInternal(new String[] {
+        PacifyViaCommandline pacifyViaCommandline = new PacifyViaCommandline();
+
+        int result = pacifyViaCommandline.mainInternal(new String[] {
                 "createPropertyFile",
                 "--resolvers=FileResolver",
                 "--destinationFile=" + destinationFile.getAbsolutePath(),
@@ -53,21 +53,27 @@ public class TestCreatePropertyFile {
 
         Assert.assertEquals("Resolver returned with errors.", 0, result);
 
-        TestUtil.checkIfResultIsAsExpected(new File(testBasePath, "output"), myResultPath);
+        TestUtil.checkIfResultIsAsExpected(destinationFile.getParentFile(), myExpectedResultPath);
     }
 
     @Test
     public void TestWithOutputPrefix() {
-        File testBasePath = new File("target/test-classes/TestCreatePropertyFileWithPrefix");
-        File myTestProperty = new File(testBasePath, "properties/subfolder/ChildOfChilds.properties");
-        File myResultPath = new File(testBasePath, "result");
+        File testResourceFolder = new File("src/test/resources/TestCreatePropertyFileWithPrefix");
+        File targetResourceFolder = new File("target/test-resources/TestCreatePropertyFileWithPrefix");
 
-        File destinationFile = new File(testBasePath, "output/result.properties");
+        TestUtil.removeOldTestResourcesAndCopyAgain(testResourceFolder, targetResourceFolder);
+
+        File myTestProperty = new File(targetResourceFolder, "properties/subfolder/ChildOfChilds.properties");
+        File myExpectedResultPath = new File(targetResourceFolder, "expectedResult");
+
+        File destinationFile = new File(targetResourceFolder, "result/result.properties");
 
         destinationFile.delete();
         destinationFile.getParentFile().mkdirs();
 
-        int result = PacifyViaCommandline.mainInternal(new String[] {
+        PacifyViaCommandline pacifyViaCommandline = new PacifyViaCommandline();
+
+        int result = pacifyViaCommandline.mainInternal(new String[] {
                 "createPropertyFile",
                 "--outputPrefix=###",
                 "--resolvers=FileResolver",
@@ -76,6 +82,6 @@ public class TestCreatePropertyFile {
 
         Assert.assertEquals("Resolver returned with errors.", 0, result);
 
-        TestUtil.checkIfResultIsAsExpected(new File(testBasePath, "output"), myResultPath);
+        TestUtil.checkIfResultIsAsExpected(destinationFile.getParentFile(), myExpectedResultPath);
     }
 }

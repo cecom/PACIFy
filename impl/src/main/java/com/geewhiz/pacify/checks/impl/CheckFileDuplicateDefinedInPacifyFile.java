@@ -25,6 +25,7 @@ import java.util.List;
 import com.geewhiz.pacify.checks.PMarkerCheck;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.FileDuplicateDefinedInPMarkerDefect;
+import com.geewhiz.pacify.model.PArchive;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
 
@@ -33,15 +34,28 @@ public class CheckFileDuplicateDefinedInPacifyFile implements PMarkerCheck {
     public List<Defect> checkForErrors(PMarker pMarker) {
         List<Defect> defects = new ArrayList<Defect>();
 
+        for (PArchive pArchive : pMarker.getPArchives()) {
+            checkPFiles(defects, pMarker, pArchive, pArchive.getPFiles());
+        }
+
+        checkPFiles(defects, pMarker, pMarker.getPFiles());
+        return defects;
+    }
+
+    private void checkPFiles(List<Defect> defects, PMarker pMarker, List<PFile> pFiles) {
+        checkPFiles(defects, pMarker, null, pFiles);
+    }
+
+    private void checkPFiles(List<Defect> defects, PMarker pMarker, PArchive pArchive, List<PFile> pFiles) {
         List<String> files = new ArrayList<String>();
-        for (PFile pFile : pMarker.getPFiles()) {
+        for (PFile pFile : pFiles) {
             if (files.contains(pFile.getRelativePath())) {
-                Defect defect = new FileDuplicateDefinedInPMarkerDefect(pMarker, pFile);
+                Defect defect = new FileDuplicateDefinedInPMarkerDefect(pMarker, pArchive, pFile);
                 defects.add(defect);
                 continue;
             }
             files.add(pFile.getRelativePath());
         }
-        return defects;
+
     }
 }

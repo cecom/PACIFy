@@ -29,8 +29,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.managers.FilterManager;
 import com.geewhiz.pacify.managers.EntityManager;
+import com.geewhiz.pacify.managers.FilterManager;
 import com.geewhiz.pacify.managers.PropertyResolveManager;
 import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.utils.DefectUtils;

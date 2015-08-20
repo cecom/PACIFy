@@ -19,33 +19,29 @@ package com.geewhiz.pacify.commandline;
  * under the License.
  */
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.PrintStream;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.geewhiz.pacify.TestUtil;
+import com.geewhiz.pacify.test.TestUtil;
 
 public class TestMultipleResolvers {
 
-    @BeforeClass
-    public static void removeOldData() {
-        TestUtil.removeOldTestResourcesAndCopyAgain();
-    }
-
     @Test
     public void testAll() {
-        File testBasePath = new File("target/test-classes/TestMultipleResolver");
-        File myTestProperty = new File(testBasePath, "properties/myProperties.properties");
-        File myPackagePath = new File(testBasePath, "package");
-        File myResultPath = new File(testBasePath, "result");
+        File testResourceFolder = new File("src/test/resources/TestMultipleResolver");
+        File targetResourceFolder = new File("target/test-resources/TestMultipleResolver");
 
-        int result = PacifyViaCommandline.mainInternal(new String[] {
+        TestUtil.removeOldTestResourcesAndCopyAgain(testResourceFolder, targetResourceFolder);
+
+        File myTestProperty = new File(targetResourceFolder, "properties/myProperties.properties");
+        File myPackagePath = new File(targetResourceFolder, "package");
+        File myExpectedResultPath = new File(targetResourceFolder, "expectedResult");
+
+        PacifyViaCommandline pacifyViaCommandline = new PacifyViaCommandline();
+
+        int result = pacifyViaCommandline.mainInternal(new String[] {
                 "--debug",
                 "replace",
                 "--packagePath=" + myPackagePath,
@@ -56,17 +52,23 @@ public class TestMultipleResolvers {
 
         Assert.assertEquals("Configuration returned with errors.", 0, result);
 
-        TestUtil.checkIfResultIsAsExpected(myPackagePath, myResultPath);
+        TestUtil.checkIfResultIsAsExpected(myPackagePath, myExpectedResultPath);
     }
 
     @Test
     public void testAllWithCustomTokens() {
-        File testBasePath = new File("target/test-classes/TestMultipleResolverWithCustomTokens");
-        File myTestProperty = new File(testBasePath, "properties/myProperties.properties");
-        File myPackagePath = new File(testBasePath, "package");
-        File myResultPath = new File(testBasePath, "result");
+        File testResourceFolder = new File("src/test/resources/TestMultipleResolverWithCustomTokens");
+        File targetResourceFolder = new File("target/test-resources/TestMultipleResolver");
 
-        int result = PacifyViaCommandline.mainInternal(new String[] {
+        TestUtil.removeOldTestResourcesAndCopyAgain(testResourceFolder, targetResourceFolder);
+
+        File myTestProperty = new File(targetResourceFolder, "properties/myProperties.properties");
+        File myPackagePath = new File(targetResourceFolder, "package");
+        File myExpectedResultPath = new File(targetResourceFolder, "expectedResult");
+
+        PacifyViaCommandline pacifyViaCommandline = new PacifyViaCommandline();
+
+        int result = pacifyViaCommandline.mainInternal(new String[] {
                 "--debug",
                 "replace",
                 "--packagePath=" + myPackagePath,
@@ -77,18 +79,24 @@ public class TestMultipleResolvers {
 
         Assert.assertEquals("Configuration returned with errors.", 0, result);
 
-        TestUtil.checkIfResultIsAsExpected(myPackagePath, myResultPath);
+        TestUtil.checkIfResultIsAsExpected(myPackagePath, myExpectedResultPath);
     }
 
     @Test
     public void testAllOnCopy() {
-        File testBasePath = new File("target/test-classes/TestMultipleResolverOnCopy");
-        File myTestProperty = new File(testBasePath, "properties/myProperties.properties");
-        File myPackagePath = new File(testBasePath, "package");
-        File myResultPath = new File(testBasePath, "result");
-        File destinationPath = new File(testBasePath, "copyOfOriginal");
+        File testResourceFolder = new File("src/test/resources/TestMultipleResolverWithCustomTokens");
+        File targetResourceFolder = new File("target/test-resources/TestMultipleResolverWithCustomTokens");
 
-        int result = PacifyViaCommandline.mainInternal(new String[] {
+        TestUtil.removeOldTestResourcesAndCopyAgain(testResourceFolder, targetResourceFolder);
+
+        File myTestProperty = new File(targetResourceFolder, "properties/myProperties.properties");
+        File myPackagePath = new File(targetResourceFolder, "package");
+        File myExpectedResultPath = new File(targetResourceFolder, "expectedResult");
+        File destinationPath = new File(targetResourceFolder, "copyOfOriginal");
+
+        PacifyViaCommandline pacifyViaCommandline = new PacifyViaCommandline();
+
+        int result = pacifyViaCommandline.mainInternal(new String[] {
                 "replace",
                 "--packagePath=" + myPackagePath.getAbsolutePath(),
                 "--copyTo=" + destinationPath.getAbsolutePath(),
@@ -99,17 +107,25 @@ public class TestMultipleResolvers {
 
         Assert.assertEquals("Configuration returned with errors.", 0, result);
 
-        TestUtil.checkIfResultIsAsExpected(destinationPath, myResultPath);
+        // the original package should not be touched
+        TestUtil.checkIfResultIsAsExpected(myPackagePath, new File(testResourceFolder, "package"));
+        TestUtil.checkIfResultIsAsExpected(destinationPath, myExpectedResultPath);
     }
 
     @Test
     public void testDifferentEncodings() {
-        File testBasePath = new File("target/test-classes/TestDifferentEncodings");
-        File myTestProperty = new File(testBasePath, "properties/utf16.properties");
-        File myPackagePath = new File(testBasePath, "package");
-        File myResultPath = new File(testBasePath, "result");
+        File testResourceFolder = new File("src/test/resources/TestDifferentEncodings");
+        File targetResourceFolder = new File("target/test-resources/TestDifferentEncodings");
 
-        int result = PacifyViaCommandline.mainInternal(new String[] {
+        TestUtil.removeOldTestResourcesAndCopyAgain(testResourceFolder, targetResourceFolder);
+
+        File myTestProperty = new File(targetResourceFolder, "properties/utf16.properties");
+        File myPackagePath = new File(targetResourceFolder, "package");
+        File myExpectedResultPath = new File(targetResourceFolder, "expectedResult");
+
+        PacifyViaCommandline pacifyViaCommandline = new PacifyViaCommandline();
+
+        int result = pacifyViaCommandline.mainInternal(new String[] {
                 "--debug",
                 "replace",
                 "--packagePath=" + myPackagePath,
@@ -121,37 +137,6 @@ public class TestMultipleResolvers {
 
         Assert.assertEquals("Configuration returned with errors.", 0, result);
 
-        TestUtil.checkIfResultIsAsExpected(myPackagePath, myResultPath, "ASCII");
-    }
-
-    @Test
-    public void testMissingPropertyParameter() {
-        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
-        PrintStream oldStdOut = System.out;
-        System.setOut(new PrintStream(outContent));
-
-        File testBasePath = new File("target/test-classes/MissingPackage");
-        File myTestProperty = new File(testBasePath, "properties/MissingProperty.properties");
-        File myPackagePath = new File(testBasePath, "package");
-
-        int result = 0;
-
-        result = PacifyViaCommandline.mainInternal(new String[] {
-                "replace",
-                "--packagePath=" + myPackagePath,
-                "--resolvers=FileResolver",
-                "-RFileResolver.file=" + myTestProperty.getAbsolutePath()
-        });
-
-        Assert.assertEquals("We expect an error.", 1, result);
-
-        Pattern p = Pattern.compile("ERROR (.*):");
-        Matcher m = p.matcher(outContent.toString());
-
-        Assert.assertTrue("We expect a defect", m.find());
-        Assert.assertEquals("We expect the defect PropertyFileNotFound.", "PropertyFileNotFound", m.group(1));
-
-        Assert.assertFalse("There should be no other defect.", m.find());
-        System.setOut(oldStdOut);
+        TestUtil.checkIfResultIsAsExpected(myPackagePath, myExpectedResultPath, "ASCII");
     }
 }

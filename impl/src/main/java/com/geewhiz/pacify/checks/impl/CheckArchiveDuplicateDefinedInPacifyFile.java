@@ -23,41 +23,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.geewhiz.pacify.checks.PMarkerCheck;
+import com.geewhiz.pacify.defect.ArchiveDuplicateDefinedInPMarkerDefect;
 import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.defect.PropertyDuplicateDefinedInPMarkerDefect;
 import com.geewhiz.pacify.model.PArchive;
-import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
-import com.geewhiz.pacify.model.PProperty;
 
-public class CheckPropertyDuplicateDefinedInPacifyFile implements PMarkerCheck {
+public class CheckArchiveDuplicateDefinedInPacifyFile implements PMarkerCheck {
 
     public List<Defect> checkForErrors(PMarker pMarker) {
         List<Defect> defects = new ArrayList<Defect>();
 
+        List<String> archives = new ArrayList<String>();
         for (PArchive pArchive : pMarker.getPArchives()) {
-            checkPFiles(defects, pMarker, pArchive, pArchive.getPFiles());
-        }
-
-        checkPFiles(defects, pMarker, pMarker.getPFiles());
-        return defects;
-    }
-
-    private void checkPFiles(List<Defect> defects, PMarker pMarker, List<PFile> pFiles) {
-        checkPFiles(defects, pMarker, null, pFiles);
-    }
-
-    private void checkPFiles(List<Defect> defects, PMarker pMarker, PArchive pArchive, List<PFile> pFiles) {
-        for (PFile pFile : pFiles) {
-            List<String> properties = new ArrayList<String>();
-            for (PProperty pProperty : pFile.getPProperties()) {
-                if (properties.contains(pProperty.getName())) {
-                    Defect defect = new PropertyDuplicateDefinedInPMarkerDefect(pMarker, pArchive, pFile, pProperty);
-                    defects.add(defect);
-                    continue;
-                }
-                properties.add(pProperty.getName());
+            if (archives.contains(pArchive.getRelativePath())) {
+                Defect defect = new ArchiveDuplicateDefinedInPMarkerDefect(pMarker, pArchive);
+                defects.add(defect);
+                continue;
             }
+            archives.add(pArchive.getRelativePath());
         }
+        return defects;
     }
 }

@@ -1,4 +1,10 @@
-package com.geewhiz.pacify.property.resolver.fileresolver.defects;
+package com.geewhiz.pacify.test;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.logging.log4j.core.LogEvent;
+import org.apache.logging.log4j.core.appender.AbstractAppender;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,18 +25,23 @@ package com.geewhiz.pacify.property.resolver.fileresolver.defects;
  * under the License.
  */
 
-import com.geewhiz.pacify.defect.Defect;
+public class ListAppender extends AbstractAppender {
 
-public class PropertyFileNotFoundDefect implements Defect {
+    private static final long  serialVersionUID = 1L;
 
-    private String propertyFile;
+    private final List<String> logMessages      = new ArrayList<String>();
 
-    public PropertyFileNotFoundDefect(String propertyFile) {
-        this.propertyFile = propertyFile;
+    public ListAppender() {
+        super("Test", null, null);
+        setStarted();
     }
 
-    public String getDefectMessage() {
-        return String.format("PropertyFileNotFound:\n\t[File=%s]\n\t[Message=%s]", propertyFile,
-                "The given file isn't a file or couldn't be found in the classpath nor absolute.");
+    public void append(LogEvent logEvent) {
+        logMessages.add(logEvent.getMessage().getFormattedMessage());
     }
+
+    public List<String> getLogMessages() {
+        return logMessages;
+    }
+
 }
