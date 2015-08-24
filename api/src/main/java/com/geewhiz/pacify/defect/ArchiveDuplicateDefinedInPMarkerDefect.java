@@ -22,18 +22,11 @@ import com.geewhiz.pacify.model.PMarker;
  * under the License.
  */
 
-public class ArchiveDuplicateDefinedInPMarkerDefect implements Defect {
+public class ArchiveDuplicateDefinedInPMarkerDefect extends DefectException {
 
-    private PMarker  pMarker;
-    private PArchive pArchive;
+    private static final long serialVersionUID = 1L;
 
     public ArchiveDuplicateDefinedInPMarkerDefect(PMarker pMarker, PArchive pArchive) {
-        this.pMarker = pMarker;
-        this.pArchive = pArchive;
-    }
-
-    public String getDefectMessage() {
-        return String.format("ArchiveDuplicateDefinedInPMarker: \n\t[MarkerFile=%s]\n\t[Archive=%s]", pMarker.getFile().getAbsolutePath(),
-                pArchive.getRelativePath());
+        super(pMarker, pArchive);
     }
 }

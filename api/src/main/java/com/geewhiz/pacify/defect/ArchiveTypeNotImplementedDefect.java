@@ -22,20 +22,16 @@ import com.geewhiz.pacify.model.PMarker;
  * under the License.
  */
 
-public class ArchiveTypeNotImplementedDefect implements Defect {
+public class ArchiveTypeNotImplementedDefect extends DefectException {
 
-    private PMarker  pMarker;
-    private PArchive pArchive;
+    private static final long serialVersionUID = 1L;
 
     public ArchiveTypeNotImplementedDefect(PMarker pMarker, PArchive pArchive) {
-        this.pMarker = pMarker;
-        this.pArchive = pArchive;
+        super(pMarker, pArchive);
     }
 
+    @Override
     public String getDefectMessage() {
-        int idx = pArchive.getRelativePath().lastIndexOf(".");
-        String type = pArchive.getRelativePath().substring(idx);
-        return String.format("ArchiveTypeNotImplemented: \n\t[MarkerFile=%s]\n\t[Archive=%s]\n\t[Type=%s]", pMarker.getFile().getAbsolutePath(),
-                pArchive.getRelativePath(), type);
+        return super.getDefectMessage() + String.format("\n\t[Type=%s]", getPArchive().getInternalType());
     }
 }

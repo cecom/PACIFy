@@ -26,16 +26,33 @@ import java.util.List;
 import com.geewhiz.pacify.checks.PMarkerCheck;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.FileDoesNotExistDefect;
+import com.geewhiz.pacify.model.PArchive;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
+import com.geewhiz.pacify.utils.FileUtils;
 
 public class CheckTargetFileExist implements PMarkerCheck {
-
-    // TODO: für Archive auch nutzbar machen.
 
     public List<Defect> checkForErrors(PMarker pMarker) {
         List<Defect> defects = new ArrayList<Defect>();
 
+        checkArchiveEntries(defects, pMarker);
+        checkPFileEntries(defects, pMarker);
+        return defects;
+    }
+
+    private void checkArchiveEntries(List<Defect> defects, PMarker pMarker) {
+        for (PArchive pArchive : pMarker.getPArchives()) {
+            for (PFile pFile : pArchive.getPFiles()) {
+                if (!FileUtils.archiveContainsFile(pMarker, pArchive, pFile)) {
+                    defects.add(new FileDoesNotExistDefect(pMarker, pArchive, pFile));
+                }
+            }
+        }
+
+    }
+
+    private void checkPFileEntries(List<Defect> defects, PMarker pMarker) {
         for (PFile pFile : pMarker.getPFiles()) {
             File file = pMarker.getAbsoluteFileFor(pFile);
             if (file.exists() && file.isFile()) {
@@ -44,8 +61,6 @@ public class CheckTargetFileExist implements PMarkerCheck {
             Defect defect = new FileDoesNotExistDefect(pMarker, pFile);
             defects.add(defect);
         }
-
-        return defects;
     }
 
 }

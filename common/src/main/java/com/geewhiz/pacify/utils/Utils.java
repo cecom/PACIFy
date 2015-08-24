@@ -24,12 +24,20 @@ import java.net.JarURLConnection;
 import java.net.URL;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
-import java.util.regex.Pattern;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.geewhiz.pacify.defect.DefectException;
+import com.geewhiz.pacify.defect.FilterNotFoundDefect;
+import com.geewhiz.pacify.filter.PacifyFilter;
+import com.geewhiz.pacify.model.PArchive;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
 
 public class Utils {
+
+    private static Logger logger = LogManager.getLogger(Utils.class.getName());
 
     public static String getJarVersion() {
         URL jarURL = Utils.class.getResource("/" + Utils.class.getName().replace(".", "/") + ".class");
@@ -50,13 +58,21 @@ public class Utils {
         return attr.getValue("Implementation-Version");
     }
 
-    public static Pattern getPattern(PMarker pMarker, PFile pFile, String match, boolean quoteIt) {
-        String beginToken = pMarker.getBeginTokenFor(pFile);
-        String endToken = pMarker.getEndTokenFor(pFile);
+    public static PacifyFilter getPacifyFilter(PMarker pMarker, PFile pFile) throws DefectException {
+        return getPacifyFilter(pMarker, null, pFile);
+    }
 
-        String searchPattern = Pattern.quote(beginToken)
-                + (quoteIt ? Pattern.quote(match) : match) + Pattern.quote(endToken);
+    public static PacifyFilter getPacifyFilter(PMarker pMarker, PArchive pArchive, PFile pFile) throws DefectException {
+        String filterClass = pFile.getFilterClass();
 
-        return Pattern.compile(searchPattern);
+        try {
+            PacifyFilter filter = (PacifyFilter) Class.forName(filterClass).getConstructor(PMarker.class, PArchive.class, PFile.class)
+                    .newInstance(pMarker, pArchive, pFile);
+            return filter;
+        } catch (Exception e) {
+            logger.debug("Error while instantiate filter class [" + filterClass + "]", e);
+            throw new FilterNotFoundDefect(pMarker, pArchive, pFile);
+        }
+
     }
 }

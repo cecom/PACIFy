@@ -19,27 +19,31 @@ package com.geewhiz.pacify.defect;
  * under the License.
  */
 
+import com.geewhiz.pacify.model.PArchive;
+import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.model.PProperty;
 
-public class PropertyNotDefinedDefect implements Defect {
+public class PropertyNotDefinedDefect extends DefectException {
 
-    private PMarker   pMarker;
-    private PProperty pproperty;
-    private String    resolvers;
+    private static final long serialVersionUID = 1L;
 
-    public PropertyNotDefinedDefect(PMarker pMarker, PProperty pproperty,
-        String resolvers) {
-        this.pMarker = pMarker;
-        this.pproperty = pproperty;
+    private String            resolvers;
+
+    public PropertyNotDefinedDefect(PMarker pMarker, PFile pFile, PProperty pProperty, String resolvers) {
+        super(pMarker, pFile, pProperty);
         this.resolvers = resolvers;
     }
 
+    public PropertyNotDefinedDefect(PMarker pMarker, PArchive pArchive, PFile pFile, PProperty pProperty, String resolvers) {
+        super(pMarker, pArchive, pFile, pProperty);
+        this.resolvers = resolvers;
+    }
+
+    @Override
     public String getDefectMessage() {
-        return String
-                .format("PropertyNotDefined:\n\t[MarkerFile=%s] \n\t[Property=%s] \n\t[resolvers=%s]",
-                        pMarker.getFile().getAbsolutePath(),
-                        pproperty.getName(), resolvers);
+        return super.getDefectMessage() +
+                String.format("\n\t[resolvers=%s]", resolvers);
     }
 
 }

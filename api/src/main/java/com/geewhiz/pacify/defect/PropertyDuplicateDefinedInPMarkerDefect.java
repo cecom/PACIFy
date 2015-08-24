@@ -24,34 +24,16 @@ import com.geewhiz.pacify.model.PProperty;
  * under the License.
  */
 
-public class PropertyDuplicateDefinedInPMarkerDefect implements Defect {
+public class PropertyDuplicateDefinedInPMarkerDefect extends DefectException {
 
-    private PMarker   pMarker;
-    private PArchive  pArchive;
-    private PFile     pFile;
-    private PProperty pProperty;
+    private static final long serialVersionUID = 1L;
 
     public PropertyDuplicateDefinedInPMarkerDefect(PMarker pMarker, PFile pFile, PProperty pProperty) {
-        this(pMarker, null, pFile, pProperty);
+        super(pMarker, pFile, pProperty);
     }
 
     public PropertyDuplicateDefinedInPMarkerDefect(PMarker pMarker, PArchive pArchive, PFile pFile, PProperty pProperty) {
-        this.pMarker = pMarker;
-        this.pArchive = pArchive;
-        this.pFile = pFile;
-        this.pProperty = pProperty;
+        super(pMarker, pArchive, pFile, pProperty);
     }
 
-    public String getDefectMessage() {
-        StringBuffer message = new StringBuffer();
-        message.append(String.format("PropertyDuplicateDefinedInMarkerFile:\n\t[MarkerFile=%s]", pMarker.getFile().getAbsolutePath()));
-        if (pArchive != null) {
-            message.append(String.format("\n\t[Archive=%s]", pArchive.getRelativePath()));
-            message.append(String.format("\n\t[Archive File=%s]", pFile.getRelativePath()));
-        } else {
-            message.append(String.format("\n\t[File=%s]", pFile.getRelativePath()));
-        }
-        message.append(String.format("\n\t[Property=%s]", pProperty.getName()));
-        return message.toString();
-    }
 }

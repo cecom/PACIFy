@@ -3,4 +3,9 @@
     <File RelativePath="someConf.conf" FilterClass="a.class.that.does.not.exist">
         <Property Name="foobar1"/>
     </File>
+    <Archive RelativePath="archive.zip">
+        <File RelativePath="someConf.conf" FilterClass="a.class.that.does.not.exist">
+            <Property Name="foobar1"/>
+        </File>
+    </Archive>
 </Pacify>

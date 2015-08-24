@@ -21,14 +21,20 @@ import java.io.File;
  * under the License.
  */
 
-public class XMLValidationDefect implements Defect {
-    private File pMarkerFile;
+public class XMLValidationDefect extends DefectException {
+
+    private static final long serialVersionUID = 1L;
+
+    private File              pMarkerFile;
 
     public XMLValidationDefect(File pMarkerFile) {
+        super();
         this.pMarkerFile = pMarkerFile;
     }
 
+    @Override
     public String getDefectMessage() {
-        return String.format("XMLValidationError: \n\t[MarkerFile=%s]\n\t", pMarkerFile.getAbsolutePath());
+        return super.getDefectMessage() +
+                String.format("\n\t[MarkerFile=%s]", pMarkerFile.getAbsolutePath());
     }
 }

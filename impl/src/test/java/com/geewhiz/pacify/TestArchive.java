@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.xml.bind.JAXBException;
+
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
@@ -17,11 +19,18 @@ import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.geewhiz.pacify.checks.impl.CheckCorrectArchiveType;
 import com.geewhiz.pacify.defect.ArchiveDuplicateDefinedInPMarkerDefect;
 import com.geewhiz.pacify.defect.ArchiveTypeNotImplementedDefect;
 import com.geewhiz.pacify.defect.Defect;
+import com.geewhiz.pacify.defect.FileDoesNotExistDefect;
+import com.geewhiz.pacify.defect.FilterNotFoundDefect;
+import com.geewhiz.pacify.defect.NoPlaceholderInTargetFileDefect;
+import com.geewhiz.pacify.defect.NotReplacedPropertyDefect;
+import com.geewhiz.pacify.defect.PropertyDuplicateDefinedInPMarkerDefect;
 import com.geewhiz.pacify.managers.EntityManager;
 import com.geewhiz.pacify.managers.PropertyResolveManager;
+import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.property.resolver.HashMapPropertyResolver;
 import com.geewhiz.pacify.resolver.PropertyResolver;
 import com.geewhiz.pacify.test.TestUtil;
@@ -129,18 +138,12 @@ public class TestArchive {
     }
 
     @Test
-    public void checkUnkownArchiveType() {
-        File packagePath = new File("target/test-classes/testArchive/wrong/unkownArchiveType/package");
+    public void checkUnkownArchiveType() throws JAXBException {
+        File source = new File("target/test-classes/testArchive/wrong/unkownArchiveType/package/wrong-CMFile.pacify");
+        PMarker pMarker = TestUtil.readPMarker(source);
 
-        HashMapPropertyResolver hpr = new HashMapPropertyResolver();
-        PropertyResolveManager prm = getPropertyResolveManager(hpr);
-
-        Replacer replacer = new Replacer(prm);
-        EntityManager entityManager = new EntityManager(packagePath);
-
-        replacer.setPackagePath(packagePath);
-        List<Defect> defects = entityManager.initialize();
-        defects.addAll(replacer.doReplacement(entityManager));
+        CheckCorrectArchiveType checker = new CheckCorrectArchiveType();
+        List<Defect> defects = checker.checkForErrors(pMarker);
 
         Assert.assertEquals("We should get a defect.", 1, defects.size());
         Assert.assertEquals("We expect ArchiveTypeNotImplementedDefect", ArchiveTypeNotImplementedDefect.class, defects.get(0).getClass());
@@ -164,6 +167,112 @@ public class TestArchive {
 
         Assert.assertEquals("We should get a defect.", 1, defects.size());
         Assert.assertEquals("We expect ArchiveTypeNotImplementedDefect", ArchiveDuplicateDefinedInPMarkerDefect.class, defects.get(0).getClass());
+    }
+
+    @Test
+    public void checkNotReplacedProperty() {
+        File packagePath = new File("target/test-classes/testArchive/wrong/notReplacedProperty/package");
+
+        HashMapPropertyResolver hpr = new HashMapPropertyResolver();
+        PropertyResolveManager prm = getPropertyResolveManager(hpr);
+
+        Replacer replacer = new Replacer(prm);
+        EntityManager entityManager = new EntityManager(packagePath);
+
+        replacer.setPackagePath(packagePath);
+        List<Defect> defects = entityManager.initialize();
+        defects.addAll(replacer.doReplacement(entityManager));
+
+        Assert.assertEquals("We should get a defect.", 2, defects.size());
+        Assert.assertEquals("We expect NotReplacedPropertyDefect", NotReplacedPropertyDefect.class, defects.get(0).getClass());
+        Assert.assertEquals("We expect NotReplacedPropertyDefect", NotReplacedPropertyDefect.class, defects.get(1).getClass());
+        Assert.assertEquals("We expect missing property notReplacedProperty", "notReplacedProperty",
+                ((NotReplacedPropertyDefect) defects.get(0)).getPropertyId());
+        Assert.assertEquals("We expect missing property notReplacedProperty", "notReplacedProperty",
+                ((NotReplacedPropertyDefect) defects.get(1)).getPropertyId());
+    }
+
+    @Test
+    public void checkTargetFileDoesNotExist() {
+        File packagePath = new File("target/test-classes/testArchive/wrong/targetFileDoesNotExist/package");
+
+        HashMapPropertyResolver hpr = new HashMapPropertyResolver();
+        PropertyResolveManager prm = getPropertyResolveManager(hpr);
+
+        EntityManager entityManager = new EntityManager(packagePath);
+        Validator validator = new Validator(prm);
+        validator.enableMarkerFileChecks();
+
+        validator.setPackagePath(packagePath);
+
+        List<Defect> defects = entityManager.initialize();
+        defects.addAll(validator.validateInternal(entityManager));
+
+        Assert.assertEquals("We should get a defect.", 1, defects.size());
+        Assert.assertEquals("We expect FileDoesNotExistDefect", FileDoesNotExistDefect.class, defects.get(0).getClass());
+    }
+
+    @Test
+    public void checkPlaceholderDoesNotExist() {
+        File packagePath = new File("target/test-classes/testArchive/wrong/placeholderDoesNotExist/package");
+
+        HashMapPropertyResolver hpr = new HashMapPropertyResolver();
+        PropertyResolveManager prm = getPropertyResolveManager(hpr);
+
+        EntityManager entityManager = new EntityManager(packagePath);
+        Validator validator = new Validator(prm);
+        validator.enableMarkerFileChecks();
+
+        validator.setPackagePath(packagePath);
+
+        List<Defect> defects = entityManager.initialize();
+        defects.addAll(validator.validateInternal(entityManager));
+
+        Assert.assertEquals("We should get a defect.", 1, defects.size());
+        Assert.assertEquals("We expect NoPlaceholderInTargetFileDefect", NoPlaceholderInTargetFileDefect.class, defects.get(0).getClass());
+        Assert.assertEquals("We expect missingProperty", "missingProperty", ((NoPlaceholderInTargetFileDefect) defects.get(0)).getPProperty().getName());
+    }
+
+    @Test
+    public void checkDuplicatePropertyEntry() {
+        File packagePath = new File("target/test-classes/testArchive/wrong/duplicatePropertyEntry/package");
+
+        HashMapPropertyResolver hpr = new HashMapPropertyResolver();
+        PropertyResolveManager prm = getPropertyResolveManager(hpr);
+
+        EntityManager entityManager = new EntityManager(packagePath);
+        Validator validator = new Validator(prm);
+        validator.enableMarkerFileChecks();
+
+        validator.setPackagePath(packagePath);
+
+        List<Defect> defects = entityManager.initialize();
+        defects.addAll(validator.validateInternal(entityManager));
+
+        Assert.assertEquals("We should get a defect.", 1, defects.size());
+        Assert.assertEquals("We expect PropertyDuplicateDefinedInPMarkerDefect", PropertyDuplicateDefinedInPMarkerDefect.class, defects.get(0).getClass());
+        Assert.assertEquals("We expect missingProperty", "foobar2", ((PropertyDuplicateDefinedInPMarkerDefect) defects.get(0)).getPProperty().getName());
+    }
+
+    @Test
+    public void checkWrongPacifyFilter() {
+        File packagePath = new File("target/test-classes/testArchive/wrong/wrongPacifyFilter/package");
+
+        HashMapPropertyResolver hpr = new HashMapPropertyResolver();
+        PropertyResolveManager prm = getPropertyResolveManager(hpr);
+
+        EntityManager entityManager = new EntityManager(packagePath);
+        Validator validator = new Validator(prm);
+        validator.enableMarkerFileChecks();
+
+        validator.setPackagePath(packagePath);
+
+        List<Defect> defects = entityManager.initialize();
+        defects.addAll(validator.validateInternal(entityManager));
+
+        Assert.assertEquals("We should get a defect.", 1, defects.size());
+        Assert.assertEquals("We expect FilterNotFoundDefect", FilterNotFoundDefect.class, defects.get(0).getClass());
+        Assert.assertEquals("We expect missing.filter.class", "missing.filter.class", ((FilterNotFoundDefect) defects.get(0)).getPFile().getFilterClass());
     }
 
     private PropertyResolveManager getPropertyResolveManager(HashMapPropertyResolver hpr) {

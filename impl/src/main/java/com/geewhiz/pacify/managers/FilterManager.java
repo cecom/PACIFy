@@ -19,42 +19,26 @@ package com.geewhiz.pacify.managers;
  * under the License.
  */
 
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.compress.archivers.ArchiveEntry;
-import org.apache.commons.compress.archivers.ArchiveException;
-import org.apache.commons.compress.archivers.ArchiveInputStream;
-import org.apache.commons.compress.archivers.ArchiveOutputStream;
-import org.apache.commons.compress.archivers.ArchiveStreamFactory;
-import org.apache.commons.compress.changes.ChangeSet;
-import org.apache.commons.compress.changes.ChangeSetPerformer;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.geewhiz.pacify.checks.impl.CheckForNotReplacedTokens;
-import com.geewhiz.pacify.defect.ArchiveTypeNotImplementedDefect;
 import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.defect.FileDoesNotExistDefect;
-import com.geewhiz.pacify.defect.FilterNotFoundDefect;
+import com.geewhiz.pacify.defect.DefectException;
 import com.geewhiz.pacify.filter.PacifyFilter;
 import com.geewhiz.pacify.model.PArchive;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.model.PProperty;
 import com.geewhiz.pacify.utils.FileUtils;
+import com.geewhiz.pacify.utils.Utils;
 
 public class FilterManager {
 
@@ -81,26 +65,21 @@ public class FilterManager {
             }
         }
 
+        CheckForNotReplacedTokens checker = new CheckForNotReplacedTokens();
+        defects.addAll(checker.checkForErrors(pMarker));
+
         if (defects.isEmpty()) {
             pMarker.getFile().delete();
         }
         return defects;
     }
 
-    private List<? extends Defect> filterPFile(PFile pFile) {
+    private List<Defect> filterPFile(PFile pFile) {
         logger.debug("     Filtering [{}] using encoding [{}] and filter [{}]", pMarker.getAbsoluteFileFor(pFile).getAbsolutePath(), pFile.getEncoding(),
                 pFile.getFilterClass());
 
         File file = pMarker.getAbsoluteFileFor(pFile);
-        if (!file.exists()) {
-            return Arrays.asList(new FileDoesNotExistDefect(pMarker, pFile));
-        }
-
         PacifyFilter pacifyFilter = getFilterForPFile(pFile);
-
-        if (pacifyFilter == null) {
-            return Arrays.asList(new FilterNotFoundDefect(pMarker, pFile));
-        }
 
         Map<String, String> propertyValues = getPropertyValues(pFile);
         String beginToken = pMarker.getBeginTokenFor(pFile);
@@ -110,34 +89,15 @@ public class FilterManager {
         List<Defect> defects = new ArrayList<Defect>();
         defects.addAll(pacifyFilter.filter(propertyValues, beginToken, endToken, file, encoding));
 
-        CheckForNotReplacedTokens checker = new CheckForNotReplacedTokens();
-        defects.addAll(checker.checkForErrors(pMarker, pFile));
-
         return defects;
     }
 
-    private List<? extends Defect> filterPArchive(PArchive pArchive) {
-        File file = pMarker.getAbsoluteFileFor(pArchive);
-        if (!file.exists()) {
-            return Arrays.asList(new FileDoesNotExistDefect(pMarker, pArchive));
-        }
-
-        String archiveType = getArchiveType(pArchive);
-        if (archiveType == null) {
-            return Arrays.asList(new ArchiveTypeNotImplementedDefect(pMarker, pArchive));
-        }
-
+    private List<Defect> filterPArchive(PArchive pArchive) {
         List<Defect> defects = new ArrayList<Defect>();
 
         for (PFile pFile : pArchive.getPFiles()) {
             File extractedFile = extractFile(pArchive, pFile);
-
-            PacifyFilter pacifyFilter = getFilterForPFile(pFile);
-
-            if (pacifyFilter == null) {
-                defects.add(new FilterNotFoundDefect(pMarker, pArchive, pFile));
-                continue;
-            }
+            PacifyFilter pacifyFilter = getFilterForPFile(pArchive, pFile);
 
             Map<String, String> propertyValues = getPropertyValues(pFile);
             String beginToken = pMarker.getBeginTokenFor(pArchive, pFile);
@@ -146,117 +106,9 @@ public class FilterManager {
 
             defects.addAll(pacifyFilter.filter(propertyValues, beginToken, endToken, extractedFile, encoding));
 
-            replaceFileInArchive(pArchive, pFile, extractedFile);
+            FileUtils.replaceFileInArchive(pMarker, pArchive, pFile, extractedFile);
         }
         return defects;
-    }
-
-    private File extractFile(PArchive pArchive, PFile pFile) {
-        ArchiveInputStream ais = null;
-        try {
-            ArchiveStreamFactory factory = new ArchiveStreamFactory();
-
-            File archiveFile = pMarker.getAbsoluteFileFor(pArchive);
-            ais = factory.createArchiveInputStream(pArchive.getType(), new FileInputStream(archiveFile));
-
-            ArchiveEntry entry;
-            while ((entry = ais.getNextEntry()) != null) {
-                if (!pFile.getRelativePath().equals(entry.getName())) {
-                    continue;
-                }
-
-                File result = FileUtils.createTempFile(archiveFile.getParentFile(), archiveFile.getName());
-                result.deleteOnExit();
-
-                byte[] content = new byte[2048];
-                BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(result));
-
-                int len;
-                while ((len = ais.read(content)) != -1)
-                {
-                    bos.write(content, 0, len);
-                }
-                bos.close();
-                content = null;
-
-                return result;
-            }
-            return null;
-        } catch (ArchiveException e) {
-            throw new RuntimeException(e);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        finally {
-            IOUtils.closeQuietly(ais);
-        }
-    }
-
-    private void replaceFileInArchive(PArchive pArchive, PFile pFile, File replaceWith) {
-        ArchiveStreamFactory factory = new ArchiveStreamFactory();
-
-        InputStream archiveInputStream = null;
-        ArchiveInputStream ais = null;
-        ArchiveOutputStream aos = null;
-
-        File archiveFile = pMarker.getAbsoluteFileFor(pArchive);
-        File tmpZip = FileUtils.createTempFile(archiveFile.getParentFile(), archiveFile.getName());
-
-        ArchiveEntry entry;
-        try {
-
-            String fileToReplace = pFile.getRelativePath();
-
-            aos = factory.createArchiveOutputStream(pArchive.getType(), new FileOutputStream(tmpZip));
-            entry = aos.createArchiveEntry(replaceWith, fileToReplace);
-
-            ChangeSet changes = new ChangeSet();
-            changes.add(entry, new FileInputStream(replaceWith), true);
-
-            archiveInputStream = new FileInputStream(archiveFile);
-            ais = factory.createArchiveInputStream(pArchive.getType(), archiveInputStream);
-
-            ChangeSetPerformer performer = new ChangeSetPerformer(changes);
-            performer.perform(ais, aos);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (ArchiveException e) {
-            throw new RuntimeException(e);
-        }
-        finally {
-            IOUtils.closeQuietly(aos);
-            IOUtils.closeQuietly(ais);
-            IOUtils.closeQuietly(archiveInputStream);
-        }
-
-        if (!archiveFile.delete()) {
-            throw new RuntimeException("Couldn't delete file [" + archiveFile.getPath() + "]... Aborting!");
-        }
-        if (!tmpZip.renameTo(archiveFile)) {
-            throw new RuntimeException("Couldn't rename filtered file from [" + tmpZip.getPath() + "] to ["
-                    + archiveFile.getPath() + "]... Aborting!");
-        }
-    }
-
-    private String getArchiveType(PArchive pArchive) {
-        if ("jar".equalsIgnoreCase(pArchive.getType())) {
-            return ArchiveStreamFactory.JAR;
-        }
-        if ("war".equalsIgnoreCase(pArchive.getType())) {
-            return ArchiveStreamFactory.JAR;
-        }
-        if ("ear".equalsIgnoreCase(pArchive.getType())) {
-            return ArchiveStreamFactory.JAR;
-        }
-        if ("zip".equalsIgnoreCase(pArchive.getType())) {
-            return ArchiveStreamFactory.ZIP;
-        }
-        if ("tar".equalsIgnoreCase(pArchive.getType())) {
-            return ArchiveStreamFactory.TAR;
-        }
-        return null;
     }
 
     private Map<String, String> getPropertyValues(PFile pFile) {
@@ -276,13 +128,20 @@ public class FilterManager {
     }
 
     private PacifyFilter getFilterForPFile(PArchive pArchive, PFile pFile) {
-        String filterClass = pFile.getFilterClass();
-
         try {
-            return (PacifyFilter) Class.forName(filterClass).getConstructor(PMarker.class, PArchive.class, PFile.class).newInstance(pMarker, pArchive, pFile);
-        } catch (Exception e) {
-            logger.debug("Error while instantiate filter class [" + filterClass + "]", e);
-            return null;
+            return Utils.getPacifyFilter(pMarker, pArchive, pFile);
+        } catch (DefectException e) {
+            // is checked before, so we should not get this exception here.
+            throw new RuntimeException(e);
+        }
+    }
+
+    private File extractFile(PArchive pArchive, PFile pFile) {
+        try {
+            return FileUtils.extractFile(pMarker, pArchive, pFile);
+        } catch (DefectException e) {
+            // Existence is checked before, so we should not get this exception here
+            throw new RuntimeException(e);
         }
     }
 }

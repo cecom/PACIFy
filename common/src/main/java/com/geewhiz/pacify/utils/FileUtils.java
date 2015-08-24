@@ -19,16 +19,33 @@ package com.geewhiz.pacify.utils;
  * under the License.
  */
 
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
+import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.ArchiveException;
+import org.apache.commons.compress.archivers.ArchiveInputStream;
+import org.apache.commons.compress.archivers.ArchiveOutputStream;
+import org.apache.commons.compress.archivers.ArchiveStreamFactory;
+import org.apache.commons.compress.changes.ChangeSet;
+import org.apache.commons.compress.changes.ChangeSetPerformer;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
+
+import com.geewhiz.pacify.defect.DefectException;
+import com.geewhiz.pacify.defect.FileDoesNotExistDefect;
+import com.geewhiz.pacify.model.PArchive;
+import com.geewhiz.pacify.model.PFile;
+import com.geewhiz.pacify.model.PMarker;
 
 public class FileUtils {
 
@@ -82,4 +99,167 @@ public class FileUtils {
         }
     }
 
+    public static Boolean archiveContainsFile(PMarker pMarker, PArchive pArchive, PFile pFile) {
+        ArchiveInputStream ais = null;
+        try {
+            ArchiveStreamFactory factory = new ArchiveStreamFactory();
+
+            File archiveFile = pMarker.getAbsoluteFileFor(pArchive);
+            ais = factory.createArchiveInputStream(pArchive.getType(), new FileInputStream(archiveFile));
+
+            ArchiveEntry entry;
+            while ((entry = ais.getNextEntry()) != null) {
+                if (pFile.getRelativePath().equals(entry.getName())) {
+                    return Boolean.TRUE;
+                }
+            }
+
+            return Boolean.FALSE;
+        } catch (ArchiveException e) {
+            throw new RuntimeException(e);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        finally {
+            IOUtils.closeQuietly(ais);
+        }
+    }
+
+    public static String getFileInOneString(PMarker pMarker, PArchive pArchive, PFile pFile) throws DefectException {
+        ArchiveInputStream ais = null;
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        try {
+            ArchiveStreamFactory factory = new ArchiveStreamFactory();
+
+            File archiveFile = pMarker.getAbsoluteFileFor(pArchive);
+            ais = factory.createArchiveInputStream(pArchive.getType(), new FileInputStream(archiveFile));
+
+            ArchiveEntry entry;
+
+            while ((entry = ais.getNextEntry()) != null) {
+                if (!pFile.getRelativePath().equals(entry.getName())) {
+                    continue;
+                }
+
+                byte[] content = new byte[2048];
+                BufferedOutputStream bos = new BufferedOutputStream(baos);
+
+                int len;
+                while ((len = ais.read(content)) != -1)
+                {
+                    bos.write(content, 0, len);
+                }
+                bos.close();
+                content = null;
+
+                return baos.toString(pFile.getEncoding());
+            }
+
+            throw new FileDoesNotExistDefect(pMarker, pArchive, pFile);
+        } catch (ArchiveException e) {
+            throw new RuntimeException(e);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        finally {
+            IOUtils.closeQuietly(baos);
+            IOUtils.closeQuietly(ais);
+        }
+    }
+
+    public static File extractFile(PMarker pMarker, PArchive pArchive, PFile pFile) throws DefectException {
+        ArchiveInputStream ais = null;
+        try {
+            ArchiveStreamFactory factory = new ArchiveStreamFactory();
+
+            File archiveFile = pMarker.getAbsoluteFileFor(pArchive);
+            ais = factory.createArchiveInputStream(pArchive.getType(), new FileInputStream(archiveFile));
+
+            ArchiveEntry entry;
+            while ((entry = ais.getNextEntry()) != null) {
+                if (!pFile.getRelativePath().equals(entry.getName())) {
+                    continue;
+                }
+
+                File result = FileUtils.createTempFile(archiveFile.getParentFile(), archiveFile.getName());
+                result.deleteOnExit();
+
+                byte[] content = new byte[2048];
+                BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(result));
+
+                int len;
+                while ((len = ais.read(content)) != -1)
+                {
+                    bos.write(content, 0, len);
+                }
+                bos.close();
+                content = null;
+
+                return result;
+            }
+
+            throw new FileDoesNotExistDefect(pMarker, pArchive, pFile);
+
+        } catch (ArchiveException e) {
+            throw new RuntimeException(e);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        finally {
+            IOUtils.closeQuietly(ais);
+        }
+    }
+
+    public static void replaceFileInArchive(PMarker pMarker, PArchive pArchive, PFile pFile, File replaceWith) {
+        ArchiveStreamFactory factory = new ArchiveStreamFactory();
+
+        InputStream archiveInputStream = null;
+        ArchiveInputStream ais = null;
+        ArchiveOutputStream aos = null;
+
+        File archiveFile = pMarker.getAbsoluteFileFor(pArchive);
+        File tmpZip = FileUtils.createTempFile(archiveFile.getParentFile(), archiveFile.getName());
+
+        ArchiveEntry entry;
+        try {
+
+            String fileToReplace = pFile.getRelativePath();
+
+            aos = factory.createArchiveOutputStream(pArchive.getType(), new FileOutputStream(tmpZip));
+            entry = aos.createArchiveEntry(replaceWith, fileToReplace);
+
+            ChangeSet changes = new ChangeSet();
+            changes.add(entry, new FileInputStream(replaceWith), true);
+
+            archiveInputStream = new FileInputStream(archiveFile);
+            ais = factory.createArchiveInputStream(pArchive.getType(), archiveInputStream);
+
+            ChangeSetPerformer performer = new ChangeSetPerformer(changes);
+            performer.perform(ais, aos);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (ArchiveException e) {
+            throw new RuntimeException(e);
+        }
+        finally {
+            IOUtils.closeQuietly(aos);
+            IOUtils.closeQuietly(ais);
+            IOUtils.closeQuietly(archiveInputStream);
+        }
+
+        if (!archiveFile.delete()) {
+            throw new RuntimeException("Couldn't delete file [" + archiveFile.getPath() + "]... Aborting!");
+        }
+        if (!tmpZip.renameTo(archiveFile)) {
+            throw new RuntimeException("Couldn't rename filtered file from [" + tmpZip.getPath() + "] to ["
+                    + archiveFile.getPath() + "]... Aborting!");
+        }
+    }
 }

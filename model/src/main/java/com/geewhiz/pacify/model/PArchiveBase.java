@@ -26,9 +26,30 @@ import org.jvnet.jaxb2_commons.locator.ObjectLocator;
 
 public abstract class PArchiveBase {
 
-    public String getType() {
+    public String getInternalType() {
         int idx = getRelativePath().lastIndexOf(".");
         return getRelativePath().substring(idx + 1);
+    }
+
+    public String getType() {
+        String type = getInternalType();
+
+        if ("jar".equalsIgnoreCase(type)) {
+            return "jar";
+        }
+        if ("war".equalsIgnoreCase(type)) {
+            return "jar";
+        }
+        if ("ear".equalsIgnoreCase(type)) {
+            return "jar";
+        }
+        if ("zip".equalsIgnoreCase(type)) {
+            return "zip";
+        }
+        if ("tar".equalsIgnoreCase(type)) {
+            return "tar";
+        }
+        return type;
     }
 
     public abstract String getRelativePath();

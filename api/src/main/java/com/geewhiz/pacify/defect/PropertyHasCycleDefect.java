@@ -19,39 +19,40 @@ package com.geewhiz.pacify.defect;
  * under the License.
  */
 
+import com.geewhiz.pacify.model.PArchive;
 import com.geewhiz.pacify.model.PMarker;
 
-public class PropertyHasCycleDefect implements Defect {
+public class PropertyHasCycleDefect extends DefectException {
 
-    private PMarker pMarker;
-    private String  property;
-    private String  cycle;
+    private static final long serialVersionUID = 1L;
+
+    private String            property;
+    private String            cycle;
 
     public PropertyHasCycleDefect(PMarker pMarker, String property, String cycle) {
-        this.pMarker = pMarker;
-        this.setProperty(property);
-        this.setCycle(cycle);
+        super(pMarker);
+        this.property = property;
+        this.cycle = cycle;
     }
 
+    public PropertyHasCycleDefect(PMarker pMarker, PArchive pArchive, String property, String cycle) {
+        super(pMarker, pArchive);
+        this.property = property;
+        this.cycle = cycle;
+    }
+
+    @Override
     public String getDefectMessage() {
-        return String.format("PropertyHasCycle: \n\t[MarkerFile=%s]\n\t[Property=%s]\n\t[cycle=%s]", pMarker.getFile().getAbsolutePath(),
-                getProperty(), getCycle());
+        return super.getDefectMessage() +
+                String.format("\n\t[Property=%s]\n\t[cycle=%s]", getProperty(), getCycle());
     }
 
     public String getCycle() {
         return cycle;
     }
 
-    private void setCycle(String reference) {
-        this.cycle = reference;
-    }
-
     public String getProperty() {
         return property;
-    }
-
-    private void setProperty(String property) {
-        this.property = property;
     }
 
 }

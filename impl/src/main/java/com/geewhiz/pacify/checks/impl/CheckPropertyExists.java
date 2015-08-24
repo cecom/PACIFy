@@ -30,6 +30,7 @@ import com.geewhiz.pacify.defect.PropertyResolveDefect;
 import com.geewhiz.pacify.exceptions.CycleDetectRuntimeException;
 import com.geewhiz.pacify.exceptions.PropertyResolveRuntimeException;
 import com.geewhiz.pacify.managers.PropertyResolveManager;
+import com.geewhiz.pacify.model.PArchive;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.model.PProperty;
@@ -45,23 +46,34 @@ public class CheckPropertyExists implements PMarkerCheck {
     public List<Defect> checkForErrors(PMarker pMarker) {
         List<Defect> defects = new ArrayList<Defect>();
 
-        for (PFile pFile : pMarker.getPFiles()) {
+        for (PArchive pArchive : pMarker.getPArchives()) {
+            checkPFiles(defects, pMarker, pArchive, pArchive.getPFiles());
+        }
+
+        checkPFiles(defects, pMarker, pMarker.getPFiles());
+        return defects;
+    }
+
+    private void checkPFiles(List<Defect> defects, PMarker pMarker, List<PFile> pFiles) {
+        checkPFiles(defects, pMarker, null, pFiles);
+    }
+
+    private void checkPFiles(List<Defect> defects, PMarker pMarker, PArchive pArchive, List<PFile> pFiles) {
+        for (PFile pFile : pFiles) {
             for (PProperty pProperty : pFile.getPProperties()) {
                 if (propertyResolveManager.containsProperty(pProperty.getName())) {
                     try {
                         propertyResolveManager.getPropertyValue(pProperty);
                     } catch (CycleDetectRuntimeException ce) {
-                        defects.add(new PropertyHasCycleDefect(pMarker, ce.getProperty(), ce.getCycle()));
+                        defects.add(new PropertyHasCycleDefect(pMarker, pArchive, ce.getProperty(), ce.getCycle()));
                     } catch (PropertyResolveRuntimeException re) {
-                        defects.add(new PropertyResolveDefect(pMarker, pProperty, re.getResolvePath(), propertyResolveManager.toString()));
+                        defects.add(new PropertyResolveDefect(pMarker, pArchive, pFile, pProperty, re.getResolvePath(), propertyResolveManager.toString()));
                     }
                     continue;
                 }
-                Defect defect = new PropertyNotDefinedDefect(pMarker, pProperty, propertyResolveManager.toString());
+                Defect defect = new PropertyNotDefinedDefect(pMarker, pArchive, pFile, pProperty, propertyResolveManager.toString());
                 defects.add(defect);
             }
         }
-
-        return defects;
     }
 }

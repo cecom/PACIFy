@@ -23,34 +23,20 @@ import com.geewhiz.pacify.model.PArchive;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
 
-public class FileDoesNotExistDefect implements Defect {
+public class FileDoesNotExistDefect extends DefectException {
 
-    private PMarker  pMarker;
-    private PFile    pFile;
-    private PArchive pArchive;
+    private static final long serialVersionUID = 1L;
 
     public FileDoesNotExistDefect(PMarker pMarker, PFile pFile) {
-        this.pMarker = pMarker;
-        this.pFile = pFile;
+        super(pMarker, pFile);
     }
 
     public FileDoesNotExistDefect(PMarker pMarker, PArchive pArchive) {
-        this.pMarker = pMarker;
-        this.pArchive = pArchive;
+        super(pMarker, pArchive);
     }
 
-    public String getDefectMessage() {
-        StringBuffer message = new StringBuffer();
-        message.append(String.format("TargetFileDoesNotExist: \n\t[MarkerFile=%s]", pMarker.getFile().getAbsolutePath()));
-        if (pArchive != null) {
-            message.append(String.format("\n\t[Archive=%s]", pMarker.getAbsoluteFileFor(pArchive).getAbsolutePath()));
-            if (pFile != null) {
-                message.append(String.format("\n\t[Archive File=%s]", pFile.getRelativePath()));
-            }
-        } else {
-            message.append(String.format("\n\t[File=%s]", pMarker.getAbsoluteFileFor(pFile).getAbsolutePath()));
-        }
-
-        return message.toString();
+    public FileDoesNotExistDefect(PMarker pMarker, PArchive pArchive, PFile pFile) {
+        super(pMarker, pArchive, pFile);
     }
+
 }

@@ -20,17 +20,20 @@ package com.geewhiz.pacify.defect;
  */
 import com.geewhiz.pacify.resolver.PropertyResolver;
 
-public class PropertyDuplicateDefinedInPropertyFileDefect implements Defect {
-    private String           property;
-    private PropertyResolver propertyResolver;
+public class PropertyDuplicateDefinedInPropertyFileDefect extends DefectException {
+
+    private static final long serialVersionUID = 1L;
+
+    private String            property;
+    private PropertyResolver  propertyResolver;
 
     public PropertyDuplicateDefinedInPropertyFileDefect(String property, PropertyResolver propertyResolver) {
-        this.property = property;
-        this.propertyResolver = propertyResolver;
+        super();
     }
 
+    @Override
     public String getDefectMessage() {
-        return String.format("PropertyDuplicateDefinedInPropertyResolver: \n\t[Resolver=[%s]]\n\t[Property=%s]",
+        return String.format("PropertyDuplicateDefinedInPropertyFileDefect:\n\t[Resolver=[%s]]\n\t[Property=%s]",
                 propertyResolver.getPropertyResolverDescription(),
                 property);
     }
