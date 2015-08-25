@@ -188,20 +188,21 @@ public class FileUtils {
 
                 File result = FileUtils.createTempFile(archiveFile.getParentFile(), archiveFile.getName());
 
-                byte[] content = new byte[2048];
                 BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(result));
+
+                byte[] content = new byte[2048];
 
                 int len;
                 while ((len = ais.read(content)) != -1)
                 {
                     bos.write(content, 0, len);
                 }
+
                 bos.close();
                 content = null;
 
                 return result;
             }
-
             throw new FileDoesNotExistDefect(pMarker, pArchive, pFile);
 
         } catch (ArchiveException e) {
@@ -222,6 +223,7 @@ public class FileUtils {
         InputStream archiveInputStream = null;
         ArchiveInputStream ais = null;
         ArchiveOutputStream aos = null;
+        FileInputStream fis = null;
 
         File archiveFile = pMarker.getAbsoluteFileFor(pArchive);
         File tmpZip = FileUtils.createTempFile(archiveFile.getParentFile(), archiveFile.getName());
@@ -233,9 +235,10 @@ public class FileUtils {
 
             aos = factory.createArchiveOutputStream(pArchive.getType(), new FileOutputStream(tmpZip));
             entry = aos.createArchiveEntry(replaceWith, fileToReplace);
+            fis = new FileInputStream(replaceWith);
 
             ChangeSet changes = new ChangeSet();
-            changes.add(entry, new FileInputStream(replaceWith), true);
+            changes.add(entry, fis, true);
 
             archiveInputStream = new FileInputStream(archiveFile);
             ais = factory.createArchiveInputStream(pArchive.getType(), archiveInputStream);
@@ -248,6 +251,7 @@ public class FileUtils {
             throw new RuntimeException(e);
         }
         finally {
+            IOUtils.closeQuietly(fis);
             IOUtils.closeQuietly(aos);
             IOUtils.closeQuietly(ais);
             IOUtils.closeQuietly(archiveInputStream);

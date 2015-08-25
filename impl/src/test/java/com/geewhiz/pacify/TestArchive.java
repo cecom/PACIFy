@@ -61,26 +61,15 @@ public class TestArchive {
         File testResourceFolder = new File("src/test/resources/testArchive/correct/jar");
         File targetResourceFolder = new File("target/test-resources/testArchive/correct/jar");
 
-        TestUtil.removeOldTestResourcesAndCopyAgain(testResourceFolder, targetResourceFolder);
-
-        File packagePath = new File(targetResourceFolder, "package");
-
-        HashMapPropertyResolver hpr = new HashMapPropertyResolver();
-        PropertyResolveManager prm = getPropertyResolveManager(hpr);
-
-        Replacer replacer = new Replacer(prm);
-        EntityManager entityManager = new EntityManager(packagePath);
-
-        replacer.setPackagePath(packagePath);
-        List<Defect> defects = entityManager.initialize();
-        defects.addAll(replacer.doReplacement(entityManager));
+        List<Defect> defects = createPrepareAndExecutePacify(testResourceFolder, targetResourceFolder);
 
         Assert.assertEquals("We shouldnt get any defects.", 0, defects.size());
 
         File expectedArchive = new File(targetResourceFolder, "expectedResult/archive.jar");
         File outputArchive = new File(targetResourceFolder, "package/archive.jar");
 
-        resultIsAsExpected(outputArchive, expectedArchive);
+        checkResultIsAsExpected(outputArchive, expectedArchive);
+        Assert.assertArrayEquals("There should be no additional File", expectedArchive.getParentFile().list(), outputArchive.getParentFile().list());
     }
 
     @Test
@@ -88,26 +77,15 @@ public class TestArchive {
         File testResourceFolder = new File("src/test/resources/testArchive/correct/tar");
         File targetResourceFolder = new File("target/test-resources/testArchive/correct/tar");
 
-        TestUtil.removeOldTestResourcesAndCopyAgain(testResourceFolder, targetResourceFolder);
-
-        File packagePath = new File(targetResourceFolder, "package");
-
-        HashMapPropertyResolver hpr = new HashMapPropertyResolver();
-        PropertyResolveManager prm = getPropertyResolveManager(hpr);
-
-        Replacer replacer = new Replacer(prm);
-        EntityManager entityManager = new EntityManager(packagePath);
-
-        replacer.setPackagePath(packagePath);
-        List<Defect> defects = entityManager.initialize();
-        defects.addAll(replacer.doReplacement(entityManager));
+        List<Defect> defects = createPrepareAndExecutePacify(testResourceFolder, targetResourceFolder);
 
         Assert.assertEquals("We shouldnt get any defects.", 0, defects.size());
 
         File expectedArchive = new File(targetResourceFolder, "expectedResult/archive.tar");
         File outputArchive = new File(targetResourceFolder, "package/archive.tar");
 
-        resultIsAsExpected(outputArchive, expectedArchive);
+        checkResultIsAsExpected(outputArchive, expectedArchive);
+        Assert.assertArrayEquals("There should be no additional File", expectedArchive.getParentFile().list(), outputArchive.getParentFile().list());
     }
 
     @Test
@@ -115,26 +93,31 @@ public class TestArchive {
         File testResourceFolder = new File("src/test/resources/testArchive/correct/zip");
         File targetResourceFolder = new File("target/test-resources/testArchive/correct/zip");
 
-        TestUtil.removeOldTestResourcesAndCopyAgain(testResourceFolder, targetResourceFolder);
-
-        File packagePath = new File(targetResourceFolder, "package");
-
-        HashMapPropertyResolver hpr = new HashMapPropertyResolver();
-        PropertyResolveManager prm = getPropertyResolveManager(hpr);
-
-        Replacer replacer = new Replacer(prm);
-        EntityManager entityManager = new EntityManager(packagePath);
-
-        replacer.setPackagePath(packagePath);
-        List<Defect> defects = entityManager.initialize();
-        defects.addAll(replacer.doReplacement(entityManager));
+        List<Defect> defects = createPrepareAndExecutePacify(testResourceFolder, targetResourceFolder);
 
         Assert.assertEquals("We shouldnt get any defects.", 0, defects.size());
 
         File expectedArchive = new File(targetResourceFolder, "expectedResult/archive.zip");
         File outputArchive = new File(targetResourceFolder, "package/archive.zip");
 
-        resultIsAsExpected(outputArchive, expectedArchive);
+        checkResultIsAsExpected(outputArchive, expectedArchive);
+        Assert.assertArrayEquals("There should be no additional File", expectedArchive.getParentFile().list(), outputArchive.getParentFile().list());
+    }
+
+    @Test
+    public void checkBigZip() throws ArchiveException, IOException {
+        File testResourceFolder = new File("src/test/resources/testArchive/correct/bigZip");
+        File targetResourceFolder = new File("target/test-resources/testArchive/correct/bigZip");
+
+        List<Defect> defects = createPrepareAndExecutePacify(testResourceFolder, targetResourceFolder);
+
+        Assert.assertEquals("We shouldnt get any defects.", 0, defects.size());
+
+        File expectedArchive = new File(targetResourceFolder, "expectedResult/archive.zip");
+        File outputArchive = new File(targetResourceFolder, "package/archive.zip");
+
+        checkResultIsAsExpected(outputArchive, expectedArchive);
+        Assert.assertArrayEquals("There should be no additional File", expectedArchive.getParentFile().list(), outputArchive.getParentFile().list());
     }
 
     @Test
@@ -153,17 +136,7 @@ public class TestArchive {
     public void checkDuplicateArchiveEntry() {
         File packagePath = new File("target/test-classes/testArchive/wrong/duplicateEntry/package");
 
-        HashMapPropertyResolver hpr = new HashMapPropertyResolver();
-        PropertyResolveManager prm = getPropertyResolveManager(hpr);
-
-        EntityManager entityManager = new EntityManager(packagePath);
-        Validator validator = new Validator(prm);
-        validator.enableMarkerFileChecks();
-
-        validator.setPackagePath(packagePath);
-
-        List<Defect> defects = entityManager.initialize();
-        defects.addAll(validator.validateInternal(entityManager));
+        List<Defect> defects = createPrepareAndExecuteValidator(packagePath);
 
         Assert.assertEquals("We should get a defect.", 1, defects.size());
         Assert.assertEquals("We expect ArchiveTypeNotImplementedDefect", ArchiveDuplicateDefinedInPMarkerDefect.class, defects.get(0).getClass());
@@ -171,17 +144,10 @@ public class TestArchive {
 
     @Test
     public void checkNotReplacedProperty() {
-        File packagePath = new File("target/test-classes/testArchive/wrong/notReplacedProperty/package");
+        File testResourceFolder = new File("target/test-classes/testArchive/wrong/notReplacedProperty");
+        File targetResourceFolder = new File("target/test-resources/testArchive/wrong/notReplacedProperty");
 
-        HashMapPropertyResolver hpr = new HashMapPropertyResolver();
-        PropertyResolveManager prm = getPropertyResolveManager(hpr);
-
-        Replacer replacer = new Replacer(prm);
-        EntityManager entityManager = new EntityManager(packagePath);
-
-        replacer.setPackagePath(packagePath);
-        List<Defect> defects = entityManager.initialize();
-        defects.addAll(replacer.doReplacement(entityManager));
+        List<Defect> defects = createPrepareAndExecutePacify(testResourceFolder, targetResourceFolder);
 
         Assert.assertEquals("We should get a defect.", 2, defects.size());
         Assert.assertEquals("We expect NotReplacedPropertyDefect", NotReplacedPropertyDefect.class, defects.get(0).getClass());
@@ -196,17 +162,7 @@ public class TestArchive {
     public void checkTargetFileDoesNotExist() {
         File packagePath = new File("target/test-classes/testArchive/wrong/targetFileDoesNotExist/package");
 
-        HashMapPropertyResolver hpr = new HashMapPropertyResolver();
-        PropertyResolveManager prm = getPropertyResolveManager(hpr);
-
-        EntityManager entityManager = new EntityManager(packagePath);
-        Validator validator = new Validator(prm);
-        validator.enableMarkerFileChecks();
-
-        validator.setPackagePath(packagePath);
-
-        List<Defect> defects = entityManager.initialize();
-        defects.addAll(validator.validateInternal(entityManager));
+        List<Defect> defects = createPrepareAndExecuteValidator(packagePath);
 
         Assert.assertEquals("We should get a defect.", 1, defects.size());
         Assert.assertEquals("We expect FileDoesNotExistDefect", FileDoesNotExistDefect.class, defects.get(0).getClass());
@@ -216,17 +172,7 @@ public class TestArchive {
     public void checkPlaceholderDoesNotExist() {
         File packagePath = new File("target/test-classes/testArchive/wrong/placeholderDoesNotExist/package");
 
-        HashMapPropertyResolver hpr = new HashMapPropertyResolver();
-        PropertyResolveManager prm = getPropertyResolveManager(hpr);
-
-        EntityManager entityManager = new EntityManager(packagePath);
-        Validator validator = new Validator(prm);
-        validator.enableMarkerFileChecks();
-
-        validator.setPackagePath(packagePath);
-
-        List<Defect> defects = entityManager.initialize();
-        defects.addAll(validator.validateInternal(entityManager));
+        List<Defect> defects = createPrepareAndExecuteValidator(packagePath);
 
         Assert.assertEquals("We should get a defect.", 1, defects.size());
         Assert.assertEquals("We expect NoPlaceholderInTargetFileDefect", NoPlaceholderInTargetFileDefect.class, defects.get(0).getClass());
@@ -237,17 +183,7 @@ public class TestArchive {
     public void checkDuplicatePropertyEntry() {
         File packagePath = new File("target/test-classes/testArchive/wrong/duplicatePropertyEntry/package");
 
-        HashMapPropertyResolver hpr = new HashMapPropertyResolver();
-        PropertyResolveManager prm = getPropertyResolveManager(hpr);
-
-        EntityManager entityManager = new EntityManager(packagePath);
-        Validator validator = new Validator(prm);
-        validator.enableMarkerFileChecks();
-
-        validator.setPackagePath(packagePath);
-
-        List<Defect> defects = entityManager.initialize();
-        defects.addAll(validator.validateInternal(entityManager));
+        List<Defect> defects = createPrepareAndExecuteValidator(packagePath);
 
         Assert.assertEquals("We should get a defect.", 1, defects.size());
         Assert.assertEquals("We expect PropertyDuplicateDefinedInPMarkerDefect", PropertyDuplicateDefinedInPMarkerDefect.class, defects.get(0).getClass());
@@ -258,6 +194,14 @@ public class TestArchive {
     public void checkWrongPacifyFilter() {
         File packagePath = new File("target/test-classes/testArchive/wrong/wrongPacifyFilter/package");
 
+        List<Defect> defects = createPrepareAndExecuteValidator(packagePath);
+
+        Assert.assertEquals("We should get a defect.", 1, defects.size());
+        Assert.assertEquals("We expect FilterNotFoundDefect", FilterNotFoundDefect.class, defects.get(0).getClass());
+        Assert.assertEquals("We expect missing.filter.class", "missing.filter.class", ((FilterNotFoundDefect) defects.get(0)).getPFile().getFilterClass());
+    }
+
+    private List<Defect> createPrepareAndExecuteValidator(File packagePath) {
         HashMapPropertyResolver hpr = new HashMapPropertyResolver();
         PropertyResolveManager prm = getPropertyResolveManager(hpr);
 
@@ -269,10 +213,24 @@ public class TestArchive {
 
         List<Defect> defects = entityManager.initialize();
         defects.addAll(validator.validateInternal(entityManager));
+        return defects;
+    }
 
-        Assert.assertEquals("We should get a defect.", 1, defects.size());
-        Assert.assertEquals("We expect FilterNotFoundDefect", FilterNotFoundDefect.class, defects.get(0).getClass());
-        Assert.assertEquals("We expect missing.filter.class", "missing.filter.class", ((FilterNotFoundDefect) defects.get(0)).getPFile().getFilterClass());
+    private List<Defect> createPrepareAndExecutePacify(File testResourceFolder, File targetResourceFolder) {
+        TestUtil.removeOldTestResourcesAndCopyAgain(testResourceFolder, targetResourceFolder);
+
+        File packagePath = new File(targetResourceFolder, "package");
+
+        HashMapPropertyResolver hpr = new HashMapPropertyResolver();
+        PropertyResolveManager prm = getPropertyResolveManager(hpr);
+
+        Replacer replacer = new Replacer(prm);
+        EntityManager entityManager = new EntityManager(packagePath);
+
+        replacer.setPackagePath(packagePath);
+        List<Defect> defects = entityManager.initialize();
+        defects.addAll(replacer.doReplacement(entityManager));
+        return defects;
     }
 
     private PropertyResolveManager getPropertyResolveManager(HashMapPropertyResolver hpr) {
@@ -285,36 +243,76 @@ public class TestArchive {
         return prm;
     }
 
-    private boolean resultIsAsExpected(File replacedArchive, File expectedArchive) throws ArchiveException, IOException {
+    private void checkResultIsAsExpected(File replacedArchive, File expectedArchive) throws ArchiveException, IOException {
+        archiveContainsEntries(replacedArchive, expectedArchive);
+        archiveDoesNotContainAdditionEntries(replacedArchive, expectedArchive);
+    }
+
+    private void archiveContainsEntries(File replacedArchive, File expectedArchive) throws ArchiveException, IOException {
+        ArchiveStreamFactory factory = new ArchiveStreamFactory();
+
+        FileInputStream expectedIS = new FileInputStream(expectedArchive);
+        ArchiveInputStream expectedAIS = factory.createArchiveInputStream(new BufferedInputStream(expectedIS));
+        ArchiveEntry expectedEntry = null;
+        while ((expectedEntry = expectedAIS.getNextEntry()) != null) {
+            FileInputStream replacedIS = new FileInputStream(replacedArchive);
+            ArchiveInputStream replacedAIS = factory.createArchiveInputStream(new BufferedInputStream(replacedIS));
+
+            ArchiveEntry replacedEntry = null;
+            boolean entryFound = false;
+            while ((replacedEntry = replacedAIS.getNextEntry()) != null) {
+                Assert.assertNotNull("We expect an entry.", replacedEntry);
+                if (!expectedEntry.getName().equals(replacedEntry.getName())) {
+                    continue;
+                }
+                entryFound = true;
+                if (expectedEntry.isDirectory()) {
+                    Assert.assertTrue("we expect a directory", replacedEntry.isDirectory());
+                    break;
+                }
+
+                ByteArrayOutputStream expectedContent = readContent(expectedAIS);
+                ByteArrayOutputStream replacedContent = readContent(replacedAIS);
+
+                Assert.assertEquals("Content should be same of entry " + expectedEntry.getName(), expectedContent.toString("UTF-8"),
+                        replacedContent.toString("UTF-8"));
+                break;
+            }
+
+            replacedIS.close();
+            Assert.assertTrue("Entry [" + expectedEntry.getName() + "] in the result archive expected.", entryFound);
+        }
+
+        expectedIS.close();
+    }
+
+    private void archiveDoesNotContainAdditionEntries(File replacedArchive, File expectedArchive) throws ArchiveException, IOException {
         ArchiveStreamFactory factory = new ArchiveStreamFactory();
 
         FileInputStream replacedIS = new FileInputStream(replacedArchive);
-        FileInputStream expectedIS = new FileInputStream(expectedArchive);
-
         ArchiveInputStream replacedAIS = factory.createArchiveInputStream(new BufferedInputStream(replacedIS));
-        ArchiveInputStream expectedAIS = factory.createArchiveInputStream(new BufferedInputStream(expectedIS));
+        ArchiveEntry replacedEntry = null;
+        while ((replacedEntry = replacedAIS.getNextEntry()) != null) {
+            FileInputStream expectedIS = new FileInputStream(expectedArchive);
+            ArchiveInputStream expectedAIS = factory.createArchiveInputStream(new BufferedInputStream(expectedIS));
 
-        ArchiveEntry expectedEntry = null;
-        while ((expectedEntry = expectedAIS.getNextEntry()) != null) {
-            ArchiveEntry replacedEntry = replacedAIS.getNextEntry();
-            Assert.assertNotNull("We expect an entry.", replacedEntry);
-
-            Assert.assertEquals(expectedEntry.getName(), replacedEntry.getName());
-
-            if (expectedEntry.isDirectory()) {
-                continue;
+            ArchiveEntry expectedEntry = null;
+            boolean entryFound = false;
+            while ((expectedEntry = expectedAIS.getNextEntry()) != null) {
+                Assert.assertNotNull("We expect an entry.", expectedEntry);
+                if (!replacedEntry.getName().equals(expectedEntry.getName())) {
+                    continue;
+                }
+                entryFound = true;
+                break;
             }
 
-            ByteArrayOutputStream expectedContent = readContent(expectedAIS);
-            ByteArrayOutputStream replacedContent = readContent(replacedAIS);
-
-            Assert.assertEquals(expectedContent.toString("UTF-8"), replacedContent.toString("UTF-8"));
+            expectedIS.close();
+            Assert.assertTrue("Entry [" + replacedEntry.getName() + "] is not in the expected archive. This file shouldn't exist.", entryFound);
         }
 
         replacedIS.close();
-        expectedIS.close();
 
-        return true;
     }
 
     private ByteArrayOutputStream readContent(ArchiveInputStream ais) throws IOException {

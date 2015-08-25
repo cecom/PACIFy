@@ -1,0 +1,409 @@
+<?xml version="1.0"?>
+<Pacify xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="..\..\..\..\..\..\..\..\model\src\main\resources\pacify.xsd">
+    <Archive RelativePath="archive.zip">
+        <File RelativePath="conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder1/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder2/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder3/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder4/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder5/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder6/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder7/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder8/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder9/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder10/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder11/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder12/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder13/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder14/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder15/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder16/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder17/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder18/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder19/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder20/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder21/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder22/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder23/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder24/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder25/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder26/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder27/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder28/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder29/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder30/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder31/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder32/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder33/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder34/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder35/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder36/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder37/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder38/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder39/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder40/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder41/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder42/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder43/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder44/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder45/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder46/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder47/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder48/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder49/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder50/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder51/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder52/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder53/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder54/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder55/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder56/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder57/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder58/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder59/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder60/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder61/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder62/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder63/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder64/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder65/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder66/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder67/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder68/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder69/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder70/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder71/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder72/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder73/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder74/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder75/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder76/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder77/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder78/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder79/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder80/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder81/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder82/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder83/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder84/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder85/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder86/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder87/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder88/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder89/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder90/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder91/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder92/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder93/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder94/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder95/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder96/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder97/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder98/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder99/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+        <File RelativePath="subfolder100/conf.txt">
+            <Property Name="foobar1"/>
+            <Property Name="foobar2"/>
+        </File>
+    </Archive>
+</Pacify>
