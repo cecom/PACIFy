@@ -187,7 +187,6 @@ public class FileUtils {
                 }
 
                 File result = FileUtils.createTempFile(archiveFile.getParentFile(), archiveFile.getName());
-                result.deleteOnExit();
 
                 byte[] content = new byte[2048];
                 BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(result));

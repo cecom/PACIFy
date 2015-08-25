@@ -27,6 +27,6 @@ import com.geewhiz.pacify.defect.Defect;
 
 public interface PacifyFilter {
 
-    List<Defect> filter(Map<String, String> propertyValues, String beginToken, String endToken, File file, String encoding);
+    List<Defect> filter(Map<String, String> propertyValues, String beginToken, String endToken, File fileToFilter, String encoding);
 
 }

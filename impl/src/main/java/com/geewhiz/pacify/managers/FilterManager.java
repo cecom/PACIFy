@@ -78,35 +78,36 @@ public class FilterManager {
         logger.debug("     Filtering [{}] using encoding [{}] and filter [{}]", pMarker.getAbsoluteFileFor(pFile).getAbsolutePath(), pFile.getEncoding(),
                 pFile.getFilterClass());
 
-        File file = pMarker.getAbsoluteFileFor(pFile);
+        File fileToFilter = pMarker.getAbsoluteFileFor(pFile);
         PacifyFilter pacifyFilter = getFilterForPFile(pFile);
-
         Map<String, String> propertyValues = getPropertyValues(pFile);
         String beginToken = pMarker.getBeginTokenFor(pFile);
         String endToken = pMarker.getEndTokenFor(pFile);
         String encoding = pFile.getEncoding();
 
-        List<Defect> defects = new ArrayList<Defect>();
-        defects.addAll(pacifyFilter.filter(propertyValues, beginToken, endToken, file, encoding));
-
-        return defects;
+        return pacifyFilter.filter(propertyValues, beginToken, endToken, fileToFilter, encoding);
     }
 
     private List<Defect> filterPArchive(PArchive pArchive) {
         List<Defect> defects = new ArrayList<Defect>();
 
         for (PFile pFile : pArchive.getPFiles()) {
-            File extractedFile = extractFile(pArchive, pFile);
-            PacifyFilter pacifyFilter = getFilterForPFile(pArchive, pFile);
+            logger.debug("     Filtering [{}] in archive [{}] using encoding [{}] and filter [{}]", pFile.getRelativePath(),
+                    pMarker.getAbsoluteFileFor(pArchive).getAbsolutePath(), pFile.getEncoding(),
+                    pFile.getFilterClass());
 
+            File fileToFilter = extractFile(pArchive, pFile);
+            PacifyFilter pacifyFilter = getFilterForPFile(pArchive, pFile);
             Map<String, String> propertyValues = getPropertyValues(pFile);
             String beginToken = pMarker.getBeginTokenFor(pArchive, pFile);
             String endToken = pMarker.getEndTokenFor(pArchive, pFile);
             String encoding = pFile.getEncoding();
 
-            defects.addAll(pacifyFilter.filter(propertyValues, beginToken, endToken, extractedFile, encoding));
+            defects.addAll(pacifyFilter.filter(propertyValues, beginToken, endToken, fileToFilter, encoding));
 
-            FileUtils.replaceFileInArchive(pMarker, pArchive, pFile, extractedFile);
+            FileUtils.replaceFileInArchive(pMarker, pArchive, pFile, fileToFilter);
+
+            fileToFilter.delete();
         }
         return defects;
     }

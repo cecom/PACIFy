@@ -76,12 +76,6 @@ public class CheckPlaceholderExistsInTargetFile implements PMarkerCheck {
     private void checkPFiles(PMarker pMarker, List<Defect> defects) {
         for (PFile pFile : pMarker.getPFiles()) {
             File file = pMarker.getAbsoluteFileFor(pFile);
-
-            if (!file.exists()) {
-                // is checked before, so don'‚t throw any exception.
-                continue;
-            }
-
             for (PProperty pProperty : pFile.getPProperties()) {
                 String beginToken = pMarker.getBeginTokenFor(pFile);
                 String endToken = pMarker.getEndTokenFor(pFile);

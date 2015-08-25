@@ -20,6 +20,7 @@ import com.geewhiz.pacify.defect.WrongTokenDefinedDefect;
 import com.geewhiz.pacify.model.PArchive;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
+import com.geewhiz.pacify.utils.FileUtils;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -56,7 +57,7 @@ public class PacifyVelocityFilter implements PacifyFilter {
     }
 
     @Override
-    public List<Defect> filter(Map<String, String> propertyValues, String beginToken, String endToken, File file, String encoding) {
+    public List<Defect> filter(Map<String, String> propertyValues, String beginToken, String endToken, File fileToFilter, String encoding) {
         List<Defect> defects = new ArrayList<Defect>();
 
         if (!BEGIN_TOKEN.equals(beginToken)) {
@@ -69,21 +70,25 @@ public class PacifyVelocityFilter implements PacifyFilter {
                     "If you use the PacifyVelocityFilter class, only \"" + END_TOKEN + "\" is allowed as end token."));
         }
 
-        File tmpFile = com.geewhiz.pacify.utils.FileUtils.createTempFile(file.getParentFile(), file.getName());
+        if (!defects.isEmpty()) {
+            return defects;
+        }
 
-        Template template = getTemplate(file, encoding);
-        Context context = getContext(propertyValues, file);
+        File tmpFile = FileUtils.createTempFile(fileToFilter.getParentFile(), fileToFilter.getName());
+
+        Template template = getTemplate(fileToFilter, encoding);
+        Context context = getContext(propertyValues, fileToFilter);
 
         try {
             FileWriterWithEncoding fw = new FileWriterWithEncoding(tmpFile, encoding);
             template.merge(context, fw);
             fw.close();
-            if (!file.delete()) {
-                throw new RuntimeException("Couldn't delete file [" + file.getPath() + "]... Aborting!");
+            if (!fileToFilter.delete()) {
+                throw new RuntimeException("Couldn't delete file [" + fileToFilter.getPath() + "]... Aborting!");
             }
-            if (!tmpFile.renameTo(file)) {
+            if (!tmpFile.renameTo(fileToFilter)) {
                 throw new RuntimeException("Couldn't rename filtered file from [" + tmpFile.getPath() + "] to ["
-                        + file.getPath() + "]... Aborting!");
+                        + fileToFilter.getPath() + "]... Aborting!");
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

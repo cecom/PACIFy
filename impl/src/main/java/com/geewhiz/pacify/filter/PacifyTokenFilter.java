@@ -42,19 +42,19 @@ public class PacifyTokenFilter implements PacifyFilter {
     }
 
     @Override
-    public List<Defect> filter(Map<String, String> propertyValues, String beginToken, String endToken, File file, String encoding) {
+    public List<Defect> filter(Map<String, String> propertyValues, String beginToken, String endToken, File fileToFilter, String encoding) {
         FilterSetCollection filterSetCollection = getFilterSetCollection(propertyValues, beginToken, endToken);
 
         try {
-            File tmpFile = com.geewhiz.pacify.utils.FileUtils.createTempFile(file.getParentFile(), file.getName());
+            File tmpFile = com.geewhiz.pacify.utils.FileUtils.createTempFile(fileToFilter.getParentFile(), fileToFilter.getName());
 
-            FileUtils.getFileUtils().copyFile(file, tmpFile, filterSetCollection, true, true, encoding);
-            if (!file.delete()) {
-                throw new RuntimeException("Couldn't delete file [" + file.getPath() + "]... Aborting!");
+            FileUtils.getFileUtils().copyFile(fileToFilter, tmpFile, filterSetCollection, true, true, encoding);
+            if (!fileToFilter.delete()) {
+                throw new RuntimeException("Couldn't delete file [" + fileToFilter.getPath() + "]... Aborting!");
             }
-            if (!tmpFile.renameTo(file)) {
+            if (!tmpFile.renameTo(fileToFilter)) {
                 throw new RuntimeException("Couldn't rename filtered file from [" + tmpFile.getPath() + "] to ["
-                        + file.getPath() + "]... Aborting!");
+                        + fileToFilter.getPath() + "]... Aborting!");
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
