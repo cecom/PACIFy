@@ -29,7 +29,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
@@ -217,41 +220,46 @@ public class FileUtils {
         }
     }
 
-    public static void replaceFileInArchive(PMarker pMarker, PArchive pArchive, PFile pFile, File replaceWith) {
+    public static void replaceFilesInArchive(PMarker pMarker, PArchive pArchive, Map<PFile, File> replaceFiles) {
         ArchiveStreamFactory factory = new ArchiveStreamFactory();
 
         InputStream archiveInputStream = null;
         ArchiveInputStream ais = null;
         ArchiveOutputStream aos = null;
-        FileInputStream fis = null;
+        List<FileInputStream> streamsToClose = new ArrayList<FileInputStream>();
 
         File archiveFile = pMarker.getAbsoluteFileFor(pArchive);
         File tmpZip = FileUtils.createTempFile(archiveFile.getParentFile(), archiveFile.getName());
 
-        ArchiveEntry entry;
         try {
-
-            String fileToReplace = pFile.getRelativePath();
-
             aos = factory.createArchiveOutputStream(pArchive.getType(), new FileOutputStream(tmpZip));
-            entry = aos.createArchiveEntry(replaceWith, fileToReplace);
-            fis = new FileInputStream(replaceWith);
-
             ChangeSet changes = new ChangeSet();
-            changes.add(entry, fis, true);
+
+            for (Entry<PFile, File> entry : replaceFiles.entrySet()) {
+                String filePath = entry.getKey().getRelativePath();
+                File replaceWithFile = entry.getValue();
+
+                ArchiveEntry archiveEntry = aos.createArchiveEntry(replaceWithFile, filePath);
+                FileInputStream fis = new FileInputStream(replaceWithFile);
+                streamsToClose.add(fis);
+                changes.add(archiveEntry, fis, true);
+            }
 
             archiveInputStream = new FileInputStream(archiveFile);
             ais = factory.createArchiveInputStream(pArchive.getType(), archiveInputStream);
 
             ChangeSetPerformer performer = new ChangeSetPerformer(changes);
             performer.perform(ais, aos);
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (ArchiveException e) {
             throw new RuntimeException(e);
         }
         finally {
-            IOUtils.closeQuietly(fis);
+            for (FileInputStream fis : streamsToClose) {
+                IOUtils.closeQuietly(fis);
+            }
             IOUtils.closeQuietly(aos);
             IOUtils.closeQuietly(ais);
             IOUtils.closeQuietly(archiveInputStream);
@@ -264,5 +272,6 @@ public class FileUtils {
             throw new RuntimeException("Couldn't rename filtered file from [" + tmpZip.getPath() + "] to ["
                     + archiveFile.getPath() + "]... Aborting!");
         }
+
     }
 }

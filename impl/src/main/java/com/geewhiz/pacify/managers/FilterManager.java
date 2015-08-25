@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.logging.log4j.LogManager;
@@ -91,6 +92,8 @@ public class FilterManager {
     private List<Defect> filterPArchive(PArchive pArchive) {
         List<Defect> defects = new ArrayList<Defect>();
 
+        Map<PFile, File> replaceFiles = new HashMap<PFile, File>();
+
         for (PFile pFile : pArchive.getPFiles()) {
             logger.debug("     Filtering [{}] in archive [{}] using encoding [{}] and filter [{}]", pFile.getRelativePath(),
                     pMarker.getAbsoluteFileFor(pArchive).getAbsolutePath(), pFile.getEncoding(),
@@ -105,10 +108,15 @@ public class FilterManager {
 
             defects.addAll(pacifyFilter.filter(propertyValues, beginToken, endToken, fileToFilter, encoding));
 
-            FileUtils.replaceFileInArchive(pMarker, pArchive, pFile, fileToFilter);
-
-            fileToFilter.delete();
+            replaceFiles.put(pFile, fileToFilter);
         }
+
+        FileUtils.replaceFilesInArchive(pMarker, pArchive, replaceFiles);
+
+        for (Entry<PFile, File> entry : replaceFiles.entrySet()) {
+            entry.getValue().delete();
+        }
+
         return defects;
     }
 
