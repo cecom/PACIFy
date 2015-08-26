@@ -43,7 +43,10 @@ import org.apache.commons.compress.changes.ChangeSet;
 import org.apache.commons.compress.changes.ChangeSetPerformer;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import com.geewhiz.pacify.defect.ArchiveDefect;
 import com.geewhiz.pacify.defect.DefectException;
 import com.geewhiz.pacify.defect.FileDoesNotExistDefect;
 import com.geewhiz.pacify.model.PArchive;
@@ -51,6 +54,8 @@ import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
 
 public class FileUtils {
+
+    private static Logger logger = LogManager.getLogger(FileUtils.class.getName());
 
     public static String getFileInOneString(File file, String encoding) {
         InputStream is = null;
@@ -220,7 +225,7 @@ public class FileUtils {
         }
     }
 
-    public static void replaceFilesInArchive(PMarker pMarker, PArchive pArchive, Map<PFile, File> replaceFiles) {
+    public static void replaceFilesInArchive(PMarker pMarker, PArchive pArchive, Map<PFile, File> replaceFiles) throws ArchiveDefect {
         ArchiveStreamFactory factory = new ArchiveStreamFactory();
 
         InputStream archiveInputStream = null;
@@ -254,7 +259,8 @@ public class FileUtils {
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (ArchiveException e) {
-            throw new RuntimeException(e);
+            logger.debug(e);
+            throw new ArchiveDefect(pMarker, pArchive, "Error while replacing file in archive.");
         }
         finally {
             for (FileInputStream fis : streamsToClose) {

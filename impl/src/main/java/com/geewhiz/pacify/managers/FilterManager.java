@@ -31,6 +31,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.geewhiz.pacify.checks.impl.CheckForNotReplacedTokens;
+import com.geewhiz.pacify.defect.ArchiveDefect;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.DefectException;
 import com.geewhiz.pacify.filter.PacifyFilter;
@@ -111,7 +112,11 @@ public class FilterManager {
             replaceFiles.put(pFile, fileToFilter);
         }
 
-        FileUtils.replaceFilesInArchive(pMarker, pArchive, replaceFiles);
+        try {
+            FileUtils.replaceFilesInArchive(pMarker, pArchive, replaceFiles);
+        } catch (ArchiveDefect e) {
+            defects.add(e);
+        }
 
         for (Entry<PFile, File> entry : replaceFiles.entrySet()) {
             entry.getValue().delete();
