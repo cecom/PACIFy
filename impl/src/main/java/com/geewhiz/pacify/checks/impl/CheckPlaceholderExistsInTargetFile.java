@@ -19,7 +19,6 @@ package com.geewhiz.pacify.checks.impl;
  * under the License.
  */
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -49,25 +48,25 @@ public class CheckPlaceholderExistsInTargetFile implements PMarkerCheck {
     private void checkArchives(PMarker pMarker, List<Defect> defects) {
         for (PArchive pArchive : pMarker.getPArchives()) {
             for (PFile pFile : pArchive.getPFiles()) {
-                File file;
+                String fileContent = null;
                 try {
-                    file = FileUtils.extractFile(pMarker, pArchive, pFile);
+                    fileContent = FileUtils.getFileInOneString(pMarker, pArchive, pFile);
                 } catch (DefectException e) {
                     // this is checked from another checker, so we dont throw it.
                     continue;
                 }
+
                 for (PProperty pProperty : pFile.getPProperties()) {
                     String beginToken = pMarker.getBeginTokenFor(pArchive, pFile);
                     String endToken = pMarker.getEndTokenFor(pArchive, pFile);
 
-                    boolean exists = doesPropertyExistInFile(file, pProperty, pFile.getEncoding(), beginToken, endToken);
+                    boolean exists = doesPropertyExistInFile(fileContent, pProperty, pFile.getEncoding(), beginToken, endToken);
                     if (exists) {
                         continue;
                     }
                     Defect defect = new NoPlaceholderInTargetFileDefect(pMarker, pArchive, pFile, pProperty);
                     defects.add(defect);
                 }
-                file.delete();
             }
 
         }
@@ -75,12 +74,12 @@ public class CheckPlaceholderExistsInTargetFile implements PMarkerCheck {
 
     private void checkPFiles(PMarker pMarker, List<Defect> defects) {
         for (PFile pFile : pMarker.getPFiles()) {
-            File file = pMarker.getAbsoluteFileFor(pFile);
+            String fileContent = FileUtils.getFileInOneString(pMarker.getAbsoluteFileFor(pFile), pFile.getEncoding());
             for (PProperty pProperty : pFile.getPProperties()) {
                 String beginToken = pMarker.getBeginTokenFor(pFile);
                 String endToken = pMarker.getEndTokenFor(pFile);
 
-                boolean exists = doesPropertyExistInFile(file, pProperty, pFile.getEncoding(), beginToken, endToken);
+                boolean exists = doesPropertyExistInFile(fileContent, pProperty, pFile.getEncoding(), beginToken, endToken);
                 if (exists) {
                     continue;
                 }
@@ -90,9 +89,7 @@ public class CheckPlaceholderExistsInTargetFile implements PMarkerCheck {
         }
     }
 
-    private boolean doesPropertyExistInFile(File file, PProperty pProperty, String encoding, String beginToken, String endToken) {
-        String fileContent = FileUtils.getFileInOneString(file, encoding);
-
+    private boolean doesPropertyExistInFile(String fileContent, PProperty pProperty, String encoding, String beginToken, String endToken) {
         String searchPattern = Pattern.quote(beginToken) + Pattern.quote(pProperty.getName()) + Pattern.quote(endToken);
 
         Pattern pattern = Pattern.compile(searchPattern);

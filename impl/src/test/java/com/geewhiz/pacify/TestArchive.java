@@ -224,11 +224,11 @@ public class TestArchive {
         HashMapPropertyResolver hpr = new HashMapPropertyResolver();
         PropertyResolveManager prm = getPropertyResolveManager(hpr);
 
-        Replacer replacer = new Replacer(prm);
         EntityManager entityManager = new EntityManager(packagePath);
-
-        replacer.setPackagePath(packagePath);
         List<Defect> defects = entityManager.initialize();
+
+        Replacer replacer = new Replacer(prm);
+        replacer.setPackagePath(packagePath);
         defects.addAll(replacer.doReplacement(entityManager));
         return defects;
     }

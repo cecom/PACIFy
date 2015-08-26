@@ -8,11 +8,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.managers.EntityManager;
+import com.geewhiz.pacify.model.PArchive;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.model.PProperty;
@@ -112,14 +114,31 @@ public class ShowUsedProperties {
         Set<String> allUsedProperties = new TreeSet<String>();
         for (PMarker pMarker : entityManager.getPMarkers()) {
             logger.info("   [{}]", pMarker.getFile().getAbsolutePath());
-            for (PFile pFile : pMarker.getPFiles()) {
-                logger.debug("      [Getting properties for file {}]", pFile.getRelativePath());
-                for (PProperty pProperty : pFile.getPProperties()) {
-                    allUsedProperties.add(pProperty.getName());
+
+            for (Object entry : pMarker.getFilesAndArchives()) {
+                if (entry instanceof PFile) {
+                    PFile pFile = (PFile) entry;
+                    logger.debug("      [Getting properties for file {}]", pFile.getRelativePath());
+                    getPFileProperties(allUsedProperties, pFile);
+                } else if (entry instanceof PArchive) {
+                    PArchive pArchive = (PArchive) entry;
+                    for (PFile pFile : pArchive.getPFiles()) {
+                        logger.debug("      [Getting properties for archive [{}]", pArchive.getRelativePath());
+                        logger.debug("          [file [{}]", pFile.getRelativePath());
+                        getPFileProperties(allUsedProperties, pFile);
+                    }
+                } else {
+                    throw new NotImplementedException("ShowUsedProperty implementation for " + entry.getClass().getName() + " not implemented.");
                 }
             }
         }
         return allUsedProperties;
+    }
+
+    private void getPFileProperties(Set<String> allUsedProperties, PFile pFile) {
+        for (PProperty pProperty : pFile.getPProperties()) {
+            allUsedProperties.add(pProperty.getName());
+        }
     }
 
     public void setOutputEncoding(String targetEncoding) {
