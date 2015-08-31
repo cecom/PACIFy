@@ -108,6 +108,10 @@ public class FileUtils {
     }
 
     public static Boolean archiveContainsFile(PMarker pMarker, PArchive pArchive, PFile pFile) {
+        return archiveContainsFile(pMarker, pArchive, pFile.getRelativePath());
+    }
+
+    public static Boolean archiveContainsFile(PMarker pMarker, PArchive pArchive, String file) {
         ArchiveInputStream ais = null;
         try {
             ArchiveStreamFactory factory = new ArchiveStreamFactory();
@@ -117,7 +121,7 @@ public class FileUtils {
 
             ArchiveEntry entry;
             while ((entry = ais.getNextEntry()) != null) {
-                if (pFile.getRelativePath().equals(entry.getName())) {
+                if (file.equals(entry.getName())) {
                     return Boolean.TRUE;
                 }
             }
@@ -181,6 +185,15 @@ public class FileUtils {
     }
 
     public static File extractFile(PMarker pMarker, PArchive pArchive, PFile pFile) throws DefectException {
+        try {
+            return extractFile(pMarker, pArchive, pFile.getRelativePath());
+        } catch (FileNotFoundException e) {
+            throw new FileDoesNotExistDefect(pMarker, pArchive, pFile);
+        }
+    }
+
+    public static File extractFile(PMarker pMarker, PArchive pArchive, String file) throws FileNotFoundException {
+        File result = null;
         ArchiveInputStream ais = null;
         try {
             ArchiveStreamFactory factory = new ArchiveStreamFactory();
@@ -190,11 +203,11 @@ public class FileUtils {
 
             ArchiveEntry entry;
             while ((entry = ais.getNextEntry()) != null) {
-                if (!pFile.getRelativePath().equals(entry.getName())) {
+                if (!file.equals(entry.getName())) {
                     continue;
                 }
 
-                File result = FileUtils.createTempFile(archiveFile.getParentFile(), archiveFile.getName());
+                result = FileUtils.createTempFile(archiveFile.getParentFile(), archiveFile.getName());
 
                 BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(result));
 
@@ -211,11 +224,7 @@ public class FileUtils {
 
                 return result;
             }
-            throw new FileDoesNotExistDefect(pMarker, pArchive, pFile);
-
         } catch (ArchiveException e) {
-            throw new RuntimeException(e);
-        } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -223,22 +232,27 @@ public class FileUtils {
         finally {
             IOUtils.closeQuietly(ais);
         }
+
+        throw new FileNotFoundException("Couldn't find file [" + file + "]");
     }
 
     public static void replaceFilesInArchive(PMarker pMarker, PArchive pArchive, Map<PFile, File> replaceFiles) throws ArchiveDefect {
         ArchiveStreamFactory factory = new ArchiveStreamFactory();
 
-        InputStream archiveInputStream = null;
+        File manifest = null;
+        InputStream archiveStream = null;
         ArchiveInputStream ais = null;
         ArchiveOutputStream aos = null;
         List<FileInputStream> streamsToClose = new ArrayList<FileInputStream>();
 
         File archiveFile = pMarker.getAbsoluteFileFor(pArchive);
-        File tmpZip = FileUtils.createTempFile(archiveFile.getParentFile(), archiveFile.getName());
+        File tmpArchive = FileUtils.createTempFile(archiveFile.getParentFile(), archiveFile.getName());
 
         try {
-            aos = factory.createArchiveOutputStream(pArchive.getType(), new FileOutputStream(tmpZip));
+            aos = factory.createArchiveOutputStream(pArchive.getType(), new FileOutputStream(tmpArchive));
             ChangeSet changes = new ChangeSet();
+
+            manifest = manifestWorkaround(pMarker, pArchive, aos, changes, streamsToClose);
 
             for (Entry<PFile, File> entry : replaceFiles.entrySet()) {
                 String filePath = entry.getKey().getRelativePath();
@@ -250,14 +264,15 @@ public class FileUtils {
                 changes.add(archiveEntry, fis, true);
             }
 
-            archiveInputStream = new FileInputStream(archiveFile);
-            ais = factory.createArchiveInputStream(pArchive.getType(), archiveInputStream);
+            archiveStream = new FileInputStream(archiveFile);
+            ais = factory.createArchiveInputStream(pArchive.getType(), archiveStream);
 
             ChangeSetPerformer performer = new ChangeSetPerformer(changes);
             performer.perform(ais, aos);
 
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            logger.debug(e);
+            throw new ArchiveDefect(pMarker, pArchive, "Error while replacing file in archive.");
         } catch (ArchiveException e) {
             logger.debug(e);
             throw new ArchiveDefect(pMarker, pArchive, "Error while replacing file in archive.");
@@ -268,16 +283,39 @@ public class FileUtils {
             }
             IOUtils.closeQuietly(aos);
             IOUtils.closeQuietly(ais);
-            IOUtils.closeQuietly(archiveInputStream);
+            IOUtils.closeQuietly(archiveStream);
+        }
+
+        if (manifest != null) {
+            manifest.delete();
         }
 
         if (!archiveFile.delete()) {
             throw new RuntimeException("Couldn't delete file [" + archiveFile.getPath() + "]... Aborting!");
         }
-        if (!tmpZip.renameTo(archiveFile)) {
-            throw new RuntimeException("Couldn't rename filtered file from [" + tmpZip.getPath() + "] to ["
+        if (!tmpArchive.renameTo(archiveFile)) {
+            throw new RuntimeException("Couldn't rename filtered file from [" + tmpArchive.getPath() + "] to ["
                     + archiveFile.getPath() + "]... Aborting!");
         }
 
+    }
+
+    // if the archive contains a manifest, we have to simulate a change, otherwise
+    // the manifest isn't the first entry anymore.
+    private static File manifestWorkaround(PMarker pMarker, PArchive pArchive, ArchiveOutputStream aos, ChangeSet changes, List<FileInputStream> streamsToClose)
+            throws IOException {
+        String manifestPath = "META-INF/MANIFEST.MF";
+        if (!archiveContainsFile(pMarker, pArchive, manifestPath)) {
+            return null;
+        }
+
+        File originalManifest = extractFile(pMarker, pArchive, manifestPath);
+
+        ArchiveEntry archiveEntry = aos.createArchiveEntry(originalManifest, manifestPath);
+        FileInputStream fis = new FileInputStream(originalManifest);
+        streamsToClose.add(fis);
+        changes.add(archiveEntry, fis, true);
+
+        return originalManifest;
     }
 }

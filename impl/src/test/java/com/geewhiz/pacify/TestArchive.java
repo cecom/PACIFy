@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.jar.JarInputStream;
 
 import javax.xml.bind.JAXBException;
 
@@ -68,7 +69,17 @@ public class TestArchive {
         File expectedArchive = new File(targetResourceFolder, "expectedResult/archive.jar");
         File outputArchive = new File(targetResourceFolder, "package/archive.jar");
 
+        JarInputStream in = new JarInputStream(new FileInputStream(new File(testResourceFolder, "package/archive.jar")));
+        JarInputStream out = new JarInputStream(new FileInputStream(outputArchive));
+
+        Assert.assertNotNull("SRC jar should contain the manifest as first entry", in.getManifest());
+        Assert.assertNotNull("RESULT jar should contain the manifest as first entry", out.getManifest());
+
+        in.close();
+        out.close();
+
         checkResultIsAsExpected(outputArchive, expectedArchive);
+
         Assert.assertArrayEquals("There should be no additional File", expectedArchive.getParentFile().list(), outputArchive.getParentFile().list());
     }
 
@@ -229,6 +240,7 @@ public class TestArchive {
 
         Replacer replacer = new Replacer(prm);
         replacer.setPackagePath(packagePath);
+
         defects.addAll(replacer.doReplacement(entityManager));
         return defects;
     }
