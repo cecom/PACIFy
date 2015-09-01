@@ -1,5 +1,6 @@
 package com.geewhiz.pacify.model;
 
+import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.jvnet.jaxb2_commons.lang.EqualsStrategy;
 import org.jvnet.jaxb2_commons.lang.HashCodeStrategy;
 import org.jvnet.jaxb2_commons.lang.ToStringStrategy;
@@ -35,19 +36,19 @@ public abstract class PArchiveBase {
         String type = getInternalType();
 
         if ("jar".equalsIgnoreCase(type)) {
-            return "jar";
+            return ArchiveStreamFactory.JAR;
         }
         if ("war".equalsIgnoreCase(type)) {
-            return "jar";
+            return ArchiveStreamFactory.JAR;
         }
         if ("ear".equalsIgnoreCase(type)) {
-            return "jar";
+            return ArchiveStreamFactory.JAR;
         }
         if ("zip".equalsIgnoreCase(type)) {
-            return "zip";
+            return ArchiveStreamFactory.ZIP;
         }
         if ("tar".equalsIgnoreCase(type)) {
-            return "tar";
+            return ArchiveStreamFactory.TAR;
         }
         return type;
     }
