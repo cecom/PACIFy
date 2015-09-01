@@ -84,6 +84,32 @@ public class TestArchive {
     }
 
     @Test
+    public void checkJarWhereTheSourceIsntAJarPerDefinition() throws ArchiveException, IOException {
+        File testResourceFolder = new File("src/test/resources/testArchive/correct/jarWhereSourceIsntAJarPerDefinition");
+        File targetResourceFolder = new File("target/test-resources/testArchive/correct/jarWhereSourceIsntAJarPerDefinition");
+
+        List<Defect> defects = createPrepareAndExecutePacify(testResourceFolder, targetResourceFolder);
+
+        Assert.assertEquals("We shouldnt get any defects.", 0, defects.size());
+
+        File expectedArchive = new File(targetResourceFolder, "expectedResult/archive.jar");
+        File outputArchive = new File(targetResourceFolder, "package/archive.jar");
+
+        JarInputStream in = new JarInputStream(new FileInputStream(new File(testResourceFolder, "package/archive.jar")));
+        JarInputStream out = new JarInputStream(new FileInputStream(outputArchive));
+
+        Assert.assertNull("SRC jar should be a jar which is packed via zip, so the first entry isn't the manifest.", in.getManifest());
+        Assert.assertNotNull("RESULT jar should contain the manifest as first entry", out.getManifest());
+
+        in.close();
+        out.close();
+
+        checkResultIsAsExpected(outputArchive, expectedArchive);
+
+        Assert.assertArrayEquals("There should be no additional File", expectedArchive.getParentFile().list(), outputArchive.getParentFile().list());
+    }
+
+    @Test
     public void checkTar() throws ArchiveException, IOException {
         File testResourceFolder = new File("src/test/resources/testArchive/correct/tar");
         File targetResourceFolder = new File("target/test-resources/testArchive/correct/tar");
