@@ -1,17 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration>
     <Appenders>
-        <Console name="STDOUT" target="SYSTEM_OUT">
+        <Console name="Console" target="SYSTEM_OUT">
             <!-- %d{dd.MM.yyyy HH:mm:ss} %-5p %c{1}:%-4L | %m%n" -->
             <PatternLayout pattern="%-5p %m%n" />
         </Console>
     </Appenders>
     <Loggers>
-        <Logger name="com.geewhiz.pacifyl" level="debug">
-            <AppenderRef ref="STDOUT" />
-        </Logger>
+        <Logger name="com.geewhiz.pacify" level="error"/>
         <Root level="error">
-            <AppenderRef ref="STDOUT" />
+            <AppenderRef ref="Console" />
         </Root>
     </Loggers>
 </Configuration>

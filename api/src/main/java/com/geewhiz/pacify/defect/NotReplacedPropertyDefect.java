@@ -19,20 +19,34 @@ package com.geewhiz.pacify.defect;
  * under the License.
  */
 
-import java.io.File;
+import com.geewhiz.pacify.model.PArchive;
+import com.geewhiz.pacify.model.PFile;
+import com.geewhiz.pacify.model.PMarker;
 
-public class NotReplacedPropertyDefect implements Defect {
+public class NotReplacedPropertyDefect extends DefectException {
 
-    File   file;
-    String propertyId;
+    private static final long serialVersionUID = 1L;
 
-    public NotReplacedPropertyDefect(File file, String propertyId) {
-        this.file = file;
+    private String            propertyId;
+
+    public NotReplacedPropertyDefect(PMarker pMarker, PFile pFile, String propertyId) {
+        super(pMarker, pFile);
         this.propertyId = propertyId;
     }
 
-    public String getDefectMessage() {
-        return String.format("NotReplacedProperty: \n\t[Property=%s]\n\t[file=%s]", propertyId,
-                file.getAbsolutePath());
+    public NotReplacedPropertyDefect(PMarker pMarker, PArchive pArchive, PFile pFile, String propertyId) {
+        super(pMarker, pArchive, pFile);
+        this.propertyId = propertyId;
     }
+
+    @Override
+    public String getDefectMessage() {
+        return super.getDefectMessage() +
+                String.format("\n\t[Property=%s]", getPropertyId());
+    }
+
+    public String getPropertyId() {
+        return propertyId;
+    }
+
 }

@@ -6,10 +6,25 @@
             <xs:documentation>Configuration File for PACIFy</xs:documentation>
         </xs:annotation>
         <xs:sequence maxOccurs="unbounded">
-            <xs:element name="File" type="PFile"/>
+            <xs:element name="File" type="PFile" minOccurs="0"/>
+            <xs:element name="Archive" type="PArchive" minOccurs="0"/>
         </xs:sequence>
         <xs:attribute name="BeginToken" type="xs:string" default="%{"/>
         <xs:attribute name="EndToken" type="xs:string" default="}"/>
+    </xs:complexType>
+    <xs:complexType name="PArchive">
+        <xs:sequence maxOccurs="unbounded">
+            <xs:element name="File" type="PFile"/>
+        </xs:sequence>
+        <xs:attribute name="RelativePath" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation xml:lang="en">
+                             Currently supported file name extension are zip, jar, war, ear and tar. 
+                        </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="BeginToken" type="xs:string"/>
+        <xs:attribute name="EndToken" type="xs:string"/>
     </xs:complexType>
     <xs:complexType name="PFile">
         <xs:sequence maxOccurs="unbounded">
@@ -18,11 +33,11 @@
         <xs:attribute name="RelativePath" type="xs:string" use="required"/>
         <xs:attribute name="Encoding" type="xs:string" default="UTF-8"/>
         <xs:attribute name="FilterClass" type="xs:string" default="com.geewhiz.pacify.filter.PacifyTokenFilter">
-                    <xs:annotation>
-                        <xs:documentation xml:lang="en">
+            <xs:annotation>
+                <xs:documentation xml:lang="en">
                              Define the class which should filter your file. Default is "com.geewhiz.pacify.filter.PacifyTokenFilter". This filter handles only placeholders. There is another filter "com.geewhiz.pacify.filter.PacifyVelocityFilter". This filter can handle velocity template files. Have a look at the documentation for more information.
                         </xs:documentation>
-                    </xs:annotation>
+            </xs:annotation>
         </xs:attribute>
         <xs:attribute name="BeginToken" type="xs:string"/>
         <xs:attribute name="EndToken" type="xs:string"/>

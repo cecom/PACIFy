@@ -1,5 +1,6 @@
 package com.geewhiz.pacify.defect;
 
+import com.geewhiz.pacify.model.PArchive;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
 
@@ -22,19 +23,22 @@ import com.geewhiz.pacify.model.PMarker;
  * under the License.
  */
 
-public class FilterNotFoundDefect implements Defect {
+public class FilterNotFoundDefect extends DefectException {
 
-    private PMarker pMarker;
-    private PFile   pFile;
+    private static final long serialVersionUID = 1L;
 
     public FilterNotFoundDefect(PMarker pMarker, PFile pFile) {
-        this.pMarker = pMarker;
-        this.pFile = pFile;
+        super(pMarker, pFile);
     }
 
+    public FilterNotFoundDefect(PMarker pMarker, PArchive pArchive, PFile pFile) {
+        super(pMarker, pArchive, pFile);
+    }
+
+    @Override
     public String getDefectMessage() {
-        return String.format("FilterNotFoundFound: \n\t[MarkerFile=%s]\n\t[File=%s]\n\t[FilterClass=%s]", pMarker.getFile().getAbsolutePath(),
-                pFile.getRelativePath(), pFile.getFilterClass());
+        return super.getDefectMessage() +
+                String.format("\n\t[Filter=%s]", getPFile().getFilterClass()) +
+                String.format("\n\t[Message=%s]", "Couldn't find filter class or couldn't initialize it. Have a look at the debug output.");
     }
-
 }

@@ -1,5 +1,7 @@
 package com.geewhiz.pacify.defect;
 
+import com.geewhiz.pacify.model.PArchive;
+import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.model.PProperty;
 
@@ -22,18 +24,16 @@ import com.geewhiz.pacify.model.PProperty;
  * under the License.
  */
 
-public class PropertyDuplicateDefinedInPMarkerDefect implements Defect {
+public class PropertyDuplicateDefinedInPMarkerDefect extends DefectException {
 
-    private PMarker   pMarker;
-    private PProperty pproperty;
+    private static final long serialVersionUID = 1L;
 
-    public PropertyDuplicateDefinedInPMarkerDefect(PMarker pMarker, PProperty pproperty) {
-        this.pMarker = pMarker;
-        this.pproperty = pproperty;
+    public PropertyDuplicateDefinedInPMarkerDefect(PMarker pMarker, PFile pFile, PProperty pProperty) {
+        super(pMarker, pFile, pProperty);
     }
 
-    public String getDefectMessage() {
-        return String.format("PropertyDuplicateDefinedInMarkerFile: \n\t[MarkerFile=%s]\n\t[Property=%s]", pMarker.getFile().getAbsolutePath(),
-                pproperty.getName());
+    public PropertyDuplicateDefinedInPMarkerDefect(PMarker pMarker, PArchive pArchive, PFile pFile, PProperty pProperty) {
+        super(pMarker, pArchive, pFile, pProperty);
     }
+
 }

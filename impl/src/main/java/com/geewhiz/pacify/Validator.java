@@ -9,6 +9,10 @@ import org.apache.logging.log4j.Logger;
 
 import com.geewhiz.pacify.checks.Check;
 import com.geewhiz.pacify.checks.PMarkerCheck;
+import com.geewhiz.pacify.checks.impl.CheckArchiveDuplicateDefinedInPacifyFile;
+import com.geewhiz.pacify.checks.impl.CheckCorrectArchiveType;
+import com.geewhiz.pacify.checks.impl.CheckCorrectPacifyFilter;
+import com.geewhiz.pacify.checks.impl.CheckFileDuplicateDefinedInPacifyFile;
 import com.geewhiz.pacify.checks.impl.CheckPlaceholderExistsInTargetFile;
 import com.geewhiz.pacify.checks.impl.CheckPropertyDuplicateDefinedInPacifyFile;
 import com.geewhiz.pacify.checks.impl.CheckPropertyDuplicateInPropertyFile;
@@ -62,8 +66,12 @@ public class Validator {
     }
 
     public void enableMarkerFileChecks() {
-        addPMarkerCheck(new CheckTargetFileExist());
+        addPMarkerCheck(new CheckArchiveDuplicateDefinedInPacifyFile());
+        addPMarkerCheck(new CheckCorrectArchiveType());
+        addPMarkerCheck(new CheckFileDuplicateDefinedInPacifyFile());
         addPMarkerCheck(new CheckPropertyDuplicateDefinedInPacifyFile());
+        addPMarkerCheck(new CheckCorrectPacifyFilter());
+        addPMarkerCheck(new CheckTargetFileExist());
         addPMarkerCheck(new CheckPlaceholderExistsInTargetFile());
     }
 

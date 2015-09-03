@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.geewhiz.pacify</groupId>
         <artifactId>pacify</artifactId>
-        <version>1.0.0</version>
+        <version>1.1.0</version>
     </parent>
     <artifactId>pacify.common</artifactId>
     <name>com.geewhiz.pacify.common</name>
@@ -44,6 +44,10 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-compress</artifactId>
         </dependency>
     </dependencies>
 </project>

@@ -6,11 +6,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 
 import org.apache.commons.io.output.FileWriterWithEncoding;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -18,10 +17,10 @@ import org.apache.velocity.context.Context;
 
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.WrongTokenDefinedDefect;
-import com.geewhiz.pacify.managers.PropertyResolveManager;
+import com.geewhiz.pacify.model.PArchive;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
-import com.geewhiz.pacify.model.PProperty;
+import com.geewhiz.pacify.utils.FileUtils;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -47,38 +46,49 @@ public class PacifyVelocityFilter implements PacifyFilter {
     private static final String BEGIN_TOKEN = "${";
     private static final String END_TOKEN   = "}";
 
-    private Logger              logger      = LogManager.getLogger(PacifyVelocityFilter.class.getName());
+    private PMarker             pMarker;
+    private PArchive            pArchive;
+    private PFile               pFile;
+
+    public PacifyVelocityFilter(PMarker pMarker, PArchive pArchive, PFile pFile) {
+        this.pMarker = pMarker;
+        this.pArchive = pArchive;
+        this.pFile = pFile;
+    }
 
     @Override
-    public List<Defect> filter(PropertyResolveManager propertyResolveManager, PMarker pMarker, PFile pFile) {
+    public List<Defect> filter(Map<String, String> propertyValues, String beginToken, String endToken, File fileToFilter, String encoding) {
         List<Defect> defects = new ArrayList<Defect>();
 
-        if (!BEGIN_TOKEN.equals(pMarker.getBeginTokenFor(pFile))) {
-            defects.add(new WrongTokenDefinedDefect(pMarker, pFile,
+        if (!BEGIN_TOKEN.equals(beginToken)) {
+            defects.add(new WrongTokenDefinedDefect(pMarker, pArchive, pFile,
                     "If you use the PacifyVelocityFilter class, only \"" + BEGIN_TOKEN + "\" is allowed as start token."));
         }
 
         if (!END_TOKEN.equals(pMarker.getEndTokenFor(pFile))) {
-            defects.add(new WrongTokenDefinedDefect(pMarker, pFile,
+            defects.add(new WrongTokenDefinedDefect(pMarker, pArchive, pFile,
                     "If you use the PacifyVelocityFilter class, only \"" + END_TOKEN + "\" is allowed as end token."));
         }
 
-        File file = pMarker.getAbsoluteFileFor(pFile);
-        File tmpFile = new File(file.getParentFile(), file.getName() + "_tmp");
+        if (!defects.isEmpty()) {
+            return defects;
+        }
 
-        Template template = getTemplate(pMarker, pFile);
-        Context context = getContext(propertyResolveManager, pFile);
+        File tmpFile = FileUtils.createTempFile(fileToFilter.getParentFile(), fileToFilter.getName());
+
+        Template template = getTemplate(fileToFilter, encoding);
+        Context context = getContext(propertyValues, fileToFilter);
 
         try {
-            FileWriterWithEncoding fw = new FileWriterWithEncoding(tmpFile, pFile.getEncoding());
+            FileWriterWithEncoding fw = new FileWriterWithEncoding(tmpFile, encoding);
             template.merge(context, fw);
             fw.close();
-            if (!file.delete()) {
-                throw new RuntimeException("Couldn't delete file [" + file.getPath() + "]... Aborting!");
+            if (!fileToFilter.delete()) {
+                throw new RuntimeException("Couldn't delete file [" + fileToFilter.getPath() + "]... Aborting!");
             }
-            if (!tmpFile.renameTo(file)) {
+            if (!tmpFile.renameTo(fileToFilter)) {
                 throw new RuntimeException("Couldn't rename filtered file from [" + tmpFile.getPath() + "] to ["
-                        + file.getPath() + "]... Aborting!");
+                        + fileToFilter.getPath() + "]... Aborting!");
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -87,26 +97,22 @@ public class PacifyVelocityFilter implements PacifyFilter {
         return defects;
     }
 
-    private Template getTemplate(PMarker pMarker, PFile pFile) {
+    private Template getTemplate(File file, String encoding) {
         Properties prop = new Properties();
-        prop.put("file.resource.loader.path", pMarker.getFolder().getAbsolutePath());
+        prop.put("file.resource.loader.path", file.getParentFile().getAbsolutePath());
 
         VelocityEngine ve = new VelocityEngine();
         ve.init(prop);
 
-        Template template = ve.getTemplate(pFile.getRelativePath(), pFile.getEncoding());
+        Template template = ve.getTemplate(file.getName(), encoding);
         return template;
     }
 
-    private Context getContext(PropertyResolveManager propertyResolveManager, PFile pFile) {
+    private Context getContext(Map<String, String> propertyValues, File file) {
         Context context = new VelocityContext();
-        for (PProperty pProperty : pFile.getPProperties()) {
-            String propertyName = pProperty.getName();
-            String propertyValue = propertyResolveManager.getPropertyValue(pProperty);
-
-            addProperty(context, propertyName, propertyValue);
+        for (Entry<String, String> entry : propertyValues.entrySet()) {
+            addProperty(context, entry.getKey(), entry.getValue());
         }
-
         return context;
     }
 

@@ -29,17 +29,22 @@ import org.junit.Test;
 import com.geewhiz.pacify.managers.PropertyResolveManager;
 import com.geewhiz.pacify.property.resolver.fileresolver.FilePropertyResolver;
 import com.geewhiz.pacify.resolver.PropertyResolver;
+import com.geewhiz.pacify.test.TestUtil;
 
 public class TestRecursivePropertyReplacement {
 
     @Test
     public void testAll() {
-        File testBasePath = new File("target/test-classes/recursePropertyReplacement");
-        File myTestProperty = new File(testBasePath, "properties/myProperties.properties");
-        File myPackagePath = new File(testBasePath, "package");
-        File myResultPath = new File(testBasePath, "result");
+        File testResourceFolder = new File("src/test/resources/recursePropertyReplacement");
+        File targetResourceFolder = new File("target/test-resources/recursePropertyReplacement");
 
-        Assert.assertTrue("TestBasePath [" + testBasePath.getPath() + "] doesn't exist!", testBasePath.exists());
+        TestUtil.removeOldTestResourcesAndCopyAgain(testResourceFolder, targetResourceFolder);
+
+        File myTestProperty = new File(targetResourceFolder, "properties/myProperties.properties");
+        File myPackagePath = new File(targetResourceFolder, "package");
+        File myExpectedResult = new File(targetResourceFolder, "expectedResult");
+
+        Assert.assertTrue("TestBasePath [" + targetResourceFolder.getPath() + "] doesn't exist!", targetResourceFolder.exists());
 
         PropertyResolveManager propertyResolveManager = getPropertyResolveManager(myTestProperty);
 
@@ -47,7 +52,7 @@ public class TestRecursivePropertyReplacement {
         replacer.setPackagePath(myPackagePath);
         replacer.execute();
 
-        TestUtil.checkIfResultIsAsExpected(myPackagePath, myResultPath);
+        TestUtil.checkIfResultIsAsExpected(myPackagePath, myExpectedResult);
     }
 
     private PropertyResolveManager getPropertyResolveManager(File myTestProperty) {

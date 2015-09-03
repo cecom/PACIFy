@@ -20,6 +20,8 @@ package com.geewhiz.pacify.model;
  */
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.jvnet.jaxb2_commons.lang.EqualsStrategy;
 import org.jvnet.jaxb2_commons.lang.HashCodeStrategy;
@@ -38,20 +40,68 @@ public abstract class PMarkerBase {
         return file;
     }
 
+    public List<PFile> getPFiles() {
+        List<PFile> result = new ArrayList<PFile>();
+
+        for (Object entry : getFilesAndArchives()) {
+            if (entry instanceof PFile) {
+                result.add((PFile) entry);
+            }
+        }
+        return result;
+    }
+
+    public List<PArchive> getPArchives() {
+        List<PArchive> result = new ArrayList<PArchive>();
+
+        for (Object entry : getFilesAndArchives()) {
+            if (entry instanceof PArchive) {
+                result.add((PArchive) entry);
+            }
+        }
+        return result;
+    }
+
+    public abstract List<Object> getFilesAndArchives();
+
     public File getFolder() {
         return file.getParentFile();
     }
 
-    public File getAbsoluteFileFor(PFile pfile) {
-        return new File(getFolder(), pfile.getRelativePath());
+    public File getAbsoluteFileFor(PFile pFile) {
+        return new File(getFolder(), pFile.getRelativePath());
     }
 
-    public String getBeginTokenFor(PFile pfile) {
-        return pfile.getBeginToken() != null ? pfile.getBeginToken() : getBeginToken();
+    public File getAbsoluteFileFor(PArchive pArchive) {
+        return new File(getFolder(), pArchive.getRelativePath());
     }
 
-    public String getEndTokenFor(PFile pfile) {
-        return pfile.getBeginToken() != null ? pfile.getEndToken() : getEndToken();
+    public String getBeginTokenFor(PFile pFile) {
+        return pFile.getBeginToken() != null ? pFile.getBeginToken() : getBeginToken();
+    }
+
+    public String getBeginTokenFor(PArchive pArchive, PFile pFile) {
+        if (pFile.getBeginToken() != null) {
+            return pFile.getBeginToken();
+        }
+        if (pArchive.getBeginToken() != null) {
+            return pArchive.getBeginToken();
+        }
+        return getBeginToken();
+    }
+
+    public String getEndTokenFor(PFile pFile) {
+        return pFile.getEndToken() != null ? pFile.getEndToken() : getEndToken();
+    }
+
+    public String getEndTokenFor(PArchive pArchive, PFile pFile) {
+        if (pFile.getEndToken() != null) {
+            return pFile.getEndToken();
+        }
+        if (pArchive.getEndToken() != null) {
+            return pArchive.getEndToken();
+        }
+        return getEndToken();
     }
 
     public abstract String getEndToken();

@@ -1,8 +1,11 @@
 package com.geewhiz.pacify.property.resolver.cmdresolver;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.resolver.PropertyResolver;
 import com.geewhiz.pacify.resolver.PropertyResolverModule;
 import com.google.inject.Provides;
@@ -29,28 +32,33 @@ import com.google.inject.multibindings.Multibinder;
 
 public class CmdPropertyResolverModule extends PropertyResolverModule {
 
-	Map<String, String> parameters;
+    Map<String, String> parameters;
 
-	@Override
-	public String getResolverId() {
-		return "CmdResolver";
-	}
+    @Override
+    public String getResolverId() {
+        return "CmdResolver";
+    }
 
-	@Override
-	protected void configure() {
-		Multibinder<PropertyResolver> resolveBinder = Multibinder.newSetBinder(binder(), PropertyResolver.class);
-		resolveBinder.addBinding().to(CmdPropertyResolver.class);
-	}
+    @Override
+    protected void configure() {
+        Multibinder<PropertyResolver> resolveBinder = Multibinder.newSetBinder(binder(), PropertyResolver.class);
+        resolveBinder.addBinding().to(CmdPropertyResolver.class);
+    }
 
-	@Override
-	public void setParameters(Map<String, String> parameters) {
-		this.parameters = parameters;
-	}
+    @Override
+    public void setParameters(Map<String, String> parameters) {
+        this.parameters = parameters;
+    }
 
-	@Provides
-	public CmdPropertyResolver createFilePropertyResolver() {
-		Properties properties = new Properties();
-		properties.putAll(parameters);
-		return new CmdPropertyResolver(properties);
-	}
+    @Provides
+    public CmdPropertyResolver createFilePropertyResolver() {
+        Properties properties = new Properties();
+        properties.putAll(parameters);
+        return new CmdPropertyResolver(properties);
+    }
+
+    @Override
+    public List<Defect> getDefects() {
+        return Collections.emptyList();
+    }
 }

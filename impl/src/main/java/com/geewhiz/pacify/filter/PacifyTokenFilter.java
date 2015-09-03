@@ -4,18 +4,17 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.tools.ant.types.FilterSet;
 import org.apache.tools.ant.types.FilterSetCollection;
 import org.apache.tools.ant.util.FileUtils;
 
 import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.managers.PropertyResolveManager;
+import com.geewhiz.pacify.model.PArchive;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
-import com.geewhiz.pacify.model.PProperty;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -38,23 +37,24 @@ import com.geewhiz.pacify.model.PProperty;
 
 public class PacifyTokenFilter implements PacifyFilter {
 
-    private Logger logger = LogManager.getLogger(PacifyTokenFilter.class.getName());
+    public PacifyTokenFilter(PMarker pMarker, PArchive pArchive, PFile pFile) {
+        // this filter doesn't need this parameters, but this constructor is needed.
+    }
 
     @Override
-    public List<Defect> filter(PropertyResolveManager propertyResolveManager, PMarker pMarker, PFile pFile) {
-        File file = pMarker.getAbsoluteFileFor(pFile);
-        FilterSetCollection filterSetCollection = getFilterSetCollection(propertyResolveManager, pMarker, pFile);
-
-        File tmpFile = new File(file.getParentFile(), file.getName() + "_tmp");
+    public List<Defect> filter(Map<String, String> propertyValues, String beginToken, String endToken, File fileToFilter, String encoding) {
+        FilterSetCollection filterSetCollection = getFilterSetCollection(propertyValues, beginToken, endToken);
 
         try {
-            FileUtils.getFileUtils().copyFile(file, tmpFile, filterSetCollection, true, true, pFile.getEncoding());
-            if (!file.delete()) {
-                throw new RuntimeException("Couldn't delete file [" + file.getPath() + "]... Aborting!");
+            File tmpFile = com.geewhiz.pacify.utils.FileUtils.createTempFile(fileToFilter.getParentFile(), fileToFilter.getName());
+
+            FileUtils.getFileUtils().copyFile(fileToFilter, tmpFile, filterSetCollection, true, true, encoding);
+            if (!fileToFilter.delete()) {
+                throw new RuntimeException("Couldn't delete file [" + fileToFilter.getPath() + "]... Aborting!");
             }
-            if (!tmpFile.renameTo(file)) {
+            if (!tmpFile.renameTo(fileToFilter)) {
                 throw new RuntimeException("Couldn't rename filtered file from [" + tmpFile.getPath() + "] to ["
-                        + file.getPath() + "]... Aborting!");
+                        + fileToFilter.getPath() + "]... Aborting!");
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -63,8 +63,8 @@ public class PacifyTokenFilter implements PacifyFilter {
         return new ArrayList<Defect>();
     }
 
-    private FilterSetCollection getFilterSetCollection(PropertyResolveManager propertyResolveManager, PMarker pMarker, PFile pFile) {
-        FilterSet filterSet = getFilterSet(propertyResolveManager, pMarker, pFile);
+    private FilterSetCollection getFilterSetCollection(Map<String, String> propertyValues, String beginToken, String endToken) {
+        FilterSet filterSet = getFilterSet(propertyValues, beginToken, endToken);
 
         FilterSetCollection executionFilters = new FilterSetCollection();
         executionFilters.addFilterSet(filterSet);
@@ -72,17 +72,14 @@ public class PacifyTokenFilter implements PacifyFilter {
         return executionFilters;
     }
 
-    private FilterSet getFilterSet(PropertyResolveManager propertyResolveManager, PMarker pMarker, PFile pFile) {
+    private FilterSet getFilterSet(Map<String, String> propertyValues, String beginToken, String endToken) {
         FilterSet filterSet = new FilterSet();
 
-        filterSet.setBeginToken(pMarker.getBeginTokenFor(pFile));
-        filterSet.setEndToken(pMarker.getEndTokenFor(pFile));
+        filterSet.setBeginToken(beginToken);
+        filterSet.setEndToken(endToken);
 
-        for (PProperty pProperty : pFile.getPProperties()) {
-            String propertyName = pProperty.getName();
-            String propertyValue = propertyResolveManager.getPropertyValue(pProperty);
-
-            filterSet.addFilter(propertyName, propertyValue);
+        for (Entry<String, String> entry : propertyValues.entrySet()) {
+            filterSet.addFilter(entry.getKey(), entry.getValue());
         }
         return filterSet;
     }

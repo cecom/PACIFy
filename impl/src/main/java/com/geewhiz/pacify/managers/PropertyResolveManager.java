@@ -88,12 +88,12 @@ public class PropertyResolveManager {
         String value = getPropertyValue(property, new ArrayList<String>());
 
         if (!pProperty.isConvertBackslashToSlash()) {
-            logger.debug("       Using property [{}] with value [{}]", property, value);
+            logger.debug("       Resolved property [{}] to value [{}]", property, value);
             return value;
         }
 
         String convertedString = value.replace('\\', '/');
-        logger.debug("       Using property [{}] original value [{}] with backslash convertion to [{}]", property, value, convertedString);
+        logger.debug("       Resolved property [{}] with original value [{}] to [{}] (backslash convertion)", property, value, convertedString);
 
         return convertedString;
     }

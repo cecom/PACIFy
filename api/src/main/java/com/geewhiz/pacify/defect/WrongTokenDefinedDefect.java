@@ -1,5 +1,6 @@
 package com.geewhiz.pacify.defect;
 
+import com.geewhiz.pacify.model.PArchive;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
 
@@ -22,21 +23,25 @@ import com.geewhiz.pacify.model.PMarker;
  * under the License.
  */
 
-public class WrongTokenDefinedDefect implements Defect {
+public class WrongTokenDefinedDefect extends DefectException {
 
-    private PMarker pMarker;
-    private PFile   pFile;
-    private String  errorMessage;
+    private static final long serialVersionUID = 1L;
+
+    private String            errorMessage;
 
     public WrongTokenDefinedDefect(PMarker pMarker, PFile pFile, String errorMessage) {
-        this.pMarker = pMarker;
-        this.pFile = pFile;
+        super(pMarker, pFile);
         this.errorMessage = errorMessage;
     }
 
+    public WrongTokenDefinedDefect(PMarker pMarker, PArchive pArchive, PFile pFile, String errorMessage) {
+        super(pMarker, pArchive, pFile);
+        this.errorMessage = errorMessage;
+    }
+
+    @Override
     public String getDefectMessage() {
-        return String.format("WrongTokenDefined: \n\t[MarkerFile=%s]\n\t[File=%s]\n\t[FilterClass=%s]\n\t[ErrorMessage=%s]",
-                pMarker.getFile().getAbsolutePath(),
-                pFile.getRelativePath(), pFile.getFilterClass(), errorMessage);
+        return super.getDefectMessage() +
+                String.format("\n\t[ErrorMessage=%s]", errorMessage);
     }
 }

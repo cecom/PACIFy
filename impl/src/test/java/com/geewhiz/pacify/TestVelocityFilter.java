@@ -6,14 +6,15 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.geewhiz.pacify.defect.Defect;
+import com.geewhiz.pacify.defect.WrongTokenDefinedDefect;
 import com.geewhiz.pacify.managers.EntityManager;
 import com.geewhiz.pacify.managers.PropertyResolveManager;
 import com.geewhiz.pacify.property.resolver.HashMapPropertyResolver;
 import com.geewhiz.pacify.resolver.PropertyResolver;
+import com.geewhiz.pacify.test.TestUtil;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -36,40 +37,46 @@ import com.geewhiz.pacify.resolver.PropertyResolver;
 
 public class TestVelocityFilter {
 
-    @BeforeClass
-    public static void removeOldData() {
-        TestUtil.removeOldTestResourcesAndCopyAgain();
-    }
-
     @Test
     public void testWrongToken() throws Exception {
-        File source = new File("target/test-classes/testVelocityFilter/wrong/wrongToken/package");
+        File testResourceFolder = new File("src/test/resources/testVelocityFilter/wrong/wrongToken");
+        File targetResourceFolder = new File("target/test-resources/testVelocityFilter/wrong/wrongToken");
+
+        TestUtil.removeOldTestResourcesAndCopyAgain(testResourceFolder, targetResourceFolder);
+
+        File packagePath = new File(targetResourceFolder, "package");
 
         HashMapPropertyResolver hpr = new HashMapPropertyResolver();
         PropertyResolveManager prm = getPropertyResolveManager(hpr);
 
         Replacer replacer = new Replacer(prm);
-        EntityManager entityManager = new EntityManager(source);
+        EntityManager entityManager = new EntityManager(packagePath);
 
-        replacer.setPackagePath(source);
+        replacer.setPackagePath(packagePath);
         List<Defect> defects = entityManager.initialize();
         defects.addAll(replacer.doReplacement(entityManager));
 
         Assert.assertEquals(1, defects.size());
-        Assert.assertEquals("com.geewhiz.pacify.defect.WrongTokenDefinedDefect", defects.get(0).getClass().getName());
+        Assert.assertEquals(WrongTokenDefinedDefect.class.getName(),
+                defects.get(0).getClass().getName());
     }
 
     @Test
     public void testNotReplacedProperty() throws Exception {
-        File source = new File("target/test-classes/testVelocityFilter/wrong/notReplacedProperty/package");
+        File testResourceFolder = new File("src/test/resources/testVelocityFilter/wrong/notReplacedProperty");
+        File targetResourceFolder = new File("target/test-resources/testVelocityFilter/wrong/notReplacedProperty");
+
+        TestUtil.removeOldTestResourcesAndCopyAgain(testResourceFolder, targetResourceFolder);
+
+        File packagePath = new File(targetResourceFolder, "package");
 
         HashMapPropertyResolver spr = new HashMapPropertyResolver();
         PropertyResolveManager prm = getPropertyResolveManager(spr);
 
         Replacer replacer = new Replacer(prm);
-        EntityManager entityManager = new EntityManager(source);
+        EntityManager entityManager = new EntityManager(packagePath);
 
-        replacer.setPackagePath(source);
+        replacer.setPackagePath(packagePath);
         List<Defect> defects = entityManager.initialize();
         defects.addAll(replacer.doReplacement(entityManager));
 
@@ -79,78 +86,102 @@ public class TestVelocityFilter {
 
     @Test
     public void testSimpleReplacement() throws Exception {
-        File source = new File("target/test-classes/testVelocityFilter/correct/simple/package");
+        File testResourceFolder = new File("src/test/resources/testVelocityFilter/correct/simple");
+        File targetResourceFolder = new File("target/test-resources/testVelocityFilter/correct/simple");
+
+        TestUtil.removeOldTestResourcesAndCopyAgain(testResourceFolder, targetResourceFolder);
+
+        File packagePath = new File(targetResourceFolder, "package");
+        File expectedResultPath = new File(targetResourceFolder, "expectedResult");
 
         HashMapPropertyResolver spr = new HashMapPropertyResolver();
 
         PropertyResolveManager prm = getPropertyResolveManager(spr);
 
         Replacer replacer = new Replacer(prm);
-        EntityManager entityManager = new EntityManager(source);
+        EntityManager entityManager = new EntityManager(packagePath);
 
-        replacer.setPackagePath(source);
+        replacer.setPackagePath(packagePath);
         List<Defect> defects = entityManager.initialize();
         defects.addAll(replacer.doReplacement(entityManager));
 
         Assert.assertEquals(0, defects.size());
-        TestUtil.checkIfResultIsAsExpected(source, new File(source, "../result"));
+        TestUtil.checkIfResultIsAsExpected(packagePath, expectedResultPath);
     }
 
     @Test
     public void testWithIfReplacement() throws Exception {
-        File source = new File("target/test-classes/testVelocityFilter/correct/ifCondition/package");
+        File testResourceFolder = new File("src/test/resources/testVelocityFilter/correct/ifCondition");
+        File targetResourceFolder = new File("target/test-resources/testVelocityFilter/correct/ifCondition");
+
+        TestUtil.removeOldTestResourcesAndCopyAgain(testResourceFolder, targetResourceFolder);
+
+        File packagePath = new File(targetResourceFolder, "package");
+        File expectedResultPath = new File(targetResourceFolder, "expectedResult");
 
         HashMapPropertyResolver spr = new HashMapPropertyResolver();
         spr.addProperty("use.jdbc", "true");
         PropertyResolveManager prm = getPropertyResolveManager(spr);
 
         Replacer replacer = new Replacer(prm);
-        EntityManager entityManager = new EntityManager(source);
+        EntityManager entityManager = new EntityManager(packagePath);
 
-        replacer.setPackagePath(source);
+        replacer.setPackagePath(packagePath);
         List<Defect> defects = entityManager.initialize();
         defects.addAll(replacer.doReplacement(entityManager));
 
         Assert.assertEquals(0, defects.size());
-        TestUtil.checkIfResultIsAsExpected(source, new File(source, "../result"));
+        TestUtil.checkIfResultIsAsExpected(packagePath, expectedResultPath);
     }
 
     @Test
     public void testWithIfElseReplacement() throws Exception {
-        File source = new File("target/test-classes/testVelocityFilter/correct/ifElseCondition/package");
+        File testResourceFolder = new File("src/test/resources/testVelocityFilter/correct/ifElseCondition");
+        File targetResourceFolder = new File("target/test-resources/testVelocityFilter/correct/ifElseCondition");
+
+        TestUtil.removeOldTestResourcesAndCopyAgain(testResourceFolder, targetResourceFolder);
+
+        File packagePath = new File(targetResourceFolder, "package");
+        File expectedResultPath = new File(targetResourceFolder, "expectedResult");
 
         HashMapPropertyResolver spr = new HashMapPropertyResolver();
         spr.addProperty("use.jdbc", "false");
         PropertyResolveManager prm = getPropertyResolveManager(spr);
 
         Replacer replacer = new Replacer(prm);
-        EntityManager entityManager = new EntityManager(source);
+        EntityManager entityManager = new EntityManager(packagePath);
 
-        replacer.setPackagePath(source);
+        replacer.setPackagePath(packagePath);
         List<Defect> defects = entityManager.initialize();
         defects.addAll(replacer.doReplacement(entityManager));
 
         Assert.assertEquals(0, defects.size());
-        TestUtil.checkIfResultIsAsExpected(source, new File(source, "../result"));
+        TestUtil.checkIfResultIsAsExpected(packagePath, expectedResultPath);
     }
 
     @Test
     public void testForEach() throws Exception {
-        File source = new File("target/test-classes/testVelocityFilter/correct/forEachCondition/package");
+        File testResourceFolder = new File("src/test/resources/testVelocityFilter/correct/forEachCondition");
+        File targetResourceFolder = new File("target/test-resources/testVelocityFilter/correct/forEachCondition");
+
+        TestUtil.removeOldTestResourcesAndCopyAgain(testResourceFolder, targetResourceFolder);
+
+        File packagePath = new File(targetResourceFolder, "package");
+        File expectedResultPath = new File(targetResourceFolder, "expectedResult");
 
         HashMapPropertyResolver spr = new HashMapPropertyResolver();
         spr.addProperty("a.list", "1,2,3,foo,bar");
         PropertyResolveManager prm = getPropertyResolveManager(spr);
 
         Replacer replacer = new Replacer(prm);
-        EntityManager entityManager = new EntityManager(source);
+        EntityManager entityManager = new EntityManager(packagePath);
 
-        replacer.setPackagePath(source);
+        replacer.setPackagePath(packagePath);
         List<Defect> defects = entityManager.initialize();
         defects.addAll(replacer.doReplacement(entityManager));
 
         Assert.assertEquals(0, defects.size());
-        TestUtil.checkIfResultIsAsExpected(source, new File(source, "../result"));
+        TestUtil.checkIfResultIsAsExpected(packagePath, expectedResultPath);
     }
 
     private PropertyResolveManager getPropertyResolveManager(HashMapPropertyResolver hpr) {

@@ -1,11 +1,4 @@
-package com.geewhiz.pacify.filter;
-
-import java.util.List;
-
-import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.managers.PropertyResolveManager;
-import com.geewhiz.pacify.model.PFile;
-import com.geewhiz.pacify.model.PMarker;
+package com.geewhiz.pacify.property.resolver.fileresolver.defects;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -26,8 +19,11 @@ import com.geewhiz.pacify.model.PMarker;
  * under the License.
  */
 
-public interface PacifyFilter {
+import com.geewhiz.pacify.defect.Defect;
 
-    List<Defect> filter(PropertyResolveManager propertyResolveManager, PMarker pMarker, PFile pFile);
+public class PropertyFileNotDefinedDefect implements Defect {
 
+    public String getDefectMessage() {
+        return String.format("PropertyFileNotDefined: \n\t[Message=%s]", "You have to define the parameter -RFileResolver.file=<path>.");
+    }
 }

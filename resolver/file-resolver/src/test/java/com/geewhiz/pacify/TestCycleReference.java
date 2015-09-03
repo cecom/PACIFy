@@ -34,6 +34,7 @@ import com.geewhiz.pacify.defect.PropertyHasCycleDefect;
 import com.geewhiz.pacify.managers.PropertyResolveManager;
 import com.geewhiz.pacify.property.resolver.fileresolver.FilePropertyResolver;
 import com.geewhiz.pacify.resolver.PropertyResolver;
+import com.geewhiz.pacify.test.TestUtil;
 
 public class TestCycleReference extends TestBase {
 

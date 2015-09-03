@@ -1,0 +1,3 @@
+foobar1
+foobar2
+property.with.üäö

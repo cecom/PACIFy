@@ -22,27 +22,26 @@ package com.geewhiz.pacify.commandline;
 import java.io.File;
 
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.geewhiz.pacify.TestUtil;
+import com.geewhiz.pacify.test.TestUtil;
 
 public class TestCommandlineCall {
 
-    @BeforeClass
-    public static void removeOldData() {
-        TestUtil.removeOldTestResourcesAndCopyAgain();
-    }
-
     @Test
     public void testReplace() {
+        File testResourceFolder = new File("src/test/resources/testReplace");
+        File targetResourceFolder = new File("target/test-resources/testReplace");
 
-        File testBasePath = new File("target/test-classes/testReplace");
-        File myTestProperty = new File(testBasePath, "properties/myTest.properties");
-        File myPackagePath = new File(testBasePath, "package");
-        File myResultPath = new File(testBasePath, "result");
+        TestUtil.removeOldTestResourcesAndCopyAgain(testResourceFolder, targetResourceFolder);
 
-        int result = PacifyViaCommandline.mainInternal(new String[] {
+        File myTestProperty = new File(targetResourceFolder, "properties/myTest.properties");
+        File myPackagePath = new File(targetResourceFolder, "package");
+        File myExpectedResultPath = new File(targetResourceFolder, "expectedResult");
+
+        PacifyViaCommandline pacifyViaCommandline = new PacifyViaCommandline();
+
+        int result = pacifyViaCommandline.mainInternal(new String[] {
                 "--info",
                 "replace",
                 "--resolvers=FileResolver",
@@ -52,14 +51,16 @@ public class TestCommandlineCall {
 
         Assert.assertEquals("Configuration returned with errors.", 0, result);
 
-        TestUtil.checkIfResultIsAsExpected(myPackagePath, myResultPath);
+        TestUtil.checkIfResultIsAsExpected(myPackagePath, myExpectedResultPath);
     }
 
     @Test
     public void testValidateMarkerFiles() {
         File testBasePath = new File("target/test-classes/testValidate");
 
-        int result = PacifyViaCommandline.mainInternal(new String[] {
+        PacifyViaCommandline pacifyViaCommandline = new PacifyViaCommandline();
+
+        int result = pacifyViaCommandline.mainInternal(new String[] {
                 "validateMarkerFiles",
                 "--packagePath=" + testBasePath
         });
@@ -72,7 +73,9 @@ public class TestCommandlineCall {
         File testBasePath = new File("target/test-classes/testValidate");
         File myTestProperty = new File(testBasePath, "properties/myTest.properties");
 
-        int result = PacifyViaCommandline.mainInternal(new String[] {
+        PacifyViaCommandline pacifyViaCommandline = new PacifyViaCommandline();
+
+        int result = pacifyViaCommandline.mainInternal(new String[] {
                 "validate",
                 "--resolvers=FileResolver",
                 "--packagePath=" + testBasePath,
@@ -84,7 +87,9 @@ public class TestCommandlineCall {
 
     @Test
     public void testHelp() {
-        int result = PacifyViaCommandline.mainInternal(new String[] {
+        PacifyViaCommandline pacifyViaCommandline = new PacifyViaCommandline();
+
+        int result = pacifyViaCommandline.mainInternal(new String[] {
                 "--help"
         });
 

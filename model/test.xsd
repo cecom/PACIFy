@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.example.org/NewXMLSchema" xmlns:tns="http://www.example.org/NewXMLSchema" elementFormDefault="qualified">
+    <element name="root">
+        <complexType>
+            <choice maxOccurs="unbounded">
+                <element ref="tns:file" />
+                <group ref="tns:g" />
+            </choice>
+        </complexType>
+    </element>
+    <group name="g">
+        <sequence>
+            <element ref="tns:files" />
+            <element ref="tns:archives" />
+        </sequence>
+    </group>
+    <element name="files">
+        <complexType>
+            <sequence>
+                <element ref="tns:file" />
+            </sequence>
+        </complexType>
+    </element>
+    <element name="archives">
+        <complexType>
+            <sequence>
+                <element ref="tns:archive" />
+            </sequence>
+        </complexType>
+    </element>
+    <element name="archive">
+        <complexType>
+            <sequence>
+                <element ref="tns:file" />
+            </sequence>
+        </complexType>
+    </element>
+    <element name="file" />
+</schema>

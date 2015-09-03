@@ -1,7 +1,9 @@
 package com.geewhiz.pacify.resolver;
 
+import java.util.List;
 import java.util.Map;
 
+import com.geewhiz.pacify.defect.Defect;
 import com.google.inject.AbstractModule;
 
 /*
@@ -30,8 +32,10 @@ import com.google.inject.AbstractModule;
  */
 public abstract class PropertyResolverModule extends AbstractModule {
 
-	public abstract String getResolverId();
+    public abstract String getResolverId();
 
-	public abstract void setParameters(Map<String, String> parameters);
+    public abstract void setParameters(Map<String, String> parameters);
+
+    public abstract List<Defect> getDefects();
 
 }

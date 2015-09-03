@@ -1,4 +1,4 @@
-package com.geewhiz.pacify;
+package com.geewhiz.pacify.test;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -28,10 +28,20 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+
 import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.Configuration;
 import org.junit.Assert;
 import org.junit.Ignore;
 
+import com.geewhiz.pacify.model.ObjectFactory;
+import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.model.utils.DirFilter;
 
 @Ignore
@@ -51,17 +61,17 @@ public class TestUtil {
         }
 
         // Look that the files exists and are like we want it
-        for (File resultFile : getFiles(expected)) {
+        for (File expectedFile : getFiles(expected)) {
             String completeRelativePath = expected.getPath();
-            int index = resultFile.getPath().indexOf(completeRelativePath) + completeRelativePath.length();
-            String relativePath = resultFile.getPath().substring(index);
+            int index = expectedFile.getPath().indexOf(completeRelativePath) + completeRelativePath.length();
+            String relativePath = expectedFile.getPath().substring(index);
 
             File filteredFile = new File(actual, relativePath);
             try {
 
-                Assert.assertEquals("Both files exists.", resultFile.exists(), filteredFile.exists());
-                Assert.assertEquals("File [" + filteredFile.getPath() + "] doesnt look like [" + resultFile.getPath() + "].\n",
-                        FileUtils.readFileToString(filteredFile, encoding), FileUtils.readFileToString(resultFile, encoding));
+                Assert.assertEquals("Both files exists.", expectedFile.exists(), filteredFile.exists());
+                Assert.assertEquals("File [" + filteredFile.getPath() + "] doesnt look like [" + expectedFile.getPath() + "].\n",
+                        FileUtils.readFileToString(expectedFile, encoding), FileUtils.readFileToString(filteredFile, encoding));
 
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -105,22 +115,38 @@ public class TestUtil {
         return files;
     }
 
-    public static void removeOldTestResourcesAndCopyAgain() {
-        File testClassesFolder = new File("target/test-classes");
-        if (testClassesFolder.exists()) {
-            for (File file : testClassesFolder.listFiles()) {
-                if ("com".equals(file.getName())) {
-                    continue;
-                }
-                FileUtils.deleteQuietly(file);
-            }
+    public static void removeOldTestResourcesAndCopyAgain(File fromFolder, File toFolder) {
+        if (toFolder.exists()) {
+            FileUtils.deleteQuietly(toFolder);
         }
 
         try {
-            FileUtils.copyDirectory(new File("src/test/resources"), testClassesFolder);
+            FileUtils.copyDirectory(fromFolder, toFolder);
         } catch (IOException e) {
             throw new RuntimeException("error while copy test-resources", e);
         }
 
+    }
+
+    public static ListAppender createListAppender() {
+        ListAppender result = new ListAppender();
+
+        // get the root logger
+        Logger logger = LogManager.getLogger("");
+
+        LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
+        Configuration config = ctx.getConfiguration();
+        config.addLoggerAppender((org.apache.logging.log4j.core.Logger) logger, result);
+
+        return result;
+    }
+
+    public static PMarker readPMarker(File file) throws JAXBException {
+        JAXBContext jaxbContext = JAXBContext.newInstance(ObjectFactory.class);
+        Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+        PMarker pMarker = (PMarker) jaxbUnmarshaller.unmarshal(file);
+        pMarker.setFile(file);
+
+        return pMarker;
     }
 }

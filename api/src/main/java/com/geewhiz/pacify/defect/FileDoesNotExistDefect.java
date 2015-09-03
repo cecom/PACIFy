@@ -19,22 +19,24 @@ package com.geewhiz.pacify.defect;
  * under the License.
  */
 
+import com.geewhiz.pacify.model.PArchive;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
 
-public class TargetFileDoesNotExistDefect implements Defect {
+public class FileDoesNotExistDefect extends DefectException {
 
-    private PMarker pMarker;
-    private PFile   pfile;
+    private static final long serialVersionUID = 1L;
 
-    public TargetFileDoesNotExistDefect(PMarker pMarker, PFile pfile) {
-        this.pMarker = pMarker;
-        this.pfile = pfile;
+    public FileDoesNotExistDefect(PMarker pMarker, PFile pFile) {
+        super(pMarker, pFile);
     }
 
-    public String getDefectMessage() {
-        return String.format("TargetFileDoesNotExist: \n\t[MarkerFile=%s]\n\t[file=%s]", pMarker.getFile().getAbsolutePath(),
-                pMarker.getAbsoluteFileFor(pfile).getAbsolutePath());
+    public FileDoesNotExistDefect(PMarker pMarker, PArchive pArchive) {
+        super(pMarker, pArchive);
+    }
+
+    public FileDoesNotExistDefect(PMarker pMarker, PArchive pArchive, PFile pFile) {
+        super(pMarker, pArchive, pFile);
     }
 
 }

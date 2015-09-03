@@ -19,25 +19,20 @@ package com.geewhiz.pacify.defect;
  * under the License.
  */
 
+import com.geewhiz.pacify.model.PArchive;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.model.PProperty;
 
-public class NoPlaceholderInTargetFileDefect implements Defect {
+public class NoPlaceholderInTargetFileDefect extends DefectException {
 
-    private PMarker   pMarker;
-    private PProperty pproperty;
-    private PFile     pfile;
+    private static final long serialVersionUID = 1L;
 
-    public NoPlaceholderInTargetFileDefect(PMarker pMarker, PProperty pproperty,
-        PFile pfile) {
-        this.pMarker = pMarker;
-        this.pproperty = pproperty;
-        this.pfile = pfile;
+    public NoPlaceholderInTargetFileDefect(PMarker pMarker, PFile pFile, PProperty pProperty) {
+        super(pMarker, pFile, pProperty);
     }
 
-    public String getDefectMessage() {
-        return String.format("NoPlaceholderInTargetFile: \n\t[MarkerFile=%s]\n\t[Property=%s]\n\t[TargetFile=%s]", pMarker.getFile().getAbsolutePath(),
-                pproperty.getName(), pMarker.getAbsoluteFileFor(pfile).getAbsolutePath());
+    public NoPlaceholderInTargetFileDefect(PMarker pMarker, PArchive pArchive, PFile pFile, PProperty pProperty) {
+        super(pMarker, pArchive, pFile, pProperty);
     }
 }

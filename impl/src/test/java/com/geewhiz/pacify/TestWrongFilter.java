@@ -22,16 +22,14 @@ package com.geewhiz.pacify;
 import java.io.File;
 import java.util.List;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Unmarshaller;
-
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.geewhiz.pacify.checks.impl.CheckCorrectPacifyFilter;
 import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.managers.FilterManager;
-import com.geewhiz.pacify.model.ObjectFactory;
+import com.geewhiz.pacify.defect.FilterNotFoundDefect;
 import com.geewhiz.pacify.model.PMarker;
+import com.geewhiz.pacify.test.TestUtil;
 
 public class TestWrongFilter {
 
@@ -39,15 +37,13 @@ public class TestWrongFilter {
     public void test() throws Exception {
         File source = new File("target/test-classes/testWrongFilter/package/example-CMFile.pacify");
 
-        JAXBContext jaxbContext = JAXBContext.newInstance(ObjectFactory.class);
-        Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-        PMarker pMarker = (PMarker) jaxbUnmarshaller.unmarshal(source);
-        pMarker.setFile(source);
+        PMarker pMarker = TestUtil.readPMarker(source);
 
-        FilterManager manager = new FilterManager(null, pMarker);
-        List<Defect> defects = manager.doFilter();
+        CheckCorrectPacifyFilter check = new CheckCorrectPacifyFilter();
+        List<Defect> defects = check.checkForErrors(pMarker);
 
-        Assert.assertEquals(1, defects.size());
-        Assert.assertEquals("com.geewhiz.pacify.defect.FilterNotFoundDefect", defects.get(0).getClass().getName());
+        Assert.assertEquals(2, defects.size());
+        Assert.assertEquals(FilterNotFoundDefect.class.getName(), defects.get(0).getClass().getName());
+        Assert.assertEquals(FilterNotFoundDefect.class.getName(), defects.get(1).getClass().getName());
     }
 }

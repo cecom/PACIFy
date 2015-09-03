@@ -22,6 +22,7 @@ package com.geewhiz.pacify;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -29,8 +30,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.managers.FilterManager;
+import com.geewhiz.pacify.defect.DefectException;
+import com.geewhiz.pacify.defect.DefectMessage;
 import com.geewhiz.pacify.managers.EntityManager;
+import com.geewhiz.pacify.managers.FilterManager;
 import com.geewhiz.pacify.managers.PropertyResolveManager;
 import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.utils.DefectUtils;
@@ -54,13 +57,7 @@ public class Replacer {
         logger.info("== Executing Replacer [Version={}]", Utils.getJarVersion());
         logger.info("   [PackagePath={}]", getPackagePath().getAbsolutePath());
 
-        File pathToConfigure = getPackagePath();
-
-        if (copyDestination != null) {
-            logger.info("   [Destination={}]", getCopyDestination().getAbsolutePath());
-            createCopy();
-            pathToConfigure = getCopyDestination();
-        }
+        File pathToConfigure = getPathToConfigure();
 
         EntityManager entityManager = new EntityManager(pathToConfigure);
 
@@ -75,6 +72,22 @@ public class Replacer {
         DefectUtils.abortIfDefectExists(defects);
 
         logger.info("== Successfully finished");
+    }
+
+    private File getPathToConfigure() {
+        if (copyDestination == null) {
+            return getPackagePath();
+        }
+
+        File result = null;
+        logger.info("   [Destination={}]", getCopyDestination().getAbsolutePath());
+        try {
+            result = createCopy();
+        } catch (DefectException e) {
+            DefectUtils.abortIfDefectExists(new ArrayList<Defect>(Arrays.asList(e)));
+        }
+
+        return result;
     }
 
     public File getPackagePath() {
@@ -93,19 +106,24 @@ public class Replacer {
         this.copyDestination = copyDestination;
     }
 
-    private void createCopy() {
+    private File createCopy() throws DefectException {
         try {
             if (getCopyDestination().exists()) {
                 if (!getCopyDestination().isDirectory()) {
-                    throw new IllegalArgumentException("destination directory [" + getCopyDestination().getAbsolutePath() + "] is not a directory.");
+                    throw new DefectMessage("Destination directory [" + getCopyDestination().getAbsolutePath() + "] is not a directory.");
                 }
                 if (getCopyDestination().list().length > 0) {
-                    throw new IllegalArgumentException("destination directory [" + getCopyDestination().getAbsolutePath() + "] is not empty.");
+                    throw new DefectMessage("Destination directory [" + getCopyDestination().getAbsolutePath() + "] is not empty.");
+                }
+                if (!getCopyDestination().canWrite()) {
+                    throw new DefectMessage("Destination directory [" + getCopyDestination().getAbsolutePath() + "] is not writable.");
                 }
             }
             FileUtils.copyDirectory(getPackagePath(), getCopyDestination());
+            return getCopyDestination();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            logger.debug(e);
+            throw new DefectMessage("Error while copy [" + getPackagePath().getAbsolutePath() + "] to [" + getCopyDestination().getAbsolutePath() + "].");
         }
     }
 
