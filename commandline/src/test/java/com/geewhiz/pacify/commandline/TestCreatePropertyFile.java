@@ -46,6 +46,7 @@ public class TestCreatePropertyFile {
         PacifyViaCommandline pacifyViaCommandline = new PacifyViaCommandline();
 
         int result = pacifyViaCommandline.mainInternal(new String[] {
+                "--debug",
                 "createPropertyFile",
                 "--resolvers=FileResolver",
                 "--destinationFile=" + destinationFile.getAbsolutePath(),

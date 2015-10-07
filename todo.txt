@@ -1,0 +1,1 @@
+- fehlermeldung wenn eine Property aufgelöst werden soll, die aber nicht richtig hinterlegt ist (kein base64)

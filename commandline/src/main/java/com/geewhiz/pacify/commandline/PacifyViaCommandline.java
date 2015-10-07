@@ -142,7 +142,7 @@ public class PacifyViaCommandline {
 
         CreatePropertyFile createPropertyFile = injector.getInstance(CreatePropertyFile.class);
         createPropertyFileCommand.configure(createPropertyFile);
-        createPropertyFile.writeTo();
+        createPropertyFile.write();
 
         return 0;
     }

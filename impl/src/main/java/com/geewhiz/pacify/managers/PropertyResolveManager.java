@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.apache.commons.lang3.StringUtils;
@@ -68,34 +66,55 @@ public class PropertyResolveManager {
         return sb.toString();
     }
 
-    public Map<String, String> getProperties() {
-
+    public Set<String> getPropertyKeys() {
         Set<String> propertyKeys = new TreeSet<String>();
         for (PropertyResolver propertyResolver : propertyResolverList) {
             propertyKeys.addAll(propertyResolver.getPropertyKeys());
         }
-
-        Map<String, String> result = new TreeMap<String, String>();
-        for (String propertyKey : propertyKeys) {
-            result.put(propertyKey, getPropertyValue(propertyKey, new ArrayList<String>()));
-        }
-
-        return result;
+        return propertyKeys;
     }
 
     public String getPropertyValue(PProperty pProperty) {
-        String property = pProperty.getName();
-        String value = getPropertyValue(property, new ArrayList<String>());
+        return getPropertyValue(pProperty.getName(), pProperty.isConvertBackslashToSlash());
+    }
 
-        if (!pProperty.isConvertBackslashToSlash()) {
-            logger.debug("       Resolved property [{}] to value [{}]", property, value);
+    public String getPropertyValue(String propertyKey) {
+        return getPropertyValue(propertyKey, false);
+    }
+
+    public String getPropertyValue(String propertyKey, boolean convertBackslashToSlash) {
+        String value = getPropertyValue(propertyKey, new ArrayList<String>());
+        boolean isProtected = isProtectedProperty(propertyKey);
+
+        if (!convertBackslashToSlash) {
+            logger.debug("       Resolved property [{}] to value [{}]", propertyKey, isProtected ? "**********" : value);
             return value;
         }
 
         String convertedString = value.replace('\\', '/');
-        logger.debug("       Resolved property [{}] with original value [{}] to [{}] (backslash convertion)", property, value, convertedString);
+        logger.debug("       Resolved property [{}] with original value [{}] to [{}] (backslash convertion)", propertyKey, isProtected ? "**********" : value,
+                isProtected ? "**********" : convertedString);
 
         return convertedString;
+    }
+
+    private boolean isProtectedProperty(String property) {
+        for (PropertyResolver propertyResolver : propertyResolverList) {
+            if (!propertyResolver.containsProperty(property)) {
+                continue;
+            }
+
+            boolean isProtected = propertyResolver.isProtectedProperty(property);
+            if (propertyResolver.propertyUsesToken(property)) {
+                for (String reference : propertyResolver.getReferencedProperties(property)) {
+                    isProtected |= isProtectedProperty(reference);
+                }
+            }
+
+            return isProtected;
+        }
+
+        throw new RuntimeException("We should never reach this.");
     }
 
     private String getPropertyValue(String property, List<String> propertyCycleDetector) {

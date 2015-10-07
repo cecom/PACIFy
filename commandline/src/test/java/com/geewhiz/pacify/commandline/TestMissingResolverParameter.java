@@ -36,7 +36,7 @@ public class TestMissingResolverParameter {
         File myTestProperty = new File(testBasePath, "properties/MissingProperty.properties");
         File myPackagePath = new File(testBasePath, "package");
 
-        ListAppender listAppender = TestUtil.createListAppender();
+        ListAppender listAppender = TestUtil.addListAppenderToLogger();
 
         PacifyViaCommandline pacifyViaCommandline = new PacifyViaCommandline();
         int result = pacifyViaCommandline.mainInternal(new String[] {

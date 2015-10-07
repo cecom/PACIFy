@@ -26,28 +26,30 @@ import org.apache.tools.ant.types.FilterSet;
 
 import com.geewhiz.pacify.defect.Defect;
 
-public interface PropertyResolver extends Comparable<PropertyResolver>{
+public interface PropertyResolver extends Comparable<PropertyResolver> {
 
-	boolean containsProperty(String property);
+    boolean containsProperty(String property);
 
-	String getPropertyValue(String key);
+    boolean isProtectedProperty(String property);
 
-	Set<String> getReferencedProperties(String property);
+    String getPropertyValue(String key);
 
-	Set<String> getPropertyKeys();
+    Set<String> getReferencedProperties(String property);
 
-	String getEncoding();
+    Set<String> getPropertyKeys();
 
-	String getPropertyResolverDescription();
+    String getEncoding();
 
-	List<Defect> checkForDuplicateEntry();
+    String getPropertyResolverDescription();
 
-	FilterSet createFilterSet();
+    List<Defect> checkForDuplicateEntry();
 
-	boolean propertyUsesToken(String property);
+    FilterSet createFilterSet();
 
-	String getBeginToken();
+    boolean propertyUsesToken(String property);
 
-	String getEndToken();
+    String getBeginToken();
+
+    String getEndToken();
 
 }
