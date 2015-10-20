@@ -21,6 +21,8 @@ package com.geewhiz.pacify;
 
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -51,7 +53,9 @@ public class TestCycleReference extends TestBase {
 
         PropertyResolveManager propertyResolveManager = new PropertyResolveManager(resolverList);
 
-        List<Defect> defects = getDefects(new CheckPropertyExists(propertyResolveManager), testStartPath);
+        LinkedHashSet<Defect> result = getDefects(new CheckPropertyExists(propertyResolveManager), testStartPath);
+
+        List<Defect> defects = new ArrayList<Defect>(result);
 
         Assert.assertEquals(3, defects.size());
         Assert.assertEquals("foobar1->foobar3->foobar2->foobar1", ((PropertyHasCycleDefect) defects.get(0)).getCycle());

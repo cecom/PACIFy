@@ -20,7 +20,7 @@ package com.geewhiz.pacify;
  */
 
 import java.io.File;
-import java.util.List;
+import java.util.LinkedHashSet;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -33,7 +33,7 @@ public class TestCheckTargetFileExist extends TestBase {
     public void checkForNotCorrect() {
         File testStartPath = new File("target/test-classes/checkTargetFileExistTest/wrong/file/package");
 
-        List<Defect> defects = getDefects(new com.geewhiz.pacify.checks.impl.CheckTargetFileExist(), testStartPath);
+        LinkedHashSet<Defect> defects = getDefects(new com.geewhiz.pacify.checks.impl.CheckTargetFileExist(), testStartPath);
 
         Assert.assertEquals(1, defects.size());
     }
@@ -42,7 +42,7 @@ public class TestCheckTargetFileExist extends TestBase {
     public void checkForCorrect() {
         File testStartPath = new File("target/test-classes/checkTargetFileExistTest/correct/file/package");
 
-        List<Defect> defects = getDefects(new com.geewhiz.pacify.checks.impl.CheckTargetFileExist(), testStartPath);
+        LinkedHashSet<Defect> defects = getDefects(new com.geewhiz.pacify.checks.impl.CheckTargetFileExist(), testStartPath);
 
         Assert.assertEquals(0, defects.size());
     }
@@ -51,7 +51,7 @@ public class TestCheckTargetFileExist extends TestBase {
     public void checkArchiveForNotCorrect() {
         File testStartPath = new File("target/test-classes/checkTargetFileExistTest/wrong/archive/package");
 
-        List<Defect> defects = getDefects(new com.geewhiz.pacify.checks.impl.CheckTargetFileExist(), testStartPath);
+        LinkedHashSet<Defect> defects = getDefects(new com.geewhiz.pacify.checks.impl.CheckTargetFileExist(), testStartPath);
 
         Assert.assertEquals(1, defects.size());
     }
@@ -60,7 +60,7 @@ public class TestCheckTargetFileExist extends TestBase {
     public void checkArchiveCorrect() {
         File testStartPath = new File("target/test-classes/checkTargetFileExistTest/correct/archive/package");
 
-        List<Defect> defects = getDefects(new com.geewhiz.pacify.checks.impl.CheckTargetFileExist(), testStartPath);
+        LinkedHashSet<Defect> defects = getDefects(new com.geewhiz.pacify.checks.impl.CheckTargetFileExist(), testStartPath);
 
         Assert.assertEquals(0, defects.size());
     }

@@ -19,16 +19,16 @@ package com.geewhiz.pacify.checks.impl;
  * under the License.
  */
 
-import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import com.geewhiz.pacify.checks.PMarkerCheck;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.PropertyHasCycleDefect;
 import com.geewhiz.pacify.defect.PropertyNotDefinedDefect;
-import com.geewhiz.pacify.defect.PropertyResolveDefect;
+import com.geewhiz.pacify.defect.ResolverDefect;
 import com.geewhiz.pacify.exceptions.CycleDetectRuntimeException;
-import com.geewhiz.pacify.exceptions.PropertyResolveRuntimeException;
+import com.geewhiz.pacify.exceptions.ResolverRuntimeException;
 import com.geewhiz.pacify.managers.PropertyResolveManager;
 import com.geewhiz.pacify.model.PArchive;
 import com.geewhiz.pacify.model.PFile;
@@ -43,8 +43,8 @@ public class CheckPropertyExists implements PMarkerCheck {
         this.propertyResolveManager = propertyResolveManager;
     }
 
-    public List<Defect> checkForErrors(PMarker pMarker) {
-        List<Defect> defects = new ArrayList<Defect>();
+    public LinkedHashSet<Defect> checkForErrors(PMarker pMarker) {
+        LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
 
         for (PArchive pArchive : pMarker.getPArchives()) {
             checkPFiles(defects, pMarker, pArchive, pArchive.getPFiles());
@@ -54,21 +54,23 @@ public class CheckPropertyExists implements PMarkerCheck {
         return defects;
     }
 
-    private void checkPFiles(List<Defect> defects, PMarker pMarker, List<PFile> pFiles) {
+    private void checkPFiles(LinkedHashSet<Defect> defects, PMarker pMarker, List<PFile> pFiles) {
         checkPFiles(defects, pMarker, null, pFiles);
     }
 
-    private void checkPFiles(List<Defect> defects, PMarker pMarker, PArchive pArchive, List<PFile> pFiles) {
+    private void checkPFiles(LinkedHashSet<Defect> defects, PMarker pMarker, PArchive pArchive, List<PFile> pFiles) {
         for (PFile pFile : pFiles) {
             for (PProperty pProperty : pFile.getPProperties()) {
-                if (propertyResolveManager.containsProperty(pProperty.getName())) {
-                    try {
+                try {
+                    if (propertyResolveManager.containsProperty(pProperty.getName())) {
                         propertyResolveManager.getPropertyValue(pProperty);
-                    } catch (CycleDetectRuntimeException ce) {
-                        defects.add(new PropertyHasCycleDefect(pMarker, pArchive, ce.getProperty(), ce.getCycle()));
-                    } catch (PropertyResolveRuntimeException re) {
-                        defects.add(new PropertyResolveDefect(pMarker, pArchive, pFile, pProperty, re.getResolvePath(), propertyResolveManager.toString()));
+                        continue;
                     }
+                } catch (CycleDetectRuntimeException ce) {
+                    defects.add(new PropertyHasCycleDefect(pMarker, pArchive, ce.getProperty(), ce.getCycle()));
+                    continue;
+                } catch (ResolverRuntimeException re) {
+                    defects.add(new ResolverDefect(pMarker, pArchive, pFile, pProperty, re.getResolver(), re.getMessage()));
                     continue;
                 }
                 Defect defect = new PropertyNotDefinedDefect(pMarker, pArchive, pFile, pProperty, propertyResolveManager.toString());

@@ -21,7 +21,7 @@ package com.geewhiz.pacify;
 
 import java.io.File;
 import java.net.URL;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -50,7 +50,7 @@ public class TestCheckPropertyExistsInPropertyFile extends TestBase {
 
         PropertyResolveManager propertyResolveManager = new PropertyResolveManager(resolverList);
 
-        List<Defect> defects = getDefects(new CheckPropertyExists(propertyResolveManager), testStartPath);
+        LinkedHashSet<Defect> defects = getDefects(new CheckPropertyExists(propertyResolveManager), testStartPath);
 
         Assert.assertEquals(2, defects.size());
     }
@@ -68,7 +68,7 @@ public class TestCheckPropertyExistsInPropertyFile extends TestBase {
 
         PropertyResolveManager propertyResolveManager = new PropertyResolveManager(resolverList);
 
-        List<Defect> defects = getDefects(new CheckPropertyExists(propertyResolveManager), testStartPath);
+        LinkedHashSet<Defect> defects = getDefects(new CheckPropertyExists(propertyResolveManager), testStartPath);
 
         Assert.assertEquals(0, defects.size());
     }

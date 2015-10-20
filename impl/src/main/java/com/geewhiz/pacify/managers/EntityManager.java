@@ -21,6 +21,7 @@ package com.geewhiz.pacify.managers;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import javax.xml.XMLConstants;
@@ -67,9 +68,9 @@ public class EntityManager {
         return (new PacifyFilesFinder(startPath).getPacifyFiles()).size();
     }
 
-    public List<Defect> initialize() {
+    public LinkedHashSet<Defect> initialize() {
         pMarkers = new ArrayList<PMarker>();
-        List<Defect> defects = new ArrayList<Defect>();
+        LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
         for (File markerFile : new PacifyFilesFinder(startPath).getPacifyFiles()) {
             try {
                 PMarker pMarker = unmarshal(markerFile);

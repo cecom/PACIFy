@@ -20,6 +20,8 @@ package com.geewhiz.pacify;
  */
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.junit.Assert;
@@ -40,7 +42,9 @@ public class TestWrongFilter {
         PMarker pMarker = TestUtil.readPMarker(source);
 
         CheckCorrectPacifyFilter check = new CheckCorrectPacifyFilter();
-        List<Defect> defects = check.checkForErrors(pMarker);
+        LinkedHashSet<Defect> result = check.checkForErrors(pMarker);
+
+        List<Defect> defects = new ArrayList<Defect>(result);
 
         Assert.assertEquals(2, defects.size());
         Assert.assertEquals(FilterNotFoundDefect.class.getName(), defects.get(0).getClass().getName());

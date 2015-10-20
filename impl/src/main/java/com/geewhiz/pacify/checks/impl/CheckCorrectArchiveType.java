@@ -19,8 +19,7 @@ package com.geewhiz.pacify.checks.impl;
  * under the License.
  */
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
 
 import com.geewhiz.pacify.checks.PMarkerCheck;
 import com.geewhiz.pacify.defect.ArchiveTypeNotImplementedDefect;
@@ -30,8 +29,8 @@ import com.geewhiz.pacify.model.PMarker;
 
 public class CheckCorrectArchiveType implements PMarkerCheck {
 
-    public List<Defect> checkForErrors(PMarker pMarker) {
-        List<Defect> defects = new ArrayList<Defect>();
+    public LinkedHashSet<Defect> checkForErrors(PMarker pMarker) {
+        LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
 
         for (PArchive pArchive : pMarker.getPArchives()) {
             String type = pArchive.getInternalType();

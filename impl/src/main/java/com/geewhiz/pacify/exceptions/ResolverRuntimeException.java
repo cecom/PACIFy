@@ -1,7 +1,4 @@
-package com.geewhiz.pacify.defect;
-
-import com.geewhiz.pacify.model.PArchive;
-import com.geewhiz.pacify.model.PMarker;
+package com.geewhiz.pacify.exceptions;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -22,12 +19,33 @@ import com.geewhiz.pacify.model.PMarker;
  * under the License.
  */
 
-public class ArchiveDuplicateDefinedInPMarkerDefect extends DefectException {
+public class ResolverRuntimeException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 
-    public ArchiveDuplicateDefinedInPMarkerDefect(PMarker pMarker, PArchive pArchive) {
-        super(pMarker, pArchive);
+    private String            resolver;
+    private String            property;
+    private String            message;
+
+    public ResolverRuntimeException(String resolver, String property, String message) {
+        super("We got a resolver exception \n\t[resolver=" + resolver + "]\n\t[property=" + property + "]\n\t[message=\""
+                + message + "\"].");
+        this.resolver = resolver;
+        this.property = property;
+        this.message = message;
+    }
+
+    public String getResolver() {
+        return resolver;
+    }
+
+    public String getProperty() {
+        return property;
+    }
+
+    @Override
+    public String getMessage() {
+        return message;
     }
 
 }

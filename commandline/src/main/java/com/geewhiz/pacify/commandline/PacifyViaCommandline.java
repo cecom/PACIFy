@@ -1,6 +1,6 @@
 package com.geewhiz.pacify.commandline;
 
-import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.apache.logging.log4j.Level;
@@ -168,7 +168,7 @@ public class PacifyViaCommandline {
     private Injector getInjector(BasePropertyResolverCommand command) {
         List<PropertyResolverModule> propertyResolverModules = command.getPropertyResolverModules();
 
-        List<Defect> defects = new ArrayList<Defect>();
+        LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
         for (PropertyResolverModule propertyResolverModule : propertyResolverModules) {
             defects.addAll(propertyResolverModule.getDefects());
         }

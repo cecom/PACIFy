@@ -37,4 +37,35 @@ public class XMLValidationDefect extends DefectException {
         return super.getDefectMessage() +
                 String.format("\n\t[MarkerFile=%s]", pMarkerFile.getAbsolutePath());
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ((pMarkerFile == null) ? 0 : pMarkerFile.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!super.equals(obj)) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        XMLValidationDefect other = (XMLValidationDefect) obj;
+        if (pMarkerFile == null) {
+            if (other.pMarkerFile != null) {
+                return false;
+            }
+        } else if (!pMarkerFile.equals(other.pMarkerFile)) {
+            return false;
+        }
+        return true;
+    }
+
 }

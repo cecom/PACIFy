@@ -1,6 +1,6 @@
 package com.geewhiz.pacify.resolver;
 
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Map;
 
 import com.geewhiz.pacify.defect.Defect;
@@ -36,6 +36,6 @@ public abstract class PropertyResolverModule extends AbstractModule {
 
     public abstract void setParameters(Map<String, String> parameters);
 
-    public abstract List<Defect> getDefects();
+    public abstract LinkedHashSet<Defect> getDefects();
 
 }

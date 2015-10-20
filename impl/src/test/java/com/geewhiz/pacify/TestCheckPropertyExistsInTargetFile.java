@@ -20,7 +20,7 @@ package com.geewhiz.pacify;
  */
 
 import java.io.File;
-import java.util.List;
+import java.util.LinkedHashSet;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -33,7 +33,7 @@ public class TestCheckPropertyExistsInTargetFile extends TestBase {
     public void checkForNotCorrect() {
         File testStartPath = new File("target/test-classes/checkPropertyExistsInTargetFileTest/wrong/package");
 
-        List<Defect> defects = getDefects(new CheckPlaceholderExistsInTargetFile(), testStartPath);
+        LinkedHashSet<Defect> defects = getDefects(new CheckPlaceholderExistsInTargetFile(), testStartPath);
 
         Assert.assertEquals(2, defects.size());
     }
@@ -42,7 +42,7 @@ public class TestCheckPropertyExistsInTargetFile extends TestBase {
     public void checkForCorrect() {
         File testStartPath = new File("target/test-classes/checkPropertyExistsInTargetFileTest/correct/package");
 
-        List<Defect> defects = getDefects(new CheckPlaceholderExistsInTargetFile(), testStartPath);
+        LinkedHashSet<Defect> defects = getDefects(new CheckPlaceholderExistsInTargetFile(), testStartPath);
 
         Assert.assertEquals(0, defects.size());
     }
@@ -51,7 +51,7 @@ public class TestCheckPropertyExistsInTargetFile extends TestBase {
     public void checkForCorrectWithCustomTokens() {
         File testStartPath = new File("target/test-classes/checkPropertyExistsInTargetFileCustomPlaceholderTest/correct/package");
 
-        List<Defect> defects = getDefects(new CheckPlaceholderExistsInTargetFile(), testStartPath);
+        LinkedHashSet<Defect> defects = getDefects(new CheckPlaceholderExistsInTargetFile(), testStartPath);
 
         Assert.assertEquals(0, defects.size());
     }
@@ -60,7 +60,7 @@ public class TestCheckPropertyExistsInTargetFile extends TestBase {
     public void checkForNotCorrectWithCustomTokens() {
         File testStartPath = new File("target/test-classes/checkPropertyExistsInTargetFileCustomPlaceholderTest/wrong/package");
 
-        List<Defect> defects = getDefects(new CheckPlaceholderExistsInTargetFile(), testStartPath);
+        LinkedHashSet<Defect> defects = getDefects(new CheckPlaceholderExistsInTargetFile(), testStartPath);
 
         Assert.assertEquals(2, defects.size());
     }

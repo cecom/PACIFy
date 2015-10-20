@@ -20,9 +20,8 @@ package com.geewhiz.pacify.managers;
  */
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -34,6 +33,8 @@ import com.geewhiz.pacify.checks.impl.CheckForNotReplacedTokens;
 import com.geewhiz.pacify.defect.ArchiveDefect;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.DefectException;
+import com.geewhiz.pacify.defect.PropertyNotDefinedDefect;
+import com.geewhiz.pacify.exceptions.PropertyNotFoundRuntimeException;
 import com.geewhiz.pacify.filter.PacifyFilter;
 import com.geewhiz.pacify.model.PArchive;
 import com.geewhiz.pacify.model.PFile;
@@ -44,18 +45,19 @@ import com.geewhiz.pacify.utils.Utils;
 
 public class FilterManager {
 
-    private Logger                 logger = LogManager.getLogger(FilterManager.class.getName());
+    private Logger                 logger          = LogManager.getLogger(FilterManager.class.getName());
 
     private PropertyResolveManager propertyResolveManager;
     private PMarker                pMarker;
+    private int                    fileChangeCount = 0;
 
     public FilterManager(PropertyResolveManager propertyResolveManager, PMarker pMarker) {
         this.propertyResolveManager = propertyResolveManager;
         this.pMarker = pMarker;
     }
 
-    public List<Defect> doFilter() {
-        List<Defect> defects = new ArrayList<Defect>();
+    public LinkedHashSet<Defect> doFilter() {
+        LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
 
         for (Object entry : pMarker.getFilesAndArchives()) {
             if (entry instanceof PFile) {
@@ -73,25 +75,35 @@ public class FilterManager {
         if (defects.isEmpty()) {
             pMarker.getFile().delete();
         }
+
+        logger.info("       Adjusted Files: {}", fileChangeCount);
+
         return defects;
     }
 
-    private List<Defect> filterPFile(PFile pFile) {
+    private LinkedHashSet<Defect> filterPFile(PFile pFile) {
         logger.debug("     Filtering [{}] using encoding [{}] and filter [{}]", pMarker.getAbsoluteFileFor(pFile).getAbsolutePath(), pFile.getEncoding(),
                 pFile.getFilterClass());
 
         File fileToFilter = pMarker.getAbsoluteFileFor(pFile);
         PacifyFilter pacifyFilter = getFilterForPFile(pFile);
-        Map<String, String> propertyValues = getPropertyValues(pFile);
+
+        Map<String, String> propertyValues = new HashMap<String, String>();
+        LinkedHashSet<Defect> defects = fillPropertyValuesFor(propertyValues, pFile);
+
         String beginToken = pMarker.getBeginTokenFor(pFile);
         String endToken = pMarker.getEndTokenFor(pFile);
         String encoding = pFile.getEncoding();
 
-        return pacifyFilter.filter(propertyValues, beginToken, endToken, fileToFilter, encoding);
+        defects.addAll(pacifyFilter.filter(propertyValues, beginToken, endToken, fileToFilter, encoding));
+
+        fileChangeCount++;
+
+        return defects;
     }
 
-    private List<Defect> filterPArchive(PArchive pArchive) {
-        List<Defect> defects = new ArrayList<Defect>();
+    private LinkedHashSet<Defect> filterPArchive(PArchive pArchive) {
+        LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
 
         Map<PFile, File> replaceFiles = new HashMap<PFile, File>();
 
@@ -102,7 +114,13 @@ public class FilterManager {
 
             File fileToFilter = extractFile(pArchive, pFile);
             PacifyFilter pacifyFilter = getFilterForPFile(pArchive, pFile);
-            Map<String, String> propertyValues = getPropertyValues(pFile);
+
+            Map<String, String> propertyValues = new HashMap<String, String>();
+            LinkedHashSet<Defect> propertyValueDefects = fillPropertyValuesFor(propertyValues, pFile);
+            if (propertyValueDefects.size() > 0) {
+                return propertyValueDefects;
+            }
+
             String beginToken = pMarker.getBeginTokenFor(pArchive, pFile);
             String endToken = pMarker.getEndTokenFor(pArchive, pFile);
             String encoding = pFile.getEncoding();
@@ -110,6 +128,8 @@ public class FilterManager {
             defects.addAll(pacifyFilter.filter(propertyValues, beginToken, endToken, fileToFilter, encoding));
 
             replaceFiles.put(pFile, fileToFilter);
+
+            fileChangeCount++;
         }
 
         try {
@@ -125,16 +145,23 @@ public class FilterManager {
         return defects;
     }
 
-    private Map<String, String> getPropertyValues(PFile pFile) {
-        HashMap<String, String> result = new HashMap<String, String>();
+    private LinkedHashSet<Defect> fillPropertyValuesFor(Map<String, String> propertyValues, PFile pFile) {
+        LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
 
         for (PProperty pProperty : pFile.getPProperties()) {
             String propertyName = pProperty.getName();
-            String propertyValue = propertyResolveManager.getPropertyValue(pProperty);
-            result.put(propertyName, propertyValue);
+            String propertyValue = null;
+            try {
+                propertyValue = propertyResolveManager.getPropertyValue(pProperty);
+            } catch (PropertyNotFoundRuntimeException e) {
+                Defect defect = new PropertyNotDefinedDefect(pMarker, pFile, pProperty, propertyResolveManager.toString());
+                defects.add(defect);
+                continue;
+            }
+            propertyValues.put(propertyName, propertyValue);
         }
 
-        return result;
+        return defects;
     }
 
     private PacifyFilter getFilterForPFile(PFile pFile) {

@@ -19,7 +19,7 @@ package com.geewhiz.pacify.checks;
  * under the License.
  */
 
-import java.util.List;
+import java.util.LinkedHashSet;
 
 import com.geewhiz.pacify.defect.Defect;
 
@@ -27,5 +27,5 @@ public interface Check {
     /**
      * @return if there are defects, return a list with the defects.
      */
-    List<Defect> checkForErrors();
+    LinkedHashSet<Defect> checkForErrors();
 }

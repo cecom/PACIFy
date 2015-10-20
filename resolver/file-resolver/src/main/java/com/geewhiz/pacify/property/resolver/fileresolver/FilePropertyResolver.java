@@ -21,6 +21,7 @@ package com.geewhiz.pacify.property.resolver.fileresolver;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -142,10 +143,10 @@ public class FilePropertyResolver extends BasePropertyResolver {
     }
 
     @Override
-    public List<Defect> checkForDuplicateEntry() {
+    public LinkedHashSet<Defect> checkForDuplicateEntry() {
         initialize();
 
-        List<Defect> defects = new ArrayList<Defect>();
+        LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
 
         for (FilePropertyResolver parentFilePropertyContainer : getParents()) {
             defects.addAll(parentFilePropertyContainer.checkForDuplicateEntry());

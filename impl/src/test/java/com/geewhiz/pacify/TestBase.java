@@ -20,7 +20,7 @@ package com.geewhiz.pacify;
  */
 
 import java.io.File;
-import java.util.List;
+import java.util.LinkedHashSet;
 
 import com.geewhiz.pacify.checks.PMarkerCheck;
 import com.geewhiz.pacify.defect.Defect;
@@ -29,10 +29,10 @@ import com.geewhiz.pacify.model.PMarker;
 
 public abstract class TestBase {
 
-    protected List<Defect> getDefects(PMarkerCheck checker, File testStartPath) {
+    protected LinkedHashSet<Defect> getDefects(PMarkerCheck checker, File testStartPath) {
         EntityManager entityManager = new EntityManager(testStartPath);
 
-        List<Defect> defects = entityManager.initialize();
+        LinkedHashSet<Defect> defects = entityManager.initialize();
         for (PMarker pMarker : entityManager.getPMarkers()) {
             defects.addAll(checker.checkForErrors(pMarker));
         }

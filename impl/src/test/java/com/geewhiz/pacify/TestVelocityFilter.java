@@ -1,6 +1,8 @@
 package com.geewhiz.pacify;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -50,11 +52,14 @@ public class TestVelocityFilter {
         PropertyResolveManager prm = getPropertyResolveManager(hpr);
 
         Replacer replacer = new Replacer(prm);
+        replacer.setPackagePath(packagePath);
+
         EntityManager entityManager = new EntityManager(packagePath);
 
-        replacer.setPackagePath(packagePath);
-        List<Defect> defects = entityManager.initialize();
-        defects.addAll(replacer.doReplacement(entityManager));
+        LinkedHashSet<Defect> result = entityManager.initialize();
+        result.addAll(replacer.doReplacement(entityManager));
+
+        List<Defect> defects = new ArrayList<Defect>(result);
 
         Assert.assertEquals(1, defects.size());
         Assert.assertEquals(WrongTokenDefinedDefect.class.getName(),
@@ -74,12 +79,14 @@ public class TestVelocityFilter {
         PropertyResolveManager prm = getPropertyResolveManager(spr);
 
         Replacer replacer = new Replacer(prm);
+        replacer.setPackagePath(packagePath);
+
         EntityManager entityManager = new EntityManager(packagePath);
 
-        replacer.setPackagePath(packagePath);
-        List<Defect> defects = entityManager.initialize();
-        defects.addAll(replacer.doReplacement(entityManager));
+        LinkedHashSet<Defect> result = entityManager.initialize();
+        result.addAll(replacer.doReplacement(entityManager));
 
+        List<Defect> defects = new ArrayList<Defect>(result);
         Assert.assertEquals(1, defects.size());
         Assert.assertEquals("com.geewhiz.pacify.defect.NotReplacedPropertyDefect", defects.get(0).getClass().getName());
     }
@@ -102,7 +109,7 @@ public class TestVelocityFilter {
         EntityManager entityManager = new EntityManager(packagePath);
 
         replacer.setPackagePath(packagePath);
-        List<Defect> defects = entityManager.initialize();
+        LinkedHashSet<Defect> defects = entityManager.initialize();
         defects.addAll(replacer.doReplacement(entityManager));
 
         Assert.assertEquals(0, defects.size());
@@ -127,7 +134,7 @@ public class TestVelocityFilter {
         EntityManager entityManager = new EntityManager(packagePath);
 
         replacer.setPackagePath(packagePath);
-        List<Defect> defects = entityManager.initialize();
+        LinkedHashSet<Defect> defects = entityManager.initialize();
         defects.addAll(replacer.doReplacement(entityManager));
 
         Assert.assertEquals(0, defects.size());
@@ -152,7 +159,7 @@ public class TestVelocityFilter {
         EntityManager entityManager = new EntityManager(packagePath);
 
         replacer.setPackagePath(packagePath);
-        List<Defect> defects = entityManager.initialize();
+        LinkedHashSet<Defect> defects = entityManager.initialize();
         defects.addAll(replacer.doReplacement(entityManager));
 
         Assert.assertEquals(0, defects.size());
@@ -177,7 +184,7 @@ public class TestVelocityFilter {
         EntityManager entityManager = new EntityManager(packagePath);
 
         replacer.setPackagePath(packagePath);
-        List<Defect> defects = entityManager.initialize();
+        LinkedHashSet<Defect> defects = entityManager.initialize();
         defects.addAll(replacer.doReplacement(entityManager));
 
         Assert.assertEquals(0, defects.size());

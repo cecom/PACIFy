@@ -1,7 +1,6 @@
 package com.geewhiz.pacify.property.resolver.cmdresolver;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Properties;
 
@@ -58,7 +57,7 @@ public class CmdPropertyResolverModule extends PropertyResolverModule {
     }
 
     @Override
-    public List<Defect> getDefects() {
-        return Collections.emptyList();
+    public LinkedHashSet<Defect> getDefects() {
+        return new LinkedHashSet<Defect>();
     }
 }

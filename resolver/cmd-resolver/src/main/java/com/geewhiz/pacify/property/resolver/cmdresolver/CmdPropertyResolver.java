@@ -19,9 +19,8 @@ package com.geewhiz.pacify.property.resolver.cmdresolver;
  * under the License.
  */
 
-import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
@@ -56,8 +55,8 @@ public class CmdPropertyResolver extends BasePropertyResolver {
     }
 
     @Override
-    public List<Defect> checkForDuplicateEntry() {
-        return new ArrayList<Defect>();
+    public LinkedHashSet<Defect> checkForDuplicateEntry() {
+        return new LinkedHashSet<Defect>();
     }
 
     @Override

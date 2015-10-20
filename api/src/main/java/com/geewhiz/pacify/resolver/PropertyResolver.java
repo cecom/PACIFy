@@ -19,7 +19,7 @@ package com.geewhiz.pacify.resolver;
  * under the License.
  */
 
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.apache.tools.ant.types.FilterSet;
@@ -42,7 +42,7 @@ public interface PropertyResolver extends Comparable<PropertyResolver> {
 
     String getPropertyResolverDescription();
 
-    List<Defect> checkForDuplicateEntry();
+    LinkedHashSet<Defect> checkForDuplicateEntry();
 
     FilterSet createFilterSet();
 

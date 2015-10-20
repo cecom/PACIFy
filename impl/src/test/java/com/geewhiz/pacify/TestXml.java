@@ -20,6 +20,8 @@ package com.geewhiz.pacify;
  */
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.junit.Assert;
@@ -61,7 +63,10 @@ public class TestXml {
         File source = new File("target/test-classes/testWrongXmlFormat/package");
 
         EntityManager entityManager = new EntityManager(source);
-        List<Defect> defects = entityManager.initialize();
+        LinkedHashSet<Defect> result = entityManager.initialize();
+
+        List<Defect> defects = new ArrayList<Defect>(result);
+
         Assert.assertEquals(1, defects.size());
         Assert.assertEquals("com.geewhiz.pacify.defect.XMLValidationDefect", defects.get(0).getClass().getName());
 

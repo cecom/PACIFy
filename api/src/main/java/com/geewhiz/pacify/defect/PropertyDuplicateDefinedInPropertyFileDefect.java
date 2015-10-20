@@ -29,6 +29,8 @@ public class PropertyDuplicateDefinedInPropertyFileDefect extends DefectExceptio
 
     public PropertyDuplicateDefinedInPropertyFileDefect(String property, PropertyResolver propertyResolver) {
         super();
+        this.property = property;
+        this.propertyResolver = propertyResolver;
     }
 
     @Override
@@ -37,4 +39,43 @@ public class PropertyDuplicateDefinedInPropertyFileDefect extends DefectExceptio
                 propertyResolver.getPropertyResolverDescription(),
                 property);
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ((property == null) ? 0 : property.hashCode());
+        result = prime * result + ((propertyResolver == null) ? 0 : propertyResolver.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!super.equals(obj)) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        PropertyDuplicateDefinedInPropertyFileDefect other = (PropertyDuplicateDefinedInPropertyFileDefect) obj;
+        if (property == null) {
+            if (other.property != null) {
+                return false;
+            }
+        } else if (!property.equals(other.property)) {
+            return false;
+        }
+        if (propertyResolver == null) {
+            if (other.propertyResolver != null) {
+                return false;
+            }
+        } else if (!propertyResolver.equals(other.propertyResolver)) {
+            return false;
+        }
+        return true;
+    }
+
 }

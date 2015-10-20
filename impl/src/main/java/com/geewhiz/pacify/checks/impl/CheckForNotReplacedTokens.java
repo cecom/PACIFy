@@ -2,6 +2,7 @@ package com.geewhiz.pacify.checks.impl;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -37,8 +38,8 @@ import com.geewhiz.pacify.utils.FileUtils;
 public class CheckForNotReplacedTokens implements PMarkerCheck {
 
     @Override
-    public List<Defect> checkForErrors(PMarker pMarker) {
-        List<Defect> defects = new ArrayList<Defect>();
+    public LinkedHashSet<Defect> checkForErrors(PMarker pMarker) {
+        LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
 
         checkArchiveEntries(defects, pMarker);
         checkPFileEntries(defects, pMarker);
@@ -46,7 +47,7 @@ public class CheckForNotReplacedTokens implements PMarkerCheck {
         return defects;
     }
 
-    private void checkArchiveEntries(List<Defect> defects, PMarker pMarker) {
+    private void checkArchiveEntries(LinkedHashSet<Defect> defects, PMarker pMarker) {
         for (PArchive pArchive : pMarker.getPArchives()) {
             for (PFile pFile : pArchive.getPFiles()) {
                 String fileContent = getFileContent(pMarker, pArchive, pFile);
@@ -54,11 +55,29 @@ public class CheckForNotReplacedTokens implements PMarkerCheck {
                 String beginToken = pMarker.getBeginTokenFor(pArchive, pFile);
                 String endToken = pMarker.getEndTokenFor(pArchive, pFile);
 
-                for (String property : getNotReplacedProperties(fileContent, beginToken, endToken)) {
-                    Defect defect = new NotReplacedPropertyDefect(pMarker, pArchive, pFile, property);
-                    defects.add(defect);
-                }
+                checkContent(defects, pMarker, pArchive, pFile, fileContent, beginToken, endToken);
             }
+        }
+    }
+
+    private void checkPFileEntries(LinkedHashSet<Defect> defects, PMarker pMarker) {
+        for (PFile pFile : pMarker.getPFiles()) {
+            File file = pMarker.getAbsoluteFileFor(pFile);
+
+            String beginToken = pMarker.getBeginTokenFor(pFile);
+            String endToken = pMarker.getEndTokenFor(pFile);
+            String encoding = pFile.getEncoding();
+            String fileContent = FileUtils.getFileInOneString(file, encoding);
+
+            checkContent(defects, pMarker, null, pFile, fileContent, beginToken, endToken);
+        }
+    }
+
+    private void checkContent(LinkedHashSet<Defect> defects, PMarker pMarker, PArchive pArchive, PFile pFile, String fileContent, String beginToken,
+            String endToken) {
+        for (String property : getNotReplacedProperties(fileContent, beginToken, endToken)) {
+            Defect defect = new NotReplacedPropertyDefect(pMarker, pArchive, pFile, property);
+            defects.add(defect);
         }
     }
 
@@ -71,22 +90,6 @@ public class CheckForNotReplacedTokens implements PMarkerCheck {
             throw new RuntimeException(e);
         }
         return fileContent;
-    }
-
-    private void checkPFileEntries(List<Defect> defects, PMarker pMarker) {
-        for (PFile pFile : pMarker.getPFiles()) {
-            File file = pMarker.getAbsoluteFileFor(pFile);
-
-            String beginToken = pMarker.getBeginTokenFor(pFile);
-            String endToken = pMarker.getEndTokenFor(pFile);
-            String encoding = pFile.getEncoding();
-            String fileContent = FileUtils.getFileInOneString(file, encoding);
-
-            for (String property : getNotReplacedProperties(fileContent, beginToken, endToken)) {
-                Defect defect = new NotReplacedPropertyDefect(pMarker, pFile, property);
-                defects.add(defect);
-            }
-        }
     }
 
     private List<String> getNotReplacedProperties(String fileContent, String beginToken, String endToken) {

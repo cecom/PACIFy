@@ -3,6 +3,7 @@ package com.geewhiz.pacify.managers;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -15,7 +16,6 @@ import org.apache.tools.ant.types.FilterSet;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.exceptions.CycleDetectRuntimeException;
 import com.geewhiz.pacify.exceptions.PropertyNotFoundRuntimeException;
-import com.geewhiz.pacify.exceptions.PropertyResolveRuntimeException;
 import com.geewhiz.pacify.model.PProperty;
 import com.geewhiz.pacify.resolver.PropertyResolver;
 import com.google.inject.Inject;
@@ -132,7 +132,7 @@ public class PropertyResolveManager {
         if (propertyCycleDetector.isEmpty()) {
             throw new PropertyNotFoundRuntimeException(property);
         }
-        throw new PropertyResolveRuntimeException(property, StringUtils.join(propertyCycleDetector, "->") + "->" + property);
+        throw new CycleDetectRuntimeException(property, StringUtils.join(propertyCycleDetector, "->") + "->" + property);
     }
 
     private String replaceTokens(PropertyResolver propertyResolver, String property, List<String> propertyCycleDetector) {
@@ -162,7 +162,7 @@ public class PropertyResolveManager {
     }
 
     public Collection<Defect> checkForDuplicateEntry() {
-        Collection<Defect> result = new ArrayList<Defect>();
+        Collection<Defect> result = new LinkedHashSet<Defect>();
         for (PropertyResolver propertyResolver : propertyResolverList) {
             result.addAll(propertyResolver.checkForDuplicateEntry());
         }
