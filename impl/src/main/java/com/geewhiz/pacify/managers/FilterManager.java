@@ -45,11 +45,10 @@ import com.geewhiz.pacify.utils.Utils;
 
 public class FilterManager {
 
-    private Logger                 logger          = LogManager.getLogger(FilterManager.class.getName());
+    private Logger                 logger = LogManager.getLogger(FilterManager.class.getName());
 
     private PropertyResolveManager propertyResolveManager;
     private PMarker                pMarker;
-    private int                    fileChangeCount = 0;
 
     public FilterManager(PropertyResolveManager propertyResolveManager, PMarker pMarker) {
         this.propertyResolveManager = propertyResolveManager;
@@ -76,13 +75,12 @@ public class FilterManager {
             pMarker.getFile().delete();
         }
 
-        logger.info("       Adjusted Files: {}", fileChangeCount);
-
         return defects;
     }
 
     private LinkedHashSet<Defect> filterPFile(PFile pFile) {
-        logger.debug("     Filtering [{}] using encoding [{}] and filter [{}]", pMarker.getAbsoluteFileFor(pFile).getAbsolutePath(), pFile.getEncoding(),
+        logger.info("      Customize File [{}]", pFile.getRelativePath());
+        logger.debug("          Filtering [{}] using encoding [{}] and filter [{}]", pMarker.getAbsoluteFileFor(pFile).getAbsolutePath(), pFile.getEncoding(),
                 pFile.getFilterClass());
 
         File fileToFilter = pMarker.getAbsoluteFileFor(pFile);
@@ -96,19 +94,21 @@ public class FilterManager {
         String encoding = pFile.getEncoding();
 
         defects.addAll(pacifyFilter.filter(propertyValues, beginToken, endToken, fileToFilter, encoding));
-
-        fileChangeCount++;
+        logger.info("          [{}] placeholders replaced.", pFile.getPProperties().size());
 
         return defects;
     }
 
     private LinkedHashSet<Defect> filterPArchive(PArchive pArchive) {
+        logger.info("      Customize Archive [{}]", pArchive.getRelativePath());
+
         LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
 
         Map<PFile, File> replaceFiles = new HashMap<PFile, File>();
 
         for (PFile pFile : pArchive.getPFiles()) {
-            logger.debug("     Filtering [{}] in archive [{}] using encoding [{}] and filter [{}]", pFile.getRelativePath(),
+            logger.info("         Customize File [{}]", pFile.getRelativePath());
+            logger.debug("             Filtering [{}] in archive [{}] using encoding [{}] and filter [{}]", pFile.getRelativePath(),
                     pMarker.getAbsoluteFileFor(pArchive).getAbsolutePath(), pFile.getEncoding(),
                     pFile.getFilterClass());
 
@@ -128,8 +128,7 @@ public class FilterManager {
             defects.addAll(pacifyFilter.filter(propertyValues, beginToken, endToken, fileToFilter, encoding));
 
             replaceFiles.put(pFile, fileToFilter);
-
-            fileChangeCount++;
+            logger.info("             [{}] placeholders replaced.", pFile.getPProperties().size());
         }
 
         try {

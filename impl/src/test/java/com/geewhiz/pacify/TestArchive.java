@@ -19,6 +19,9 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -37,6 +40,7 @@ import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.property.resolver.HashMapPropertyResolver;
 import com.geewhiz.pacify.resolver.PropertyResolver;
 import com.geewhiz.pacify.test.TestUtil;
+import com.geewhiz.pacify.utils.LoggingUtils;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -61,6 +65,9 @@ public class TestArchive {
 
     @Test
     public void checkJar() throws ArchiveException, IOException {
+        Logger logger = LogManager.getLogger(TestArchive.class.getName());
+        LoggingUtils.setLogLevel(logger, Level.INFO);
+
         File testResourceFolder = new File("src/test/resources/testArchive/correct/jar");
         File targetResourceFolder = new File("target/test-resources/testArchive/correct/jar");
 
@@ -87,6 +94,9 @@ public class TestArchive {
 
     @Test
     public void checkJarWhereTheSourceIsntAJarPerDefinition() throws ArchiveException, IOException {
+        Logger logger = LogManager.getLogger(TestArchive.class.getName());
+        LoggingUtils.setLogLevel(logger, Level.ERROR);
+
         File testResourceFolder = new File("src/test/resources/testArchive/correct/jarWhereSourceIsntAJarPerDefinition");
         File targetResourceFolder = new File("target/test-resources/testArchive/correct/jarWhereSourceIsntAJarPerDefinition");
 

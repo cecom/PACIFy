@@ -115,7 +115,11 @@ public class CreatePropertyFile {
     private Set<String> getPropertyLines() {
         Set<String> result = new TreeSet<String>();
         for (String propertyKey : propertyResolveManager.getPropertyKeys()) {
-            String line = propertyKey + "=" + propertyResolveManager.getPropertyValue(propertyKey);
+            String protectedPrefix = "";
+            if (propertyResolveManager.isProtectedProperty(propertyKey)) {
+                protectedPrefix = "*";
+            }
+            String line = protectedPrefix + propertyKey + "=" + propertyResolveManager.getPropertyValue(propertyKey);
             result.add(line);
         }
         return result;

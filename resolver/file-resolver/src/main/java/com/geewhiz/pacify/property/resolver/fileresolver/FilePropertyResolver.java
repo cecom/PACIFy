@@ -42,6 +42,8 @@ public class FilePropertyResolver extends BasePropertyResolver {
     public static final String         SEPARATOR_STRING    = "=";
     public static final String         COMMENT_STRING      = "#";
 
+    public static final String         PROTECTED_MARKER    = "*";
+
     public static final String         SEARCH_PATTERN      = "([^" + Pattern.quote(SEPARATOR_STRING) + "]*)" + Pattern.quote(SEPARATOR_STRING) + "?(.*)";
     public static final Pattern        PROPERTY_PATTERN    = Pattern.compile(SEARCH_PATTERN);
 
@@ -204,7 +206,7 @@ public class FilePropertyResolver extends BasePropertyResolver {
             String key = matcher.group(1);
             String value = matcher.group(2);
 
-            if (key.startsWith("*")) {
+            if (key.startsWith(PROTECTED_MARKER)) {
                 key = key.substring(1);
                 protectedProperties.add(key);
             }

@@ -87,18 +87,19 @@ public class PropertyResolveManager {
         boolean isProtected = isProtectedProperty(propertyKey);
 
         if (!convertBackslashToSlash) {
-            logger.debug("       Resolved property [{}] to value [{}]", propertyKey, isProtected ? "**********" : value);
+            logger.debug("             Resolved property [{}] to value [{}]", propertyKey, isProtected ? "**********" : value);
             return value;
         }
 
         String convertedString = value.replace('\\', '/');
-        logger.debug("       Resolved property [{}] with original value [{}] to [{}] (backslash convertion)", propertyKey, isProtected ? "**********" : value,
+        logger.debug("             Resolved property [{}] with original value [{}] to [{}] (backslash convertion)", propertyKey, isProtected ? "**********"
+                : value,
                 isProtected ? "**********" : convertedString);
 
         return convertedString;
     }
 
-    private boolean isProtectedProperty(String property) {
+    public boolean isProtectedProperty(String property) {
         for (PropertyResolver propertyResolver : propertyResolverList) {
             if (!propertyResolver.containsProperty(property)) {
                 continue;
