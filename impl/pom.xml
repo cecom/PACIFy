@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.geewhiz.pacify</groupId>
         <artifactId>pacify</artifactId>
-        <version>1.2.0</version>
+        <version>develop</version>
     </parent>
     <artifactId>pacify.impl</artifactId>
     <name>com.geewhiz.pacify.impl</name>
