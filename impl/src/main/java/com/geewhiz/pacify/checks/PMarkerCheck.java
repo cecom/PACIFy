@@ -19,7 +19,7 @@ package com.geewhiz.pacify.checks;
  * under the License.
  */
 
-import java.util.List;
+import java.util.LinkedHashSet;
 
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.model.PMarker;
@@ -30,5 +30,5 @@ public interface PMarkerCheck {
      * @param pMarker which should be checked?
      * @return if there are defects, return a list with the defects.
      */
-    List<Defect> checkForErrors(PMarker pMarker);
+    LinkedHashSet<Defect> checkForErrors(PMarker pMarker);
 }

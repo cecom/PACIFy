@@ -19,8 +19,7 @@ package com.geewhiz.pacify.checks.impl;
  * under the License.
  */
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
 
 import com.geewhiz.pacify.checks.Check;
 import com.geewhiz.pacify.defect.Defect;
@@ -34,8 +33,8 @@ public class CheckPropertyDuplicateInPropertyFile implements Check {
 		this.propertyResolveManager = propertyResolveManager;
 	}
 
-	public List<Defect> checkForErrors() {
-		List<Defect> defects = new ArrayList<Defect>();
+	public LinkedHashSet<Defect> checkForErrors() {
+		LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
 
 		defects.addAll(propertyResolveManager.checkForDuplicateEntry());
 

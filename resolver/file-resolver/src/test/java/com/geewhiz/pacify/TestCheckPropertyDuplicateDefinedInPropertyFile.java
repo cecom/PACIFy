@@ -21,8 +21,7 @@ package com.geewhiz.pacify;
 
 import java.io.File;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -53,7 +52,7 @@ public class TestCheckPropertyDuplicateDefinedInPropertyFile {
 
         CheckPropertyDuplicateInPropertyFile checker = new CheckPropertyDuplicateInPropertyFile(propertyResolveManager);
 
-        List<Defect> defects = new ArrayList<Defect>();
+        LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
         defects.addAll(checker.checkForErrors());
 
         Assert.assertEquals(2, defects.size());
@@ -74,7 +73,7 @@ public class TestCheckPropertyDuplicateDefinedInPropertyFile {
 
         CheckPropertyDuplicateInPropertyFile checker = new CheckPropertyDuplicateInPropertyFile(propertyResolveManager);
 
-        List<Defect> defects = new ArrayList<Defect>();
+        LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
         defects.addAll(checker.checkForErrors());
 
         Assert.assertEquals(0, defects.size());

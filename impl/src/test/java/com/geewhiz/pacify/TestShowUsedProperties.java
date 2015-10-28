@@ -1,7 +1,7 @@
 package com.geewhiz.pacify;
 
 import java.io.File;
-import java.util.List;
+import java.util.LinkedHashSet;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -44,7 +44,7 @@ public class TestShowUsedProperties {
         File expectedResultPath = new File(targetResourceFolder, "expectedResult");
 
         EntityManager entityManager = new EntityManager(packagePath);
-        List<Defect> defects = entityManager.initialize();
+        LinkedHashSet<Defect> defects = entityManager.initialize();
 
         Assert.assertEquals("Initialization of entitymanager should not have any defect.", 0, defects.size());
 

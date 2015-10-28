@@ -2,8 +2,7 @@ package com.geewhiz.pacify.filter;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -42,7 +41,7 @@ public class PacifyTokenFilter implements PacifyFilter {
     }
 
     @Override
-    public List<Defect> filter(Map<String, String> propertyValues, String beginToken, String endToken, File fileToFilter, String encoding) {
+    public LinkedHashSet<Defect> filter(Map<String, String> propertyValues, String beginToken, String endToken, File fileToFilter, String encoding) {
         FilterSetCollection filterSetCollection = getFilterSetCollection(propertyValues, beginToken, endToken);
 
         try {
@@ -60,7 +59,7 @@ public class PacifyTokenFilter implements PacifyFilter {
             throw new RuntimeException(e);
         }
 
-        return new ArrayList<Defect>();
+        return new LinkedHashSet<Defect>();
     }
 
     private FilterSetCollection getFilterSetCollection(Map<String, String> propertyValues, String beginToken, String endToken) {

@@ -21,9 +21,8 @@ package com.geewhiz.pacify;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.LinkedHashSet;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
@@ -64,7 +63,7 @@ public class Replacer {
         logger.info("== Found [{}] pacify marker files", entityManager.getPMarkerCount());
         logger.info("== Validating...");
 
-        List<Defect> defects = createValidator().validateInternal(entityManager);
+        LinkedHashSet<Defect> defects = createValidator().validateInternal(entityManager);
         DefectUtils.abortIfDefectExists(defects);
 
         logger.info("== Replacing...");
@@ -84,7 +83,7 @@ public class Replacer {
         try {
             result = createCopy();
         } catch (DefectException e) {
-            DefectUtils.abortIfDefectExists(new ArrayList<Defect>(Arrays.asList(e)));
+            DefectUtils.abortIfDefectExists(new LinkedHashSet<Defect>(Arrays.asList(e)));
         }
 
         return result;
@@ -127,10 +126,10 @@ public class Replacer {
         }
     }
 
-    public List<Defect> doReplacement(EntityManager entityManager) {
-        List<Defect> defects = new ArrayList<Defect>();
+    public LinkedHashSet<Defect> doReplacement(EntityManager entityManager) {
+        LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
         for (PMarker pMarker : entityManager.getPMarkers()) {
-            logger.debug("   Processing Marker File [{}],", pMarker.getFile().getAbsolutePath());
+            logger.info("   Processing Marker File [{}],", pMarker.getFile().getAbsolutePath());
             FilterManager filterManager = new FilterManager(propertyResolveManager,
                     pMarker);
             defects.addAll(filterManager.doFilter());

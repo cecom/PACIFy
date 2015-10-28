@@ -104,4 +104,57 @@ public abstract class DefectException extends Exception implements Defect {
         return result.toString();
     }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((pArchive == null) ? 0 : pArchive.hashCode());
+        result = prime * result + ((pFile == null) ? 0 : pFile.hashCode());
+        result = prime * result + ((pMarker == null) ? 0 : pMarker.hashCode());
+        result = prime * result + ((pProperty == null) ? 0 : pProperty.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        DefectException other = (DefectException) obj;
+        if (pArchive == null) {
+            if (other.pArchive != null) {
+                return false;
+            }
+        } else if (!pArchive.equals(other.pArchive)) {
+            return false;
+        }
+        if (pFile == null) {
+            if (other.pFile != null) {
+                return false;
+            }
+        } else if (!pFile.equals(other.pFile)) {
+            return false;
+        }
+        if (pMarker == null) {
+            if (other.pMarker != null) {
+                return false;
+            }
+        } else if (!pMarker.equals(other.pMarker)) {
+            return false;
+        }
+        if (pProperty == null) {
+            if (other.pProperty != null) {
+                return false;
+            }
+        } else if (!pProperty.equals(other.pProperty)) {
+            return false;
+        }
+        return true;
+    }
 }

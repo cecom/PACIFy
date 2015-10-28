@@ -20,8 +20,7 @@ package com.geewhiz.pacify.checks.impl;
  */
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
 
 import com.geewhiz.pacify.checks.PMarkerCheck;
 import com.geewhiz.pacify.defect.Defect;
@@ -33,15 +32,15 @@ import com.geewhiz.pacify.utils.FileUtils;
 
 public class CheckTargetFileExist implements PMarkerCheck {
 
-    public List<Defect> checkForErrors(PMarker pMarker) {
-        List<Defect> defects = new ArrayList<Defect>();
+    public LinkedHashSet<Defect> checkForErrors(PMarker pMarker) {
+        LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
 
         checkArchiveEntries(defects, pMarker);
         checkPFileEntries(defects, pMarker);
         return defects;
     }
 
-    private void checkArchiveEntries(List<Defect> defects, PMarker pMarker) {
+    private void checkArchiveEntries(LinkedHashSet<Defect> defects, PMarker pMarker) {
         for (PArchive pArchive : pMarker.getPArchives()) {
             for (PFile pFile : pArchive.getPFiles()) {
                 if (!FileUtils.archiveContainsFile(pMarker, pArchive, pFile)) {
@@ -52,7 +51,7 @@ public class CheckTargetFileExist implements PMarkerCheck {
 
     }
 
-    private void checkPFileEntries(List<Defect> defects, PMarker pMarker) {
+    private void checkPFileEntries(LinkedHashSet<Defect> defects, PMarker pMarker) {
         for (PFile pFile : pMarker.getPFiles()) {
             File file = pMarker.getAbsoluteFileFor(pFile);
             if (file.exists() && file.isFile()) {

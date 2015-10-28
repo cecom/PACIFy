@@ -1,6 +1,6 @@
 package com.geewhiz.pacify.utils;
 
-import java.util.List;
+import java.util.LinkedHashSet;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,7 +31,7 @@ public class DefectUtils {
 
     private static Logger logger = LogManager.getLogger(DefectUtils.class.getName());
 
-    public static void abortIfDefectExists(List<Defect> defects) {
+    public static void abortIfDefectExists(LinkedHashSet<Defect> defects) {
         if (defects.isEmpty()) {
             return;
         }

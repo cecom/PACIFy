@@ -19,8 +19,8 @@ package com.geewhiz.pacify.checks.impl;
  * under the License.
  */
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.File;
+import java.util.LinkedHashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -36,8 +36,8 @@ import com.geewhiz.pacify.utils.FileUtils;
 
 public class CheckPlaceholderExistsInTargetFile implements PMarkerCheck {
 
-    public List<Defect> checkForErrors(PMarker pMarker) {
-        List<Defect> defects = new ArrayList<Defect>();
+    public LinkedHashSet<Defect> checkForErrors(PMarker pMarker) {
+        LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
 
         checkArchives(pMarker, defects);
         checkPFiles(pMarker, defects);
@@ -45,7 +45,7 @@ public class CheckPlaceholderExistsInTargetFile implements PMarkerCheck {
         return defects;
     }
 
-    private void checkArchives(PMarker pMarker, List<Defect> defects) {
+    private void checkArchives(PMarker pMarker, LinkedHashSet<Defect> defects) {
         for (PArchive pArchive : pMarker.getPArchives()) {
             for (PFile pFile : pArchive.getPFiles()) {
                 String fileContent = null;
@@ -72,9 +72,15 @@ public class CheckPlaceholderExistsInTargetFile implements PMarkerCheck {
         }
     }
 
-    private void checkPFiles(PMarker pMarker, List<Defect> defects) {
+    private void checkPFiles(PMarker pMarker, LinkedHashSet<Defect> defects) {
         for (PFile pFile : pMarker.getPFiles()) {
-            String fileContent = FileUtils.getFileInOneString(pMarker.getAbsoluteFileFor(pFile), pFile.getEncoding());
+            File file = pMarker.getAbsoluteFileFor(pFile);
+            if (!file.exists()) {
+                // is checked before
+                continue;
+            }
+
+            String fileContent = FileUtils.getFileInOneString(file, pFile.getEncoding());
             for (PProperty pProperty : pFile.getPProperties()) {
                 String beginToken = pMarker.getBeginTokenFor(pFile);
                 String endToken = pMarker.getEndTokenFor(pFile);

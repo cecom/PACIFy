@@ -22,38 +22,39 @@ package com.geewhiz.pacify.defect;
 import com.geewhiz.pacify.model.PArchive;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
+import com.geewhiz.pacify.model.PProperty;
 
-public class NotReplacedPropertyDefect extends DefectException {
+public class ResolverDefect extends DefectException {
 
     private static final long serialVersionUID = 1L;
 
-    private String            propertyId;
+    private String            message;
+    private String            resolver;
 
-    public NotReplacedPropertyDefect(PMarker pMarker, PFile pFile, String propertyId) {
-        super(pMarker, pFile);
-        this.propertyId = propertyId;
-    }
-
-    public NotReplacedPropertyDefect(PMarker pMarker, PArchive pArchive, PFile pFile, String propertyId) {
-        super(pMarker, pArchive, pFile);
-        this.propertyId = propertyId;
+    public ResolverDefect(PMarker pMarker, PArchive pArchive, PFile pFile, PProperty pProperty, String resolver, String message) {
+        super(pMarker, pArchive, pFile, pProperty);
+        this.message = message;
+        this.resolver = resolver;
     }
 
     @Override
     public String getDefectMessage() {
         return super.getDefectMessage() +
-                String.format("\n\t[Property=%s]", getPropertyId());
+                String.format("\n\t[Resolver=%s]\n\t[message=%s]", resolver, message);
+
     }
 
-    public String getPropertyId() {
-        return propertyId;
+    @Override
+    public String getMessage() {
+        return message;
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
-        result = prime * result + ((propertyId == null) ? 0 : propertyId.hashCode());
+        result = prime * result + ((message == null) ? 0 : message.hashCode());
+        result = prime * result + ((resolver == null) ? 0 : resolver.hashCode());
         return result;
     }
 
@@ -68,12 +69,19 @@ public class NotReplacedPropertyDefect extends DefectException {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        NotReplacedPropertyDefect other = (NotReplacedPropertyDefect) obj;
-        if (propertyId == null) {
-            if (other.propertyId != null) {
+        ResolverDefect other = (ResolverDefect) obj;
+        if (message == null) {
+            if (other.message != null) {
                 return false;
             }
-        } else if (!propertyId.equals(other.propertyId)) {
+        } else if (!message.equals(other.message)) {
+            return false;
+        }
+        if (resolver == null) {
+            if (other.resolver != null) {
+                return false;
+            }
+        } else if (!resolver.equals(other.resolver)) {
             return false;
         }
         return true;

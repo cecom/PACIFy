@@ -2,9 +2,8 @@ package com.geewhiz.pacify.filter;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -57,8 +56,8 @@ public class PacifyVelocityFilter implements PacifyFilter {
     }
 
     @Override
-    public List<Defect> filter(Map<String, String> propertyValues, String beginToken, String endToken, File fileToFilter, String encoding) {
-        List<Defect> defects = new ArrayList<Defect>();
+    public LinkedHashSet<Defect> filter(Map<String, String> propertyValues, String beginToken, String endToken, File fileToFilter, String encoding) {
+        LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
 
         if (!BEGIN_TOKEN.equals(beginToken)) {
             defects.add(new WrongTokenDefinedDefect(pMarker, pArchive, pFile,

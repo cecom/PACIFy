@@ -2,8 +2,7 @@ package com.geewhiz.pacify.property.resolver.fileresolver;
 
 import java.io.File;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Map;
 
 import com.geewhiz.pacify.defect.Defect;
@@ -37,7 +36,7 @@ import com.google.inject.multibindings.Multibinder;
 public class FilePropertyResolverModule extends PropertyResolverModule {
     private Map<String, String> commandLineParameters;
     private URL                 fileUrl;
-    private List<Defect>        defects = new ArrayList<Defect>();
+    private LinkedHashSet<Defect>        defects = new LinkedHashSet<Defect>();
 
     @Override
     public String getResolverId() {
@@ -68,7 +67,7 @@ public class FilePropertyResolverModule extends PropertyResolverModule {
     }
 
     @Override
-    public List<Defect> getDefects() {
+    public LinkedHashSet<Defect> getDefects() {
         return defects;
     }
 

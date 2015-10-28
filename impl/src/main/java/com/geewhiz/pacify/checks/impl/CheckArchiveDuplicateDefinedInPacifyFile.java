@@ -20,6 +20,7 @@ package com.geewhiz.pacify.checks.impl;
  */
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import com.geewhiz.pacify.checks.PMarkerCheck;
@@ -30,8 +31,8 @@ import com.geewhiz.pacify.model.PMarker;
 
 public class CheckArchiveDuplicateDefinedInPacifyFile implements PMarkerCheck {
 
-    public List<Defect> checkForErrors(PMarker pMarker) {
-        List<Defect> defects = new ArrayList<Defect>();
+    public LinkedHashSet<Defect> checkForErrors(PMarker pMarker) {
+        LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
 
         List<String> archives = new ArrayList<String>();
         for (PArchive pArchive : pMarker.getPArchives()) {

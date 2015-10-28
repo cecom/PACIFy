@@ -128,7 +128,7 @@ public class TestUtil {
 
     }
 
-    public static ListAppender createListAppender() {
+    public static ListAppender addListAppenderToLogger() {
         ListAppender result = new ListAppender();
 
         // get the root logger

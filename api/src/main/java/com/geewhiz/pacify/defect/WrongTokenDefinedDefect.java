@@ -44,4 +44,35 @@ public class WrongTokenDefinedDefect extends DefectException {
         return super.getDefectMessage() +
                 String.format("\n\t[ErrorMessage=%s]", errorMessage);
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ((errorMessage == null) ? 0 : errorMessage.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!super.equals(obj)) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        WrongTokenDefinedDefect other = (WrongTokenDefinedDefect) obj;
+        if (errorMessage == null) {
+            if (other.errorMessage != null) {
+                return false;
+            }
+        } else if (!errorMessage.equals(other.errorMessage)) {
+            return false;
+        }
+        return true;
+    }
+
 }

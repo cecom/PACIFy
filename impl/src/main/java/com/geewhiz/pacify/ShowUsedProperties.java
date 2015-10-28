@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -60,7 +60,7 @@ public class ShowUsedProperties {
         logger.info("== Executing ShowUsedProperties [Version={}]", Utils.getJarVersion());
         logger.info("== Found [{}] pacify marker files", entityManager.getPMarkerCount());
 
-        List<Defect> defects = entityManager.initialize();
+        LinkedHashSet<Defect> defects = entityManager.initialize();
         DefectUtils.abortIfDefectExists(defects);
 
         if (getOutputType() == OutputType.Stdout) {

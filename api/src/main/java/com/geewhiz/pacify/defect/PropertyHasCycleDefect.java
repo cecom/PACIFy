@@ -55,4 +55,42 @@ public class PropertyHasCycleDefect extends DefectException {
         return property;
     }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ((cycle == null) ? 0 : cycle.hashCode());
+        result = prime * result + ((property == null) ? 0 : property.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!super.equals(obj)) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        PropertyHasCycleDefect other = (PropertyHasCycleDefect) obj;
+        if (cycle == null) {
+            if (other.cycle != null) {
+                return false;
+            }
+        } else if (!cycle.equals(other.cycle)) {
+            return false;
+        }
+        if (property == null) {
+            if (other.property != null) {
+                return false;
+            }
+        } else if (!property.equals(other.property)) {
+            return false;
+        }
+        return true;
+    }
+
 }

@@ -6,6 +6,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -17,6 +19,9 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -35,6 +40,7 @@ import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.property.resolver.HashMapPropertyResolver;
 import com.geewhiz.pacify.resolver.PropertyResolver;
 import com.geewhiz.pacify.test.TestUtil;
+import com.geewhiz.pacify.utils.LoggingUtils;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -59,10 +65,13 @@ public class TestArchive {
 
     @Test
     public void checkJar() throws ArchiveException, IOException {
+        Logger logger = LogManager.getLogger(TestArchive.class.getName());
+        LoggingUtils.setLogLevel(logger, Level.INFO);
+
         File testResourceFolder = new File("src/test/resources/testArchive/correct/jar");
         File targetResourceFolder = new File("target/test-resources/testArchive/correct/jar");
 
-        List<Defect> defects = createPrepareAndExecutePacify(testResourceFolder, targetResourceFolder);
+        LinkedHashSet<Defect> defects = createPrepareAndExecutePacify(testResourceFolder, targetResourceFolder);
 
         Assert.assertEquals("We shouldnt get any defects.", 0, defects.size());
 
@@ -85,10 +94,13 @@ public class TestArchive {
 
     @Test
     public void checkJarWhereTheSourceIsntAJarPerDefinition() throws ArchiveException, IOException {
+        Logger logger = LogManager.getLogger(TestArchive.class.getName());
+        LoggingUtils.setLogLevel(logger, Level.ERROR);
+
         File testResourceFolder = new File("src/test/resources/testArchive/correct/jarWhereSourceIsntAJarPerDefinition");
         File targetResourceFolder = new File("target/test-resources/testArchive/correct/jarWhereSourceIsntAJarPerDefinition");
 
-        List<Defect> defects = createPrepareAndExecutePacify(testResourceFolder, targetResourceFolder);
+        LinkedHashSet<Defect> defects = createPrepareAndExecutePacify(testResourceFolder, targetResourceFolder);
 
         Assert.assertEquals("We shouldnt get any defects.", 0, defects.size());
 
@@ -114,7 +126,7 @@ public class TestArchive {
         File testResourceFolder = new File("src/test/resources/testArchive/correct/tar");
         File targetResourceFolder = new File("target/test-resources/testArchive/correct/tar");
 
-        List<Defect> defects = createPrepareAndExecutePacify(testResourceFolder, targetResourceFolder);
+        LinkedHashSet<Defect> defects = createPrepareAndExecutePacify(testResourceFolder, targetResourceFolder);
 
         Assert.assertEquals("We shouldnt get any defects.", 0, defects.size());
 
@@ -130,7 +142,7 @@ public class TestArchive {
         File testResourceFolder = new File("src/test/resources/testArchive/correct/zip");
         File targetResourceFolder = new File("target/test-resources/testArchive/correct/zip");
 
-        List<Defect> defects = createPrepareAndExecutePacify(testResourceFolder, targetResourceFolder);
+        LinkedHashSet<Defect> defects = createPrepareAndExecutePacify(testResourceFolder, targetResourceFolder);
 
         Assert.assertEquals("We shouldnt get any defects.", 0, defects.size());
 
@@ -146,7 +158,7 @@ public class TestArchive {
         File testResourceFolder = new File("src/test/resources/testArchive/correct/bigZip");
         File targetResourceFolder = new File("target/test-resources/testArchive/correct/bigZip");
 
-        List<Defect> defects = createPrepareAndExecutePacify(testResourceFolder, targetResourceFolder);
+        LinkedHashSet<Defect> defects = createPrepareAndExecutePacify(testResourceFolder, targetResourceFolder);
 
         Assert.assertEquals("We shouldnt get any defects.", 0, defects.size());
 
@@ -163,20 +175,20 @@ public class TestArchive {
         PMarker pMarker = TestUtil.readPMarker(source);
 
         CheckCorrectArchiveType checker = new CheckCorrectArchiveType();
-        List<Defect> defects = checker.checkForErrors(pMarker);
+        LinkedHashSet<Defect> defects = checker.checkForErrors(pMarker);
 
         Assert.assertEquals("We should get a defect.", 1, defects.size());
-        Assert.assertEquals("We expect ArchiveTypeNotImplementedDefect", ArchiveTypeNotImplementedDefect.class, defects.get(0).getClass());
+        Assert.assertEquals("We expect ArchiveTypeNotImplementedDefect", ArchiveTypeNotImplementedDefect.class, defects.iterator().next().getClass());
     }
 
     @Test
     public void checkDuplicateArchiveEntry() {
         File packagePath = new File("target/test-classes/testArchive/wrong/duplicateEntry/package");
 
-        List<Defect> defects = createPrepareAndExecuteValidator(packagePath);
+        LinkedHashSet<Defect> defects = createPrepareAndExecuteValidator(packagePath);
 
         Assert.assertEquals("We should get a defect.", 1, defects.size());
-        Assert.assertEquals("We expect ArchiveTypeNotImplementedDefect", ArchiveDuplicateDefinedInPMarkerDefect.class, defects.get(0).getClass());
+        Assert.assertEquals("We expect ArchiveTypeNotImplementedDefect", ArchiveDuplicateDefinedInPMarkerDefect.class, defects.iterator().next().getClass());
     }
 
     @Test
@@ -184,7 +196,9 @@ public class TestArchive {
         File testResourceFolder = new File("target/test-classes/testArchive/wrong/notReplacedProperty");
         File targetResourceFolder = new File("target/test-resources/testArchive/wrong/notReplacedProperty");
 
-        List<Defect> defects = createPrepareAndExecutePacify(testResourceFolder, targetResourceFolder);
+        LinkedHashSet<Defect> result = createPrepareAndExecutePacify(testResourceFolder, targetResourceFolder);
+
+        List<Defect> defects = new ArrayList<Defect>(result);
 
         Assert.assertEquals("We should get a defect.", 2, defects.size());
         Assert.assertEquals("We expect NotReplacedPropertyDefect", NotReplacedPropertyDefect.class, defects.get(0).getClass());
@@ -199,7 +213,9 @@ public class TestArchive {
     public void checkTargetFileDoesNotExist() {
         File packagePath = new File("target/test-classes/testArchive/wrong/targetFileDoesNotExist/package");
 
-        List<Defect> defects = createPrepareAndExecuteValidator(packagePath);
+        LinkedHashSet<Defect> result = createPrepareAndExecuteValidator(packagePath);
+
+        List<Defect> defects = new ArrayList<Defect>(result);
 
         Assert.assertEquals("We should get a defect.", 1, defects.size());
         Assert.assertEquals("We expect FileDoesNotExistDefect", FileDoesNotExistDefect.class, defects.get(0).getClass());
@@ -209,7 +225,9 @@ public class TestArchive {
     public void checkPlaceholderDoesNotExist() {
         File packagePath = new File("target/test-classes/testArchive/wrong/placeholderDoesNotExist/package");
 
-        List<Defect> defects = createPrepareAndExecuteValidator(packagePath);
+        LinkedHashSet<Defect> result = createPrepareAndExecuteValidator(packagePath);
+
+        List<Defect> defects = new ArrayList<Defect>(result);
 
         Assert.assertEquals("We should get a defect.", 1, defects.size());
         Assert.assertEquals("We expect NoPlaceholderInTargetFileDefect", NoPlaceholderInTargetFileDefect.class, defects.get(0).getClass());
@@ -220,7 +238,9 @@ public class TestArchive {
     public void checkDuplicatePropertyEntry() {
         File packagePath = new File("target/test-classes/testArchive/wrong/duplicatePropertyEntry/package");
 
-        List<Defect> defects = createPrepareAndExecuteValidator(packagePath);
+        LinkedHashSet<Defect> result = createPrepareAndExecuteValidator(packagePath);
+
+        List<Defect> defects = new ArrayList<Defect>(result);
 
         Assert.assertEquals("We should get a defect.", 1, defects.size());
         Assert.assertEquals("We expect PropertyDuplicateDefinedInPMarkerDefect", PropertyDuplicateDefinedInPMarkerDefect.class, defects.get(0).getClass());
@@ -231,14 +251,16 @@ public class TestArchive {
     public void checkWrongPacifyFilter() {
         File packagePath = new File("target/test-classes/testArchive/wrong/wrongPacifyFilter/package");
 
-        List<Defect> defects = createPrepareAndExecuteValidator(packagePath);
+        LinkedHashSet<Defect> result = createPrepareAndExecuteValidator(packagePath);
+
+        List<Defect> defects = new ArrayList<Defect>(result);
 
         Assert.assertEquals("We should get a defect.", 1, defects.size());
         Assert.assertEquals("We expect FilterNotFoundDefect", FilterNotFoundDefect.class, defects.get(0).getClass());
         Assert.assertEquals("We expect missing.filter.class", "missing.filter.class", ((FilterNotFoundDefect) defects.get(0)).getPFile().getFilterClass());
     }
 
-    private List<Defect> createPrepareAndExecuteValidator(File packagePath) {
+    private LinkedHashSet<Defect> createPrepareAndExecuteValidator(File packagePath) {
         HashMapPropertyResolver hpr = new HashMapPropertyResolver();
         PropertyResolveManager prm = getPropertyResolveManager(hpr);
 
@@ -248,12 +270,12 @@ public class TestArchive {
 
         validator.setPackagePath(packagePath);
 
-        List<Defect> defects = entityManager.initialize();
+        LinkedHashSet<Defect> defects = entityManager.initialize();
         defects.addAll(validator.validateInternal(entityManager));
         return defects;
     }
 
-    private List<Defect> createPrepareAndExecutePacify(File testResourceFolder, File targetResourceFolder) {
+    private LinkedHashSet<Defect> createPrepareAndExecutePacify(File testResourceFolder, File targetResourceFolder) {
         TestUtil.removeOldTestResourcesAndCopyAgain(testResourceFolder, targetResourceFolder);
 
         File packagePath = new File(targetResourceFolder, "package");
@@ -262,7 +284,7 @@ public class TestArchive {
         PropertyResolveManager prm = getPropertyResolveManager(hpr);
 
         EntityManager entityManager = new EntityManager(packagePath);
-        List<Defect> defects = entityManager.initialize();
+        LinkedHashSet<Defect> defects = entityManager.initialize();
 
         Replacer replacer = new Replacer(prm);
         replacer.setPackagePath(packagePath);

@@ -8,9 +8,6 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.geewhiz.pacify.test.ListAppender;
-import com.geewhiz.pacify.test.TestUtil;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
@@ -34,8 +31,6 @@ public class TestShowUsedProperties {
 
     @Test
     public void writeToStdout() throws Exception {
-
-        ListAppender stringAppender = TestUtil.createListAppender();
 
         PrintStream oldStdOut = System.out;
 

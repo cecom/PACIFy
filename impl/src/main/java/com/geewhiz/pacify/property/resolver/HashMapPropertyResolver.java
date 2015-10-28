@@ -1,7 +1,8 @@
 package com.geewhiz.pacify.property.resolver;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -30,15 +31,20 @@ import com.geewhiz.pacify.resolver.BasePropertyResolver;
 
 public class HashMapPropertyResolver extends BasePropertyResolver {
 
-    Map<String, String> properties = new HashMap<String, String>();
+    Map<String, String> properties          = new HashMap<String, String>();
+    List<String>        protectedProperties = new ArrayList<String>();
 
     public void addProperty(String key, String value) {
+        if (key.startsWith("*")) {
+            key = key.substring(1);
+            protectedProperties.add(key);
+        }
         properties.put(key, value);
     }
 
     @Override
-    public boolean containsProperty(String property) {
-        return properties.containsKey(property);
+    public boolean containsProperty(String key) {
+        return properties.containsKey(key);
     }
 
     @Override
@@ -62,8 +68,8 @@ public class HashMapPropertyResolver extends BasePropertyResolver {
     }
 
     @Override
-    public List<Defect> checkForDuplicateEntry() {
-        return Collections.emptyList();
+    public LinkedHashSet<Defect> checkForDuplicateEntry() {
+        return new LinkedHashSet<Defect>();
     }
 
     @Override
@@ -74,6 +80,11 @@ public class HashMapPropertyResolver extends BasePropertyResolver {
     @Override
     public String getEndToken() {
         return "}";
+    }
+
+    @Override
+    public boolean isProtectedProperty(String key) {
+        return protectedProperties.contains(key);
     }
 
 }

@@ -2,6 +2,7 @@ package com.geewhiz.pacify;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -107,14 +108,14 @@ public class Validator {
         logger.info("== Found [{}] pacify marker files", entityManager.getPMarkerCount());
         logger.info("== Validating ...");
 
-        List<Defect> defects = validateInternal(entityManager);
+        LinkedHashSet<Defect> defects = validateInternal(entityManager);
         DefectUtils.abortIfDefectExists(defects);
 
         logger.info("== Successfully finished");
     }
 
-    public List<Defect> validateInternal(EntityManager entityManager) {
-        List<Defect> defects = new ArrayList<Defect>();
+    public LinkedHashSet<Defect> validateInternal(EntityManager entityManager) {
+        LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
 
         defects.addAll(entityManager.initialize());
 
@@ -124,7 +125,7 @@ public class Validator {
         }
 
         for (PMarker pMarker : entityManager.getPMarkers()) {
-            logger.debug("   Processing Marker File [{}]", pMarker.getFile().getAbsolutePath());
+            logger.info("   Processing Marker File [{}]", pMarker.getFile().getAbsolutePath());
             for (PMarkerCheck pMarkerCheck : pMarkerChecks) {
                 logger.debug("     Check [{}]", pMarkerCheck.getClass().getName());
                 defects.addAll(pMarkerCheck.checkForErrors(pMarker));

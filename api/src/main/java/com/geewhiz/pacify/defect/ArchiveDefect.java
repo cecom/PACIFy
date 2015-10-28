@@ -38,4 +38,35 @@ public class ArchiveDefect extends DefectException {
                 String.format("\n\t[Type=%s]", getPArchive().getInternalType()) +
                 String.format("\n\t[Message=%s]", message);
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ((message == null) ? 0 : message.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!super.equals(obj)) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        ArchiveDefect other = (ArchiveDefect) obj;
+        if (message == null) {
+            if (other.message != null) {
+                return false;
+            }
+        } else if (!message.equals(other.message)) {
+            return false;
+        }
+        return true;
+    }
+
 }

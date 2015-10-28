@@ -20,7 +20,7 @@ package com.geewhiz.pacify;
  */
 
 import java.io.File;
-import java.util.List;
+import java.util.LinkedHashSet;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -34,7 +34,7 @@ public class TestCheckPropertyDuplicateDefinedInPMarkerFile extends TestBase {
     public void checkForNotCorrect() {
         File testStartPath = new File("target/test-classes/checkPropertyDuplicateDefinedInPMarkerFile/wrong/package");
 
-        List<Defect> defects = getDefects(new CheckPropertyDuplicateDefinedInPacifyFile(), testStartPath);
+        LinkedHashSet<Defect> defects = getDefects(new CheckPropertyDuplicateDefinedInPacifyFile(), testStartPath);
 
         Assert.assertEquals(1, defects.size());
     }
@@ -43,7 +43,7 @@ public class TestCheckPropertyDuplicateDefinedInPMarkerFile extends TestBase {
     public void checkForCorrect() {
         File testStartPath = new File("target/test-classes/checkPropertyDuplicateDefinedInPMarkerFile/correct/package");
 
-        List<Defect> defects = getDefects(new CheckPropertyDuplicateDefinedInPacifyFile(), testStartPath);
+        LinkedHashSet<Defect> defects = getDefects(new CheckPropertyDuplicateDefinedInPacifyFile(), testStartPath);
 
         Assert.assertEquals(0, defects.size());
     }

@@ -20,6 +20,7 @@ package com.geewhiz.pacify.checks.impl;
  */
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import com.geewhiz.pacify.checks.PMarkerCheck;
@@ -31,8 +32,8 @@ import com.geewhiz.pacify.model.PMarker;
 
 public class CheckFileDuplicateDefinedInPacifyFile implements PMarkerCheck {
 
-    public List<Defect> checkForErrors(PMarker pMarker) {
-        List<Defect> defects = new ArrayList<Defect>();
+    public LinkedHashSet<Defect> checkForErrors(PMarker pMarker) {
+        LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
 
         for (PArchive pArchive : pMarker.getPArchives()) {
             checkPFiles(defects, pMarker, pArchive, pArchive.getPFiles());
@@ -42,11 +43,11 @@ public class CheckFileDuplicateDefinedInPacifyFile implements PMarkerCheck {
         return defects;
     }
 
-    private void checkPFiles(List<Defect> defects, PMarker pMarker, List<PFile> pFiles) {
+    private void checkPFiles(LinkedHashSet<Defect> defects, PMarker pMarker, List<PFile> pFiles) {
         checkPFiles(defects, pMarker, null, pFiles);
     }
 
-    private void checkPFiles(List<Defect> defects, PMarker pMarker, PArchive pArchive, List<PFile> pFiles) {
+    private void checkPFiles(LinkedHashSet<Defect> defects, PMarker pMarker, PArchive pArchive, List<PFile> pFiles) {
         List<String> files = new ArrayList<String>();
         for (PFile pFile : pFiles) {
             if (files.contains(pFile.getRelativePath())) {

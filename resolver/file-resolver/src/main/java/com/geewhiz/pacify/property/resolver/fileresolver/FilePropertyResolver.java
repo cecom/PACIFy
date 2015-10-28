@@ -21,6 +21,7 @@ package com.geewhiz.pacify.property.resolver.fileresolver;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -41,16 +42,18 @@ public class FilePropertyResolver extends BasePropertyResolver {
     public static final String         SEPARATOR_STRING    = "=";
     public static final String         COMMENT_STRING      = "#";
 
+    public static final String         PROTECTED_MARKER    = "*";
+
     public static final String         SEARCH_PATTERN      = "([^" + Pattern.quote(SEPARATOR_STRING) + "]*)" + Pattern.quote(SEPARATOR_STRING) + "?(.*)";
     public static final Pattern        PROPERTY_PATTERN    = Pattern.compile(SEARCH_PATTERN);
 
     private boolean                    initialized         = false;
 
     private URL                        propertyFileURL;
-    private Map<String, String>        localProperties     = new TreeMap<String, String>();
-    private Map<String, String>        properties;
-    private String                     fileEncoding        = "utf-8";
     private List<FilePropertyResolver> parents             = new ArrayList<FilePropertyResolver>();
+    private Map<String, String>        localProperties     = new TreeMap<String, String>();
+    private List<String>               protectedProperties = new ArrayList<String>();
+    private String                     fileEncoding        = "utf-8";
     private String                     beginToken          = "%{";
     private String                     endToken            = "}";
 
@@ -65,52 +68,87 @@ public class FilePropertyResolver extends BasePropertyResolver {
         return fileEncoding;
     }
 
+    @Override
     public boolean containsProperty(String key) {
-        return getPropertyValue(key) != null;
+        if (getLocalProperties().containsKey(key)) {
+            return true;
+        }
+        for (int i = getParents().size() - 1; i >= 0; i--) {
+            FilePropertyResolver parent = getParents().get(i);
+            if (parent.containsProperty(key)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
+    @Override
+    public boolean isProtectedProperty(String key) {
+        if (getProtectedProperties().contains(key)) {
+            return true;
+        }
+        for (int i = getParents().size() - 1; i >= 0; i--) {
+            FilePropertyResolver parent = getParents().get(i);
+            if (parent.isProtectedProperty(key)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    @Override
     public String getPropertyValue(String key) {
-        return getProperties().get(key);
+        if (getLocalProperties().containsKey(key)) {
+            return getLocalProperties().get(key);
+        }
+        for (int i = getParents().size() - 1; i >= 0; i--) {
+            FilePropertyResolver parent = getParents().get(i);
+            if (parent.containsProperty(key)) {
+                return parent.getPropertyValue(key);
+            }
+        }
+        return null;
     }
 
     /**
      * @return the localProperties for this instance, without the parents
      */
     public Map<String, String> getLocalProperties() {
-        if (!initialized) {
-            initialize();
-        }
+        initialize();
         return localProperties;
     }
 
+    public List<String> getProtectedProperties() {
+        initialize();
+        return protectedProperties;
+    }
+
+    @Override
     public Set<String> getPropertyKeys() {
-        if (!initialized) {
-            initialize();
+        initialize();
+
+        Set<String> result = new TreeSet<String>();
+
+        result.addAll(getLocalProperties().keySet());
+        for (int i = getParents().size() - 1; i >= 0; i--) {
+            result.addAll(getParents().get(i).getPropertyKeys());
         }
 
-        return properties.keySet();
+        return result;
     }
 
-    /**
-     * @return the localProperties for this instance and its parents.
-     */
-    public Map<String, String> getProperties() {
-        if (!initialized) {
-            initialize();
-        }
-        return properties;
-    }
-
+    @Override
     public String getPropertyResolverDescription() {
         return "FileResolver=" + getPropertyFileURL().toString();
     }
 
-    public List<Defect> checkForDuplicateEntry() {
-        if (!initialized) {
-            initialize();
-        }
+    @Override
+    public LinkedHashSet<Defect> checkForDuplicateEntry() {
+        initialize();
 
-        List<Defect> defects = new ArrayList<Defect>();
+        LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
 
         for (FilePropertyResolver parentFilePropertyContainer : getParents()) {
             defects.addAll(parentFilePropertyContainer.checkForDuplicateEntry());
@@ -133,30 +171,12 @@ public class FilePropertyResolver extends BasePropertyResolver {
     }
 
     private void initialize() {
-        initialized = true;
-
-        properties = new TreeMap<String, String>();
-
-        parsePropertyFile();
-
-        for (FilePropertyResolver parents : getParents()) {
-            Map<String, String> parentProperties = parents.getProperties();
-            properties.putAll(parentProperties);
+        if (initialized) {
+            return;
         }
 
-        properties.putAll(getLocalProperties());
-    }
+        initialized = true;
 
-    protected void setLocalProperties(Map<String, String> localProperties) {
-        this.localProperties = localProperties;
-    }
-
-    protected void addParent(FilePropertyResolver parent) {
-        parents.add(parent);
-        parent.initialize();
-    }
-
-    private void parsePropertyFile() {
         for (String line : FileUtils.getFileAsLines(getPropertyFileURL(), getEncoding())) {
             if (line.length() == 0) {
                 continue;
@@ -185,11 +205,26 @@ public class FilePropertyResolver extends BasePropertyResolver {
             }
             String key = matcher.group(1);
             String value = matcher.group(2);
+
+            if (key.startsWith(PROTECTED_MARKER)) {
+                key = key.substring(1);
+                protectedProperties.add(key);
+            }
+
             String allreadyAdded = localProperties.put(key, value);
             if (allreadyAdded != null) {
                 duplicateProperties.add(key);
             }
         }
+    }
+
+    protected void setLocalProperties(Map<String, String> localProperties) {
+        this.localProperties = localProperties;
+    }
+
+    protected void addParent(FilePropertyResolver parent) {
+        parent.initialize();
+        parents.add(parent);
     }
 
     public void setEncoding(String encoding) {
@@ -203,6 +238,7 @@ public class FilePropertyResolver extends BasePropertyResolver {
         this.beginToken = beginToken;
     }
 
+    @Override
     public String getBeginToken() {
         return beginToken;
     }
@@ -214,6 +250,7 @@ public class FilePropertyResolver extends BasePropertyResolver {
         this.endToken = endToken;
     }
 
+    @Override
     public String getEndToken() {
         return endToken;
     }

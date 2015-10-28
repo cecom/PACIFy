@@ -1,7 +1,7 @@
 package com.geewhiz.pacify.filter;
 
 import java.io.File;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Map;
 
 import com.geewhiz.pacify.defect.Defect;
@@ -27,6 +27,6 @@ import com.geewhiz.pacify.defect.Defect;
 
 public interface PacifyFilter {
 
-    List<Defect> filter(Map<String, String> propertyValues, String beginToken, String endToken, File fileToFilter, String encoding);
+    LinkedHashSet<Defect> filter(Map<String, String> propertyValues, String beginToken, String endToken, File fileToFilter, String encoding);
 
 }
