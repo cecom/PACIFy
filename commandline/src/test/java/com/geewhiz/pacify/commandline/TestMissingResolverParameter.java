@@ -47,7 +47,7 @@ public class TestMissingResolverParameter {
         });
 
         Assert.assertEquals("We expect an error.", 1, result);
-        Assert.assertEquals("We expect a defect", 2, listAppender.getLogMessages().size());
+        Assert.assertEquals("We expect two lines in the output.", 2, listAppender.getLogMessages().size());
         Assert.assertEquals("We expect the defect PropertyFileNotFound.", "==== !!!!!! We got Errors !!!!! ...", listAppender.getLogMessages().get(0));
         Assert.assertEquals("We expect the defect PropertyFileNotFound.", "PropertyFileNotFound:", listAppender.getLogMessages().get(1).split("\\n")[0]);
     }

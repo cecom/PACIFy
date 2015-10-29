@@ -33,8 +33,14 @@ public class ResolverDefect extends DefectException {
 
     public ResolverDefect(PMarker pMarker, PArchive pArchive, PFile pFile, PProperty pProperty, String resolver, String message) {
         super(pMarker, pArchive, pFile, pProperty);
-        this.message = message;
         this.resolver = resolver;
+        this.message = message;
+    }
+
+    public ResolverDefect(String resolver, String message) {
+        super();
+        this.resolver = resolver;
+        this.message = message;
     }
 
     @Override

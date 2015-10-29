@@ -21,6 +21,7 @@ import com.geewhiz.pacify.commandline.commands.ShowUsedPropertiesCommand;
 import com.geewhiz.pacify.commandline.commands.ValidateCommand;
 import com.geewhiz.pacify.commandline.commands.ValidateMarkerFilesCommand;
 import com.geewhiz.pacify.defect.Defect;
+import com.geewhiz.pacify.exceptions.DefectRuntimeException;
 import com.geewhiz.pacify.resolver.PropertyResolverModule;
 import com.geewhiz.pacify.utils.DefectUtils;
 import com.geewhiz.pacify.utils.LoggingUtils;
@@ -112,8 +113,11 @@ public class PacifyViaCommandline {
                     return 0;
                 }
             }
+        } catch (DefectRuntimeException de) {
+            logger.debug("We got a DefectException.", de);
+            return 1;
         } catch (Exception e) {
-            logger.debug("We got an Exception.", e);
+            logger.error("We got an Exception.", e);
             return 1;
         }
         return 1;

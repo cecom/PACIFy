@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -31,7 +32,11 @@ import org.apache.logging.log4j.Logger;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Chmod;
 
+import com.geewhiz.pacify.defect.Defect;
+import com.geewhiz.pacify.defect.ResolverDefect;
+import com.geewhiz.pacify.exceptions.ResolverRuntimeException;
 import com.geewhiz.pacify.managers.PropertyResolveManager;
+import com.geewhiz.pacify.utils.DefectUtils;
 import com.geewhiz.pacify.utils.Utils;
 import com.google.inject.Inject;
 
@@ -114,14 +119,25 @@ public class CreatePropertyFile {
 
     private Set<String> getPropertyLines() {
         Set<String> result = new TreeSet<String>();
+
+        LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
+
         for (String propertyKey : propertyResolveManager.getPropertyKeys()) {
             String protectedPrefix = "";
             if (propertyResolveManager.isProtectedProperty(propertyKey)) {
                 protectedPrefix = "*";
             }
-            String line = protectedPrefix + propertyKey + "=" + propertyResolveManager.getPropertyValue(propertyKey);
-            result.add(line);
+            try {
+                String line = protectedPrefix + propertyKey + "=" + propertyResolveManager.getPropertyValue(propertyKey);
+                result.add(line);
+            } catch (ResolverRuntimeException re) {
+                defects.add(new ResolverDefect(re.getResolver(), re.getMessage()));
+                continue;
+            }
         }
+
+        DefectUtils.abortIfDefectExists(defects);
+
         return result;
     }
 
