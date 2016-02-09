@@ -35,7 +35,7 @@ public class TestCheckPropertyExistsInTargetFile extends TestBase {
 
         LinkedHashSet<Defect> defects = getDefects(new CheckPlaceholderExistsInTargetFile(), testStartPath);
 
-        Assert.assertEquals(2, defects.size());
+        Assert.assertEquals(3, defects.size());
     }
 
     @Test

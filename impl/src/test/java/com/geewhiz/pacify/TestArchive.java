@@ -33,6 +33,7 @@ import com.geewhiz.pacify.defect.FileDoesNotExistDefect;
 import com.geewhiz.pacify.defect.FilterNotFoundDefect;
 import com.geewhiz.pacify.defect.NoPlaceholderInTargetFileDefect;
 import com.geewhiz.pacify.defect.NotReplacedPropertyDefect;
+import com.geewhiz.pacify.defect.PlaceholderNotDefinedDefect;
 import com.geewhiz.pacify.defect.PropertyDuplicateDefinedInPMarkerDefect;
 import com.geewhiz.pacify.managers.EntityManager;
 import com.geewhiz.pacify.managers.PropertyResolveManager;
@@ -229,8 +230,9 @@ public class TestArchive {
 
         List<Defect> defects = new ArrayList<Defect>(result);
 
-        Assert.assertEquals("We should get a defect.", 1, defects.size());
+        Assert.assertEquals("We should get a defect.", 2, defects.size());
         Assert.assertEquals("We expect NoPlaceholderInTargetFileDefect", NoPlaceholderInTargetFileDefect.class, defects.get(0).getClass());
+        Assert.assertEquals("We expect PlaceholderNotDefinedDefect.", PlaceholderNotDefinedDefect.class, defects.get(1).getClass());
         Assert.assertEquals("We expect missingProperty", "missingProperty", ((NoPlaceholderInTargetFileDefect) defects.get(0)).getPProperty().getName());
     }
 
@@ -242,8 +244,9 @@ public class TestArchive {
 
         List<Defect> defects = new ArrayList<Defect>(result);
 
-        Assert.assertEquals("We should get a defect.", 1, defects.size());
+        Assert.assertEquals("We should get a defect.", 2, defects.size());
         Assert.assertEquals("We expect PropertyDuplicateDefinedInPMarkerDefect", PropertyDuplicateDefinedInPMarkerDefect.class, defects.get(0).getClass());
+        Assert.assertEquals("We expect PlaceholderNotDefinedDefect.", PlaceholderNotDefinedDefect.class, defects.get(1).getClass());
         Assert.assertEquals("We expect missingProperty", "foobar2", ((PropertyDuplicateDefinedInPMarkerDefect) defects.get(0)).getPProperty().getName());
     }
 
@@ -255,8 +258,9 @@ public class TestArchive {
 
         List<Defect> defects = new ArrayList<Defect>(result);
 
-        Assert.assertEquals("We should get a defect.", 1, defects.size());
+        Assert.assertEquals("We should get a defect.", 2, defects.size());
         Assert.assertEquals("We expect FilterNotFoundDefect", FilterNotFoundDefect.class, defects.get(0).getClass());
+        Assert.assertEquals("We expect PlaceholderNotDefinedDefect.", PlaceholderNotDefinedDefect.class, defects.get(1).getClass());
         Assert.assertEquals("We expect missing.filter.class", "missing.filter.class", ((FilterNotFoundDefect) defects.get(0)).getPFile().getFilterClass());
     }
 
