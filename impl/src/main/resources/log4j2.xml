@@ -3,7 +3,7 @@
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
             <!-- %d{dd.MM.yyyy HH:mm:ss} %-5p %c{1}:%-4L | %m%n" -->
-            <PatternLayout pattern="%-5p %m%n" />
+            <PatternLayout pattern="%highlight{%-5p | %d{dd.MM.yyyy HH:mm:ss,SSS} %r | %m%n}" />
         </Console>
     </Appenders>
     <Loggers>
