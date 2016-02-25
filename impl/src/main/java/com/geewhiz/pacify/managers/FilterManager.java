@@ -33,7 +33,7 @@ import com.geewhiz.pacify.checks.impl.CheckForNotReplacedTokens;
 import com.geewhiz.pacify.defect.ArchiveDefect;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.DefectException;
-import com.geewhiz.pacify.defect.PropertyNotDefinedDefect;
+import com.geewhiz.pacify.defect.PropertyNotDefinedInResolverDefect;
 import com.geewhiz.pacify.exceptions.PropertyNotFoundRuntimeException;
 import com.geewhiz.pacify.filter.PacifyFilter;
 import com.geewhiz.pacify.model.PArchive;
@@ -153,7 +153,7 @@ public class FilterManager {
             try {
                 propertyValue = propertyResolveManager.getPropertyValue(pProperty);
             } catch (PropertyNotFoundRuntimeException e) {
-                Defect defect = new PropertyNotDefinedDefect(pMarker, pFile, pProperty, propertyResolveManager.toString());
+                Defect defect = new PropertyNotDefinedInResolverDefect(pMarker, pFile, pProperty, propertyResolveManager.toString());
                 defects.add(defect);
                 continue;
             }

@@ -25,7 +25,7 @@ import java.util.List;
 import com.geewhiz.pacify.checks.PMarkerCheck;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.PropertyHasCycleDefect;
-import com.geewhiz.pacify.defect.PropertyNotDefinedDefect;
+import com.geewhiz.pacify.defect.PropertyNotDefinedInResolverDefect;
 import com.geewhiz.pacify.defect.ResolverDefect;
 import com.geewhiz.pacify.exceptions.CycleDetectRuntimeException;
 import com.geewhiz.pacify.exceptions.ResolverRuntimeException;
@@ -73,7 +73,7 @@ public class CheckPropertyExists implements PMarkerCheck {
                     defects.add(new ResolverDefect(pMarker, pArchive, pFile, pProperty, re.getResolver(), re.getMessage()));
                     continue;
                 }
-                Defect defect = new PropertyNotDefinedDefect(pMarker, pArchive, pFile, pProperty, propertyResolveManager.toString());
+                Defect defect = new PropertyNotDefinedInResolverDefect(pMarker, pArchive, pFile, pProperty, propertyResolveManager.toString());
                 defects.add(defect);
             }
         }

@@ -32,7 +32,7 @@ import org.junit.Test;
 
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.NotReplacedPropertyDefect;
-import com.geewhiz.pacify.defect.PropertyNotDefinedDefect;
+import com.geewhiz.pacify.defect.PropertyNotDefinedInResolverDefect;
 import com.geewhiz.pacify.managers.EntityManager;
 import com.geewhiz.pacify.managers.PropertyResolveManager;
 import com.geewhiz.pacify.property.resolver.fileresolver.FilePropertyResolver;
@@ -65,9 +65,9 @@ public class TestMissingProperty extends TestBase {
 
         List<Defect> defects = new ArrayList<Defect>(result);
 
-        Assert.assertEquals(PropertyNotDefinedDefect.class, defects.get(0).getClass());
+        Assert.assertEquals(PropertyNotDefinedInResolverDefect.class, defects.get(0).getClass());
         Assert.assertEquals(2, defects.size());
-        Assert.assertEquals("foobar5", ((PropertyNotDefinedDefect) defects.get(0)).getPProperty().getName());
+        Assert.assertEquals("foobar5", ((PropertyNotDefinedInResolverDefect) defects.get(0)).getPProperty().getName());
 
         Assert.assertEquals(NotReplacedPropertyDefect.class, defects.get(1).getClass());
         Assert.assertEquals("foobar5", ((NotReplacedPropertyDefect) defects.get(1)).getPropertyId());

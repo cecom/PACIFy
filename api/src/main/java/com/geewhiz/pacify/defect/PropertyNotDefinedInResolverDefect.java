@@ -24,18 +24,18 @@ import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.model.PProperty;
 
-public class PropertyNotDefinedDefect extends DefectException {
+public class PropertyNotDefinedInResolverDefect extends DefectException {
 
     private static final long serialVersionUID = 1L;
 
     private String            resolvers;
 
-    public PropertyNotDefinedDefect(PMarker pMarker, PFile pFile, PProperty pProperty, String resolvers) {
+    public PropertyNotDefinedInResolverDefect(PMarker pMarker, PFile pFile, PProperty pProperty, String resolvers) {
         super(pMarker, pFile, pProperty);
         this.resolvers = resolvers;
     }
 
-    public PropertyNotDefinedDefect(PMarker pMarker, PArchive pArchive, PFile pFile, PProperty pProperty, String resolvers) {
+    public PropertyNotDefinedInResolverDefect(PMarker pMarker, PArchive pArchive, PFile pFile, PProperty pProperty, String resolvers) {
         super(pMarker, pArchive, pFile, pProperty);
         this.resolvers = resolvers;
     }
@@ -65,7 +65,7 @@ public class PropertyNotDefinedDefect extends DefectException {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        PropertyNotDefinedDefect other = (PropertyNotDefinedDefect) obj;
+        PropertyNotDefinedInResolverDefect other = (PropertyNotDefinedInResolverDefect) obj;
         if (resolvers == null) {
             if (other.resolvers != null) {
                 return false;
