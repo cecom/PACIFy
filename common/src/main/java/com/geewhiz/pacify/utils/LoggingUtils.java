@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.LoggerConfig;
+import org.apache.logging.log4j.core.lookup.MainMapLookup;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -29,6 +30,9 @@ import org.apache.logging.log4j.core.config.LoggerConfig;
 public class LoggingUtils {
 
     public static void setLogLevel(Logger logger, Level level) {
+        // used to change the pattern layout, dependent on level
+        MainMapLookup.setMainArguments(new String[] { "pacifyLogLevel", level.toString() });
+
         LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
         Configuration conf = ctx.getConfiguration();
         LoggerConfig lconf = conf.getLoggerConfig(logger.getName());

@@ -2,12 +2,20 @@
 <Configuration>
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
-            <!-- %d{dd.MM.yyyy HH:mm:ss} %-5p %c{1}:%-4L | %m%n" -->
-            <PatternLayout pattern="%highlight{%-5p | %d{dd.MM.yyyy HH:mm:ss,SSS} %r | %m%n}" />
+            <PatternLayout>
+                <ScriptPatternSelector defaultPattern="%highlight{%-5p | %d{dd.MM.yyyy HH:mm:ss,SSS} %r | %m%n}">
+                    <Script name="selector" language="javascript"><![CDATA[
+                       substitutor.replace("${main:pacifyLogLevel}"); 
+                    ]]>
+                    </Script>
+                    <!-- INFO and DEBUG are using the defaultPattern -->
+                    <PatternMatch key="ERROR" pattern="%-5p %m%n" />
+                </ScriptPatternSelector>
+            </PatternLayout>
         </Console>
     </Appenders>
     <Loggers>
-        <Logger name="com.geewhiz.pacify" level="error"/>
+        <Logger name="com.geewhiz.pacify" level="error" />
         <Root level="error">
             <AppenderRef ref="Console" />
         </Root>
