@@ -15,7 +15,9 @@
         </Console>
     </Appenders>
     <Loggers>
-        <Logger name="com.geewhiz.pacify" level="error" />
+       <!--  <Logger name="com.geewhiz.pacify.property.resolver.araresolver.AraPropertyResolver" level="trace" additivity="false">
+            <AppenderRef ref="Console" />
+        </Logger> -->
         <Root level="error">
             <AppenderRef ref="Console" />
         </Root>

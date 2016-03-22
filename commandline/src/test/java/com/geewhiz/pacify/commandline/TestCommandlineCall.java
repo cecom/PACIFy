@@ -95,5 +95,31 @@ public class TestCommandlineCall {
 
         Assert.assertEquals("Call should return 0.", 0, result);
     }
+    
+    @Test
+    public void testManyProperties() {
+        File testResourceFolder = new File("src/test/resources/testManyProperties");
+        File targetResourceFolder = new File("target/test-resources/testManyProperties");
+
+        TestUtil.removeOldTestResourcesAndCopyAgain(testResourceFolder, targetResourceFolder);
+
+        File myTestProperty = new File(targetResourceFolder, "properties/myTest.properties");
+        File myPackagePath = new File(targetResourceFolder, "package");
+        File myExpectedResultPath = new File(targetResourceFolder, "expectedResult");
+
+        PacifyViaCommandline pacifyViaCommandline = new PacifyViaCommandline();
+
+        int result = pacifyViaCommandline.mainInternal(new String[] {
+                "--debug",
+                "replace",
+                "--resolvers=FileResolver",
+                "--packagePath=" + myPackagePath.getAbsolutePath(),
+                "-RFileResolver.file=" + myTestProperty.getAbsolutePath()
+        });
+
+        Assert.assertEquals("Configuration returned with errors.", 0, result);
+
+        TestUtil.checkIfResultIsAsExpected(myPackagePath, myExpectedResultPath);
+    }
 
 }
