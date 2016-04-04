@@ -60,7 +60,13 @@ public class PacifyViaCommandline {
 
     private Logger logger = LogManager.getLogger(PacifyViaCommandline.class.getName());
 
-    protected int mainInternal(String[] args) {
+    /**
+     * without system.exit(). If you call it from your java app.
+     * 
+     * @param args commandline params.
+     * @return
+     */
+    public int mainInternal(String[] args) {
         int resultValue = execute(args);
         logger.debug("Exiting with exit code " + resultValue);
         return resultValue;
