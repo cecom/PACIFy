@@ -37,6 +37,7 @@ import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.model.PProperty;
 import com.geewhiz.pacify.utils.FileUtils;
+import com.geewhiz.pacify.utils.RegExpUtils;
 
 public class CheckPlaceholderExistsInTargetFile implements PMarkerCheck {
 
@@ -143,8 +144,8 @@ public class CheckPlaceholderExistsInTargetFile implements PMarkerCheck {
     }
 
     private Set<String> getAllPlaceHolders(String fileContent, String encoding, String beginToken, String endToken) {
-        String regexp = "([^" + beginToken + "]*)";
-        Matcher matcher = getPlaceHolderMatcher(fileContent, regexp, encoding, beginToken, endToken);
+        Pattern pattern = RegExpUtils.getDefaultPattern(beginToken, endToken);
+        Matcher matcher = getPlaceHolderMatcher(fileContent, pattern, encoding, beginToken, endToken);
 
         Set<String> result = new TreeSet<String>();
 
@@ -157,15 +158,12 @@ public class CheckPlaceholderExistsInTargetFile implements PMarkerCheck {
     }
 
     private boolean doesPropertyExistInFile(String fileContent, PProperty pProperty, String encoding, String beginToken, String endToken) {
-        return getPlaceHolderMatcher(fileContent, Pattern.quote(pProperty.getName()), encoding, beginToken, endToken).find();
+        Pattern pattern = RegExpUtils.getPatternFor(beginToken, endToken, Pattern.quote(pProperty.getName()));
+        return getPlaceHolderMatcher(fileContent, pattern, encoding, beginToken, endToken).find();
     }
 
-    private Matcher getPlaceHolderMatcher(String fileContent, String regexp, String encoding, String beginToken, String endToken) {
-        String searchPattern = Pattern.quote(beginToken) + regexp + Pattern.quote(endToken);
-
-        Pattern pattern = Pattern.compile(searchPattern);
+    private Matcher getPlaceHolderMatcher(String fileContent, Pattern pattern, String encoding, String beginToken, String endToken) {
         Matcher matcher = pattern.matcher(fileContent);
-
         return matcher;
     }
 }

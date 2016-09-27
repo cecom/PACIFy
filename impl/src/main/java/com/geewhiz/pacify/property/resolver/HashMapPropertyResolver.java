@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Set;
 
 import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.resolver.BasePropertyResolver;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one

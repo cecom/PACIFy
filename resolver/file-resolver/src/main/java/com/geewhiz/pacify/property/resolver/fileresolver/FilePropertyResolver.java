@@ -32,8 +32,8 @@ import java.util.regex.Pattern;
 
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.PropertyDuplicateDefinedInPropertyFileDefect;
+import com.geewhiz.pacify.property.resolver.BasePropertyResolver;
 import com.geewhiz.pacify.property.resolver.fileresolver.exceptions.WrongPropertyLineRuntimeException;
-import com.geewhiz.pacify.resolver.BasePropertyResolver;
 import com.geewhiz.pacify.utils.FileUtils;
 
 public class FilePropertyResolver extends BasePropertyResolver {

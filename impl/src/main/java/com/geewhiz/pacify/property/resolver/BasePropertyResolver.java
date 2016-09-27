@@ -1,4 +1,4 @@
-package com.geewhiz.pacify.resolver;
+package com.geewhiz.pacify.property.resolver;
 
 import java.util.Set;
 import java.util.TreeSet;
@@ -6,6 +6,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.tools.ant.types.FilterSet;
+import org.apache.tools.ant.util.regexp.RegexpUtil;
+
+import com.geewhiz.pacify.resolver.PropertyResolver;
+import com.geewhiz.pacify.utils.RegExpUtils;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -44,10 +48,7 @@ public abstract class BasePropertyResolver implements PropertyResolver {
 	}
 
 	protected Matcher getMatcher(String propertyValue) {
-		String searchPattern = Pattern.quote(getBeginToken()) + "([^"
-		        + Pattern.quote(getEndToken()) + "]*)"
-		        + Pattern.quote(getEndToken());
-		Pattern pattern = Pattern.compile(searchPattern);
+		Pattern pattern = RegExpUtils.getDefaultPattern(getBeginToken(), getEndToken());
 
 		Matcher matcher = pattern.matcher(propertyValue);
 		return matcher;

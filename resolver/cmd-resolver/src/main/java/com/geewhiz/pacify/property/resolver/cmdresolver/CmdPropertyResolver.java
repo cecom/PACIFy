@@ -26,7 +26,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.resolver.BasePropertyResolver;
+import com.geewhiz.pacify.property.resolver.BasePropertyResolver;
 
 public class CmdPropertyResolver extends BasePropertyResolver {
 

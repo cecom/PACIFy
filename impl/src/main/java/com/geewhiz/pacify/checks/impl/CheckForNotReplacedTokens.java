@@ -15,6 +15,7 @@ import com.geewhiz.pacify.model.PArchive;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.utils.FileUtils;
+import com.geewhiz.pacify.utils.RegExpUtils;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -95,10 +96,7 @@ public class CheckForNotReplacedTokens implements PMarkerCheck {
     private List<String> getNotReplacedProperties(String fileContent, String beginToken, String endToken) {
         List<String> result = new ArrayList<String>();
 
-        String searchPattern = Pattern.quote(beginToken)
-                + "([^" + Pattern.quote(endToken) + "]*)" + Pattern.quote(endToken);
-
-        Pattern pattern = Pattern.compile(searchPattern);
+        Pattern pattern = RegExpUtils.getDefaultPattern(beginToken, endToken);
         Matcher matcher = pattern.matcher(fileContent);
 
         while (matcher.find()) {
