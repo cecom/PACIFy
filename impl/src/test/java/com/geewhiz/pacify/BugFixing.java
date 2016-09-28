@@ -1,9 +1,7 @@
 package com.geewhiz.pacify;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -11,11 +9,10 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
-import com.geewhiz.pacify.checks.impl.CheckPlaceholderExistsInTargetFile;
 import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.defect.PlaceholderNotDefinedDefect;
 import com.geewhiz.pacify.managers.EntityManager;
 import com.geewhiz.pacify.managers.PropertyResolveManager;
 import com.geewhiz.pacify.property.resolver.HashMapPropertyResolver;
@@ -44,11 +41,14 @@ import com.geewhiz.pacify.utils.LoggingUtils;
 
 public class BugFixing extends TestBase {
 
+    @Before
+    public void before(){
+        Logger logger = LogManager.getLogger();
+        LoggingUtils.setLogLevel(logger, Level.ERROR);
+    }
+    
     @Test
     public void Bug1() {
-        Logger logger = LogManager.getLogger();
-        LoggingUtils.setLogLevel(logger, Level.INFO);
-
         File testResourceFolder = new File("src/test/resources/Bugfixing/Bug1");
         File targetResourceFolder = new File("target/test-resources/Bugfixing/Bug1");
 
@@ -56,12 +56,9 @@ public class BugFixing extends TestBase {
 
         Assert.assertEquals("We shouldnt get any defects.", 0, defects.size());
     }
-    
+
     @Test
     public void Bug2() {
-        Logger logger = LogManager.getLogger();
-        LoggingUtils.setLogLevel(logger, Level.INFO);
-
         File testResourceFolder = new File("src/test/resources/Bugfixing/Bug2");
         File targetResourceFolder = new File("target/test-resources/Bugfixing/Bug2");
 
@@ -69,36 +66,51 @@ public class BugFixing extends TestBase {
 
         Assert.assertEquals("We shouldnt get any defects.", 0, defects.size());
     }
-    
-    private LinkedHashSet<Defect> createPrepareAndExecuteValidator(File testResourceFolder, File targetResourceFolder) {
-        TestUtil.removeOldTestResourcesAndCopyAgain(testResourceFolder, targetResourceFolder);
 
+    private LinkedHashSet<Defect> createPrepareAndExecuteValidator(File testResourceFolder, File targetResourceFolder) {
         File packagePath = new File(targetResourceFolder, "package");
 
-        HashMapPropertyResolver hpr = new HashMapPropertyResolver();
-        PropertyResolveManager prm = getPropertyResolveManager(hpr);
+        TestUtil.removeOldTestResourcesAndCopyAgain(testResourceFolder, targetResourceFolder);
 
+        PropertyResolveManager propertyResolveManager = createPropertyResolveManager();
         EntityManager entityManager = new EntityManager(packagePath);
+
         LinkedHashSet<Defect> defects = entityManager.initialize();
 
-        Validator validator = new Validator(prm);
-        validator.setPackagePath(packagePath);
-        validator.enableMarkerFileChecks();
-        validator.enablePropertyResolveChecks();
+        // execute validation
+        defects.addAll(createValidator(propertyResolveManager, packagePath).validateInternal(entityManager));
 
-        defects.addAll(validator.validateInternal(entityManager));
-        
+        // execute replacer
+        defects.addAll(createReplacer(propertyResolveManager, packagePath).doReplacement(entityManager));
+
         return defects;
     }
 
-    private PropertyResolveManager getPropertyResolveManager(HashMapPropertyResolver hpr) {
-        hpr.addProperty("bug1", "bug1Value");
-        hpr.addProperty("bug2", "bug2Value");
+    private PropertyResolveManager createPropertyResolveManager() {
+        HashMapPropertyResolver hpr = new HashMapPropertyResolver();
+        hpr.addProperty("foobar", "foobarValue");
 
         Set<PropertyResolver> propertyResolverList = new TreeSet<PropertyResolver>();
         propertyResolverList.add(hpr);
         PropertyResolveManager prm = new PropertyResolveManager(propertyResolverList);
         return prm;
     }
-    
+
+    private Replacer createReplacer(PropertyResolveManager propertyResolveManager, File packagePath) {
+        Replacer replacer = new Replacer(propertyResolveManager);
+
+        replacer.setPackagePath(packagePath);
+
+        return replacer;
+    }
+
+    private Validator createValidator(PropertyResolveManager propertyResolveManager, File packagePath) {
+        Validator validator = new Validator(propertyResolveManager);
+
+        validator.setPackagePath(packagePath);
+        validator.enableMarkerFileChecks();
+        validator.enablePropertyResolveChecks();
+
+        return validator;
+    }
 }
