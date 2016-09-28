@@ -57,6 +57,19 @@ public class BugFixing extends TestBase {
         Assert.assertEquals("We shouldnt get any defects.", 0, defects.size());
     }
     
+    @Test
+    public void Bug2() {
+        Logger logger = LogManager.getLogger();
+        LoggingUtils.setLogLevel(logger, Level.INFO);
+
+        File testResourceFolder = new File("src/test/resources/Bugfixing/Bug2");
+        File targetResourceFolder = new File("target/test-resources/Bugfixing/Bug2");
+
+        LinkedHashSet<Defect> defects = createPrepareAndExecuteValidator(testResourceFolder, targetResourceFolder);
+
+        Assert.assertEquals("We shouldnt get any defects.", 0, defects.size());
+    }
+    
     private LinkedHashSet<Defect> createPrepareAndExecuteValidator(File testResourceFolder, File targetResourceFolder) {
         TestUtil.removeOldTestResourcesAndCopyAgain(testResourceFolder, targetResourceFolder);
 
@@ -80,6 +93,7 @@ public class BugFixing extends TestBase {
 
     private PropertyResolveManager getPropertyResolveManager(HashMapPropertyResolver hpr) {
         hpr.addProperty("bug1", "bug1Value");
+        hpr.addProperty("bug2", "bug2Value");
 
         Set<PropertyResolver> propertyResolverList = new TreeSet<PropertyResolver>();
         propertyResolverList.add(hpr);
