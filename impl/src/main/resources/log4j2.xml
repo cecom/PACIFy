@@ -3,7 +3,7 @@
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout>
-                <ScriptPatternSelector defaultPattern="%highlight{%-5p | %d{dd.MM.yyyy HH:mm:ss,SSS} %r | %m%n}">
+                <ScriptPatternSelector defaultPattern="%highlight{%-5p | %d{dd.MM.yyyy HH:mm:ss,SSS} %r | %m%n}" noConsoleNoAnsi="true">
                     <Script name="selector" language="javascript"><![CDATA[
                        substitutor.replace("${main:pacifyLogLevel}"); 
                     ]]>
