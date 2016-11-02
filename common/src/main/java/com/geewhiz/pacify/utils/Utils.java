@@ -58,20 +58,15 @@ public class Utils {
         return attr.getValue("Implementation-Version");
     }
 
-    public static PacifyFilter getPacifyFilter(PMarker pMarker, PFile pFile) throws DefectException {
-        return getPacifyFilter(pMarker, null, pFile);
-    }
-
-    public static PacifyFilter getPacifyFilter(PMarker pMarker, PArchive pArchive, PFile pFile) throws DefectException {
+    public static PacifyFilter getPacifyFilter(PFile pFile) throws DefectException {
         String filterClass = pFile.getFilterClass();
 
         try {
-            PacifyFilter filter = (PacifyFilter) Class.forName(filterClass).getConstructor(PMarker.class, PArchive.class, PFile.class)
-                    .newInstance(pMarker, pArchive, pFile);
+            PacifyFilter filter = (PacifyFilter) Class.forName(filterClass).getConstructor(PFile.class).newInstance(pFile);
             return filter;
         } catch (Exception e) {
             logger.debug("Error while instantiate filter class [" + filterClass + "]", e);
-            throw new FilterNotFoundDefect(pMarker, pArchive, pFile);
+            throw new FilterNotFoundDefect(pFile);
         }
 
     }

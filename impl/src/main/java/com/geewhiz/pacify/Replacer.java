@@ -127,13 +127,11 @@ public class Replacer {
     }
 
     public LinkedHashSet<Defect> doReplacement(EntityManager entityManager) {
+        FilterManager filterManager = new FilterManager(entityManager, propertyResolveManager);
+
         LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
-        for (PMarker pMarker : entityManager.getPMarkers()) {
-            logger.info("   Processing Marker File [{}],", pMarker.getFile().getAbsolutePath());
-            FilterManager filterManager = new FilterManager(propertyResolveManager,
-                    pMarker);
-            defects.addAll(filterManager.doFilter());
-        }
+        defects.addAll(filterManager.doFilter());
+
         return defects;
     }
 

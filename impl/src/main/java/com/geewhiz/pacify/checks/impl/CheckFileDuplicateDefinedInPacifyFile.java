@@ -26,20 +26,21 @@ import java.util.List;
 import com.geewhiz.pacify.checks.PMarkerCheck;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.FileDuplicateDefinedInPMarkerDefect;
+import com.geewhiz.pacify.managers.EntityManager;
 import com.geewhiz.pacify.model.PArchive;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
 
 public class CheckFileDuplicateDefinedInPacifyFile implements PMarkerCheck {
 
-    public LinkedHashSet<Defect> checkForErrors(PMarker pMarker) {
+    public LinkedHashSet<Defect> checkForErrors(EntityManager entityManager,PMarker pMarker) {
         LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
 
-        for (PArchive pArchive : pMarker.getPArchives()) {
+        for (PArchive pArchive :entityManager.getPArchivesFrom(pMarker)) {
             checkPFiles(defects, pMarker, pArchive, pArchive.getPFiles());
         }
 
-        checkPFiles(defects, pMarker, pMarker.getPFiles());
+        checkPFiles(defects, pMarker,  entityManager.getPFilesFrom(pMarker));
         return defects;
     }
 

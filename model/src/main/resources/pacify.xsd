@@ -31,6 +31,13 @@
             <xs:element name="Property" type="PProperty"/>
         </xs:sequence>
         <xs:attribute name="RelativePath" type="xs:string" use="required"/>
+        <xs:attribute name="UseRegExResolution" type="xs:boolean" default="false">
+            <xs:annotation>
+                <xs:documentation xml:lang="en">
+                             If your relative path contains a RegExp you have to set this attribute to true.
+                        </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
         <xs:attribute name="Encoding" type="xs:string" default="UTF-8"/>
         <xs:attribute name="FilterClass" type="xs:string" default="com.geewhiz.pacify.filter.PacifyTokenFilter">
             <xs:annotation>

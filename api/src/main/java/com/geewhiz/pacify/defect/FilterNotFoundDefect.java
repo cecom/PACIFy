@@ -1,8 +1,6 @@
 package com.geewhiz.pacify.defect;
 
-import com.geewhiz.pacify.model.PArchive;
 import com.geewhiz.pacify.model.PFile;
-import com.geewhiz.pacify.model.PMarker;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -27,18 +25,13 @@ public class FilterNotFoundDefect extends DefectException {
 
     private static final long serialVersionUID = 1L;
 
-    public FilterNotFoundDefect(PMarker pMarker, PFile pFile) {
-        super(pMarker, pFile);
-    }
-
-    public FilterNotFoundDefect(PMarker pMarker, PArchive pArchive, PFile pFile) {
-        super(pMarker, pArchive, pFile);
+    public FilterNotFoundDefect(PFile pFile) {
+        super(pFile);
     }
 
     @Override
     public String getDefectMessage() {
-        return super.getDefectMessage() +
-                String.format("\n\t[Filter=%s]", getPFile().getFilterClass()) +
-                String.format("\n\t[Message=%s]", "Couldn't find filter class or couldn't initialize it. Have a look at the debug output.");
+        return super.getDefectMessage() + String.format("\n\t[Filter=%s]", getPFile().getFilterClass())
+                + String.format("\n\t[Message=%s]", "Couldn't find filter class or couldn't initialize it. Have a look at the debug output.");
     }
 }

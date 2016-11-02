@@ -1,8 +1,6 @@
 package com.geewhiz.pacify.defect;
 
-import com.geewhiz.pacify.model.PArchive;
 import com.geewhiz.pacify.model.PFile;
-import com.geewhiz.pacify.model.PMarker;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -29,20 +27,14 @@ public class WrongTokenDefinedDefect extends DefectException {
 
     private String            errorMessage;
 
-    public WrongTokenDefinedDefect(PMarker pMarker, PFile pFile, String errorMessage) {
-        super(pMarker, pFile);
-        this.errorMessage = errorMessage;
-    }
-
-    public WrongTokenDefinedDefect(PMarker pMarker, PArchive pArchive, PFile pFile, String errorMessage) {
-        super(pMarker, pArchive, pFile);
+    public WrongTokenDefinedDefect(PFile pFile, String errorMessage) {
+        super(pFile);
         this.errorMessage = errorMessage;
     }
 
     @Override
     public String getDefectMessage() {
-        return super.getDefectMessage() +
-                String.format("\n\t[ErrorMessage=%s]", errorMessage);
+        return super.getDefectMessage() + String.format("\n\t[ErrorMessage=%s]", errorMessage);
     }
 
     @Override

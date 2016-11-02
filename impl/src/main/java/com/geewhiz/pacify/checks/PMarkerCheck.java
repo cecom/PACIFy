@@ -22,6 +22,7 @@ package com.geewhiz.pacify.checks;
 import java.util.LinkedHashSet;
 
 import com.geewhiz.pacify.defect.Defect;
+import com.geewhiz.pacify.managers.EntityManager;
 import com.geewhiz.pacify.model.PMarker;
 
 public interface PMarkerCheck {
@@ -30,5 +31,5 @@ public interface PMarkerCheck {
      * @param pMarker which should be checked?
      * @return if there are defects, return a list with the defects.
      */
-    LinkedHashSet<Defect> checkForErrors(PMarker pMarker);
+    LinkedHashSet<Defect> checkForErrors(EntityManager entityManager, PMarker pMarker);
 }

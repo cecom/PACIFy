@@ -56,6 +56,15 @@ public abstract class DefectException extends Exception implements Defect {
         this(pMarker, null, pFile, pProperty);
     }
 
+    public DefectException(PFile pFile, PProperty pProperty) {
+        this(pFile.getPMarker(), pFile.getPArchive(), pFile, pProperty);
+    }
+
+    public DefectException(PFile pFile) {
+        this(pFile.getPMarker(), pFile.getPArchive(), pFile, null);
+    }
+
+    // TODO: hier aufräumen, brauch nur noch PFile Constructor
     public DefectException(PMarker pMarker, PArchive pArchive, PFile pFile, PProperty pProperty) {
         this.pMarker = pMarker;
         this.pArchive = pArchive;
@@ -87,13 +96,13 @@ public abstract class DefectException extends Exception implements Defect {
             result.append(String.format("\n\t[MarkerFile=%s]", pMarker.getFile().getAbsolutePath()));
         }
         if (pArchive != null) {
-            result.append(String.format("\n\t[Archive=%s]", pMarker.getAbsoluteFileFor(pArchive)));
+            result.append(String.format("\n\t[Archive=%s]", pArchive.getFile().getAbsolutePath()));
             if (pFile != null) {
                 result.append(String.format("\n\t[Archive File=%s]", pFile.getRelativePath()));
             }
         } else {
             if (pFile != null) {
-                result.append(String.format("\n\t[File=%s]", pMarker.getAbsoluteFileFor(pFile)));
+                result.append(String.format("\n\t[File=%s]", pFile.getFile().getAbsolutePath()));
             }
         }
 

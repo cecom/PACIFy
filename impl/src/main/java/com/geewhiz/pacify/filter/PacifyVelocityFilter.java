@@ -45,13 +45,9 @@ public class PacifyVelocityFilter implements PacifyFilter {
     private static final String BEGIN_TOKEN = "${";
     private static final String END_TOKEN   = "}";
 
-    private PMarker             pMarker;
-    private PArchive            pArchive;
     private PFile               pFile;
 
-    public PacifyVelocityFilter(PMarker pMarker, PArchive pArchive, PFile pFile) {
-        this.pMarker = pMarker;
-        this.pArchive = pArchive;
+    public PacifyVelocityFilter(PFile pFile) {
         this.pFile = pFile;
     }
 
@@ -60,13 +56,12 @@ public class PacifyVelocityFilter implements PacifyFilter {
         LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
 
         if (!BEGIN_TOKEN.equals(beginToken)) {
-            defects.add(new WrongTokenDefinedDefect(pMarker, pArchive, pFile,
-                    "If you use the PacifyVelocityFilter class, only \"" + BEGIN_TOKEN + "\" is allowed as start token."));
+            defects.add(
+                    new WrongTokenDefinedDefect(pFile, "If you use the PacifyVelocityFilter class, only \"" + BEGIN_TOKEN + "\" is allowed as start token."));
         }
 
-        if (!END_TOKEN.equals(pMarker.getEndTokenFor(pFile))) {
-            defects.add(new WrongTokenDefinedDefect(pMarker, pArchive, pFile,
-                    "If you use the PacifyVelocityFilter class, only \"" + END_TOKEN + "\" is allowed as end token."));
+        if (!END_TOKEN.equals(endToken)) {
+            defects.add(new WrongTokenDefinedDefect(pFile, "If you use the PacifyVelocityFilter class, only \"" + END_TOKEN + "\" is allowed as end token."));
         }
 
         if (!defects.isEmpty()) {
@@ -86,8 +81,7 @@ public class PacifyVelocityFilter implements PacifyFilter {
                 throw new RuntimeException("Couldn't delete file [" + fileToFilter.getPath() + "]... Aborting!");
             }
             if (!tmpFile.renameTo(fileToFilter)) {
-                throw new RuntimeException("Couldn't rename filtered file from [" + tmpFile.getPath() + "] to ["
-                        + fileToFilter.getPath() + "]... Aborting!");
+                throw new RuntimeException("Couldn't rename filtered file from [" + tmpFile.getPath() + "] to [" + fileToFilter.getPath() + "]... Aborting!");
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

@@ -29,6 +29,7 @@ import com.geewhiz.pacify.defect.PropertyNotDefinedInResolverDefect;
 import com.geewhiz.pacify.defect.ResolverDefect;
 import com.geewhiz.pacify.exceptions.CycleDetectRuntimeException;
 import com.geewhiz.pacify.exceptions.ResolverRuntimeException;
+import com.geewhiz.pacify.managers.EntityManager;
 import com.geewhiz.pacify.managers.PropertyResolveManager;
 import com.geewhiz.pacify.model.PArchive;
 import com.geewhiz.pacify.model.PFile;
@@ -43,14 +44,14 @@ public class CheckPropertyExists implements PMarkerCheck {
         this.propertyResolveManager = propertyResolveManager;
     }
 
-    public LinkedHashSet<Defect> checkForErrors(PMarker pMarker) {
+    public LinkedHashSet<Defect> checkForErrors(EntityManager entityManager, PMarker pMarker) {
         LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
 
-        for (PArchive pArchive : pMarker.getPArchives()) {
+        for (PArchive pArchive : entityManager.getPArchivesFrom(pMarker)) {
             checkPFiles(defects, pMarker, pArchive, pArchive.getPFiles());
         }
 
-        checkPFiles(defects, pMarker, pMarker.getPFiles());
+        checkPFiles(defects, pMarker, entityManager.getPFilesFrom(pMarker));
         return defects;
     }
 

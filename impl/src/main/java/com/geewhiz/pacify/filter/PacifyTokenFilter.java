@@ -11,9 +11,7 @@ import org.apache.tools.ant.types.FilterSetCollection;
 import org.apache.tools.ant.util.FileUtils;
 
 import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.model.PArchive;
 import com.geewhiz.pacify.model.PFile;
-import com.geewhiz.pacify.model.PMarker;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -36,7 +34,7 @@ import com.geewhiz.pacify.model.PMarker;
 
 public class PacifyTokenFilter implements PacifyFilter {
 
-    public PacifyTokenFilter(PMarker pMarker, PArchive pArchive, PFile pFile) {
+    public PacifyTokenFilter(PFile pFile) {
         // this filter doesn't need this parameters, but this constructor is needed.
     }
 
@@ -52,8 +50,7 @@ public class PacifyTokenFilter implements PacifyFilter {
                 throw new RuntimeException("Couldn't delete file [" + fileToFilter.getPath() + "]... Aborting!");
             }
             if (!tmpFile.renameTo(fileToFilter)) {
-                throw new RuntimeException("Couldn't rename filtered file from [" + tmpFile.getPath() + "] to ["
-                        + fileToFilter.getPath() + "]... Aborting!");
+                throw new RuntimeException("Couldn't rename filtered file from [" + tmpFile.getPath() + "] to [" + fileToFilter.getPath() + "]... Aborting!");
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

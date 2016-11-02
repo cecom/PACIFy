@@ -35,6 +35,7 @@
                         <arg>-XhashCode</arg>
                         <arg>-XtoString</arg>
                         <arg>-Xannotate</arg>
+                        <arg>-Xcopyable</arg>
                     </args>
                 </configuration>
                 <executions>

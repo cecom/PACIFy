@@ -25,6 +25,7 @@ import java.util.LinkedHashSet;
 import com.geewhiz.pacify.checks.PMarkerCheck;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.FileDoesNotExistDefect;
+import com.geewhiz.pacify.managers.EntityManager;
 import com.geewhiz.pacify.model.PArchive;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
@@ -32,16 +33,16 @@ import com.geewhiz.pacify.utils.FileUtils;
 
 public class CheckTargetFileExist implements PMarkerCheck {
 
-    public LinkedHashSet<Defect> checkForErrors(PMarker pMarker) {
+    public LinkedHashSet<Defect> checkForErrors(EntityManager entityManager, PMarker pMarker) {
         LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
 
-        checkArchiveEntries(defects, pMarker);
-        checkPFileEntries(defects, pMarker);
+        checkArchiveEntries(entityManager, defects, pMarker);
+        checkPFileEntries(entityManager, defects, pMarker);
         return defects;
     }
 
-    private void checkArchiveEntries(LinkedHashSet<Defect> defects, PMarker pMarker) {
-        for (PArchive pArchive : pMarker.getPArchives()) {
+    private void checkArchiveEntries(EntityManager entityManager, LinkedHashSet<Defect> defects, PMarker pMarker) {
+        for (PArchive pArchive : entityManager.getPArchivesFrom(pMarker)) {
             for (PFile pFile : pArchive.getPFiles()) {
                 if (!FileUtils.archiveContainsFile(pMarker, pArchive, pFile)) {
                     defects.add(new FileDoesNotExistDefect(pMarker, pArchive, pFile));
@@ -51,9 +52,9 @@ public class CheckTargetFileExist implements PMarkerCheck {
 
     }
 
-    private void checkPFileEntries(LinkedHashSet<Defect> defects, PMarker pMarker) {
-        for (PFile pFile : pMarker.getPFiles()) {
-            File file = pMarker.getAbsoluteFileFor(pFile);
+    private void checkPFileEntries(EntityManager entityManager, LinkedHashSet<Defect> defects, PMarker pMarker) {
+        for (PFile pFile : entityManager.getPFilesFrom(pMarker)) {
+            File file = pFile.getFile();
             if (file.exists() && file.isFile()) {
                 continue;
             }

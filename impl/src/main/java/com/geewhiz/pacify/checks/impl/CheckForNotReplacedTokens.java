@@ -11,6 +11,7 @@ import com.geewhiz.pacify.checks.PMarkerCheck;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.DefectException;
 import com.geewhiz.pacify.defect.NotReplacedPropertyDefect;
+import com.geewhiz.pacify.managers.EntityManager;
 import com.geewhiz.pacify.model.PArchive;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
@@ -39,44 +40,38 @@ import com.geewhiz.pacify.utils.RegExpUtils;
 public class CheckForNotReplacedTokens implements PMarkerCheck {
 
     @Override
-    public LinkedHashSet<Defect> checkForErrors(PMarker pMarker) {
+    public LinkedHashSet<Defect> checkForErrors(EntityManager entityManager, PMarker pMarker) {
         LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
 
-        checkArchiveEntries(defects, pMarker);
-        checkPFileEntries(defects, pMarker);
+        checkArchiveEntries(entityManager, defects, pMarker);
+        checkPFileEntries(entityManager, defects, pMarker);
 
         return defects;
     }
 
-    private void checkArchiveEntries(LinkedHashSet<Defect> defects, PMarker pMarker) {
-        for (PArchive pArchive : pMarker.getPArchives()) {
+    private void checkArchiveEntries(EntityManager entityManager, LinkedHashSet<Defect> defects, PMarker pMarker) {
+        for (PArchive pArchive : entityManager.getPArchivesFrom(pMarker)) {
             for (PFile pFile : pArchive.getPFiles()) {
                 String fileContent = getFileContent(pMarker, pArchive, pFile);
 
-                String beginToken = pMarker.getBeginTokenFor(pArchive, pFile);
-                String endToken = pMarker.getEndTokenFor(pArchive, pFile);
-
-                checkContent(defects, pMarker, pArchive, pFile, fileContent, beginToken, endToken);
+                checkContent(defects, pMarker, pArchive, pFile, fileContent);
             }
         }
     }
 
-    private void checkPFileEntries(LinkedHashSet<Defect> defects, PMarker pMarker) {
-        for (PFile pFile : pMarker.getPFiles()) {
-            File file = pMarker.getAbsoluteFileFor(pFile);
+    private void checkPFileEntries(EntityManager entityManager, LinkedHashSet<Defect> defects, PMarker pMarker) {
+        for (PFile pFile : entityManager.getPFilesFrom(pMarker)) {
+            File file = pFile.getFile();
 
-            String beginToken = pMarker.getBeginTokenFor(pFile);
-            String endToken = pMarker.getEndTokenFor(pFile);
             String encoding = pFile.getEncoding();
             String fileContent = FileUtils.getFileInOneString(file, encoding);
 
-            checkContent(defects, pMarker, null, pFile, fileContent, beginToken, endToken);
+            checkContent(defects, pMarker, null, pFile, fileContent);
         }
     }
 
-    private void checkContent(LinkedHashSet<Defect> defects, PMarker pMarker, PArchive pArchive, PFile pFile, String fileContent, String beginToken,
-            String endToken) {
-        for (String property : getNotReplacedProperties(fileContent, beginToken, endToken)) {
+    private void checkContent(LinkedHashSet<Defect> defects, PMarker pMarker, PArchive pArchive, PFile pFile, String fileContent) {
+        for (String property : getNotReplacedProperties(fileContent, pFile.getBeginToken(), pFile.getEndToken())) {
             Defect defect = new NotReplacedPropertyDefect(pMarker, pArchive, pFile, property);
             defects.add(defect);
         }

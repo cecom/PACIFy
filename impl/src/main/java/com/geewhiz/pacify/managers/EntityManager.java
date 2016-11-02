@@ -38,7 +38,10 @@ import org.apache.logging.log4j.Logger;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.XMLValidationDefect;
 import com.geewhiz.pacify.model.ObjectFactory;
+import com.geewhiz.pacify.model.PArchive;
+import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
+import com.geewhiz.pacify.model.utils.PFileResolver;
 import com.geewhiz.pacify.model.utils.PacifyFilesFinder;
 
 public class EntityManager {
@@ -75,6 +78,7 @@ public class EntityManager {
             try {
                 PMarker pMarker = unmarshal(markerFile);
                 pMarker.setFile(markerFile);
+
                 pMarkers.add(pMarker);
             } catch (JAXBException e) {
                 defects.add(new XMLValidationDefect(markerFile));
@@ -89,6 +93,33 @@ public class EntityManager {
             throw new RuntimeException("You didn't initialize the EntityManager. Call initialize().");
         }
         return pMarkers;
+    }
+
+    public List<PFile> getPFilesFrom(PMarker pMarker) {
+        List<PFile> result = new ArrayList<PFile>();
+
+        for (Object entry : pMarker.getFilesAndArchives()) {
+            if (entry instanceof PFile) {
+                PFile pFile = (PFile) entry;
+                pFile.setPMarker(pMarker);
+                PFileResolver resolver = new PFileResolver(pFile);
+                result.addAll(resolver.resolve());
+            }
+        }
+        return result;
+    }
+
+    public List<PArchive> getPArchivesFrom(PMarker pMarker) {
+        List<PArchive> result = new ArrayList<PArchive>();
+
+        for (Object entry : pMarker.getFilesAndArchives()) {
+            if (entry instanceof PArchive) {
+                PArchive pArchive = (PArchive) entry;
+                pArchive.setPMarker(pMarker);
+                result.add(pArchive);
+            }
+        }
+        return result;
     }
 
     private PMarker unmarshal(File file) throws JAXBException {

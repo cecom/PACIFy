@@ -47,32 +47,34 @@ public class FilterManager {
 
     private Logger                 logger = LogManager.getLogger(FilterManager.class.getName());
 
+    private EntityManager          entityManager;
     private PropertyResolveManager propertyResolveManager;
-    private PMarker                pMarker;
 
-    public FilterManager(PropertyResolveManager propertyResolveManager, PMarker pMarker) {
+    public FilterManager(EntityManager entityManager, PropertyResolveManager propertyResolveManager) {
+        this.entityManager = entityManager;
         this.propertyResolveManager = propertyResolveManager;
-        this.pMarker = pMarker;
     }
 
     public LinkedHashSet<Defect> doFilter() {
         LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
 
-        for (Object entry : pMarker.getFilesAndArchives()) {
-            if (entry instanceof PFile) {
-                defects.addAll(filterPFile((PFile) entry));
-            } else if (entry instanceof PArchive) {
-                defects.addAll(filterPArchive((PArchive) entry));
-            } else {
-                throw new NotImplementedException("Filter implementation for " + entry.getClass().getName() + " not implemented.");
+        for (PMarker pMarker : entityManager.getPMarkers()) {
+            logger.info("   Processing Marker File [{}],", pMarker.getFile().getAbsolutePath());
+
+            for (PFile pFile : entityManager.getPFilesFrom(pMarker)) {
+                defects.addAll(filterPFile(pFile));
             }
-        }
 
-        CheckForNotReplacedTokens checker = new CheckForNotReplacedTokens();
-        defects.addAll(checker.checkForErrors(pMarker));
+            for (PArchive pArchive : entityManager.getPArchivesFrom(pMarker)) {
+                defects.addAll(filterPArchive(pArchive));
+            }
 
-        if (defects.isEmpty()) {
-            pMarker.getFile().delete();
+            CheckForNotReplacedTokens checker = new CheckForNotReplacedTokens();
+            defects.addAll(checker.checkForErrors(entityManager, pMarker));
+
+            if (defects.isEmpty()) {
+                pMarker.getFile().delete();
+            }
         }
 
         return defects;
@@ -80,17 +82,17 @@ public class FilterManager {
 
     private LinkedHashSet<Defect> filterPFile(PFile pFile) {
         logger.info("      Customize File [{}]", pFile.getRelativePath());
-        logger.debug("          Filtering [{}] using encoding [{}] and filter [{}]", pMarker.getAbsoluteFileFor(pFile).getAbsolutePath(), pFile.getEncoding(),
+        logger.debug("          Filtering [{}] using encoding [{}] and filter [{}]", pFile.getFile().getAbsolutePath(), pFile.getEncoding(),
                 pFile.getFilterClass());
 
-        File fileToFilter = pMarker.getAbsoluteFileFor(pFile);
+        File fileToFilter = pFile.getFile();
         PacifyFilter pacifyFilter = getFilterForPFile(pFile);
 
         Map<String, String> propertyValues = new HashMap<String, String>();
         LinkedHashSet<Defect> defects = fillPropertyValuesFor(propertyValues, pFile);
 
-        String beginToken = pMarker.getBeginTokenFor(pFile);
-        String endToken = pMarker.getEndTokenFor(pFile);
+        String beginToken = pFile.getBeginToken();
+        String endToken = pFile.getEndToken();
         String encoding = pFile.getEncoding();
 
         defects.addAll(pacifyFilter.filter(propertyValues, beginToken, endToken, fileToFilter, encoding));
@@ -112,11 +114,10 @@ public class FilterManager {
         for (PFile pFile : pArchive.getPFiles()) {
             logger.info("         Customize File [{}]", pFile.getRelativePath());
             logger.debug("             Filtering [{}] in archive [{}] using encoding [{}] and filter [{}]", pFile.getRelativePath(),
-                    pMarker.getAbsoluteFileFor(pArchive).getAbsolutePath(), pFile.getEncoding(),
-                    pFile.getFilterClass());
+                    pArchive.getFile().getAbsolutePath(), pFile.getEncoding(), pFile.getFilterClass());
 
             File fileToFilter = extractFile(pArchive, pFile);
-            PacifyFilter pacifyFilter = getFilterForPFile(pArchive, pFile);
+            PacifyFilter pacifyFilter = getFilterForPFile(pFile);
 
             Map<String, String> propertyValues = new HashMap<String, String>();
             LinkedHashSet<Defect> propertyValueDefects = fillPropertyValuesFor(propertyValues, pFile);
@@ -124,8 +125,8 @@ public class FilterManager {
                 return propertyValueDefects;
             }
 
-            String beginToken = pMarker.getBeginTokenFor(pArchive, pFile);
-            String endToken = pMarker.getEndTokenFor(pArchive, pFile);
+            String beginToken = pFile.getBeginToken();
+            String endToken = pFile.getEndToken();
             String encoding = pFile.getEncoding();
 
             defects.addAll(pacifyFilter.filter(propertyValues, beginToken, endToken, fileToFilter, encoding));
@@ -135,7 +136,7 @@ public class FilterManager {
         }
 
         try {
-            FileUtils.replaceFilesInArchive(pMarker, pArchive, replaceFiles);
+            FileUtils.replaceFilesInArchive(pArchive.getPMarker(), pArchive, replaceFiles);
         } catch (ArchiveDefect e) {
             defects.add(e);
         }
@@ -156,7 +157,7 @@ public class FilterManager {
             try {
                 propertyValue = propertyResolveManager.getPropertyValue(pProperty);
             } catch (PropertyNotFoundRuntimeException e) {
-                Defect defect = new PropertyNotDefinedInResolverDefect(pMarker, pFile, pProperty, propertyResolveManager.toString());
+                Defect defect = new PropertyNotDefinedInResolverDefect(pFile.getPMarker(), pFile, pProperty, propertyResolveManager.toString());
                 defects.add(defect);
                 continue;
             }
@@ -167,12 +168,8 @@ public class FilterManager {
     }
 
     private PacifyFilter getFilterForPFile(PFile pFile) {
-        return getFilterForPFile(null, pFile);
-    }
-
-    private PacifyFilter getFilterForPFile(PArchive pArchive, PFile pFile) {
         try {
-            return Utils.getPacifyFilter(pMarker, pArchive, pFile);
+            return Utils.getPacifyFilter(pFile);
         } catch (DefectException e) {
             // is checked before, so we should not get this exception here.
             throw new RuntimeException(e);
@@ -181,7 +178,7 @@ public class FilterManager {
 
     private File extractFile(PArchive pArchive, PFile pFile) {
         try {
-            return FileUtils.extractFile(pMarker, pArchive, pFile);
+            return FileUtils.extractFile(pArchive.getPMarker(), pArchive, pFile);
         } catch (DefectException e) {
             // Existence is checked before, so we should not get this exception here
             throw new RuntimeException(e);

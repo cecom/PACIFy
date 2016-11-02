@@ -2,7 +2,6 @@ package com.geewhiz.pacify.model;
 
 import java.io.File;
 
-import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.jvnet.jaxb2_commons.lang.CopyStrategy;
 import org.jvnet.jaxb2_commons.lang.EqualsStrategy;
 import org.jvnet.jaxb2_commons.lang.HashCodeStrategy;
@@ -28,14 +27,10 @@ import org.jvnet.jaxb2_commons.locator.ObjectLocator;
  * under the License.
  */
 
-public abstract class PArchiveBase {
+public abstract class PFileBase {
 
-    private PMarker pMarker;
-
-    public String getInternalType() {
-        int idx = getRelativePath().lastIndexOf(".");
-        return getRelativePath().substring(idx + 1);
-    }
+    private PMarker  pMarker;
+    private PArchive pArchive;
 
     public void setPMarker(PMarker pMarker) {
         this.pMarker = pMarker;
@@ -45,43 +40,38 @@ public abstract class PArchiveBase {
         return pMarker;
     }
 
-    public String getType() {
-        String type = getInternalType();
-
-        if ("jar".equalsIgnoreCase(type)) {
-            return ArchiveStreamFactory.JAR;
-        }
-        if ("war".equalsIgnoreCase(type)) {
-            return ArchiveStreamFactory.JAR;
-        }
-        if ("ear".equalsIgnoreCase(type)) {
-            return ArchiveStreamFactory.JAR;
-        }
-        if ("zip".equalsIgnoreCase(type)) {
-            return ArchiveStreamFactory.ZIP;
-        }
-        if ("tar".equalsIgnoreCase(type)) {
-            return ArchiveStreamFactory.TAR;
-        }
-        return type;
+    public PArchive getPArchive() {
+        return pArchive;
     }
 
-    public String getBeginToken() {
-        return getInternalBeginToken() != null ? getInternalBeginToken() : getPMarker().getBeginToken();
-    }
-
-    public String getEndToken() {
-        return getInternalEndToken() != null ? getInternalEndToken() : getPMarker().getEndToken();
+    public void setPArchive(PArchive pArchive) {
+        this.pArchive = pArchive;
     }
 
     public File getFile() {
         return new File(getPMarker().getFolder(), getRelativePath());
     }
-    
+
+    public String getBeginToken() {
+        if (getInternalBeginToken() != null)
+            return getInternalBeginToken();
+        if (getPArchive() != null)
+            return getPArchive().getBeginToken();
+        return getPMarker().getBeginToken();
+    }
+
+    public String getEndToken() {
+        if (getInternalEndToken() != null)
+            return getInternalEndToken();
+        if (getPArchive() != null)
+            return getPArchive().getEndToken();
+        return getPMarker().getEndToken();
+    }
+
     public abstract String getInternalEndToken();
 
     public abstract String getInternalBeginToken();
-    
+
     public abstract String getRelativePath();
 
     public int hashCode(ObjectLocator locator, HashCodeStrategy strategy) {
@@ -100,9 +90,10 @@ public abstract class PArchiveBase {
     }
 
     public Object copyTo(ObjectLocator locator, Object draftCopy, CopyStrategy strategy) {
-        if (draftCopy instanceof PArchive) {
-            ((PArchive) draftCopy).setPMarker(pMarker);
+        if (draftCopy instanceof PFile) {
+            ((PFile) draftCopy).setPMarker(pMarker);
         }
         return draftCopy;
     }
+
 }

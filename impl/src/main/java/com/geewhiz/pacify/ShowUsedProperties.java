@@ -96,8 +96,7 @@ public class ShowUsedProperties {
             throw new RuntimeException(e);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
-        }
-        finally {
+        } finally {
             if (writer != null) {
                 writer.close();
             }
@@ -115,20 +114,16 @@ public class ShowUsedProperties {
         for (PMarker pMarker : entityManager.getPMarkers()) {
             logger.info("   [{}]", pMarker.getFile().getAbsolutePath());
 
-            for (Object entry : pMarker.getFilesAndArchives()) {
-                if (entry instanceof PFile) {
-                    PFile pFile = (PFile) entry;
-                    logger.debug("      [Getting properties for file {}]", pFile.getRelativePath());
+            for (PFile pFile : entityManager.getPFilesFrom(pMarker)) {
+                logger.debug("      [Getting properties for file {}]", pFile.getRelativePath());
+                getPFileProperties(allUsedProperties, pFile);
+            }
+
+            for (PArchive pArchive : entityManager.getPArchivesFrom(pMarker)) {
+                for (PFile pFile : pArchive.getPFiles()) {
+                    logger.debug("      [Getting properties for archive [{}]", pArchive.getRelativePath());
+                    logger.debug("          [file [{}]", pFile.getRelativePath());
                     getPFileProperties(allUsedProperties, pFile);
-                } else if (entry instanceof PArchive) {
-                    PArchive pArchive = (PArchive) entry;
-                    for (PFile pFile : pArchive.getPFiles()) {
-                        logger.debug("      [Getting properties for archive [{}]", pArchive.getRelativePath());
-                        logger.debug("          [file [{}]", pFile.getRelativePath());
-                        getPFileProperties(allUsedProperties, pFile);
-                    }
-                } else {
-                    throw new NotImplementedException("ShowUsedProperty implementation for " + entry.getClass().getName() + " not implemented.");
                 }
             }
         }

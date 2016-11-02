@@ -32,6 +32,7 @@ import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.DefectException;
 import com.geewhiz.pacify.defect.NoPlaceholderInTargetFileDefect;
 import com.geewhiz.pacify.defect.PlaceholderNotDefinedDefect;
+import com.geewhiz.pacify.managers.EntityManager;
 import com.geewhiz.pacify.model.PArchive;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
@@ -41,17 +42,17 @@ import com.geewhiz.pacify.utils.RegExpUtils;
 
 public class CheckPlaceholderExistsInTargetFile implements PMarkerCheck {
 
-    public LinkedHashSet<Defect> checkForErrors(PMarker pMarker) {
+    public LinkedHashSet<Defect> checkForErrors(EntityManager entityManager, PMarker pMarker) {
         LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
 
-        checkArchives(pMarker, defects);
-        checkPFiles(pMarker, defects);
+        checkArchives(entityManager, pMarker, defects);
+        checkPFiles(entityManager, pMarker, defects);
 
         return defects;
     }
 
-    private void checkArchives(PMarker pMarker, LinkedHashSet<Defect> defects) {
-        for (PArchive pArchive : pMarker.getPArchives()) {
+    private void checkArchives(EntityManager entityManager, PMarker pMarker, LinkedHashSet<Defect> defects) {
+        for (PArchive pArchive : entityManager.getPArchivesFrom(pMarker)) {
             for (PFile pFile : pArchive.getPFiles()) {
                 String fileContent = null;
                 try {
@@ -61,12 +62,9 @@ public class CheckPlaceholderExistsInTargetFile implements PMarkerCheck {
                     continue;
                 }
 
-                String beginToken = pMarker.getBeginTokenFor(pArchive, pFile);
-                String endToken = pMarker.getEndTokenFor(pArchive, pFile);
-
                 // check for properties which are referenced from the marker file
                 for (PProperty pProperty : pFile.getPProperties()) {
-                    boolean exists = doesPropertyExistInFile(fileContent, pProperty, pFile.getEncoding(), beginToken, endToken);
+                    boolean exists = doesPropertyExistInFile(fileContent, pProperty, pFile.getEncoding(), pFile.getBeginToken(), pFile.getEndToken());
                     if (exists) {
                         continue;
                     }
@@ -75,8 +73,8 @@ public class CheckPlaceholderExistsInTargetFile implements PMarkerCheck {
                 }
 
                 // are all properties referenced from the marker file?
-                Set<String> notReferencedPlaceHolders = getNotReferencedPlaceHolders(fileContent, pFile.getEncoding(), pFile.getPProperties(), beginToken,
-                        endToken);
+                Set<String> notReferencedPlaceHolders = getNotReferencedPlaceHolders(fileContent, pFile.getEncoding(), pFile.getPProperties(),
+                        pFile.getBeginToken(), pFile.getEndToken());
 
                 for (String notReferencedPlaceHolder : notReferencedPlaceHolders) {
                     Defect defect = new PlaceholderNotDefinedDefect(pMarker, pArchive, pFile, notReferencedPlaceHolder);
@@ -87,21 +85,18 @@ public class CheckPlaceholderExistsInTargetFile implements PMarkerCheck {
         }
     }
 
-    private void checkPFiles(PMarker pMarker, LinkedHashSet<Defect> defects) {
-        for (PFile pFile : pMarker.getPFiles()) {
-            File file = pMarker.getAbsoluteFileFor(pFile);
+    private void checkPFiles(EntityManager entityManager, PMarker pMarker, LinkedHashSet<Defect> defects) {
+        for (PFile pFile : entityManager.getPFilesFrom(pMarker)) {
+            File file = pFile.getFile();
             if (!file.exists()) {
                 // is checked before
                 continue;
             }
 
-            String beginToken = pMarker.getBeginTokenFor(pFile);
-            String endToken = pMarker.getEndTokenFor(pFile);
-
             // check for properties which are referenced from the marker file
             String fileContent = FileUtils.getFileInOneString(file, pFile.getEncoding());
             for (PProperty pProperty : pFile.getPProperties()) {
-                boolean exists = doesPropertyExistInFile(fileContent, pProperty, pFile.getEncoding(), beginToken, endToken);
+                boolean exists = doesPropertyExistInFile(fileContent, pProperty, pFile.getEncoding(), pFile.getBeginToken(), pFile.getEndToken());
                 if (exists) {
                     continue;
                 }
@@ -110,8 +105,8 @@ public class CheckPlaceholderExistsInTargetFile implements PMarkerCheck {
             }
 
             // are all properties referenced from the marker file?
-            Set<String> notReferencedPlaceHolders = getNotReferencedPlaceHolders(fileContent, pFile.getEncoding(), pFile.getPProperties(), beginToken,
-                    endToken);
+            Set<String> notReferencedPlaceHolders = getNotReferencedPlaceHolders(fileContent, pFile.getEncoding(), pFile.getPProperties(),
+                    pFile.getBeginToken(), pFile.getEndToken());
 
             for (String notReferencedPlaceHolder : notReferencedPlaceHolders) {
                 Defect defect = new PlaceholderNotDefinedDefect(pMarker, pFile, notReferencedPlaceHolder);

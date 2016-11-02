@@ -60,7 +60,7 @@ import com.geewhiz.pacify.model.PMarker;
 
 public class FileUtils {
 
-    private static Logger        logger   = LogManager.getLogger(FileUtils.class.getName());
+    private static Logger logger = LogManager.getLogger(FileUtils.class.getName());
 
     private static final boolean IS_POSIX = FileSystems.getDefault().supportedFileAttributeViews().contains("posix");
 
@@ -132,7 +132,7 @@ public class FileUtils {
         try {
             ArchiveStreamFactory factory = new ArchiveStreamFactory();
 
-            File archiveFile = pMarker.getAbsoluteFileFor(pArchive);
+            File archiveFile = pArchive.getFile();
             ais = factory.createArchiveInputStream(pArchive.getType(), new FileInputStream(archiveFile));
 
             ArchiveEntry entry;
@@ -161,7 +161,7 @@ public class FileUtils {
         try {
             ArchiveStreamFactory factory = new ArchiveStreamFactory();
 
-            File archiveFile = pMarker.getAbsoluteFileFor(pArchive);
+            File archiveFile = pArchive.getFile();
             ais = factory.createArchiveInputStream(pArchive.getType(), new FileInputStream(archiveFile));
 
             ArchiveEntry entry;
@@ -211,7 +211,7 @@ public class FileUtils {
         try {
             ArchiveStreamFactory factory = new ArchiveStreamFactory();
 
-            File archiveFile = pMarker.getAbsoluteFileFor(pArchive);
+            File archiveFile = pArchive.getFile();
             ais = factory.createArchiveInputStream(pArchive.getType(), new FileInputStream(archiveFile));
 
             ArchiveEntry entry;
@@ -256,7 +256,7 @@ public class FileUtils {
         ArchiveOutputStream aos = null;
         List<FileInputStream> streamsToClose = new ArrayList<FileInputStream>();
 
-        File archiveFile = pMarker.getAbsoluteFileFor(pArchive);
+        File archiveFile = pArchive.getFile();
         File tmpArchive = FileUtils.createEmptyFileWithSamePermissions(archiveFile);
 
         try {

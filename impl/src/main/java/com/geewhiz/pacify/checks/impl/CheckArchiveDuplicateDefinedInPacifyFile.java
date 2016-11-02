@@ -26,16 +26,17 @@ import java.util.List;
 import com.geewhiz.pacify.checks.PMarkerCheck;
 import com.geewhiz.pacify.defect.ArchiveDuplicateDefinedInPMarkerDefect;
 import com.geewhiz.pacify.defect.Defect;
+import com.geewhiz.pacify.managers.EntityManager;
 import com.geewhiz.pacify.model.PArchive;
 import com.geewhiz.pacify.model.PMarker;
 
 public class CheckArchiveDuplicateDefinedInPacifyFile implements PMarkerCheck {
 
-    public LinkedHashSet<Defect> checkForErrors(PMarker pMarker) {
+    public LinkedHashSet<Defect> checkForErrors(EntityManager entityManager, PMarker pMarker) {
         LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
 
         List<String> archives = new ArrayList<String>();
-        for (PArchive pArchive : pMarker.getPArchives()) {
+        for (PArchive pArchive : entityManager.getPArchivesFrom(pMarker)) {
             if (archives.contains(pArchive.getRelativePath())) {
                 Defect defect = new ArchiveDuplicateDefinedInPMarkerDefect(pMarker, pArchive);
                 defects.add(defect);

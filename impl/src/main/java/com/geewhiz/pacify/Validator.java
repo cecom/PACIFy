@@ -128,7 +128,7 @@ public class Validator {
             logger.info("   Processing Marker File [{}]", pMarker.getFile().getAbsolutePath());
             for (PMarkerCheck pMarkerCheck : pMarkerChecks) {
                 logger.debug("     Check [{}]", pMarkerCheck.getClass().getName());
-                defects.addAll(pMarkerCheck.checkForErrors(pMarker));
+                defects.addAll(pMarkerCheck.checkForErrors(entityManager, pMarker));
             }
         }
         return defects;

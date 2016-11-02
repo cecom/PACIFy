@@ -34,7 +34,7 @@ public abstract class TestBase {
 
         LinkedHashSet<Defect> defects = entityManager.initialize();
         for (PMarker pMarker : entityManager.getPMarkers()) {
-            defects.addAll(checker.checkForErrors(pMarker));
+            defects.addAll(checker.checkForErrors(entityManager, pMarker));
         }
         return defects;
     }

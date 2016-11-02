@@ -29,6 +29,7 @@ import org.junit.Test;
 
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.managers.EntityManager;
+import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
 
 public class TestXml {
@@ -42,19 +43,21 @@ public class TestXml {
 
         PMarker pMarker = entityManager.getPMarkers().get(0);
 
-        Assert.assertEquals(3, pMarker.getPFiles().size());
+        List<PFile> pFiles = entityManager.getPFilesFrom(pMarker);
 
-        Assert.assertEquals("someConf.conf", pMarker.getPFiles().get(0).getRelativePath());
-        Assert.assertEquals("subfolder/someOtherConf.conf", pMarker.getPFiles().get(1).getRelativePath());
-        Assert.assertEquals("someParentConf.conf", pMarker.getPFiles().get(2).getRelativePath());
+        Assert.assertEquals(3, pFiles.size());
 
-        Assert.assertEquals(1, pMarker.getPFiles().get(0).getPProperties().size());
-        Assert.assertEquals(1, pMarker.getPFiles().get(1).getPProperties().size());
-        Assert.assertEquals(1, pMarker.getPFiles().get(2).getPProperties().size());
+        Assert.assertEquals("someConf.conf", pFiles.get(0).getRelativePath());
+        Assert.assertEquals("subfolder/someOtherConf.conf", pFiles.get(1).getRelativePath());
+        Assert.assertEquals("someParentConf.conf", pFiles.get(2).getRelativePath());
 
-        Assert.assertEquals("foobar1", pMarker.getPFiles().get(0).getPProperties().get(0).getName());
-        Assert.assertEquals("foobar1", pMarker.getPFiles().get(1).getPProperties().get(0).getName());
-        Assert.assertEquals("foobar2", pMarker.getPFiles().get(2).getPProperties().get(0).getName());
+        Assert.assertEquals(1, pFiles.get(0).getPProperties().size());
+        Assert.assertEquals(1, pFiles.get(1).getPProperties().size());
+        Assert.assertEquals(1, pFiles.get(2).getPProperties().size());
+
+        Assert.assertEquals("foobar1", pFiles.get(0).getPProperties().get(0).getName());
+        Assert.assertEquals("foobar1", pFiles.get(1).getPProperties().get(0).getName());
+        Assert.assertEquals("foobar2", pFiles.get(2).getPProperties().get(0).getName());
 
     }
 

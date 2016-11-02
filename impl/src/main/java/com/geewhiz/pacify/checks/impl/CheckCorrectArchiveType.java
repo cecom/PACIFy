@@ -24,15 +24,16 @@ import java.util.LinkedHashSet;
 import com.geewhiz.pacify.checks.PMarkerCheck;
 import com.geewhiz.pacify.defect.ArchiveTypeNotImplementedDefect;
 import com.geewhiz.pacify.defect.Defect;
+import com.geewhiz.pacify.managers.EntityManager;
 import com.geewhiz.pacify.model.PArchive;
 import com.geewhiz.pacify.model.PMarker;
 
 public class CheckCorrectArchiveType implements PMarkerCheck {
 
-    public LinkedHashSet<Defect> checkForErrors(PMarker pMarker) {
+    public LinkedHashSet<Defect> checkForErrors(EntityManager entityManager, PMarker pMarker) {
         LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
 
-        for (PArchive pArchive : pMarker.getPArchives()) {
+        for (PArchive pArchive : entityManager.getPArchivesFrom(pMarker)) {
             String type = pArchive.getInternalType();
             if ("jar".equalsIgnoreCase(type)) {
                 continue;
