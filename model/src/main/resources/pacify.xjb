@@ -40,5 +40,10 @@
         <jaxb:bindings node="xsd:complexType[@name='PFile']/xsd:attribute[@name='EndToken']">
             <jaxb:property name="internalEndToken" />
         </jaxb:bindings>
+
+        <jaxb:bindings node="xsd:complexType[@name='PProperty']">
+            <inheritance:extends>PPropertyBase</inheritance:extends>
+        </jaxb:bindings>
+
     </jaxb:bindings>
 </jaxb:bindings>

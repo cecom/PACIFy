@@ -43,44 +43,25 @@ public class CheckForNotReplacedTokens implements PMarkerCheck {
     public LinkedHashSet<Defect> checkForErrors(EntityManager entityManager, PMarker pMarker) {
         LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
 
-        checkArchiveEntries(entityManager, defects, pMarker);
-        checkPFileEntries(entityManager, defects, pMarker);
+        for (PFile pFile : entityManager.getPFilesFrom(pMarker)) {
+            String fileContent = getFileContent(pFile);
+            checkContent(defects, pFile, fileContent);
+        }
 
         return defects;
     }
 
-    private void checkArchiveEntries(EntityManager entityManager, LinkedHashSet<Defect> defects, PMarker pMarker) {
-        for (PArchive pArchive : entityManager.getPArchivesFrom(pMarker)) {
-            for (PFile pFile : pArchive.getPFiles()) {
-                String fileContent = getFileContent(pMarker, pArchive, pFile);
-
-                checkContent(defects, pMarker, pArchive, pFile, fileContent);
-            }
-        }
-    }
-
-    private void checkPFileEntries(EntityManager entityManager, LinkedHashSet<Defect> defects, PMarker pMarker) {
-        for (PFile pFile : entityManager.getPFilesFrom(pMarker)) {
-            File file = pFile.getFile();
-
-            String encoding = pFile.getEncoding();
-            String fileContent = FileUtils.getFileInOneString(file, encoding);
-
-            checkContent(defects, pMarker, null, pFile, fileContent);
-        }
-    }
-
-    private void checkContent(LinkedHashSet<Defect> defects, PMarker pMarker, PArchive pArchive, PFile pFile, String fileContent) {
+    private void checkContent(LinkedHashSet<Defect> defects, PFile pFile, String fileContent) {
         for (String property : getNotReplacedProperties(fileContent, pFile.getBeginToken(), pFile.getEndToken())) {
-            Defect defect = new NotReplacedPropertyDefect(pMarker, pArchive, pFile, property);
+            Defect defect = new NotReplacedPropertyDefect(pFile, property);
             defects.add(defect);
         }
     }
 
-    private String getFileContent(PMarker pMarker, PArchive pArchive, PFile pFile) {
+    private String getFileContent(PFile pFile) {
         String fileContent;
         try {
-            fileContent = FileUtils.getFileInOneString(pMarker, pArchive, pFile);
+            fileContent = FileUtils.getFileInOneString(pFile);
         } catch (DefectException e) {
             // the existence of the file is checked before, so we should not get this exception
             throw new RuntimeException(e);

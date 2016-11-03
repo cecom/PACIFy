@@ -1,7 +1,5 @@
 package com.geewhiz.pacify.model;
 
-import java.io.File;
-
 import javax.xml.bind.Unmarshaller;
 
 import org.jvnet.jaxb2_commons.lang.CopyStrategy;
@@ -31,62 +29,25 @@ import com.geewhiz.pacify.exceptions.DefectRuntimeException;
  * under the License.
  */
 
-public abstract class PFileBase {
+public abstract class PPropertyBase {
 
-    private PMarker  pMarker;
-    private PArchive pArchive;
+    private PFile pFile;
 
-    public PMarker getPMarker() {
-        return pMarker;
+    public PFile getPFile() {
+        return pFile;
     }
 
-    public PArchive getPArchive() {
-        return pArchive;
+    protected PFile setPFile(PFile pFile) {
+        return pFile;
     }
 
-    protected void setPMarker(PMarker pMarker) {
-        this.pMarker = pMarker;
-    }
-
-    protected void setPArchive(PArchive pArchive) {
-        this.pArchive = pArchive;
-    }
-
-    public String getPUri() {
-        StringBuffer sb = new StringBuffer();
-        if (pArchive != null) {
-            sb.append(pArchive.getPUri());
-            sb.append("!");
+    public void afterUnmarshal(Unmarshaller unmarshaller, Object parent) {
+        if (parent instanceof PFile) {
+            pFile = (PFile) parent;
+        } else {
+            throw new DefectRuntimeException("Wrong Parent [" + parent.getClass().getName() + "]");
         }
-        sb.append(getRelativePath());
-        return sb.toString();
     }
-
-    public File getFile() {
-        return new File(getPMarker().getFolder(), getRelativePath());
-    }
-
-    public String getBeginToken() {
-        if (getInternalBeginToken() != null)
-            return getInternalBeginToken();
-        if (getPArchive() != null)
-            return getPArchive().getBeginToken();
-        return getPMarker().getBeginToken();
-    }
-
-    public String getEndToken() {
-        if (getInternalEndToken() != null)
-            return getInternalEndToken();
-        if (getPArchive() != null)
-            return getPArchive().getEndToken();
-        return getPMarker().getEndToken();
-    }
-
-    public abstract String getInternalEndToken();
-
-    public abstract String getInternalBeginToken();
-
-    public abstract String getRelativePath();
 
     public int hashCode(ObjectLocator locator, HashCodeStrategy strategy) {
         // we don't have any attribute in this class so not needed
@@ -104,20 +65,10 @@ public abstract class PFileBase {
     }
 
     public Object copyTo(ObjectLocator locator, Object draftCopy, CopyStrategy strategy) {
-        if (draftCopy instanceof PFile) {
-            ((PFile) draftCopy).setPMarker(pMarker);
+        if (draftCopy instanceof PProperty) {
+            ((PProperty) draftCopy).setPFile(pFile);
         }
         return draftCopy;
-    }
-
-    public void afterUnmarshal(Unmarshaller unmarshaller, Object parent) {
-        if (parent instanceof PMarker) {
-            pMarker = (PMarker) parent;
-        } else if (parent instanceof PArchive) {
-            pArchive = (PArchive) parent;
-        } else {
-            throw new DefectRuntimeException("Wrong Parent [" + parent.getClass().getName() + "]");
-        }
     }
 
 }

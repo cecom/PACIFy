@@ -2,12 +2,16 @@ package com.geewhiz.pacify.model;
 
 import java.io.File;
 
+import javax.xml.bind.Unmarshaller;
+
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.jvnet.jaxb2_commons.lang.CopyStrategy;
 import org.jvnet.jaxb2_commons.lang.EqualsStrategy;
 import org.jvnet.jaxb2_commons.lang.HashCodeStrategy;
 import org.jvnet.jaxb2_commons.lang.ToStringStrategy;
 import org.jvnet.jaxb2_commons.locator.ObjectLocator;
+
+import com.geewhiz.pacify.exceptions.DefectRuntimeException;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -37,12 +41,18 @@ public abstract class PArchiveBase {
         return getRelativePath().substring(idx + 1);
     }
 
-    public void setPMarker(PMarker pMarker) {
-        this.pMarker = pMarker;
-    }
-
     public PMarker getPMarker() {
         return pMarker;
+    }
+
+    public String getPUri() {
+        StringBuffer sb = new StringBuffer();
+        sb.append(getRelativePath());
+        return sb.toString();
+    }
+
+    protected void setPMarker(PMarker pMarker) {
+        this.pMarker = pMarker;
     }
 
     public String getType() {
@@ -77,11 +87,11 @@ public abstract class PArchiveBase {
     public File getFile() {
         return new File(getPMarker().getFolder(), getRelativePath());
     }
-    
+
     public abstract String getInternalEndToken();
 
     public abstract String getInternalBeginToken();
-    
+
     public abstract String getRelativePath();
 
     public int hashCode(ObjectLocator locator, HashCodeStrategy strategy) {
@@ -104,5 +114,13 @@ public abstract class PArchiveBase {
             ((PArchive) draftCopy).setPMarker(pMarker);
         }
         return draftCopy;
+    }
+
+    public void afterUnmarshal(Unmarshaller unmarshaller, Object parent) {
+        if (parent instanceof PMarker) {
+            pMarker = (PMarker) parent;
+        } else {
+            throw new DefectRuntimeException("Wrong Parent [" + parent.getClass().getName() + "]");
+        }
     }
 }

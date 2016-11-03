@@ -1,7 +1,6 @@
 package com.geewhiz.pacify.defect;
 
 import com.geewhiz.pacify.model.PArchive;
-import com.geewhiz.pacify.model.PMarker;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -27,16 +26,14 @@ public class ArchiveDefect extends DefectException {
     private static final long serialVersionUID = 1L;
     private String            message;
 
-    public ArchiveDefect(PMarker pMarker, PArchive pArchive, String message) {
-        super(pMarker, pArchive);
+    public ArchiveDefect(PArchive pArchive, String message) {
+        super(pArchive);
         this.message = message;
     }
 
     @Override
     public String getDefectMessage() {
-        return super.getDefectMessage() +
-                String.format("\n\t[Type=%s]", getPArchive().getInternalType()) +
-                String.format("\n\t[Message=%s]", message);
+        return super.getDefectMessage() + String.format("\n\t[Type=%s]", getPArchive().getInternalType()) + String.format("\n\t[Message=%s]", message);
     }
 
     @Override

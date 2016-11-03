@@ -1,6 +1,5 @@
 package com.geewhiz.pacify.defect;
 
-import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PProperty;
 
 /*
@@ -26,8 +25,8 @@ public class PropertyDuplicateDefinedInPMarkerDefect extends DefectException {
 
     private static final long serialVersionUID = 1L;
 
-    public PropertyDuplicateDefinedInPMarkerDefect(PFile pFile, PProperty pProperty) {
-        super(pFile, pProperty);
+    public PropertyDuplicateDefinedInPMarkerDefect(PProperty pProperty) {
+        super(pProperty);
     }
 
 }

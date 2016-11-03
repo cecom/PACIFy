@@ -34,7 +34,6 @@ import com.geewhiz.pacify.defect.DefectMessage;
 import com.geewhiz.pacify.managers.EntityManager;
 import com.geewhiz.pacify.managers.FilterManager;
 import com.geewhiz.pacify.managers.PropertyResolveManager;
-import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.utils.DefectUtils;
 import com.geewhiz.pacify.utils.Utils;
 import com.google.inject.Inject;

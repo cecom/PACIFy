@@ -20,7 +20,6 @@ package com.geewhiz.pacify.checks.impl;
  */
 
 import java.util.LinkedHashSet;
-import java.util.List;
 
 import com.geewhiz.pacify.checks.PMarkerCheck;
 import com.geewhiz.pacify.defect.Defect;
@@ -31,7 +30,6 @@ import com.geewhiz.pacify.exceptions.CycleDetectRuntimeException;
 import com.geewhiz.pacify.exceptions.ResolverRuntimeException;
 import com.geewhiz.pacify.managers.EntityManager;
 import com.geewhiz.pacify.managers.PropertyResolveManager;
-import com.geewhiz.pacify.model.PArchive;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.model.PProperty;
@@ -47,36 +45,29 @@ public class CheckPropertyExists implements PMarkerCheck {
     public LinkedHashSet<Defect> checkForErrors(EntityManager entityManager, PMarker pMarker) {
         LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
 
-        for (PArchive pArchive : entityManager.getPArchivesFrom(pMarker)) {
-            checkPFiles(defects, pMarker, pArchive, pArchive.getPFiles());
+        for (PFile pFile : entityManager.getPFilesFrom(pMarker)) {
+            checkPFile(defects, pFile);
         }
 
-        checkPFiles(defects, pMarker, entityManager.getPFilesFrom(pMarker));
         return defects;
     }
 
-    private void checkPFiles(LinkedHashSet<Defect> defects, PMarker pMarker, List<PFile> pFiles) {
-        checkPFiles(defects, pMarker, null, pFiles);
-    }
-
-    private void checkPFiles(LinkedHashSet<Defect> defects, PMarker pMarker, PArchive pArchive, List<PFile> pFiles) {
-        for (PFile pFile : pFiles) {
-            for (PProperty pProperty : pFile.getPProperties()) {
-                try {
-                    if (propertyResolveManager.containsProperty(pProperty.getName())) {
-                        propertyResolveManager.getPropertyValue(pProperty);
-                        continue;
-                    }
-                } catch (CycleDetectRuntimeException ce) {
-                    defects.add(new PropertyHasCycleDefect(pMarker, pArchive, ce.getProperty(), ce.getCycle()));
-                    continue;
-                } catch (ResolverRuntimeException re) {
-                    defects.add(new ResolverDefect(pMarker, pArchive, pFile, pProperty, re.getResolver(), re.getMessage()));
+    private void checkPFile(LinkedHashSet<Defect> defects, PFile pFile) {
+        for (PProperty pProperty : pFile.getPProperties()) {
+            try {
+                if (propertyResolveManager.containsProperty(pProperty.getName())) {
+                    propertyResolveManager.getPropertyValue(pProperty);
                     continue;
                 }
-                Defect defect = new PropertyNotDefinedInResolverDefect(pMarker, pArchive, pFile, pProperty, propertyResolveManager.toString());
-                defects.add(defect);
+            } catch (CycleDetectRuntimeException ce) {
+                defects.add(new PropertyHasCycleDefect(pProperty, ce.getProperty(), ce.getCycle()));
+                continue;
+            } catch (ResolverRuntimeException re) {
+                defects.add(new ResolverDefect(pProperty, re.getResolver(), re.getMessage()));
+                continue;
             }
+            Defect defect = new PropertyNotDefinedInResolverDefect(pProperty, propertyResolveManager.toString());
+            defects.add(defect);
         }
     }
 }

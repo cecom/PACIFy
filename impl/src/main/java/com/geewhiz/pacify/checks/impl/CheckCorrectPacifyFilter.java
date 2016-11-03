@@ -20,14 +20,12 @@ package com.geewhiz.pacify.checks.impl;
  */
 
 import java.util.LinkedHashSet;
-import java.util.List;
 
 import com.geewhiz.pacify.checks.PMarkerCheck;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.DefectException;
 import com.geewhiz.pacify.defect.FilterNotFoundDefect;
 import com.geewhiz.pacify.managers.EntityManager;
-import com.geewhiz.pacify.model.PArchive;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.utils.Utils;
@@ -37,20 +35,7 @@ public class CheckCorrectPacifyFilter implements PMarkerCheck {
     public LinkedHashSet<Defect> checkForErrors(EntityManager entityManager, PMarker pMarker) {
         LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
 
-        for (PArchive pArchive : entityManager.getPArchivesFrom(pMarker)) {
-            checkPFiles(defects, pMarker, pArchive, pArchive.getPFiles());
-        }
-
-        checkPFiles(defects, pMarker, entityManager.getPFilesFrom(pMarker));
-        return defects;
-    }
-
-    private void checkPFiles(LinkedHashSet<Defect> defects, PMarker pMarker, List<PFile> pFiles) {
-        checkPFiles(defects, pMarker, null, pFiles);
-    }
-
-    private void checkPFiles(LinkedHashSet<Defect> defects, PMarker pMarker, PArchive pArchive, List<PFile> pFiles) {
-        for (PFile pFile : pFiles) {
+        for (PFile pFile : entityManager.getPFilesFrom(pMarker)) {
             try {
                 Utils.getPacifyFilter(pFile);
             } catch (DefectException e) {
@@ -58,5 +43,6 @@ public class CheckCorrectPacifyFilter implements PMarkerCheck {
             }
 
         }
+        return defects;
     }
 }

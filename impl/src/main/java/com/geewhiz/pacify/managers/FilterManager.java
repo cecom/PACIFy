@@ -25,7 +25,6 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -81,9 +80,8 @@ public class FilterManager {
     }
 
     private LinkedHashSet<Defect> filterPFile(PFile pFile) {
-        logger.info("      Customize File [{}]", pFile.getRelativePath());
-        logger.debug("          Filtering [{}] using encoding [{}] and filter [{}]", pFile.getFile().getAbsolutePath(), pFile.getEncoding(),
-                pFile.getFilterClass());
+        logger.info("      Customize File [{}]", pFile.getPUri());
+        logger.debug("          Filtering [{}] using encoding [{}] and filter [{}]", pFile.getPUri(), pFile.getEncoding(), pFile.getFilterClass());
 
         File fileToFilter = pFile.getFile();
         PacifyFilter pacifyFilter = getFilterForPFile(pFile);
@@ -104,6 +102,7 @@ public class FilterManager {
         return defects;
     }
 
+    // TODO: sollte raus, da wir keine spezialbehandlung für archive mehr benötigen, wenn PFile.getFile das file schon extrahiert.
     private LinkedHashSet<Defect> filterPArchive(PArchive pArchive) {
         logger.info("      Customize Archive [{}]", pArchive.getRelativePath());
 
@@ -157,7 +156,7 @@ public class FilterManager {
             try {
                 propertyValue = propertyResolveManager.getPropertyValue(pProperty);
             } catch (PropertyNotFoundRuntimeException e) {
-                Defect defect = new PropertyNotDefinedInResolverDefect(pFile.getPMarker(), pFile, pProperty, propertyResolveManager.toString());
+                Defect defect = new PropertyNotDefinedInResolverDefect(pProperty, propertyResolveManager.toString());
                 defects.add(defect);
                 continue;
             }

@@ -27,37 +27,25 @@ import com.geewhiz.pacify.checks.PMarkerCheck;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.FileDuplicateDefinedInPMarkerDefect;
 import com.geewhiz.pacify.managers.EntityManager;
-import com.geewhiz.pacify.model.PArchive;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
 
 public class CheckFileDuplicateDefinedInPacifyFile implements PMarkerCheck {
 
-    public LinkedHashSet<Defect> checkForErrors(EntityManager entityManager,PMarker pMarker) {
+    public LinkedHashSet<Defect> checkForErrors(EntityManager entityManager, PMarker pMarker) {
         LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
 
-        for (PArchive pArchive :entityManager.getPArchivesFrom(pMarker)) {
-            checkPFiles(defects, pMarker, pArchive, pArchive.getPFiles());
-        }
-
-        checkPFiles(defects, pMarker,  entityManager.getPFilesFrom(pMarker));
-        return defects;
-    }
-
-    private void checkPFiles(LinkedHashSet<Defect> defects, PMarker pMarker, List<PFile> pFiles) {
-        checkPFiles(defects, pMarker, null, pFiles);
-    }
-
-    private void checkPFiles(LinkedHashSet<Defect> defects, PMarker pMarker, PArchive pArchive, List<PFile> pFiles) {
         List<String> files = new ArrayList<String>();
-        for (PFile pFile : pFiles) {
+        for (PFile pFile : entityManager.getPFilesFrom(pMarker)) {
             if (files.contains(pFile.getRelativePath())) {
-                Defect defect = new FileDuplicateDefinedInPMarkerDefect(pMarker, pArchive, pFile);
+                Defect defect = new FileDuplicateDefinedInPMarkerDefect(pFile);
                 defects.add(defect);
                 continue;
             }
             files.add(pFile.getRelativePath());
         }
 
+        return defects;
     }
+
 }

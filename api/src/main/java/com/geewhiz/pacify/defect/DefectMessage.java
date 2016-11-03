@@ -1,8 +1,6 @@
 package com.geewhiz.pacify.defect;
 
-import com.geewhiz.pacify.model.PArchive;
 import com.geewhiz.pacify.model.PFile;
-import com.geewhiz.pacify.model.PMarker;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -31,20 +29,14 @@ public class DefectMessage extends DefectException {
         this.message = message;
     }
 
-    public DefectMessage(PMarker pMarker, PFile pFile, String message) {
-        super(pMarker, pFile);
-        this.message = message;
-    }
-
-    public DefectMessage(PMarker pMarker, PArchive pArchive, PFile pFile, String message) {
-        super(pMarker, pArchive, pFile);
+    public DefectMessage(PFile pFile, String message) {
+        super(pFile);
         this.message = message;
     }
 
     @Override
     public String getDefectMessage() {
-        return super.getDefectMessage() +
-                String.format("\n\t[Message=%s]", message);
+        return super.getDefectMessage() + String.format("\n\t[Message=%s]", message);
     }
 
     @Override

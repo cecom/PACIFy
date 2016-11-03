@@ -38,7 +38,7 @@ public class CheckArchiveDuplicateDefinedInPacifyFile implements PMarkerCheck {
         List<String> archives = new ArrayList<String>();
         for (PArchive pArchive : entityManager.getPArchivesFrom(pMarker)) {
             if (archives.contains(pArchive.getRelativePath())) {
-                Defect defect = new ArchiveDuplicateDefinedInPMarkerDefect(pMarker, pArchive);
+                Defect defect = new ArchiveDuplicateDefinedInPMarkerDefect(pArchive);
                 defects.add(defect);
                 continue;
             }

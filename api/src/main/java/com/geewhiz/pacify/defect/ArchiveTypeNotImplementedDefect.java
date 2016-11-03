@@ -1,7 +1,6 @@
 package com.geewhiz.pacify.defect;
 
 import com.geewhiz.pacify.model.PArchive;
-import com.geewhiz.pacify.model.PMarker;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -26,8 +25,8 @@ public class ArchiveTypeNotImplementedDefect extends DefectException {
 
     private static final long serialVersionUID = 1L;
 
-    public ArchiveTypeNotImplementedDefect(PMarker pMarker, PArchive pArchive) {
-        super(pMarker, pArchive);
+    public ArchiveTypeNotImplementedDefect(PArchive pArchive) {
+        super(pArchive);
     }
 
     @Override

@@ -42,10 +42,11 @@ public class CheckTargetFileExist implements PMarkerCheck {
     }
 
     private void checkArchiveEntries(EntityManager entityManager, LinkedHashSet<Defect> defects, PMarker pMarker) {
+        // TODO: sollte ausgelagert werden in PFile.getFile()...
         for (PArchive pArchive : entityManager.getPArchivesFrom(pMarker)) {
             for (PFile pFile : pArchive.getPFiles()) {
                 if (!FileUtils.archiveContainsFile(pMarker, pArchive, pFile)) {
-                    defects.add(new FileDoesNotExistDefect(pMarker, pArchive, pFile));
+                    defects.add(new FileDoesNotExistDefect(pFile));
                 }
             }
         }
@@ -58,7 +59,7 @@ public class CheckTargetFileExist implements PMarkerCheck {
             if (file.exists() && file.isFile()) {
                 continue;
             }
-            Defect defect = new FileDoesNotExistDefect(pMarker, pFile);
+            Defect defect = new FileDoesNotExistDefect(pFile);
             defects.add(defect);
         }
     }

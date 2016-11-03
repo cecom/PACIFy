@@ -50,7 +50,7 @@ public class CheckCorrectArchiveType implements PMarkerCheck {
             if ("tar".equalsIgnoreCase(type)) {
                 continue;
             }
-            defects.add(new ArchiveTypeNotImplementedDefect(pMarker, pArchive));
+            defects.add(new ArchiveTypeNotImplementedDefect(pArchive));
         }
         return defects;
     }

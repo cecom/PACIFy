@@ -6,7 +6,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.tools.ant.types.FilterSet;
-import org.apache.tools.ant.util.regexp.RegexpUtil;
 
 import com.geewhiz.pacify.resolver.PropertyResolver;
 import com.geewhiz.pacify.utils.RegExpUtils;
@@ -32,45 +31,44 @@ import com.geewhiz.pacify.utils.RegExpUtils;
 
 public abstract class BasePropertyResolver implements PropertyResolver {
 
-	@Override
-	public FilterSet createFilterSet() {
-		FilterSet filterset = new FilterSet();
+    @Override
+    public FilterSet createFilterSet() {
+        FilterSet filterset = new FilterSet();
 
-		filterset.setBeginToken(getBeginToken());
-		filterset.setEndToken(getEndToken());
+        filterset.setBeginToken(getBeginToken());
+        filterset.setEndToken(getEndToken());
 
-		return filterset;
-	}
+        return filterset;
+    }
 
-	@Override
-	public boolean propertyUsesToken(String property) {
-		return getMatcher(getPropertyValue(property)).find();
-	}
+    @Override
+    public boolean propertyUsesToken(String property) {
+        return getMatcher(getPropertyValue(property)).find();
+    }
 
-	protected Matcher getMatcher(String propertyValue) {
-		Pattern pattern = RegExpUtils.getDefaultPattern(getBeginToken(), getEndToken());
+    protected Matcher getMatcher(String propertyValue) {
+        Pattern pattern = RegExpUtils.getDefaultPattern(getBeginToken(), getEndToken());
 
-		Matcher matcher = pattern.matcher(propertyValue);
-		return matcher;
-	}
+        Matcher matcher = pattern.matcher(propertyValue);
+        return matcher;
+    }
 
-	public Set<String> getReferencedProperties(String property) {
-		String propertyValue = getPropertyValue(property);
-		Matcher matcher = getMatcher(propertyValue);
+    public Set<String> getReferencedProperties(String property) {
+        String propertyValue = getPropertyValue(property);
+        Matcher matcher = getMatcher(propertyValue);
 
-		Set<String> result = new TreeSet<String>();
-		while (matcher.find()) {
-			String propertyId = matcher.group(1);
-			result.add(propertyId);
-		}
+        Set<String> result = new TreeSet<String>();
+        while (matcher.find()) {
+            String propertyId = matcher.group(1);
+            result.add(propertyId);
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	@Override
-	public int compareTo(PropertyResolver o) {
-		return getPropertyResolverDescription().compareTo(
-		        o.getPropertyResolverDescription());
-	}
+    @Override
+    public int compareTo(PropertyResolver o) {
+        return getPropertyResolverDescription().compareTo(o.getPropertyResolverDescription());
+    }
 
 }

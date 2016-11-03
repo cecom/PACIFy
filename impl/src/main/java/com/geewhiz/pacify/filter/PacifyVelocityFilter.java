@@ -16,9 +16,7 @@ import org.apache.velocity.context.Context;
 
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.WrongTokenDefinedDefect;
-import com.geewhiz.pacify.model.PArchive;
 import com.geewhiz.pacify.model.PFile;
-import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.utils.FileUtils;
 
 /*

@@ -64,18 +64,6 @@ public class FileUtils {
 
     private static final boolean IS_POSIX = FileSystems.getDefault().supportedFileAttributeViews().contains("posix");
 
-    public static String getFileInOneString(File file, String encoding) {
-        InputStream is = null;
-        try {
-            is = new FileInputStream(file);
-            return IOUtils.toString(is, Charsets.toCharset(encoding));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } finally {
-            IOUtils.closeQuietly(is);
-        }
-    }
-
     public static List<String> getFileAsLines(URL fileURL, String encoding) {
         InputStream is = null;
         try {
@@ -154,12 +142,38 @@ public class FileUtils {
         }
     }
 
-    public static String getFileInOneString(PMarker pMarker, PArchive pArchive, PFile pFile) throws DefectException {
+    public static String getFileInOneString(PFile pFile) throws DefectException {
+        if (pFile.getPArchive() != null) {
+            return getFileContentFromArchive(pFile);
+        } else {
+            return getFileContentFromFile(pFile);
+        }
+    }
+
+    private static String getFileContentFromFile(PFile pFile) throws DefectException {
+        if (!pFile.getFile().exists()) {
+            throw new FileDoesNotExistDefect(pFile);
+        }
+
+        InputStream is = null;
+        try {
+            is = new FileInputStream(pFile.getFile());
+            return IOUtils.toString(is, Charsets.toCharset(pFile.getEncoding()));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            IOUtils.closeQuietly(is);
+        }
+    }
+
+    private static String getFileContentFromArchive(PFile pFile) throws DefectException {
         ArchiveInputStream ais = null;
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
         try {
             ArchiveStreamFactory factory = new ArchiveStreamFactory();
+
+            PArchive pArchive = pFile.getPArchive();
 
             File archiveFile = pArchive.getFile();
             ais = factory.createArchiveInputStream(pArchive.getType(), new FileInputStream(archiveFile));
@@ -184,7 +198,7 @@ public class FileUtils {
                 return baos.toString(pFile.getEncoding());
             }
 
-            throw new FileDoesNotExistDefect(pMarker, pArchive, pFile);
+            throw new FileDoesNotExistDefect(pFile);
         } catch (ArchiveException e) {
             throw new RuntimeException(e);
         } catch (FileNotFoundException e) {
@@ -201,7 +215,7 @@ public class FileUtils {
         try {
             return extractFile(pMarker, pArchive, pFile.getRelativePath());
         } catch (FileNotFoundException e) {
-            throw new FileDoesNotExistDefect(pMarker, pArchive, pFile);
+            throw new FileDoesNotExistDefect(pFile);
         }
     }
 
@@ -283,10 +297,10 @@ public class FileUtils {
 
         } catch (IOException e) {
             logger.debug(e);
-            throw new ArchiveDefect(pMarker, pArchive, "Error while replacing file in archive.");
+            throw new ArchiveDefect(pArchive, "Error while replacing file in archive.");
         } catch (ArchiveException e) {
             logger.debug(e);
-            throw new ArchiveDefect(pMarker, pArchive, "Error while replacing file in archive.");
+            throw new ArchiveDefect(pArchive, "Error while replacing file in archive.");
         } finally {
             for (FileInputStream fis : streamsToClose) {
                 IOUtils.closeQuietly(fis);

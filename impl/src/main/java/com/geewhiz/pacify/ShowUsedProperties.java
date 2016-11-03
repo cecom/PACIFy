@@ -8,13 +8,11 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.managers.EntityManager;
-import com.geewhiz.pacify.model.PArchive;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.model.PProperty;
@@ -115,17 +113,10 @@ public class ShowUsedProperties {
             logger.info("   [{}]", pMarker.getFile().getAbsolutePath());
 
             for (PFile pFile : entityManager.getPFilesFrom(pMarker)) {
-                logger.debug("      [Getting properties for file {}]", pFile.getRelativePath());
+                logger.debug("      [Getting properties for file {}]", pFile.getPUri());
                 getPFileProperties(allUsedProperties, pFile);
             }
 
-            for (PArchive pArchive : entityManager.getPArchivesFrom(pMarker)) {
-                for (PFile pFile : pArchive.getPFiles()) {
-                    logger.debug("      [Getting properties for archive [{}]", pArchive.getRelativePath());
-                    logger.debug("          [file [{}]", pFile.getRelativePath());
-                    getPFileProperties(allUsedProperties, pFile);
-                }
-            }
         }
         return allUsedProperties;
     }

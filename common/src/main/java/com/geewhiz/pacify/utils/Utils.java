@@ -31,9 +31,7 @@ import org.apache.logging.log4j.Logger;
 import com.geewhiz.pacify.defect.DefectException;
 import com.geewhiz.pacify.defect.FilterNotFoundDefect;
 import com.geewhiz.pacify.filter.PacifyFilter;
-import com.geewhiz.pacify.model.PArchive;
 import com.geewhiz.pacify.model.PFile;
-import com.geewhiz.pacify.model.PMarker;
 
 public class Utils {
 

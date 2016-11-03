@@ -21,22 +21,17 @@ package com.geewhiz.pacify.defect;
 
 import com.geewhiz.pacify.model.PArchive;
 import com.geewhiz.pacify.model.PFile;
-import com.geewhiz.pacify.model.PMarker;
 
 public class FileDoesNotExistDefect extends DefectException {
 
     private static final long serialVersionUID = 1L;
 
-    public FileDoesNotExistDefect(PMarker pMarker, PFile pFile) {
-        super(pMarker, pFile);
+    public FileDoesNotExistDefect(PFile pFile) {
+        super(pFile);
     }
 
-    public FileDoesNotExistDefect(PMarker pMarker, PArchive pArchive) {
-        super(pMarker, pArchive);
-    }
-
-    public FileDoesNotExistDefect(PMarker pMarker, PArchive pArchive, PFile pFile) {
-        super(pMarker, pArchive, pFile);
+    public FileDoesNotExistDefect(PArchive pArchive) {
+        super(pArchive);
     }
 
 }

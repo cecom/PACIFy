@@ -37,39 +37,25 @@ public abstract class DefectException extends Exception implements Defect {
     }
 
     public DefectException(PMarker pMarker) {
-        this(pMarker, null, null, null);
+        this.pMarker = pMarker;
     }
 
-    public DefectException(PMarker pMarker, PArchive pArchive) {
-        this(pMarker, pArchive, null, null);
-    }
-
-    public DefectException(PMarker pMarker, PFile pFile) {
-        this(pMarker, null, pFile, null);
-    }
-
-    public DefectException(PMarker pMarker, PArchive pArchive, PFile pFile) {
-        this(pMarker, pArchive, pFile, null);
-    }
-
-    public DefectException(PMarker pMarker, PFile pFile, PProperty pProperty) {
-        this(pMarker, null, pFile, pProperty);
-    }
-
-    public DefectException(PFile pFile, PProperty pProperty) {
-        this(pFile.getPMarker(), pFile.getPArchive(), pFile, pProperty);
+    public DefectException(PArchive pArchive) {
+        this.pMarker = pArchive.getPMarker();
+        this.pArchive = pArchive;
     }
 
     public DefectException(PFile pFile) {
-        this(pFile.getPMarker(), pFile.getPArchive(), pFile, null);
+        this.pMarker = pFile.getPMarker();
+        this.pArchive = pFile.getPArchive();
+        this.pFile = pFile;
     }
 
-    // TODO: hier aufräumen, brauch nur noch PFile Constructor
-    public DefectException(PMarker pMarker, PArchive pArchive, PFile pFile, PProperty pProperty) {
-        this.pMarker = pMarker;
-        this.pArchive = pArchive;
-        this.pFile = pFile;
+    public DefectException(PProperty pProperty) {
         this.pProperty = pProperty;
+        this.pFile = pProperty.getPFile();
+        this.pMarker = pFile.getPMarker();
+        this.pArchive = pFile.getPArchive();
     }
 
     public PMarker getPMarker() {

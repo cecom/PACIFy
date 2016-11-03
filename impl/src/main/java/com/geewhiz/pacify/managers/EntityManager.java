@@ -101,21 +101,23 @@ public class EntityManager {
         for (Object entry : pMarker.getFilesAndArchives()) {
             if (entry instanceof PFile) {
                 PFile pFile = (PFile) entry;
-                pFile.setPMarker(pMarker);
                 PFileResolver resolver = new PFileResolver(pFile);
                 result.addAll(resolver.resolve());
+            } else if (entry instanceof PArchive) {
+                PArchive pArchive = (PArchive) entry;
+                result.addAll(pArchive.getPFiles());
             }
         }
         return result;
     }
 
+    // TODO: Methode sollte raus, da wir sie nicht mehr benötigen
     public List<PArchive> getPArchivesFrom(PMarker pMarker) {
         List<PArchive> result = new ArrayList<PArchive>();
 
         for (Object entry : pMarker.getFilesAndArchives()) {
             if (entry instanceof PArchive) {
                 PArchive pArchive = (PArchive) entry;
-                pArchive.setPMarker(pMarker);
                 result.add(pArchive);
             }
         }
