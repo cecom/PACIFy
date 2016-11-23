@@ -73,7 +73,7 @@ public class PacifyVelocityFilter implements PacifyFilter {
             return defects;
         }
 
-        File tmpFile = FileUtils.createTempFile(fileToFilter.getParentFile(), fileToFilter.getName());
+        File tmpFile = FileUtils.createEmptyFileWithSamePermissions(fileToFilter);
 
         Template template = getTemplate(fileToFilter, encoding);
         Context context = getContext(propertyValues, fileToFilter);

@@ -29,10 +29,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.attribute.PosixFilePermission;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
@@ -55,7 +60,9 @@ import com.geewhiz.pacify.model.PMarker;
 
 public class FileUtils {
 
-    private static Logger logger = LogManager.getLogger(FileUtils.class.getName());
+    private static Logger        logger   = LogManager.getLogger(FileUtils.class.getName());
+
+    private static final boolean IS_POSIX = FileSystems.getDefault().supportedFileAttributeViews().contains("posix");
 
     public static String getFileInOneString(File file, String encoding) {
         InputStream is = null;
@@ -64,8 +71,7 @@ public class FileUtils {
             return IOUtils.toString(is, Charsets.toCharset(encoding));
         } catch (IOException e) {
             throw new RuntimeException(e);
-        }
-        finally {
+        } finally {
             IOUtils.closeQuietly(is);
         }
     }
@@ -77,8 +83,7 @@ public class FileUtils {
             return IOUtils.readLines(is, Charsets.toCharset(encoding));
         } catch (IOException e) {
             throw new RuntimeException(e);
-        }
-        finally {
+        } finally {
             IOUtils.closeQuietly(is);
         }
     }
@@ -99,9 +104,20 @@ public class FileUtils {
         }
     }
 
-    public static File createTempFile(File folder, String prefix) {
+    public static File createEmptyFileWithSamePermissions(File forFile) {
         try {
-            return File.createTempFile(prefix, "tmp", folder);
+            File folder = forFile.getParentFile();
+            String prefix = forFile.getName();
+
+            File tmp = File.createTempFile(prefix, "tmp", folder);
+
+            if (IS_POSIX) {
+                Set<PosixFilePermission> attrs = Files.getPosixFilePermissions(Paths.get(forFile.toURI()));
+                Files.setPosixFilePermissions(Paths.get(tmp.toURI()), attrs);
+            }
+
+            return tmp;
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -133,8 +149,7 @@ public class FileUtils {
             throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
-        }
-        finally {
+        } finally {
             IOUtils.closeQuietly(ais);
         }
     }
@@ -160,8 +175,7 @@ public class FileUtils {
                 BufferedOutputStream bos = new BufferedOutputStream(baos);
 
                 int len;
-                while ((len = ais.read(content)) != -1)
-                {
+                while ((len = ais.read(content)) != -1) {
                     bos.write(content, 0, len);
                 }
                 bos.close();
@@ -177,8 +191,7 @@ public class FileUtils {
             throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
-        }
-        finally {
+        } finally {
             IOUtils.closeQuietly(baos);
             IOUtils.closeQuietly(ais);
         }
@@ -207,15 +220,14 @@ public class FileUtils {
                     continue;
                 }
 
-                result = FileUtils.createTempFile(archiveFile.getParentFile(), archiveFile.getName());
+                result = FileUtils.createEmptyFileWithSamePermissions(archiveFile);
 
                 BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(result));
 
                 byte[] content = new byte[2048];
 
                 int len;
-                while ((len = ais.read(content)) != -1)
-                {
+                while ((len = ais.read(content)) != -1) {
                     bos.write(content, 0, len);
                 }
 
@@ -228,8 +240,7 @@ public class FileUtils {
             throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
-        }
-        finally {
+        } finally {
             IOUtils.closeQuietly(ais);
         }
 
@@ -246,7 +257,7 @@ public class FileUtils {
         List<FileInputStream> streamsToClose = new ArrayList<FileInputStream>();
 
         File archiveFile = pMarker.getAbsoluteFileFor(pArchive);
-        File tmpArchive = FileUtils.createTempFile(archiveFile.getParentFile(), archiveFile.getName());
+        File tmpArchive = FileUtils.createEmptyFileWithSamePermissions(archiveFile);
 
         try {
             aos = factory.createArchiveOutputStream(pArchive.getType(), new FileOutputStream(tmpArchive));
@@ -276,8 +287,7 @@ public class FileUtils {
         } catch (ArchiveException e) {
             logger.debug(e);
             throw new ArchiveDefect(pMarker, pArchive, "Error while replacing file in archive.");
-        }
-        finally {
+        } finally {
             for (FileInputStream fis : streamsToClose) {
                 IOUtils.closeQuietly(fis);
             }
@@ -294,8 +304,7 @@ public class FileUtils {
             throw new RuntimeException("Couldn't delete file [" + archiveFile.getPath() + "]... Aborting!");
         }
         if (!tmpArchive.renameTo(archiveFile)) {
-            throw new RuntimeException("Couldn't rename filtered file from [" + tmpArchive.getPath() + "] to ["
-                    + archiveFile.getPath() + "]... Aborting!");
+            throw new RuntimeException("Couldn't rename filtered file from [" + tmpArchive.getPath() + "] to [" + archiveFile.getPath() + "]... Aborting!");
         }
 
     }

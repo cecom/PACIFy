@@ -45,7 +45,7 @@ public class PacifyTokenFilter implements PacifyFilter {
         FilterSetCollection filterSetCollection = getFilterSetCollection(propertyValues, beginToken, endToken);
 
         try {
-            File tmpFile = com.geewhiz.pacify.utils.FileUtils.createTempFile(fileToFilter.getParentFile(), fileToFilter.getName());
+            File tmpFile = com.geewhiz.pacify.utils.FileUtils.createEmptyFileWithSamePermissions(fileToFilter);
 
             FileUtils.getFileUtils().copyFile(fileToFilter, tmpFile, filterSetCollection, true, true, encoding);
             if (!fileToFilter.delete()) {
