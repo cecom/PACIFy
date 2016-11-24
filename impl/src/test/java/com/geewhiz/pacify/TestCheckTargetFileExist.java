@@ -47,8 +47,7 @@ public class TestCheckTargetFileExist extends TestBase {
         Assert.assertEquals(0, defects.size());
     }
 
-    // TODO
-    // @Test
+    @Test
     public void checkArchiveForNotCorrect() {
         File testStartPath = new File("target/test-classes/checkTargetFileExistTest/wrong/archive/package");
 
@@ -57,8 +56,7 @@ public class TestCheckTargetFileExist extends TestBase {
         Assert.assertEquals(1, defects.size());
     }
 
-    // TODO
-    // @Test
+    @Test
     public void checkArchiveCorrect() {
         File testStartPath = new File("target/test-classes/checkTargetFileExistTest/correct/archive/package");
 

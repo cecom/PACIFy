@@ -21,7 +21,7 @@ import com.geewhiz.pacify.commandline.commands.ShowUsedPropertiesCommand;
 import com.geewhiz.pacify.commandline.commands.ValidateCommand;
 import com.geewhiz.pacify.commandline.commands.ValidateMarkerFilesCommand;
 import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.exceptions.DefectRuntimeException;
+import com.geewhiz.pacify.defect.DefectRuntimeException;
 import com.geewhiz.pacify.resolver.PropertyResolverModule;
 import com.geewhiz.pacify.utils.DefectUtils;
 import com.geewhiz.pacify.utils.LoggingUtils;

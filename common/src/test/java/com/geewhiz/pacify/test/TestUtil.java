@@ -28,10 +28,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -40,8 +36,6 @@ import org.apache.logging.log4j.core.config.Configuration;
 import org.junit.Assert;
 import org.junit.Ignore;
 
-import com.geewhiz.pacify.model.ObjectFactory;
-import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.model.utils.DirFilter;
 
 @Ignore
@@ -141,12 +135,4 @@ public class TestUtil {
         return result;
     }
 
-    public static PMarker readPMarker(File file) throws JAXBException {
-        JAXBContext jaxbContext = JAXBContext.newInstance(ObjectFactory.class);
-        Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-        PMarker pMarker = (PMarker) jaxbUnmarshaller.unmarshal(file);
-        pMarker.setFile(file);
-
-        return pMarker;
-    }
 }

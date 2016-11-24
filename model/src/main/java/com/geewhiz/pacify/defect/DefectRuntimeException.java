@@ -1,4 +1,4 @@
-package com.geewhiz.pacify.exceptions;
+package com.geewhiz.pacify.defect;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one

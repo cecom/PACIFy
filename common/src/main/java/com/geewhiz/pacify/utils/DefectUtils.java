@@ -6,7 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.exceptions.DefectRuntimeException;
+import com.geewhiz.pacify.defect.DefectRuntimeException;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one

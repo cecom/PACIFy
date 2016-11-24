@@ -1,5 +1,6 @@
 package com.geewhiz.pacify.defect;
 
+import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.model.PArchive;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
@@ -88,7 +89,7 @@ public abstract class DefectException extends Exception implements Defect {
             }
         } else {
             if (pFile != null) {
-                result.append(String.format("\n\t[File=%s]", pFile.getFile().getAbsolutePath()));
+                result.append(String.format("\n\t[File=%s]", pFile.getRelativePath()));
             }
         }
 

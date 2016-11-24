@@ -4,13 +4,14 @@ import java.io.File;
 
 import javax.xml.bind.Unmarshaller;
 
+import org.apache.commons.compress.compressors.FileNameUtil;
 import org.jvnet.jaxb2_commons.lang.CopyStrategy;
 import org.jvnet.jaxb2_commons.lang.EqualsStrategy;
 import org.jvnet.jaxb2_commons.lang.HashCodeStrategy;
 import org.jvnet.jaxb2_commons.lang.ToStringStrategy;
 import org.jvnet.jaxb2_commons.locator.ObjectLocator;
 
-import com.geewhiz.pacify.exceptions.DefectRuntimeException;
+import com.geewhiz.pacify.defect.DefectRuntimeException;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -36,7 +37,14 @@ public abstract class PFileBase {
     private PMarker  pMarker;
     private PArchive pArchive;
 
+    /**
+     * The physical representation. if the PFile in an archive, it will be extracted and will be available here
+     */
+    private File     file;
+
     public PMarker getPMarker() {
+        if (getPArchive() != null)
+            return pArchive.getPMarker();
         return pMarker;
     }
 
@@ -52,18 +60,18 @@ public abstract class PFileBase {
         this.pArchive = pArchive;
     }
 
+    public Boolean isArchiveFile() {
+        return getPArchive() != null;
+    }
+
     public String getPUri() {
         StringBuffer sb = new StringBuffer();
-        if (pArchive != null) {
-            sb.append(pArchive.getPUri());
+        if (getPArchive() != null) {
+            sb.append(getPArchive().getPUri());
             sb.append("!");
         }
         sb.append(getRelativePath());
         return sb.toString();
-    }
-
-    public File getFile() {
-        return new File(getPMarker().getFolder(), getRelativePath());
     }
 
     public String getBeginToken() {
@@ -80,6 +88,14 @@ public abstract class PFileBase {
         if (getPArchive() != null)
             return getPArchive().getEndToken();
         return getPMarker().getEndToken();
+    }
+
+    public File getFile() {
+        return file;
+    }
+
+    public void setFile(File file) {
+        this.file = file;
     }
 
     public abstract String getInternalEndToken();

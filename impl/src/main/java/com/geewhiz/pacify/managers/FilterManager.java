@@ -23,23 +23,19 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.geewhiz.pacify.checks.impl.CheckForNotReplacedTokens;
-import com.geewhiz.pacify.defect.ArchiveDefect;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.DefectException;
 import com.geewhiz.pacify.defect.PropertyNotDefinedInResolverDefect;
 import com.geewhiz.pacify.exceptions.PropertyNotFoundRuntimeException;
 import com.geewhiz.pacify.filter.PacifyFilter;
-import com.geewhiz.pacify.model.PArchive;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.model.PProperty;
-import com.geewhiz.pacify.utils.FileUtils;
 import com.geewhiz.pacify.utils.Utils;
 
 public class FilterManager {
@@ -64,18 +60,15 @@ public class FilterManager {
                 defects.addAll(filterPFile(pFile));
             }
 
-            for (PArchive pArchive : entityManager.getPArchivesFrom(pMarker)) {
-                defects.addAll(filterPArchive(pArchive));
-            }
-
             CheckForNotReplacedTokens checker = new CheckForNotReplacedTokens();
             defects.addAll(checker.checkForErrors(entityManager, pMarker));
 
             if (defects.isEmpty()) {
                 pMarker.getFile().delete();
+                entityManager.postProcessPMarker(pMarker);
             }
         }
-
+        
         return defects;
     }
 
@@ -98,51 +91,6 @@ public class FilterManager {
         fileToFilter.setLastModified(System.currentTimeMillis());
 
         logger.info("          [{}] placeholders replaced.", pFile.getPProperties().size());
-
-        return defects;
-    }
-
-    // TODO: sollte raus, da wir keine spezialbehandlung für archive mehr benötigen, wenn PFile.getFile das file schon extrahiert.
-    private LinkedHashSet<Defect> filterPArchive(PArchive pArchive) {
-        logger.info("      Customize Archive [{}]", pArchive.getRelativePath());
-
-        LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
-
-        Map<PFile, File> replaceFiles = new HashMap<PFile, File>();
-
-        for (PFile pFile : pArchive.getPFiles()) {
-            logger.info("         Customize File [{}]", pFile.getRelativePath());
-            logger.debug("             Filtering [{}] in archive [{}] using encoding [{}] and filter [{}]", pFile.getRelativePath(),
-                    pArchive.getFile().getAbsolutePath(), pFile.getEncoding(), pFile.getFilterClass());
-
-            File fileToFilter = extractFile(pArchive, pFile);
-            PacifyFilter pacifyFilter = getFilterForPFile(pFile);
-
-            Map<String, String> propertyValues = new HashMap<String, String>();
-            LinkedHashSet<Defect> propertyValueDefects = fillPropertyValuesFor(propertyValues, pFile);
-            if (propertyValueDefects.size() > 0) {
-                return propertyValueDefects;
-            }
-
-            String beginToken = pFile.getBeginToken();
-            String endToken = pFile.getEndToken();
-            String encoding = pFile.getEncoding();
-
-            defects.addAll(pacifyFilter.filter(propertyValues, beginToken, endToken, fileToFilter, encoding));
-
-            replaceFiles.put(pFile, fileToFilter);
-            logger.info("             [{}] placeholders replaced.", pFile.getPProperties().size());
-        }
-
-        try {
-            FileUtils.replaceFilesInArchive(pArchive.getPMarker(), pArchive, replaceFiles);
-        } catch (ArchiveDefect e) {
-            defects.add(e);
-        }
-
-        for (Entry<PFile, File> entry : replaceFiles.entrySet()) {
-            entry.getValue().delete();
-        }
 
         return defects;
     }
@@ -175,12 +123,4 @@ public class FilterManager {
         }
     }
 
-    private File extractFile(PArchive pArchive, PFile pFile) {
-        try {
-            return FileUtils.extractFile(pArchive.getPMarker(), pArchive, pFile);
-        } catch (DefectException e) {
-            // Existence is checked before, so we should not get this exception here
-            throw new RuntimeException(e);
-        }
-    }
 }

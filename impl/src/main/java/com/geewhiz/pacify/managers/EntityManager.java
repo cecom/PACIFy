@@ -21,8 +21,11 @@ package com.geewhiz.pacify.managers;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
@@ -35,6 +38,7 @@ import javax.xml.validation.SchemaFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.geewhiz.pacify.defect.ArchiveDefect;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.XMLValidationDefect;
 import com.geewhiz.pacify.model.ObjectFactory;
@@ -43,6 +47,7 @@ import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.model.utils.PFileResolver;
 import com.geewhiz.pacify.model.utils.PacifyFilesFinder;
+import com.geewhiz.pacify.utils.FileUtils;
 
 public class EntityManager {
 
@@ -105,23 +110,30 @@ public class EntityManager {
                 result.addAll(resolver.resolve());
             } else if (entry instanceof PArchive) {
                 PArchive pArchive = (PArchive) entry;
-                result.addAll(pArchive.getPFiles());
+
+                List<PFile> pFiles = pArchive.getPFiles();
+                for (PFile pFile : pFiles) {
+                    if (pFile.getFile() == null) {
+                        File extractedFile = FileUtils.extractFile(pArchive.getFile(), pArchive.getType(), pFile.getRelativePath());
+                        pFile.setFile(extractedFile);
+                    }
+                }
+                result.addAll(pFiles);
             }
         }
         return result;
     }
 
-    // TODO: Methode sollte raus, da wir sie nicht mehr benötigen
-    public List<PArchive> getPArchivesFrom(PMarker pMarker) {
-        List<PArchive> result = new ArrayList<PArchive>();
-
-        for (Object entry : pMarker.getFilesAndArchives()) {
-            if (entry instanceof PArchive) {
-                PArchive pArchive = (PArchive) entry;
-                result.add(pArchive);
-            }
+    public Boolean doesFileExist(PFile pFile) {
+        PMarker pMarker = pFile.getPMarker();
+        if (pFile.getPArchive() == null) {
+            File fileToCheck = new File(pMarker.getFolder(), pFile.getRelativePath());
+            return fileToCheck.exists() && fileToCheck.isFile();
+        } else {
+            PArchive pArchive = pFile.getPArchive();
+            File archiveFile = new File(pMarker.getFolder(), pArchive.getRelativePath());
+            return FileUtils.archiveContainsFile(archiveFile, pArchive.getType(), pFile.getRelativePath());
         }
-        return result;
     }
 
     private PMarker unmarshal(File file) throws JAXBException {
@@ -129,5 +141,9 @@ public class EntityManager {
         jaxbUnmarshaller.setSchema(schema);
 
         return (PMarker) jaxbUnmarshaller.unmarshal(file);
+    }
+
+    public void postProcessPMarker(PMarker pMarker) {
+        FileUtils.replaceFilesInArchives(getPFilesFrom(pMarker));
     }
 }

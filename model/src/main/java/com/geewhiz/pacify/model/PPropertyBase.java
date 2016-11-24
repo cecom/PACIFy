@@ -8,7 +8,7 @@ import org.jvnet.jaxb2_commons.lang.HashCodeStrategy;
 import org.jvnet.jaxb2_commons.lang.ToStringStrategy;
 import org.jvnet.jaxb2_commons.locator.ObjectLocator;
 
-import com.geewhiz.pacify.exceptions.DefectRuntimeException;
+import com.geewhiz.pacify.defect.DefectRuntimeException;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one

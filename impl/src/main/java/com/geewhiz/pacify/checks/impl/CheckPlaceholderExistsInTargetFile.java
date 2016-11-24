@@ -8,7 +8,6 @@ import java.util.regex.Pattern;
 
 import com.geewhiz.pacify.checks.PMarkerCheck;
 import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.defect.DefectException;
 import com.geewhiz.pacify.defect.NoPlaceholderInTargetFileDefect;
 import com.geewhiz.pacify.defect.PlaceholderNotDefinedDefect;
 import com.geewhiz.pacify.managers.EntityManager;
@@ -24,7 +23,11 @@ public class CheckPlaceholderExistsInTargetFile implements PMarkerCheck {
         LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
 
         for (PFile pFile : entityManager.getPFilesFrom(pMarker)) {
-            String fileContent = getFileContent(pFile);
+            // existents of the file is checked in another checker
+            if (pFile.getFile() == null)
+                continue;
+
+            String fileContent = FileUtils.getFileInOneString(pFile.getFile(), pFile.getEncoding());
             if (fileContent == null) {
                 continue;
             }
@@ -53,15 +56,6 @@ public class CheckPlaceholderExistsInTargetFile implements PMarkerCheck {
             }
             Defect defect = new NoPlaceholderInTargetFileDefect(pProperty);
             defects.add(defect);
-        }
-    }
-
-    private String getFileContent(PFile pFile) {
-        try {
-            return FileUtils.getFileInOneString(pFile);
-        } catch (DefectException e) {
-            // this is checked from another checker, so we dont throw it.
-            return null;
         }
     }
 

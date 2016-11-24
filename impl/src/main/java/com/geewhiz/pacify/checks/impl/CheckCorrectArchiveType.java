@@ -33,25 +33,29 @@ public class CheckCorrectArchiveType implements PMarkerCheck {
     public LinkedHashSet<Defect> checkForErrors(EntityManager entityManager, PMarker pMarker) {
         LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
 
-        for (PArchive pArchive : entityManager.getPArchivesFrom(pMarker)) {
-            String type = pArchive.getInternalType();
-            if ("jar".equalsIgnoreCase(type)) {
-                continue;
+        for (Object entry : pMarker.getFilesAndArchives()) {
+            if (entry instanceof PArchive) {
+                PArchive pArchive = (PArchive) entry;
+                String type = pArchive.getInternalType();
+                if ("jar".equalsIgnoreCase(type)) {
+                    continue;
+                }
+                if ("war".equalsIgnoreCase(type)) {
+                    continue;
+                }
+                if ("ear".equalsIgnoreCase(type)) {
+                    continue;
+                }
+                if ("zip".equalsIgnoreCase(type)) {
+                    continue;
+                }
+                if ("tar".equalsIgnoreCase(type)) {
+                    continue;
+                }
+                defects.add(new ArchiveTypeNotImplementedDefect(pArchive));
             }
-            if ("war".equalsIgnoreCase(type)) {
-                continue;
-            }
-            if ("ear".equalsIgnoreCase(type)) {
-                continue;
-            }
-            if ("zip".equalsIgnoreCase(type)) {
-                continue;
-            }
-            if ("tar".equalsIgnoreCase(type)) {
-                continue;
-            }
-            defects.add(new ArchiveTypeNotImplementedDefect(pArchive));
         }
+
         return defects;
     }
 }

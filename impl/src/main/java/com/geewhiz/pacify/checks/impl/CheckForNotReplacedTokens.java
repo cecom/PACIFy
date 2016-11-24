@@ -1,6 +1,5 @@
 package com.geewhiz.pacify.checks.impl;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -9,10 +8,8 @@ import java.util.regex.Pattern;
 
 import com.geewhiz.pacify.checks.PMarkerCheck;
 import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.defect.DefectException;
 import com.geewhiz.pacify.defect.NotReplacedPropertyDefect;
 import com.geewhiz.pacify.managers.EntityManager;
-import com.geewhiz.pacify.model.PArchive;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.utils.FileUtils;
@@ -44,7 +41,7 @@ public class CheckForNotReplacedTokens implements PMarkerCheck {
         LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
 
         for (PFile pFile : entityManager.getPFilesFrom(pMarker)) {
-            String fileContent = getFileContent(pFile);
+            String fileContent = FileUtils.getFileInOneString(pFile.getFile(), pFile.getEncoding());
             checkContent(defects, pFile, fileContent);
         }
 
@@ -56,17 +53,6 @@ public class CheckForNotReplacedTokens implements PMarkerCheck {
             Defect defect = new NotReplacedPropertyDefect(pFile, property);
             defects.add(defect);
         }
-    }
-
-    private String getFileContent(PFile pFile) {
-        String fileContent;
-        try {
-            fileContent = FileUtils.getFileInOneString(pFile);
-        } catch (DefectException e) {
-            // the existence of the file is checked before, so we should not get this exception
-            throw new RuntimeException(e);
-        }
-        return fileContent;
     }
 
     private List<String> getNotReplacedProperties(String fileContent, String beginToken, String endToken) {

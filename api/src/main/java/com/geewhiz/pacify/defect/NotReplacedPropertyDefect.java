@@ -1,5 +1,6 @@
 package com.geewhiz.pacify.defect;
 
+import com.geewhiz.pacify.defect.DefectException;
 import com.geewhiz.pacify.model.PFile;
 
 public class NotReplacedPropertyDefect extends DefectException {

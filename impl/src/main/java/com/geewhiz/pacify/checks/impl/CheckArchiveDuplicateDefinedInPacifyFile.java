@@ -36,14 +36,19 @@ public class CheckArchiveDuplicateDefinedInPacifyFile implements PMarkerCheck {
         LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
 
         List<String> archives = new ArrayList<String>();
-        for (PArchive pArchive : entityManager.getPArchivesFrom(pMarker)) {
-            if (archives.contains(pArchive.getRelativePath())) {
-                Defect defect = new ArchiveDuplicateDefinedInPMarkerDefect(pArchive);
-                defects.add(defect);
-                continue;
+
+        for (Object entry : pMarker.getFilesAndArchives()) {
+            if (entry instanceof PArchive) {
+                PArchive pArchive = (PArchive) entry;
+                if (archives.contains(pArchive.getRelativePath())) {
+                    Defect defect = new ArchiveDuplicateDefinedInPMarkerDefect(pArchive);
+                    defects.add(defect);
+                    continue;
+                }
+                archives.add(pArchive.getRelativePath());
             }
-            archives.add(pArchive.getRelativePath());
         }
+
         return defects;
     }
 }

@@ -64,9 +64,7 @@ import com.geewhiz.pacify.utils.LoggingUtils;
 
 public class TestArchive {
 
-    //TODO: tests wieder einkommentieren
-    
-    //@Test
+    @Test
     public void checkJar() throws ArchiveException, IOException {
         Logger logger = LogManager.getLogger(TestArchive.class.getName());
         LoggingUtils.setLogLevel(logger, Level.INFO);
@@ -95,7 +93,7 @@ public class TestArchive {
         Assert.assertArrayEquals("There should be no additional File", expectedArchive.getParentFile().list(), outputArchive.getParentFile().list());
     }
 
-    //@Test
+    @Test
     public void checkJarWhereTheSourceIsntAJarPerDefinition() throws ArchiveException, IOException {
         Logger logger = LogManager.getLogger(TestArchive.class.getName());
         LoggingUtils.setLogLevel(logger, Level.ERROR);
@@ -124,7 +122,7 @@ public class TestArchive {
         Assert.assertArrayEquals("There should be no additional File", expectedArchive.getParentFile().list(), outputArchive.getParentFile().list());
     }
 
-    //   @Test
+    @Test
     public void checkTar() throws ArchiveException, IOException {
         File testResourceFolder = new File("src/test/resources/testArchive/correct/tar");
         File targetResourceFolder = new File("target/test-resources/testArchive/correct/tar");
@@ -140,7 +138,7 @@ public class TestArchive {
         Assert.assertArrayEquals("There should be no additional File", expectedArchive.getParentFile().list(), outputArchive.getParentFile().list());
     }
 
-    //  @Test
+    @Test
     public void checkZip() throws ArchiveException, IOException {
         File testResourceFolder = new File("src/test/resources/testArchive/correct/zip");
         File targetResourceFolder = new File("target/test-resources/testArchive/correct/zip");
@@ -156,7 +154,7 @@ public class TestArchive {
         Assert.assertArrayEquals("There should be no additional File", expectedArchive.getParentFile().list(), outputArchive.getParentFile().list());
     }
 
-    //  @Test
+    @Test
     public void checkBigZip() throws ArchiveException, IOException {
         File testResourceFolder = new File("src/test/resources/testArchive/correct/bigZip");
         File targetResourceFolder = new File("target/test-resources/testArchive/correct/bigZip");
@@ -172,24 +170,25 @@ public class TestArchive {
         Assert.assertArrayEquals("There should be no additional File", expectedArchive.getParentFile().list(), outputArchive.getParentFile().list());
     }
 
-    // TODO: wieder aktivieren
-    // @Test
-    // public void checkUnkownArchiveType() throws JAXBException {
-    // File packagePath = new File("target/test-classes/testArchive/wrong/unkownArchiveType/package");
-    //
-    // File source = new File("target/test-classes/testArchive/wrong/unkownArchiveType/package/wrong-CMFile.pacify");
-    // PMarker pMarker = TestUtil.readPMarker(source);
-    //
-    // EntityManager entityManager = createEntityManager(packagePath, defects);
-    //
-    // CheckCorrectArchiveType checker = new CheckCorrectArchiveType();
-    // LinkedHashSet<Defect> defects = checker.checkForErrors(pMarker);
-    //
-    // Assert.assertEquals("We should get a defect.", 1, defects.size());
-    // Assert.assertEquals("We expect ArchiveTypeNotImplementedDefect", ArchiveTypeNotImplementedDefect.class, defects.iterator().next().getClass());
-    // }
+    @Test
+    public void checkUnkownArchiveType() throws JAXBException {
+        File packagePath = new File("target/test-classes/testArchive/wrong/unkownArchiveType/package");
 
-    //   @Test
+        LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
+        EntityManager entityManager = createEntityManager(packagePath, defects);
+
+        List<PMarker> pMarkers = entityManager.getPMarkers();
+
+        Assert.assertEquals(1, pMarkers.size());
+
+        CheckCorrectArchiveType checker = new CheckCorrectArchiveType();
+        defects.addAll(checker.checkForErrors(entityManager, pMarkers.get(0)));
+
+        Assert.assertEquals("We should get a defect.", 1, defects.size());
+        Assert.assertEquals("We expect ArchiveTypeNotImplementedDefect", ArchiveTypeNotImplementedDefect.class, defects.iterator().next().getClass());
+    }
+
+    @Test
     public void checkDuplicateArchiveEntry() {
         File packagePath = new File("target/test-classes/testArchive/wrong/duplicateEntry/package");
 
@@ -199,7 +198,7 @@ public class TestArchive {
         Assert.assertEquals("We expect ArchiveTypeNotImplementedDefect", ArchiveDuplicateDefinedInPMarkerDefect.class, defects.iterator().next().getClass());
     }
 
-    //  @Test
+    @Test
     public void checkNotReplacedProperty() {
         File testResourceFolder = new File("target/test-classes/testArchive/wrong/notReplacedProperty");
         File targetResourceFolder = new File("target/test-resources/testArchive/wrong/notReplacedProperty");
@@ -217,7 +216,7 @@ public class TestArchive {
                 ((NotReplacedPropertyDefect) defects.get(1)).getPropertyId());
     }
 
-    // @Test
+    @Test
     public void checkTargetFileDoesNotExist() {
         File packagePath = new File("target/test-classes/testArchive/wrong/targetFileDoesNotExist/package");
 
@@ -229,7 +228,7 @@ public class TestArchive {
         Assert.assertEquals("We expect FileDoesNotExistDefect", FileDoesNotExistDefect.class, defects.get(0).getClass());
     }
 
-    //  @Test
+    @Test
     public void checkPlaceholderDoesNotExist() {
         File packagePath = new File("target/test-classes/testArchive/wrong/placeholderDoesNotExist/package");
 
@@ -243,7 +242,7 @@ public class TestArchive {
         Assert.assertEquals("We expect missingProperty", "missingProperty", ((NoPlaceholderInTargetFileDefect) defects.get(0)).getPProperty().getName());
     }
 
-    // @Test
+    @Test
     public void checkDuplicatePropertyEntry() {
         File packagePath = new File("target/test-classes/testArchive/wrong/duplicatePropertyEntry/package");
 
@@ -257,7 +256,7 @@ public class TestArchive {
         Assert.assertEquals("We expect missingProperty", "foobar2", ((PropertyDuplicateDefinedInPMarkerDefect) defects.get(0)).getPProperty().getName());
     }
 
-    //  @Test
+    @Test
     public void checkWrongPacifyFilter() {
         File packagePath = new File("target/test-classes/testArchive/wrong/wrongPacifyFilter/package");
 

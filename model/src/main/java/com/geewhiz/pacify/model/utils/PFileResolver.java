@@ -19,6 +19,7 @@
 
 package com.geewhiz.pacify.model.utils;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -40,6 +41,9 @@ public class PFileResolver {
         if (pFile.isUseRegExResolution()) {
             result.addAll(resolveRegExp());
         } else {
+            if (pFile.getFile() == null) {
+                pFile.setFile(new File(pFile.getPMarker().getFolder(), pFile.getRelativePath()));
+            }
             result.add(pFile);
         }
 
@@ -66,6 +70,7 @@ public class PFileResolver {
 
     private PFile createPFile(String path) {
         PFile aClone = (PFile) pFile.clone();
+        pFile.setFile(new File(pFile.getPMarker().getFolder(), path));
 
         aClone.setUseRegExResolution(false);
         aClone.setRelativePath(path);

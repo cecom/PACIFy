@@ -1,5 +1,6 @@
 package com.geewhiz.pacify.defect;
 
+import com.geewhiz.pacify.defect.DefectException;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
