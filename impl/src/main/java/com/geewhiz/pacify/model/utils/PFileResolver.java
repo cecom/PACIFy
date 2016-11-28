@@ -62,20 +62,13 @@ public class PFileResolver {
         }
 
         List<String> pFiles = finder.getFiles();
-        for (String file : pFiles) {
-            result.add(createPFile(file));
+        for (String relativePath : pFiles) {
+            File physicalPath = new File(pFile.getPMarker().getFolder(), relativePath);
+
+            PFile clone = ModelUtils.createPFile(pFile, relativePath, physicalPath);
+            result.add(clone);
         }
         return result;
-    }
-
-    private PFile createPFile(String path) {
-        PFile aClone = (PFile) pFile.clone();
-        pFile.setFile(new File(pFile.getPMarker().getFolder(), path));
-
-        aClone.setUseRegExResolution(false);
-        aClone.setRelativePath(path);
-
-        return aClone;
     }
 
 }

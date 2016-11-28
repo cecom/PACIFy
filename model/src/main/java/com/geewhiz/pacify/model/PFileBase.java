@@ -38,7 +38,7 @@ public abstract class PFileBase {
     private PArchive pArchive;
 
     /**
-     * The physical representation. if the PFile in an archive, it will be extracted and will be available here
+     * The physical representation. if the PFile in an archive, it will be extracted (if in an arhive) and will be available here
      */
     private File     file;
 
@@ -62,6 +62,10 @@ public abstract class PFileBase {
 
     public Boolean isArchiveFile() {
         return getPArchive() != null;
+    }
+
+    public Boolean fileExists() {
+        return file != null && file.exists();
     }
 
     public String getPUri() {

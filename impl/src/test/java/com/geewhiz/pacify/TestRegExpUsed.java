@@ -25,6 +25,9 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
+import static org.hamcrest.CoreMatchers.startsWith;
+import static org.hamcrest.CoreMatchers.endsWith;
+
 import com.geewhiz.pacify.managers.EntityManager;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
@@ -32,7 +35,7 @@ import com.geewhiz.pacify.model.PMarker;
 public class TestRegExpUsed {
 
     @Test
-    public void testAll() {
+    public void testPFile() {
         File source = new File("target/test-classes/testRegExpUsed/package");
 
         EntityManager entityManager = new EntityManager(source);
@@ -47,6 +50,38 @@ public class TestRegExpUsed {
         Assert.assertEquals("file1.conf", pFiles.get(0).getRelativePath());
         Assert.assertEquals("subfolder/file2.conf", pFiles.get(1).getRelativePath());
         Assert.assertEquals("subfolder/subfolder2/file3.conf", pFiles.get(2).getRelativePath());
+
+        Assert.assertEquals(1, pFiles.get(0).getPProperties().size());
+        Assert.assertEquals(1, pFiles.get(1).getPProperties().size());
+        Assert.assertEquals(1, pFiles.get(2).getPProperties().size());
+
+        Assert.assertEquals("foobar1", pFiles.get(0).getPProperties().get(0).getName());
+        Assert.assertEquals("foobar1", pFiles.get(1).getPProperties().get(0).getName());
+        Assert.assertEquals("foobar1", pFiles.get(2).getPProperties().get(0).getName());
+
+    }
+
+    @Test
+    public void testPArchive() {
+        File source = new File("target/test-classes/testRegExpUsedArchive/package");
+
+        EntityManager entityManager = new EntityManager(source);
+        entityManager.initialize();
+
+        PMarker pMarker = entityManager.getPMarkers().get(0);
+
+        List<PFile> pFiles = entityManager.getPFilesFrom(pMarker);
+
+        Assert.assertEquals(3, pFiles.size());
+
+        Assert.assertThat(pFiles.get(0).getRelativePath(), startsWith("some.zip!file1.conf"));
+        Assert.assertThat(pFiles.get(0).getRelativePath(), endsWith(".tmp"));
+
+        Assert.assertThat(pFiles.get(1).getRelativePath(), startsWith("some.zip!file2.conf"));
+        Assert.assertThat(pFiles.get(1).getRelativePath(), endsWith(".tmp"));
+
+        Assert.assertThat(pFiles.get(2).getRelativePath(), startsWith("some.zip!file3.conf"));
+        Assert.assertThat(pFiles.get(2).getRelativePath(), endsWith(".tmp"));
 
         Assert.assertEquals(1, pFiles.get(0).getPProperties().size());
         Assert.assertEquals(1, pFiles.get(1).getPProperties().size());

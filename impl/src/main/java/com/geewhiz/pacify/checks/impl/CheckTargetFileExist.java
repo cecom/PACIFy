@@ -15,7 +15,7 @@ public class CheckTargetFileExist implements PMarkerCheck {
         LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
 
         for (PFile pFile : entityManager.getPFilesFrom(pMarker)) {
-            if (!entityManager.doesFileExist(pFile)) {
+            if (!pFile.fileExists()) {
                 Defect defect = new FileDoesNotExistDefect(pFile);
                 defects.add(defect);
             }

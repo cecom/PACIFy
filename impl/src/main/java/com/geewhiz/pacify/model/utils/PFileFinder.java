@@ -67,18 +67,6 @@ public class PFileFinder extends SimpleFileVisitor<Path> {
         return CONTINUE;
     }
 
-    // public boolean accept(File pathName) {
-    // String path = pathName.getPath();
-    // String markerPath = pFile.getPMarker().getFolder().getPath();
-    //
-    // if (path.startsWith(markerPath)) {
-    // path = path.substring(markerPath.length() + 1);
-    // }
-    //
-    // Matcher m = regEx.matcher(path);
-    // return m.matches();
-    // }
-
     public List<String> getFiles() {
         return foundFiles;
     }

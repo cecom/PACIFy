@@ -30,6 +30,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.ArrayList;
@@ -51,6 +53,7 @@ import org.apache.commons.io.IOUtils;
 
 import com.geewhiz.pacify.model.PArchive;
 import com.geewhiz.pacify.model.PFile;
+import com.geewhiz.pacify.model.utils.ModelUtils;
 
 public class FileUtils {
 
@@ -85,11 +88,14 @@ public class FileUtils {
     }
 
     public static File createEmptyFileWithSamePermissions(File forFile) {
+        return createEmptyFileWithSamePermissions(forFile, forFile.getName());
+    }
+
+    public static File createEmptyFileWithSamePermissions(File forFile, String filePrefix) {
         try {
             File folder = forFile.getParentFile();
-            String prefix = forFile.getName();
 
-            File tmp = File.createTempFile(prefix, "tmp", folder);
+            File tmp = File.createTempFile(filePrefix, ".tmp", folder);
 
             if (IS_POSIX) {
                 Set<PosixFilePermission> attrs = Files.getPosixFilePermissions(Paths.get(forFile.toURI()));
@@ -103,7 +109,7 @@ public class FileUtils {
         }
     }
 
-    public static Boolean archiveContainsFile(File archiveFile, String archiveType, String fileToLookFor) {
+    private static Boolean archiveContainsFile(File archiveFile, String archiveType, String fileToLookFor) {
         ArchiveInputStream ais = null;
         try {
             ArchiveStreamFactory factory = new ArchiveStreamFactory();
@@ -141,12 +147,21 @@ public class FileUtils {
         }
     }
 
-    /*
-     * @return null if file not in archive
+    /**
+     * 
+     * @param archiveFile
+     * @param archiveType
+     * @param pFile
+     * @return if pfile is a regular expression, a list of pfiles.
      */
+    public static List<PFile> extractFiles(File archiveFile, String archiveType, PFile pFile) {
+        List<PFile> result = new ArrayList<PFile>();
 
-    public static File extractFile(File archiveFile, String archiveType, String fileToExtract) {
-        File result = null;
+        if (pFile.getFile() != null) {
+            result.add(pFile);
+            return result;
+        }
+
         ArchiveInputStream ais = null;
         try {
             ArchiveStreamFactory factory = new ArchiveStreamFactory();
@@ -155,13 +170,18 @@ public class FileUtils {
 
             ArchiveEntry entry;
             while ((entry = ais.getNextEntry()) != null) {
-                if (!fileToExtract.equals(entry.getName())) {
+                if (pFile.isUseRegExResolution()) {
+                    if (!matches(entry.getName(), pFile.getRelativePath())) {
+                        continue;
+                    }
+                } else if (!pFile.getRelativePath().equals(entry.getName())) {
                     continue;
                 }
 
-                result = FileUtils.createEmptyFileWithSamePermissions(archiveFile);
+                File physicalFile = FileUtils.createEmptyFileWithSamePermissions(archiveFile,
+                        archiveFile + "!" + Paths.get(entry.getName()).getFileName().toString() + "_");
 
-                BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(result));
+                BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(physicalFile));
 
                 byte[] content = new byte[2048];
 
@@ -173,7 +193,14 @@ public class FileUtils {
                 bos.close();
                 content = null;
 
-                return result;
+                if (pFile.isUseRegExResolution()) {
+                    PFile aClone = ModelUtils.createPFile(pFile, physicalFile.getName(), physicalFile);
+                    result.add(aClone);
+                } else {
+                    pFile.setFile(physicalFile);
+                    result.add(pFile);
+                    break;
+                }
             }
         } catch (ArchiveException e) {
             throw new RuntimeException(e);
@@ -183,7 +210,12 @@ public class FileUtils {
             IOUtils.closeQuietly(ais);
         }
 
-        return null;
+        // if we can't resolve the regular expression, return the given pfile
+        if (result.size() == 0) {
+            result.add(pFile);
+            return result;
+        }
+        return result;
     }
 
     public static void replaceFilesInArchives(List<PFile> replacePFiles) {
@@ -228,7 +260,9 @@ public class FileUtils {
             aos = factory.createArchiveOutputStream(archiveType, new FileOutputStream(tmpArchive));
             ChangeSet changes = new ChangeSet();
 
-            manifest = manifestWorkaround(archiveFile, archiveType, aos, changes, streamsToClose);
+            if ("jar".equalsIgnoreCase(archiveType)) {
+                manifest = manifestWorkaround(archiveFile, archiveType, aos, changes, streamsToClose);
+            }
 
             for (PFile pFile : replaceFiles) {
                 String filePath = pFile.getRelativePath();
@@ -280,13 +314,23 @@ public class FileUtils {
             return null;
         }
 
-        File originalManifest = extractFile(archiveFile, archiveType, manifestPath);
+        PFile manifestPFile = new PFile();
+        manifestPFile.setRelativePath(manifestPath);
+        manifestPFile.setUseRegExResolution(false);
 
-        ArchiveEntry archiveEntry = aos.createArchiveEntry(originalManifest, manifestPath);
-        FileInputStream fis = new FileInputStream(originalManifest);
+        PFile originalManifestPFile = extractFiles(archiveFile, archiveType, manifestPFile).get(0);
+
+        ArchiveEntry archiveEntry = aos.createArchiveEntry(originalManifestPFile.getFile(), manifestPath);
+        FileInputStream fis = new FileInputStream(originalManifestPFile.getFile());
         streamsToClose.add(fis);
         changes.add(archiveEntry, fis, true);
 
-        return originalManifest;
+        return originalManifestPFile.getFile();
+    }
+
+    private static Boolean matches(String pathName, String regExp) {
+        Path path = FileSystems.getDefault().getPath(pathName);
+        PathMatcher matcher = FileSystems.getDefault().getPathMatcher("regex:" + regExp);
+        return matcher.matches(path);
     }
 }

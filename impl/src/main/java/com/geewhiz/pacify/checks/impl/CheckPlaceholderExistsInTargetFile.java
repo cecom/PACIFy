@@ -24,7 +24,7 @@ public class CheckPlaceholderExistsInTargetFile implements PMarkerCheck {
 
         for (PFile pFile : entityManager.getPFilesFrom(pMarker)) {
             // existents of the file is checked in another checker
-            if (pFile.getFile() == null)
+            if (!pFile.fileExists())
                 continue;
 
             String fileContent = FileUtils.getFileInOneString(pFile.getFile(), pFile.getEncoding());
