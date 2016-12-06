@@ -94,6 +94,9 @@ public class FilterManager {
         String encoding = pFile.getEncoding();
 
         defects.addAll(pacifyFilter.filter(propertyValues, beginToken, endToken, fileToFilter, encoding));
+
+        fileToFilter.setLastModified(System.currentTimeMillis());
+
         logger.info("          [{}] placeholders replaced.", pFile.getPProperties().size());
 
         return defects;

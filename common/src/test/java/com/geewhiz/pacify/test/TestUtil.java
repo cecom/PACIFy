@@ -121,7 +121,7 @@ public class TestUtil {
         }
 
         try {
-            FileUtils.copyDirectory(fromFolder, toFolder);
+            FileUtils.copyDirectory(fromFolder, toFolder, true);
         } catch (IOException e) {
             throw new RuntimeException("error while copy test-resources", e);
         }

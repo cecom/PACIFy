@@ -20,6 +20,8 @@ import com.geewhiz.pacify.resolver.PropertyResolver;
 import com.geewhiz.pacify.test.TestUtil;
 import com.geewhiz.pacify.utils.LoggingUtils;
 
+import static org.hamcrest.Matchers.*;
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
@@ -39,35 +41,30 @@ import com.geewhiz.pacify.utils.LoggingUtils;
  * under the License.
  */
 
-public class BugFixing extends TestBase {
+public class Features extends TestBase {
 
     @Before
-    public void before(){
+    public void before() {
         Logger logger = LogManager.getLogger();
         LoggingUtils.setLogLevel(logger, Level.ERROR);
     }
-    
-    @Test
-    public void Bug1() {
-        File testResourceFolder = new File("src/test/resources/1_Bugfixing/Bug1");
-        File targetResourceFolder = new File("target/test-resources/Bugfixing/Bug1");
-
-        LinkedHashSet<Defect> defects = createPrepareAndExecuteValidator(testResourceFolder, targetResourceFolder);
-
-        Assert.assertEquals("We shouldnt get any defects.", 0, defects.size());
-    }
 
     @Test
-    public void Bug2() {
-        File testResourceFolder = new File("src/test/resources/1_Bugfixing/Bug2");
-        File targetResourceFolder = new File("target/test-resources/Bugfixing/Bug2");
+    public void ModifyDateFeature() {
+        File testResourceFolder = new File("src/test/resources/2_Features/ModifyDate");
+        File targetResourceFolder = new File("target/test-resources/2_Features/ModifyDate");
 
-        LinkedHashSet<Defect> defects = createPrepareAndExecuteValidator(testResourceFolder, targetResourceFolder);
+        LinkedHashSet<Defect> defects = createPrepareAndExecute(testResourceFolder, targetResourceFolder);
 
         Assert.assertEquals("We shouldnt get any defects.", 0, defects.size());
+        Assert.assertEquals("Time of the readme.txt which is not replaced should be same.",
+                (new File(targetResourceFolder, "package/readme.txt")).lastModified(), (new File(testResourceFolder, "package/readme.txt")).lastModified());
+
+        Assert.assertThat("Timestamp", (new File(targetResourceFolder, "package/conf.txt")).lastModified(),
+                greaterThan((new File(testResourceFolder, "package/conf.txt")).lastModified()));
     }
 
-    private LinkedHashSet<Defect> createPrepareAndExecuteValidator(File testResourceFolder, File targetResourceFolder) {
+    private LinkedHashSet<Defect> createPrepareAndExecute(File testResourceFolder, File targetResourceFolder) {
         File packagePath = new File(targetResourceFolder, "package");
 
         TestUtil.removeOldTestResourcesAndCopyAgain(testResourceFolder, targetResourceFolder);
