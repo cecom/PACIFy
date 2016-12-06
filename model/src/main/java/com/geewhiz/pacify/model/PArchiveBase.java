@@ -34,7 +34,13 @@ import com.geewhiz.pacify.defect.DefectRuntimeException;
 
 public abstract class PArchiveBase {
 
-    private PMarker pMarker;
+    private PMarker  pMarker;
+    private PArchive pParentArchive;
+
+    /**
+     * The physical representation. if this entry is an archive in an archive.
+     */
+    private File     file;
 
     public String getInternalType() {
         int idx = getRelativePath().lastIndexOf(".");
@@ -42,11 +48,31 @@ public abstract class PArchiveBase {
     }
 
     public PMarker getPMarker() {
+        if(isArchiveFile())
+            return getParentArchive().getPMarker();
         return pMarker;
+    }
+
+    public PArchive getParentArchive() {
+        return pParentArchive;
+    }
+
+    public File getFile() {
+        return file;
+    }
+
+    public void setFile(File file) {
+        this.file = file;
+    }
+
+    public Boolean isArchiveFile() {
+        return getParentArchive() != null;
     }
 
     public String getPUri() {
         StringBuffer sb = new StringBuffer();
+        if (getParentArchive() != null)
+            sb.append(getParentArchive().getPUri()).append("!");
         sb.append(getRelativePath());
         return sb.toString();
     }
@@ -84,10 +110,6 @@ public abstract class PArchiveBase {
         return getInternalEndToken() != null ? getInternalEndToken() : getPMarker().getEndToken();
     }
 
-    public File getFile() {
-        return new File(getPMarker().getFolder(), getRelativePath());
-    }
-
     public abstract String getInternalEndToken();
 
     public abstract String getInternalBeginToken();
@@ -119,6 +141,8 @@ public abstract class PArchiveBase {
     public void afterUnmarshal(Unmarshaller unmarshaller, Object parent) {
         if (parent instanceof PMarker) {
             pMarker = (PMarker) parent;
+        } else if (parent instanceof PArchive) {
+            pParentArchive = (PArchive) parent;
         } else {
             throw new DefectRuntimeException("Wrong Parent [" + parent.getClass().getName() + "]");
         }

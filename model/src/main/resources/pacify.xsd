@@ -1,56 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
-    <xs:element name="Pacify" type="PMarker"/>
+    <xs:element name="Pacify" type="PMarker" />
     <xs:complexType name="PMarker">
         <xs:annotation>
             <xs:documentation>Configuration File for PACIFy</xs:documentation>
         </xs:annotation>
         <xs:sequence maxOccurs="unbounded">
-            <xs:element name="File" type="PFile" minOccurs="0"/>
-            <xs:element name="Archive" type="PArchive" minOccurs="0"/>
+            <xs:element name="File" type="PFile" minOccurs="0" />
+            <xs:element name="Archive" type="PArchive" minOccurs="0" />
         </xs:sequence>
-        <xs:attribute name="BeginToken" type="xs:string" default="%{"/>
-        <xs:attribute name="EndToken" type="xs:string" default="}"/>
+        <xs:attribute name="BeginToken" type="xs:string" default="%{" />
+        <xs:attribute name="EndToken" type="xs:string" default="}" />
     </xs:complexType>
     <xs:complexType name="PArchive">
         <xs:sequence maxOccurs="unbounded">
-            <xs:element name="File" type="PFile"/>
+            <xs:element name="File" type="PFile" minOccurs="0" />
+            <xs:element name="Archive" type="PArchive" minOccurs="0" />
         </xs:sequence>
         <xs:attribute name="RelativePath" type="xs:string" use="required">
             <xs:annotation>
                 <xs:documentation xml:lang="en">
-                             Currently supported file name extension are zip, jar, war, ear and tar. 
-                        </xs:documentation>
+                    Currently supported file name extension are zip, jar, war, ear and tar.
+                </xs:documentation>
             </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="BeginToken" type="xs:string"/>
-        <xs:attribute name="EndToken" type="xs:string"/>
+        <xs:attribute name="BeginToken" type="xs:string" />
+        <xs:attribute name="EndToken" type="xs:string" />
     </xs:complexType>
     <xs:complexType name="PFile">
         <xs:sequence maxOccurs="unbounded">
-            <xs:element name="Property" type="PProperty"/>
+            <xs:element name="Property" type="PProperty" />
         </xs:sequence>
-        <xs:attribute name="RelativePath" type="xs:string" use="required"/>
+        <xs:attribute name="RelativePath" type="xs:string" use="required" />
         <xs:attribute name="UseRegExResolution" type="xs:boolean" default="false">
             <xs:annotation>
                 <xs:documentation xml:lang="en">
-                             If your relative path contains a RegExp you have to set this attribute to true.
-                        </xs:documentation>
+                    If your relative path contains a RegExp you have to set this attribute to true.
+                </xs:documentation>
             </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="Encoding" type="xs:string" default="UTF-8"/>
+        <xs:attribute name="Encoding" type="xs:string" default="UTF-8" />
         <xs:attribute name="FilterClass" type="xs:string" default="com.geewhiz.pacify.filter.PacifyTokenFilter">
             <xs:annotation>
                 <xs:documentation xml:lang="en">
-                             Define the class which should filter your file. Default is "com.geewhiz.pacify.filter.PacifyTokenFilter". This filter handles only placeholders. There is another filter "com.geewhiz.pacify.filter.PacifyVelocityFilter". This filter can handle velocity template files. Have a look at the documentation for more information.
-                        </xs:documentation>
+                    Define the class which should filter your file. Default is "com.geewhiz.pacify.filter.PacifyTokenFilter". This filter handles only placeholders. There is another
+                    filter "com.geewhiz.pacify.filter.PacifyVelocityFilter". This filter can handle velocity template files. Have a look at the documentation
+                    for more information.
+                </xs:documentation>
             </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="BeginToken" type="xs:string"/>
-        <xs:attribute name="EndToken" type="xs:string"/>
+        <xs:attribute name="BeginToken" type="xs:string" />
+        <xs:attribute name="EndToken" type="xs:string" />
     </xs:complexType>
     <xs:complexType name="PProperty">
-        <xs:attribute name="Name" type="xs:string" use="required"/>
-        <xs:attribute name="ConvertBackslashToSlash" type="xs:boolean" default="false"/>
+        <xs:attribute name="Name" type="xs:string" use="required" />
+        <xs:attribute name="ConvertBackslashToSlash" type="xs:boolean" default="false" />
     </xs:complexType>
 </xs:schema>

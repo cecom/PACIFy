@@ -38,7 +38,7 @@ public abstract class PFileBase {
     private PArchive pArchive;
 
     /**
-     * The physical representation. if the PFile in an archive, it will be extracted (if in an arhive) and will be available here
+     * The physical representation. If this entry is within an archive it will be available here.
      */
     private File     file;
 
@@ -52,11 +52,11 @@ public abstract class PFileBase {
         return pArchive;
     }
 
-    protected void setPMarker(PMarker pMarker) {
+    public void setPMarker(PMarker pMarker) {
         this.pMarker = pMarker;
     }
 
-    protected void setPArchive(PArchive pArchive) {
+    public void setPArchive(PArchive pArchive) {
         this.pArchive = pArchive;
     }
 
@@ -126,6 +126,7 @@ public abstract class PFileBase {
     public Object copyTo(ObjectLocator locator, Object draftCopy, CopyStrategy strategy) {
         if (draftCopy instanceof PFile) {
             ((PFile) draftCopy).setPMarker(pMarker);
+            ((PFile) draftCopy).setPArchive(pArchive);
         }
         return draftCopy;
     }

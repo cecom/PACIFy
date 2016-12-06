@@ -17,9 +17,6 @@
         <jaxb:bindings node="xsd:complexType[@name='PArchive']">
             <inheritance:extends>PArchiveBase</inheritance:extends>
         </jaxb:bindings>
-        <jaxb:bindings node="xsd:complexType[@name='PArchive']/*/xsd:element[@name='File']">
-            <jaxb:property name="PFiles" />
-        </jaxb:bindings>
         <jaxb:bindings node="xsd:complexType[@name='PArchive']/xsd:attribute[@name='BeginToken']">
             <jaxb:property name="internalBeginToken" />
         </jaxb:bindings>

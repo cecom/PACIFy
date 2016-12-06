@@ -94,6 +94,27 @@ public class TestArchive {
     }
 
     @Test
+    public void checkJarInEar() throws ArchiveException, IOException {
+        Logger logger = LogManager.getLogger(TestArchive.class.getName());
+        LoggingUtils.setLogLevel(logger, Level.INFO);
+
+        File testResourceFolder = new File("src/test/resources/testArchive/correct/jarInEar");
+        File targetResourceFolder = new File("target/test-resources/testArchive/correct/jarInEar");
+
+        LinkedHashSet<Defect> defects = createPrepareAndExecutePacify(testResourceFolder, targetResourceFolder);
+
+        Assert.assertEquals("We shouldnt get any defects.", 0, defects.size());
+
+        File expectedArchive = new File(targetResourceFolder, "expectedResult/some.ear");
+        File outputArchive = new File(targetResourceFolder, "package/some.ear");
+
+        // TODO: does not work with archive in archive
+        // checkResultIsAsExpected(outputArchive, expectedArchive);
+
+        Assert.assertArrayEquals("There should be no additional File", expectedArchive.getParentFile().list(), outputArchive.getParentFile().list());
+    }
+
+    @Test
     public void checkJarWhereTheSourceIsntAJarPerDefinition() throws ArchiveException, IOException {
         Logger logger = LogManager.getLogger(TestArchive.class.getName());
         LoggingUtils.setLogLevel(logger, Level.ERROR);
