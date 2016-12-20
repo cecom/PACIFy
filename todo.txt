@@ -1,4 +1,4 @@
 archive in archive
 test for missing file while using regexp in archive and pfile
 regular expression within archive test
-vergleich von archive in archive geht nicht
+ArchiveUtils weiter aufräumen, fileutils sollte nichts mehr von archiven wissen

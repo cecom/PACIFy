@@ -42,13 +42,14 @@ public abstract class PArchiveBase {
      */
     private File     file;
 
+    // TODO: liegt jetzt in archiveutils, muss raus
     public String getInternalType() {
         int idx = getRelativePath().lastIndexOf(".");
         return getRelativePath().substring(idx + 1);
     }
 
     public PMarker getPMarker() {
-        if(isArchiveFile())
+        if (isArchiveFile())
             return getParentArchive().getPMarker();
         return pMarker;
     }
@@ -81,6 +82,7 @@ public abstract class PArchiveBase {
         this.pMarker = pMarker;
     }
 
+    // TODO: liegt jetzt in archiveutils, muss raus
     public String getType() {
         String type = getInternalType();
 

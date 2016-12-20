@@ -27,6 +27,7 @@ import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.managers.EntityManager;
 import com.geewhiz.pacify.model.PArchive;
 import com.geewhiz.pacify.model.PMarker;
+import com.geewhiz.pacify.utils.ArchiveUtils;
 
 public class CheckCorrectArchiveType implements PMarkerCheck {
 
@@ -36,23 +37,10 @@ public class CheckCorrectArchiveType implements PMarkerCheck {
         for (Object entry : pMarker.getFilesAndArchives()) {
             if (entry instanceof PArchive) {
                 PArchive pArchive = (PArchive) entry;
-                String type = pArchive.getInternalType();
-                if ("jar".equalsIgnoreCase(type)) {
-                    continue;
+
+                if (!ArchiveUtils.isArchiveAndIsSupported(pArchive.getRelativePath())) {
+                    defects.add(new ArchiveTypeNotImplementedDefect(pArchive));
                 }
-                if ("war".equalsIgnoreCase(type)) {
-                    continue;
-                }
-                if ("ear".equalsIgnoreCase(type)) {
-                    continue;
-                }
-                if ("zip".equalsIgnoreCase(type)) {
-                    continue;
-                }
-                if ("tar".equalsIgnoreCase(type)) {
-                    continue;
-                }
-                defects.add(new ArchiveTypeNotImplementedDefect(pArchive));
             }
         }
 

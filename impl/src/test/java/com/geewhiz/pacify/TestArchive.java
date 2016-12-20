@@ -41,6 +41,8 @@ import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.property.resolver.HashMapPropertyResolver;
 import com.geewhiz.pacify.resolver.PropertyResolver;
 import com.geewhiz.pacify.test.TestUtil;
+import com.geewhiz.pacify.utils.ArchiveUtils;
+import com.geewhiz.pacify.utils.FileUtils;
 import com.geewhiz.pacify.utils.LoggingUtils;
 
 /*
@@ -108,8 +110,7 @@ public class TestArchive {
         File expectedArchive = new File(targetResourceFolder, "expectedResult/some.ear");
         File outputArchive = new File(targetResourceFolder, "package/some.ear");
 
-        // TODO: does not work with archive in archive
-        // checkResultIsAsExpected(outputArchive, expectedArchive);
+        checkResultIsAsExpected(outputArchive, expectedArchive);
 
         Assert.assertArrayEquals("There should be no additional File", expectedArchive.getParentFile().list(), outputArchive.getParentFile().list());
     }
@@ -366,6 +367,20 @@ public class TestArchive {
                 entryFound = true;
                 if (expectedEntry.isDirectory()) {
                     Assert.assertTrue("we expect a directory", replacedEntry.isDirectory());
+                    break;
+                }
+
+                if (ArchiveUtils.isArchiveAndIsSupported(expectedEntry.getName())) {
+                    Assert.assertTrue("we expect a archive", ArchiveUtils.isArchiveAndIsSupported(replacedEntry.getName()));
+
+                    File replacedChildArchive = ArchiveUtils.extractFile(replacedArchive, replacedEntry.getName());
+                    File expectedChildArchive = ArchiveUtils.extractFile(expectedArchive, expectedEntry.getName());
+
+                    archiveContainsEntries(replacedChildArchive, expectedChildArchive);
+
+                    replacedChildArchive.delete();
+                    expectedChildArchive.delete();
+
                     break;
                 }
 
