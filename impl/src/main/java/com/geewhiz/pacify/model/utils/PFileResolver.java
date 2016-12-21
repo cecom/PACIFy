@@ -68,6 +68,12 @@ public class PFileResolver {
             PFile clone = ModelUtils.createPFile(pFile, relativePath, physicalPath);
             result.add(clone);
         }
+        
+        // if we can't resolve the regular expression, return the given pfile
+        if (result.size() == 0) {
+            result.add(pFile);
+        }
+        
         return result;
     }
 

@@ -21,7 +21,6 @@ package com.geewhiz.pacify.managers;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 
@@ -46,7 +45,7 @@ import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.model.utils.PArchiveResolver;
 import com.geewhiz.pacify.model.utils.PFileResolver;
 import com.geewhiz.pacify.model.utils.PacifyFilesFinder;
-import com.geewhiz.pacify.utils.FileUtils;
+import com.geewhiz.pacify.utils.ArchiveUtils;
 
 public class EntityManager {
 
@@ -130,6 +129,6 @@ public class EntityManager {
     }
 
     public void postProcessPMarker(PMarker pMarker) {
-        FileUtils.replaceFilesInArchives(getPFilesFrom(pMarker));
+        ArchiveUtils.replaceFilesInArchives(getPFilesFrom(pMarker));
     }
 }

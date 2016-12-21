@@ -8,7 +8,7 @@ import org.apache.commons.lang3.NotImplementedException;
 
 import com.geewhiz.pacify.model.PArchive;
 import com.geewhiz.pacify.model.PFile;
-import com.geewhiz.pacify.utils.FileUtils;
+import com.geewhiz.pacify.utils.ArchiveUtils;
 
 public class PArchiveResolver {
 
@@ -24,7 +24,7 @@ public class PArchiveResolver {
         if (pArchive.getFile() == null) {
             File physicalFile = null;
             if (pArchive.isArchiveFile()) {
-                physicalFile = FileUtils.extractPArchive(pArchive);
+                physicalFile = ArchiveUtils.extractPArchive(pArchive);
             } else {
                 physicalFile = new File(pArchive.getPMarker().getFolder(), pArchive.getRelativePath());
             }
@@ -34,7 +34,7 @@ public class PArchiveResolver {
         for (Object entry : pArchive.getFilesAndArchives()) {
             if (entry instanceof PFile) {
                 PFile pFile = (PFile) entry;
-                result.addAll(resolvePFiles(pFile));
+                result.addAll(ArchiveUtils.extractPFile(pFile));
             } else if (entry instanceof PArchive) {
                 PArchive pArchive = (PArchive) entry;
                 PArchiveResolver resolver = new PArchiveResolver(pArchive);
@@ -44,17 +44,6 @@ public class PArchiveResolver {
             }
 
         }
-        return result;
-    }
-
-    private List<PFile> resolvePFiles(PFile pFile) {
-        List<PFile> result = new ArrayList<PFile>();
-
-        List<PFile> extractedPFiles = FileUtils.extractPFile(pFile);
-        if (extractedPFiles != null) {
-            result.addAll(extractedPFiles);
-        }
-
         return result;
     }
 

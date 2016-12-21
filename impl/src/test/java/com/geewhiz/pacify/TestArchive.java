@@ -42,7 +42,6 @@ import com.geewhiz.pacify.property.resolver.HashMapPropertyResolver;
 import com.geewhiz.pacify.resolver.PropertyResolver;
 import com.geewhiz.pacify.test.TestUtil;
 import com.geewhiz.pacify.utils.ArchiveUtils;
-import com.geewhiz.pacify.utils.FileUtils;
 import com.geewhiz.pacify.utils.LoggingUtils;
 
 /*
@@ -102,6 +101,26 @@ public class TestArchive {
 
         File testResourceFolder = new File("src/test/resources/testArchive/correct/jarInEar");
         File targetResourceFolder = new File("target/test-resources/testArchive/correct/jarInEar");
+
+        LinkedHashSet<Defect> defects = createPrepareAndExecutePacify(testResourceFolder, targetResourceFolder);
+
+        Assert.assertEquals("We shouldnt get any defects.", 0, defects.size());
+
+        File expectedArchive = new File(targetResourceFolder, "expectedResult/some.ear");
+        File outputArchive = new File(targetResourceFolder, "package/some.ear");
+
+        checkResultIsAsExpected(outputArchive, expectedArchive);
+
+        Assert.assertArrayEquals("There should be no additional File", expectedArchive.getParentFile().list(), outputArchive.getParentFile().list());
+    }
+
+    @Test
+    public void checkJarInEarWithRegExp() throws ArchiveException, IOException {
+        Logger logger = LogManager.getLogger(TestArchive.class.getName());
+        LoggingUtils.setLogLevel(logger, Level.INFO);
+
+        File testResourceFolder = new File("src/test/resources/testArchive/correct/jarInEarWithRegExp");
+        File targetResourceFolder = new File("target/test-resources/testArchive/correct/jarInEarWithRegExp");
 
         LinkedHashSet<Defect> defects = createPrepareAndExecutePacify(testResourceFolder, targetResourceFolder);
 
@@ -343,8 +362,8 @@ public class TestArchive {
     }
 
     private void checkResultIsAsExpected(File replacedArchive, File expectedArchive) throws ArchiveException, IOException {
-        archiveContainsEntries(replacedArchive, expectedArchive);
         archiveDoesNotContainAdditionEntries(replacedArchive, expectedArchive);
+        archiveContainsEntries(replacedArchive, expectedArchive);
     }
 
     private void archiveContainsEntries(File replacedArchive, File expectedArchive) throws ArchiveException, IOException {
@@ -373,8 +392,10 @@ public class TestArchive {
                 if (ArchiveUtils.isArchiveAndIsSupported(expectedEntry.getName())) {
                     Assert.assertTrue("we expect a archive", ArchiveUtils.isArchiveAndIsSupported(replacedEntry.getName()));
 
-                    File replacedChildArchive = ArchiveUtils.extractFile(replacedArchive, replacedEntry.getName());
-                    File expectedChildArchive = ArchiveUtils.extractFile(expectedArchive, expectedEntry.getName());
+                    File replacedChildArchive = ArchiveUtils.extractFile(replacedArchive, ArchiveUtils.getArchiveType(replacedArchive),
+                            replacedEntry.getName());
+                    File expectedChildArchive = ArchiveUtils.extractFile(expectedArchive, ArchiveUtils.getArchiveType(expectedArchive),
+                            expectedEntry.getName());
 
                     archiveContainsEntries(replacedChildArchive, expectedChildArchive);
 
@@ -417,6 +438,21 @@ public class TestArchive {
                     continue;
                 }
                 entryFound = true;
+
+                if (ArchiveUtils.isArchiveAndIsSupported(expectedEntry.getName())) {
+                    Assert.assertTrue("we expect a archive", ArchiveUtils.isArchiveAndIsSupported(replacedEntry.getName()));
+
+                    File replacedChildArchive = ArchiveUtils.extractFile(replacedArchive, ArchiveUtils.getArchiveType(replacedArchive),
+                            replacedEntry.getName());
+                    File expectedChildArchive = ArchiveUtils.extractFile(expectedArchive, ArchiveUtils.getArchiveType(expectedArchive),
+                            expectedEntry.getName());
+
+                    archiveDoesNotContainAdditionEntries(replacedChildArchive, expectedChildArchive);
+
+                    replacedChildArchive.delete();
+                    expectedChildArchive.delete();
+                }
+
                 break;
             }
 
