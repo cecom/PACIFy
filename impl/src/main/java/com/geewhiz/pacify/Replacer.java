@@ -20,8 +20,6 @@
 
 package com.geewhiz.pacify;
 
-
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -55,7 +53,7 @@ public class Replacer {
     }
 
     public void execute() {
-        logger.info("== Executing Replacer [Version={}]", Utils.getJarVersion());
+        logger.info("== Executing {} [Version={}]", getClass().getSimpleName(), Utils.getJarVersion());
         logger.info("   [PackagePath={}]", getPackagePath().getAbsolutePath());
 
         File pathToConfigure = getPathToConfigure();
@@ -65,7 +63,7 @@ public class Replacer {
         logger.info("== Found [{}] pacify marker files", entityManager.getPMarkerCount());
         logger.info("== Validating...");
 
-        LinkedHashSet<Defect> defects = createValidator().validateInternal(entityManager);
+        LinkedHashSet<Defect> defects = validate(entityManager);
         DefectUtils.abortIfDefectExists(defects);
 
         logger.info("== Replacing...");
@@ -132,12 +130,16 @@ public class Replacer {
         FilterManager filterManager = new FilterManager(entityManager, propertyResolveManager);
 
         LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
-            defects.addAll(filterManager.doFilter());
+        defects.addAll(filterManager.doFilter());
 
         return defects;
     }
 
-    private Validator createValidator() {
+    protected LinkedHashSet<Defect> validate(EntityManager entityManager) {
+        return createValidator().validateInternal(entityManager);
+    }
+
+    protected Validator createValidator() {
         Validator validator = new Validator(propertyResolveManager);
         validator.setPackagePath(packagePath);
         validator.enableMarkerFileChecks();

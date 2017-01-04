@@ -34,7 +34,7 @@ import org.junit.Test;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.utils.LoggingUtils;
 
-public class BugFixing extends TestBase {
+public class TestPreConfigure extends TestBase {
 
     Map<String, String> propertiesToUseWhileResolving = new HashMap<String, String>();
 
@@ -43,24 +43,17 @@ public class BugFixing extends TestBase {
         Logger logger = LogManager.getLogger();
         LoggingUtils.setLogLevel(logger, Level.ERROR);
 
-        propertiesToUseWhileResolving.put("foobar", "foobarValue");
+        propertiesToUseWhileResolving.put("foobar1", "asdf");
+        propertiesToUseWhileResolving.put("foo", "bar");
     }
 
     @Test
-    public void Bug1() {
-        String testFolder = "1_Bugfixing/Bug1";
+    public void checkForCorrect() {
+        String testFolder = "testPreConfigure/correct/default";
 
         LinkedHashSet<Defect> defects = createPrepareAndExecutePacify(testFolder, propertiesToUseWhileResolving);
 
-        Assert.assertEquals("We shouldnt get any defects.", 0, defects.size());
+        Assert.assertEquals(0, defects.size());
     }
 
-    @Test
-    public void Bug2() {
-        String testFolder = "1_Bugfixing/Bug2";
-
-        LinkedHashSet<Defect> defects = createPrepareAndExecutePacify(testFolder, propertiesToUseWhileResolving);
-
-        Assert.assertEquals("We shouldnt get any defects.", 0, defects.size());
-    }
 }

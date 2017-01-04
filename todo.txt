@@ -1,0 +1,1 @@
+- test commandline call preconfigure command

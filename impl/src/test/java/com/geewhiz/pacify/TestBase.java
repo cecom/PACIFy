@@ -20,19 +20,24 @@
 
 package com.geewhiz.pacify;
 
-
-
 import java.io.File;
 import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import com.geewhiz.pacify.checks.PMarkerCheck;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.managers.EntityManager;
+import com.geewhiz.pacify.managers.PropertyResolveManager;
 import com.geewhiz.pacify.model.PMarker;
+import com.geewhiz.pacify.property.resolver.HashMapPropertyResolver;
+import com.geewhiz.pacify.resolver.PropertyResolver;
+import com.geewhiz.pacify.test.TestUtil;
 
 public abstract class TestBase {
 
-    protected LinkedHashSet<Defect> getDefects(PMarkerCheck checker, File testStartPath) {
+    public LinkedHashSet<Defect> getDefects(PMarkerCheck checker, File testStartPath) {
         EntityManager entityManager = new EntityManager(testStartPath);
 
         LinkedHashSet<Defect> defects = entityManager.initialize();
@@ -40,6 +45,64 @@ public abstract class TestBase {
             defects.addAll(checker.checkForErrors(entityManager, pMarker));
         }
         return defects;
+    }
+
+    public LinkedHashSet<Defect> createPrepareAndExecutePacify(String testFolder, Map<String, String> propertiesWhichWillBeUsedWhileResolving) {
+
+        File testResourceFolder = getTestResourceFolder(testFolder);
+        File targetResourceFolder = getTargetResourceFolder(testFolder);
+
+        File packagePath = new File(targetResourceFolder, "package");
+
+        TestUtil.removeOldTestResourcesAndCopyAgain(testResourceFolder, targetResourceFolder);
+
+        PropertyResolveManager propertyResolveManager = createPropertyResolveManager(propertiesWhichWillBeUsedWhileResolving);
+        EntityManager entityManager = new EntityManager(packagePath);
+
+        LinkedHashSet<Defect> defects = entityManager.initialize();
+
+        // execute validation
+        defects.addAll(createValidator(propertyResolveManager, packagePath).validateInternal(entityManager));
+
+        // execute replacer
+        defects.addAll(createReplacer(propertyResolveManager, packagePath).doReplacement(entityManager));
+
+        return defects;
+    }
+
+    public File getTestResourceFolder(String testFolder) {
+        return new File("src/test/resources/" + testFolder);
+    }
+
+    public File getTargetResourceFolder(String testFolder) {
+        return new File("target/test-resources/" + testFolder);
+    }
+
+    public PropertyResolveManager createPropertyResolveManager(Map<String, String> propertiesWhichWillBeUsedWhileResolving) {
+        HashMapPropertyResolver hpr = new HashMapPropertyResolver(propertiesWhichWillBeUsedWhileResolving);
+
+        Set<PropertyResolver> propertyResolverList = new TreeSet<PropertyResolver>();
+        propertyResolverList.add(hpr);
+        PropertyResolveManager prm = new PropertyResolveManager(propertyResolverList);
+        return prm;
+    }
+
+    public Replacer createReplacer(PropertyResolveManager propertyResolveManager, File packagePath) {
+        Replacer replacer = new Replacer(propertyResolveManager);
+
+        replacer.setPackagePath(packagePath);
+
+        return replacer;
+    }
+
+    public Validator createValidator(PropertyResolveManager propertyResolveManager, File packagePath) {
+        Validator validator = new Validator(propertyResolveManager);
+
+        validator.setPackagePath(packagePath);
+        validator.enableMarkerFileChecks();
+        validator.enablePropertyResolveChecks();
+
+        return validator;
     }
 
 }
