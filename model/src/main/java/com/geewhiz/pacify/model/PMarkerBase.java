@@ -20,9 +20,9 @@
 
 package com.geewhiz.pacify.model;
 
-
-
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.jvnet.jaxb2_commons.lang.CopyStrategy;
 import org.jvnet.jaxb2_commons.lang.EqualsStrategy;
@@ -32,7 +32,11 @@ import org.jvnet.jaxb2_commons.locator.ObjectLocator;
 
 public abstract class PMarkerBase {
 
-    private File file;
+    private File    file;
+
+    private Boolean resolved;
+
+    private Boolean successfullyProcessed;
 
     public void setFile(java.io.File file) {
         this.file = file;
@@ -45,6 +49,38 @@ public abstract class PMarkerBase {
     public File getFolder() {
         return file.getParentFile();
     }
+
+    /**
+     * if resolved this model does only contain PFiles.
+     * 
+     * @return
+     */
+    public List<PFile> getPFiles() {
+        List<PFile> result = new ArrayList<PFile>();
+
+        for (Object entry : getFilesAndArchives()) {
+            if (entry instanceof PFile) {
+                PFile pFile = (PFile) entry;
+                result.add(pFile);
+            }
+        }
+
+        return result;
+    }
+
+    public void setSuccessfullyProcessed(Boolean state) {
+        this.successfullyProcessed = state;
+    }
+
+    public Boolean isSuccessfullyProcessed() {
+        return successfullyProcessed != null && successfullyProcessed;
+    }
+
+    public String getXPath() {
+        return "/Pacify";
+    }
+
+    public abstract List<Object> getFilesAndArchives();
 
     public boolean equals(ObjectLocator thisLocator, ObjectLocator thatLocator, Object object, EqualsStrategy strategy) {
         return file.equals(((PMarker) object).getFile());
@@ -66,5 +102,13 @@ public abstract class PMarkerBase {
             ((PMarker) draftCopy).setFile(file);
         }
         return draftCopy;
+    }
+
+    public Boolean isResolved() {
+        return resolved != null && resolved;
+    }
+
+    public void setResolved(Boolean resolved) {
+        this.resolved = resolved;
     }
 }

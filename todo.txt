@@ -1,1 +1,3 @@
 - test commandline call preconfigure command
+- preconfigure should count the correct placeholders replaced size
+- wenn ein platzhalter ersetzt wird, die auflösung des wertes wiederum eine referenz enthält welche nicht gepflegt ist

@@ -20,6 +20,7 @@
 
 package com.geewhiz.pacify;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -32,6 +33,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.geewhiz.pacify.defect.Defect;
+import com.geewhiz.pacify.managers.PropertyResolveManager;
+import com.geewhiz.pacify.test.TestUtil;
 import com.geewhiz.pacify.utils.LoggingUtils;
 
 public class TestPreConfigure extends TestBase {
@@ -54,6 +57,16 @@ public class TestPreConfigure extends TestBase {
         LinkedHashSet<Defect> defects = createPrepareAndExecutePacify(testFolder, propertiesToUseWhileResolving);
 
         Assert.assertEquals(0, defects.size());
+
+        TestUtil.checkIfResultIsAsExpected(testFolder);
     }
 
+    @Override
+    public Replacer createReplacer(PropertyResolveManager propertyResolveManager, File packagePath) {
+        PreConfigure preconfigure = new PreConfigure(propertyResolveManager);
+
+        preconfigure.setPackagePath(packagePath);
+
+        return preconfigure;
+    }
 }

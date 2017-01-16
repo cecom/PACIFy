@@ -32,7 +32,9 @@ public class ModelUtils {
         aClone.setFile(physicalPath);
         aClone.setUseRegExResolution(false);
         aClone.setRelativePath(relativePath);
+        aClone.setIsCloneFrom(cloneFrom); 
 
         return aClone;
     }
 }
+

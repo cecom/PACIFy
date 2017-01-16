@@ -20,8 +20,6 @@
 
 package com.geewhiz.pacify.managers;
 
-
-
 import java.io.File;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -57,22 +55,56 @@ public class FilterManager {
         LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
 
         for (PMarker pMarker : entityManager.getPMarkers()) {
-            logger.info("   Processing Marker File [{}],", pMarker.getFile().getAbsolutePath());
+            defects.addAll(doFilterPMarker(pMarker));
+        }
 
-            for (PFile pFile : entityManager.getPFilesFrom(pMarker)) {
-                defects.addAll(filterPFile(pFile));
+        return defects;
+    }
+
+    private LinkedHashSet<Defect> doFilterPMarker(PMarker pMarker) {
+        LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
+
+        logger.info("   Processing Marker File [{}],", pMarker.getFile().getAbsolutePath());
+
+        for (PFile pFile : entityManager.getPFilesFrom(pMarker)) {
+            defects.addAll(filterPFile(pFile));
+        }
+
+        CheckForNotReplacedTokens checker = new CheckForNotReplacedTokens();
+        defects.addAll(checker.checkForErrors(entityManager, pMarker));
+
+        postProcessPMarker(pMarker, defects);
+
+        return defects;
+    }
+
+    private void postProcessPMarker(PMarker pMarker, LinkedHashSet<Defect> defects) {
+        pMarker.setSuccessfullyProcessed(defects.isEmpty());
+
+        markPProperties(pMarker, defects);
+
+        entityManager.postProcessPMarker(pMarker);
+    }
+
+    private void markPProperties(PMarker pMarker, LinkedHashSet<Defect> defects) {
+        // we cant do whitelisting, so first mark everything as successfully
+        for (PProperty pProperty : entityManager.getPPropertiesFrom(pMarker)) {
+            pProperty.setSuccessfullyProcessed(Boolean.TRUE);
+        }
+
+        // now mark all properties which have a defect
+        for (Defect defect : defects) {
+            if (!(defect instanceof DefectException)) {
+                continue;
             }
+            DefectException defectException = (DefectException) defect;
 
-            CheckForNotReplacedTokens checker = new CheckForNotReplacedTokens();
-            defects.addAll(checker.checkForErrors(entityManager, pMarker));
-
-            if (defects.isEmpty()) {
-                pMarker.getFile().delete();
-                entityManager.postProcessPMarker(pMarker);
+            PProperty pProperty = defectException.getPProperty();
+            if (pProperty != null) {
+                pProperty.setSuccessfullyProcessed(Boolean.FALSE);
+                continue;
             }
         }
-        
-        return defects;
     }
 
     private LinkedHashSet<Defect> filterPFile(PFile pFile) {

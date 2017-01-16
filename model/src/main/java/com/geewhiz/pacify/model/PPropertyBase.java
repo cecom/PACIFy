@@ -30,18 +30,36 @@ import org.jvnet.jaxb2_commons.locator.ObjectLocator;
 
 import com.geewhiz.pacify.defect.DefectRuntimeException;
 
-
-
 public abstract class PPropertyBase {
 
-    private PFile pFile;
+    private PFile   pFile;
+
+    private Boolean successfullyProcessed;
 
     public PFile getPFile() {
         return pFile;
     }
 
+    public String getXPath() {
+        StringBuffer result = new StringBuffer();
+        result.append(pFile.getXPath());
+        result.append("/Property[@Name='").append(getName()).append("']");
+
+        return result.toString();
+    }
+
+    protected abstract String getName();
+
     protected PFile setPFile(PFile pFile) {
         return pFile;
+    }
+
+    public void setSuccessfullyProcessed(Boolean state) {
+        this.successfullyProcessed = state;
+    }
+
+    public Boolean isSuccessfullyProcessed() {
+        return successfullyProcessed != null && successfullyProcessed;
     }
 
     public void afterUnmarshal(Unmarshaller unmarshaller, Object parent) {

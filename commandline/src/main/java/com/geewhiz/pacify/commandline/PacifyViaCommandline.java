@@ -30,12 +30,14 @@ import org.apache.logging.log4j.Logger;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 import com.geewhiz.pacify.CreatePropertyFile;
+import com.geewhiz.pacify.PreConfigure;
 import com.geewhiz.pacify.Replacer;
 import com.geewhiz.pacify.ShowUsedProperties;
 import com.geewhiz.pacify.Validator;
 import com.geewhiz.pacify.commandline.commands.BasePropertyResolverCommand;
 import com.geewhiz.pacify.commandline.commands.CreatePropertyFileCommand;
 import com.geewhiz.pacify.commandline.commands.MainCommand;
+import com.geewhiz.pacify.commandline.commands.PreConfigureCommand;
 import com.geewhiz.pacify.commandline.commands.ReplacerCommand;
 import com.geewhiz.pacify.commandline.commands.ShowUsedPropertiesCommand;
 import com.geewhiz.pacify.commandline.commands.ValidateCommand;
@@ -48,8 +50,6 @@ import com.geewhiz.pacify.utils.LoggingUtils;
 import com.geewhiz.pacify.utils.Utils;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-
-
 
 public class PacifyViaCommandline {
 
@@ -66,7 +66,8 @@ public class PacifyViaCommandline {
     /**
      * without system.exit(). If you call it from your java app.
      * 
-     * @param args commandline params.
+     * @param args
+     *            commandline params.
      * @return
      */
     public int mainInternal(String[] args) {
@@ -82,6 +83,7 @@ public class PacifyViaCommandline {
         ValidateCommand validateCommand = new ValidateCommand();
         ValidateMarkerFilesCommand validateMarkerFilesCommand = new ValidateMarkerFilesCommand();
         ShowUsedPropertiesCommand showUsedPropertiesCommand = new ShowUsedPropertiesCommand();
+        PreConfigureCommand preConfigureCommand = new PreConfigureCommand();
 
         JCommander jc = new JCommander(mainCommand);
         jc.addCommand("replace", replacerCommand);
@@ -89,6 +91,7 @@ public class PacifyViaCommandline {
         jc.addCommand("validate", validateCommand);
         jc.addCommand("validateMarkerFiles", validateMarkerFilesCommand);
         jc.addCommand("showUsedProperties", showUsedPropertiesCommand);
+        jc.addCommand("preConfigure", preConfigureCommand);
 
         try {
             jc.parse(args);
@@ -116,6 +119,8 @@ public class PacifyViaCommandline {
                 return executeValidateMarkerFiles(validateMarkerFilesCommand);
             } else if ("showUsedProperties".equals(jc.getParsedCommand())) {
                 return executeShowUsedProperties(showUsedPropertiesCommand);
+            } else if ("preConfigure".equals(jc.getParsedCommand())) {
+                return executePreConfigure(preConfigureCommand);
             } else {
                 jc.usage();
                 if (mainCommand.isHelp()) {
@@ -174,6 +179,16 @@ public class PacifyViaCommandline {
         ShowUsedProperties showUsedProperties = new ShowUsedProperties();
         showUsedPropertiesCommand.configure(showUsedProperties);
         showUsedProperties.execute();
+
+        return 0;
+    }
+
+    private int executePreConfigure(PreConfigureCommand preConfigureCommand) {
+        Injector injector = getInjector(preConfigureCommand);
+
+        PreConfigure preConfigure = injector.getInstance(PreConfigure.class);
+        preConfigureCommand.configure(preConfigure);
+        preConfigure.execute();
 
         return 0;
     }

@@ -61,11 +61,13 @@ public abstract class TestBase {
 
         LinkedHashSet<Defect> defects = entityManager.initialize();
 
+        Replacer replacer = createReplacer(propertyResolveManager, packagePath);
+
         // execute validation
-        defects.addAll(createValidator(propertyResolveManager, packagePath).validateInternal(entityManager));
+        defects.addAll(replacer.validate(entityManager));
 
         // execute replacer
-        defects.addAll(createReplacer(propertyResolveManager, packagePath).doReplacement(entityManager));
+        defects.addAll(replacer.doReplacement(entityManager));
 
         return defects;
     }
@@ -93,16 +95,6 @@ public abstract class TestBase {
         replacer.setPackagePath(packagePath);
 
         return replacer;
-    }
-
-    public Validator createValidator(PropertyResolveManager propertyResolveManager, File packagePath) {
-        Validator validator = new Validator(propertyResolveManager);
-
-        validator.setPackagePath(packagePath);
-        validator.enableMarkerFileChecks();
-        validator.enablePropertyResolveChecks();
-
-        return validator;
     }
 
 }

@@ -20,8 +20,6 @@
 
 package com.geewhiz.pacify.test;
 
-
-
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -44,6 +42,17 @@ import com.geewhiz.pacify.model.utils.DirFilter;
 @Ignore
 public class TestUtil {
 
+    public static void checkIfResultIsAsExpected(String testFolder) {
+        File targetResourceFolder = new File("target/test-resources/", testFolder);
+
+        File actual = new File(targetResourceFolder, "package");
+        File expected = new File(targetResourceFolder, "expectedResult");
+
+        checkIfResultIsAsExpected(actual, expected);
+
+    }
+
+    //todo: alle sollten checkIfResultIsAsExpected(String testFolder) aufrufen
     public static void checkIfResultIsAsExpected(File actual, File expected) {
         checkIfResultIsAsExpected(actual, expected, "UTF-8");
     }
@@ -82,7 +91,7 @@ public class TestUtil {
             String relativePath = actualFile.getPath().substring(index);
 
             File expectedFile = new File(expected, relativePath);
-            Assert.assertEquals("Both files exists.", expectedFile.exists(), actualFile.exists());
+            Assert.assertEquals("There is a file which is not expected [" + actualFile.getPath() + "].", expectedFile.exists(), actualFile.exists());
         }
 
     }

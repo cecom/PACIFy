@@ -20,8 +20,6 @@
 
 package com.geewhiz.pacify.managers;
 
-
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -45,9 +43,11 @@ import com.geewhiz.pacify.model.ObjectFactory;
 import com.geewhiz.pacify.model.PArchive;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
+import com.geewhiz.pacify.model.PProperty;
 import com.geewhiz.pacify.model.utils.PArchiveResolver;
 import com.geewhiz.pacify.model.utils.PFileResolver;
 import com.geewhiz.pacify.model.utils.PacifyFilesFinder;
+import com.geewhiz.pacify.model.utils.XMLUtils;
 import com.geewhiz.pacify.utils.ArchiveUtils;
 
 public class EntityManager {
@@ -102,6 +102,10 @@ public class EntityManager {
     }
 
     public List<PFile> getPFilesFrom(PMarker pMarker) {
+        if (pMarker.isResolved()) {
+            return pMarker.getPFiles();
+        }
+
         List<PFile> result = new ArrayList<PFile>();
 
         for (Object entry : pMarker.getFilesAndArchives()) {
@@ -120,6 +124,17 @@ public class EntityManager {
 
         pMarker.getFilesAndArchives().clear();
         pMarker.getFilesAndArchives().addAll(result);
+        pMarker.setResolved(Boolean.TRUE);
+
+        return result;
+    }
+
+    public List<PProperty> getPPropertiesFrom(PMarker pMarker) {
+        List<PProperty> result = new ArrayList<PProperty>();
+
+        for (PFile pFile : getPFilesFrom(pMarker)) {
+            result.addAll(pFile.getPProperties());
+        }
 
         return result;
     }
@@ -133,5 +148,25 @@ public class EntityManager {
 
     public void postProcessPMarker(PMarker pMarker) {
         ArchiveUtils.replaceFilesInArchives(getPFilesFrom(pMarker));
+        if (pMarker.isSuccessfullyProcessed()) {
+            pMarker.getFile().delete();
+        } else {
+            removeResolvedEntries(pMarker);
+        }
     }
+
+    private void removeResolvedEntries(PMarker pMarker) {
+        XMLUtils xmlUtils = new XMLUtils(pMarker);
+
+        for (PProperty pProperty : getPPropertiesFrom(pMarker)) {
+            if (pProperty.isSuccessfullyProcessed()) {
+                xmlUtils.deleteExistingElement(pProperty.getXPath());
+                continue;
+            }
+        }
+
+        xmlUtils.removeEntriesWithoutChilds();
+        xmlUtils.writeDocument();
+    }
+
 }

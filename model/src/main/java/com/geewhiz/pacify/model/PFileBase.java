@@ -35,7 +35,10 @@ import com.geewhiz.pacify.defect.DefectRuntimeException;
 public abstract class PFileBase {
 
     private PMarker  pMarker;
+
     private PArchive pArchive;
+
+    private PFile    cloneParent;
 
     /**
      * The physical representation. If this entry is within an archive it will be available here.
@@ -102,6 +105,18 @@ public abstract class PFileBase {
         this.file = file;
     }
 
+    public String getXPath() {
+        StringBuffer result = new StringBuffer();
+        if (getPArchive() != null) {
+            result.append(getPArchive().getXPath());
+        } else {
+            result.append(getPMarker().getXPath());
+        }
+        result.append("/File[@RelativePath='").append(getRelativePath()).append("']");
+
+        return result.toString();
+    }
+
     public abstract String getInternalEndToken();
 
     public abstract String getInternalBeginToken();
@@ -139,6 +154,18 @@ public abstract class PFileBase {
         } else {
             throw new DefectRuntimeException("Wrong Parent [" + parent.getClass().getName() + "]");
         }
+    }
+
+    public Boolean isClone() {
+        return cloneParent != null;
+    }
+
+    public PFile isCloneFrom() {
+        return this.cloneParent;
+    }
+
+    public void setIsCloneFrom(PFile pFile) {
+        this.cloneParent = pFile;
     }
 
 }
