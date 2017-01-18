@@ -64,8 +64,6 @@ import com.geewhiz.pacify.test.TestUtil;
 import com.geewhiz.pacify.utils.ArchiveUtils;
 import com.geewhiz.pacify.utils.LoggingUtils;
 
-
-
 public class TestArchive {
 
     @Test
@@ -336,6 +334,7 @@ public class TestArchive {
         return entityManager;
     }
 
+    // todo: sollte von TestBase erben und auch nutzen. das hier dann raus
     private LinkedHashSet<Defect> createPrepareAndExecutePacify(File testResourceFolder, File targetResourceFolder) {
         TestUtil.removeOldTestResourcesAndCopyAgain(testResourceFolder, targetResourceFolder);
 
@@ -345,12 +344,10 @@ public class TestArchive {
 
         File packagePath = new File(targetResourceFolder, "package");
 
-        EntityManager entityManager = createEntityManager(packagePath, defects);
-
         Replacer replacer = new Replacer(prm);
         replacer.setPackagePath(packagePath);
 
-        defects.addAll(replacer.doReplacement(entityManager));
+        defects.addAll(replacer.doReplacement());
         return defects;
     }
 
@@ -369,6 +366,7 @@ public class TestArchive {
         archiveContainsEntries(replacedArchive, expectedArchive);
     }
 
+    // todo: sollte nach TestUtil.checkIfResultIsAsExpected
     private void archiveContainsEntries(File replacedArchive, File expectedArchive) throws ArchiveException, IOException {
         ArchiveStreamFactory factory = new ArchiveStreamFactory();
 

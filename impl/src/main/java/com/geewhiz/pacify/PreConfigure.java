@@ -19,6 +19,7 @@
  */
 package com.geewhiz.pacify;
 
+import java.io.File;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 
@@ -29,6 +30,7 @@ import com.geewhiz.pacify.defect.NotReplacedPropertyDefect;
 import com.geewhiz.pacify.defect.PropertyNotDefinedInResolverDefect;
 import com.geewhiz.pacify.managers.EntityManager;
 import com.geewhiz.pacify.managers.PropertyResolveManager;
+import com.geewhiz.pacify.postprocessor.AdjustPMarkerPostProcessor;
 import com.google.inject.Inject;
 
 public class PreConfigure extends Replacer {
@@ -55,8 +57,8 @@ public class PreConfigure extends Replacer {
     }
 
     @Override
-    public LinkedHashSet<Defect> doReplacement(EntityManager entityManager) {
-        LinkedHashSet<Defect> defects = super.doReplacement(entityManager);
+    public LinkedHashSet<Defect> doReplacement() {
+        LinkedHashSet<Defect> defects = super.doReplacement();
 
         Iterator<Defect> defectIter = defects.iterator();
         while (defectIter.hasNext()) {
@@ -70,6 +72,13 @@ public class PreConfigure extends Replacer {
         }
 
         return defects;
+    }
+
+    @Override
+    protected EntityManager createEntityManager(File pathToConfigure) {
+        EntityManager entityManager = super.createEntityManager(pathToConfigure);
+        entityManager.setPostProcessor(new AdjustPMarkerPostProcessor(entityManager));
+        return entityManager;
     }
 
 }

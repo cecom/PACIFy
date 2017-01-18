@@ -36,8 +36,6 @@ public abstract class PMarkerBase {
 
     private Boolean resolved;
 
-    private Boolean successfullyProcessed;
-
     public void setFile(java.io.File file) {
         this.file = file;
     }
@@ -66,14 +64,6 @@ public abstract class PMarkerBase {
         }
 
         return result;
-    }
-
-    public void setSuccessfullyProcessed(Boolean state) {
-        this.successfullyProcessed = state;
-    }
-
-    public Boolean isSuccessfullyProcessed() {
-        return successfullyProcessed != null && successfullyProcessed;
     }
 
     public String getXPath() {

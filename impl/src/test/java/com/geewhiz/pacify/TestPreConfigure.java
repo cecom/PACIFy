@@ -47,7 +47,7 @@ public class TestPreConfigure extends TestBase {
         LoggingUtils.setLogLevel(logger, Level.ERROR);
 
         propertiesToUseWhileResolving.put("foobar1", "asdf");
-        propertiesToUseWhileResolving.put("foo", "bar");
+        propertiesToUseWhileResolving.put("foo", "%{someReference}/staticPart");
     }
 
     @Test

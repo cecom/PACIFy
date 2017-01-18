@@ -32,7 +32,6 @@ import com.geewhiz.pacify.checks.impl.CheckForNotReplacedTokens;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.DefectException;
 import com.geewhiz.pacify.defect.PropertyNotDefinedInResolverDefect;
-import com.geewhiz.pacify.exceptions.PropertyNotFoundRuntimeException;
 import com.geewhiz.pacify.filter.PacifyFilter;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
@@ -52,16 +51,18 @@ public class FilterManager {
     }
 
     public LinkedHashSet<Defect> doFilter() {
-        LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
+        LinkedHashSet<Defect> allDefects = new LinkedHashSet<Defect>();
 
         for (PMarker pMarker : entityManager.getPMarkers()) {
-            defects.addAll(doFilterPMarker(pMarker));
+            LinkedHashSet<Defect> pMarkerDefects = filterPMarker(pMarker);
+            allDefects.addAll(pMarkerDefects);
+            entityManager.postProcessPMarker(pMarker, pMarkerDefects);
         }
 
-        return defects;
+        return allDefects;
     }
 
-    private LinkedHashSet<Defect> doFilterPMarker(PMarker pMarker) {
+    private LinkedHashSet<Defect> filterPMarker(PMarker pMarker) {
         LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
 
         logger.info("   Processing Marker File [{}],", pMarker.getFile().getAbsolutePath());
@@ -73,38 +74,7 @@ public class FilterManager {
         CheckForNotReplacedTokens checker = new CheckForNotReplacedTokens();
         defects.addAll(checker.checkForErrors(entityManager, pMarker));
 
-        postProcessPMarker(pMarker, defects);
-
         return defects;
-    }
-
-    private void postProcessPMarker(PMarker pMarker, LinkedHashSet<Defect> defects) {
-        pMarker.setSuccessfullyProcessed(defects.isEmpty());
-
-        markPProperties(pMarker, defects);
-
-        entityManager.postProcessPMarker(pMarker);
-    }
-
-    private void markPProperties(PMarker pMarker, LinkedHashSet<Defect> defects) {
-        // we cant do whitelisting, so first mark everything as successfully
-        for (PProperty pProperty : entityManager.getPPropertiesFrom(pMarker)) {
-            pProperty.setSuccessfullyProcessed(Boolean.TRUE);
-        }
-
-        // now mark all properties which have a defect
-        for (Defect defect : defects) {
-            if (!(defect instanceof DefectException)) {
-                continue;
-            }
-            DefectException defectException = (DefectException) defect;
-
-            PProperty pProperty = defectException.getPProperty();
-            if (pProperty != null) {
-                pProperty.setSuccessfullyProcessed(Boolean.FALSE);
-                continue;
-            }
-        }
     }
 
     private LinkedHashSet<Defect> filterPFile(PFile pFile) {
@@ -134,16 +104,13 @@ public class FilterManager {
         LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
 
         for (PProperty pProperty : pFile.getPProperties()) {
-            String propertyName = pProperty.getName();
-            String propertyValue = null;
-            try {
-                propertyValue = propertyResolveManager.getPropertyValue(pProperty);
-            } catch (PropertyNotFoundRuntimeException e) {
-                Defect defect = new PropertyNotDefinedInResolverDefect(pProperty, propertyResolveManager.toString());
-                defects.add(defect);
-                continue;
+            propertyResolveManager.resolveProperty(pProperty);
+
+            if (pProperty.isResolved()) {
+                propertyValues.put(pProperty.getName(), pProperty.getValue());
+            } else {
+                defects.add(new PropertyNotDefinedInResolverDefect(pProperty, propertyResolveManager.toString()));
             }
-            propertyValues.put(propertyName, propertyValue);
         }
 
         return defects;

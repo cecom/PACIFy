@@ -20,8 +20,6 @@
 
 package com.geewhiz.pacify;
 
-
-
 import java.io.File;
 import java.net.URL;
 import java.util.LinkedHashSet;
@@ -56,11 +54,9 @@ public class TestNotReplacedProperty extends TestBase {
         PropertyResolveManager propertyResolveManager = createPropertyResolveManager(myTestPropertyURL);
 
         Replacer replacer = new Replacer(propertyResolveManager);
+        replacer.setPackagePath(targetResourceFolder);
 
-        EntityManager entityManager = new EntityManager(targetResourceFolder);
-        entityManager.initialize();
-
-        LinkedHashSet<Defect> defects = replacer.doReplacement(entityManager);
+        LinkedHashSet<Defect> defects = replacer.doReplacement();
 
         Assert.assertEquals(3, defects.size());
     }

@@ -19,8 +19,6 @@
  */
 package com.geewhiz.pacify.model.utils;
 
-import java.io.FileOutputStream;
-
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -35,16 +33,15 @@ import javax.xml.xpath.XPathFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.w3c.dom.bootstrap.DOMImplementationRegistry;
-import org.w3c.dom.ls.DOMImplementationLS;
-import org.w3c.dom.ls.LSOutput;
-import org.w3c.dom.ls.LSSerializer;
 
 import com.geewhiz.pacify.defect.DefectRuntimeException;
 import com.geewhiz.pacify.model.PMarker;
+import com.geewhiz.pacify.model.PProperty;
 
 public class XMLUtils {
 
@@ -86,6 +83,30 @@ public class XMLUtils {
         }
     }
 
+    public void addIfItDoesNotExist(PProperty pProperty) {
+        try {
+            String xpath = pProperty.getXPath();
+
+            Node childNode = (Node) xpathSearch.evaluate(xpath, document, XPathConstants.NODE);
+            if (childNode != null) {
+                return;
+            }
+
+            Node parentNode = (Node) xpathSearch.evaluate(getParentXPath(xpath), document, XPathConstants.NODE);
+
+            Attr nameAttr = document.createAttribute("Name");
+            nameAttr.setValue(pProperty.getName());
+
+            Element newChild = document.createElement("Property");
+            newChild.setAttributeNode(nameAttr);
+
+            parentNode.appendChild(newChild);
+        } catch (Exception e) {
+            logger.debug(e);
+            throw new DefectRuntimeException("Error while adding pproperty [" + pProperty.getXPath() + "]");
+        }
+    }
+
     public void removeEntriesWithoutChilds() {
         while (removeEntries()) {
             // do until we don't find any more.
@@ -97,9 +118,14 @@ public class XMLUtils {
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
             transformer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC, "yes");
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty(OutputKeys.METHOD, "xml");
             transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
 
+            document.normalize();
             document.setXmlStandalone(true);
+
+            removeEmptyTextNodes();
+
             DOMSource source = new DOMSource(document);
             StreamResult result = new StreamResult(pMarker.getFile());
 
@@ -107,6 +133,21 @@ public class XMLUtils {
         } catch (Exception e) {
             logger.debug(e);
             throw new DefectRuntimeException("Error while writing xml document.");
+        }
+    }
+
+    private void removeEmptyTextNodes() {
+        try {
+            NodeList emptyTextNodes = (NodeList) xpathSearch.evaluate("//text()[normalize-space(.) = '']", document, XPathConstants.NODESET);
+
+            // Remove each empty text node from document.
+            for (int i = 0; i < emptyTextNodes.getLength(); i++) {
+                Node emptyTextNode = emptyTextNodes.item(i);
+                emptyTextNode.getParentNode().removeChild(emptyTextNode);
+            }
+        } catch (XPathExpressionException e) {
+            logger.debug(e);
+            throw new DefectRuntimeException("Error while removing empty lines from pacify marker file [" + pMarker.getFile().getAbsolutePath() + "]");
         }
     }
 

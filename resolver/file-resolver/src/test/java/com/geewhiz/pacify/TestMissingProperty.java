@@ -20,8 +20,6 @@
 
 package com.geewhiz.pacify;
 
-
-
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
@@ -59,12 +57,11 @@ public class TestMissingProperty extends TestBase {
 
         PropertyResolveManager propertyResolveManager = createPropertyResolveManager(myTestPropertyURL);
 
+        // todo: testbase nutzen vom erstellen
         Replacer replacer = new Replacer(propertyResolveManager);
+        replacer.setPackagePath(targetResourceFolder);
 
-        EntityManager entityManager = new EntityManager(targetResourceFolder);
-        entityManager.initialize();
-
-        LinkedHashSet<Defect> result = replacer.doReplacement(entityManager);
+        LinkedHashSet<Defect> result = replacer.doReplacement();
 
         List<Defect> defects = new ArrayList<Defect>(result);
 

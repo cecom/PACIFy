@@ -21,9 +21,7 @@
 package com.geewhiz.pacify;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -32,13 +30,10 @@ import org.junit.Test;
 
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.WrongTokenDefinedDefect;
-import com.geewhiz.pacify.managers.EntityManager;
 import com.geewhiz.pacify.managers.PropertyResolveManager;
 import com.geewhiz.pacify.property.resolver.HashMapPropertyResolver;
 import com.geewhiz.pacify.resolver.PropertyResolver;
 import com.geewhiz.pacify.test.TestUtil;
-
-
 
 public class TestVelocityFilter {
 
@@ -57,16 +52,10 @@ public class TestVelocityFilter {
         Replacer replacer = new Replacer(prm);
         replacer.setPackagePath(packagePath);
 
-        EntityManager entityManager = new EntityManager(packagePath);
-
-        LinkedHashSet<Defect> result = entityManager.initialize();
-        result.addAll(replacer.doReplacement(entityManager));
-
-        List<Defect> defects = new ArrayList<Defect>(result);
+        LinkedHashSet<Defect> defects = replacer.doReplacement();
 
         Assert.assertEquals(1, defects.size());
-        Assert.assertEquals(WrongTokenDefinedDefect.class.getName(),
-                defects.get(0).getClass().getName());
+        Assert.assertEquals(WrongTokenDefinedDefect.class.getName(), defects.iterator().next().getClass().getName());
     }
 
     @Test
@@ -84,14 +73,9 @@ public class TestVelocityFilter {
         Replacer replacer = new Replacer(prm);
         replacer.setPackagePath(packagePath);
 
-        EntityManager entityManager = new EntityManager(packagePath);
-
-        LinkedHashSet<Defect> result = entityManager.initialize();
-        result.addAll(replacer.doReplacement(entityManager));
-
-        List<Defect> defects = new ArrayList<Defect>(result);
+        LinkedHashSet<Defect> defects = replacer.doReplacement();
         Assert.assertEquals(1, defects.size());
-        Assert.assertEquals("com.geewhiz.pacify.defect.NotReplacedPropertyDefect", defects.get(0).getClass().getName());
+        Assert.assertEquals("com.geewhiz.pacify.defect.NotReplacedPropertyDefect", defects.iterator().next().getClass().getName());
     }
 
     @Test
@@ -109,11 +93,9 @@ public class TestVelocityFilter {
         PropertyResolveManager prm = getPropertyResolveManager(spr);
 
         Replacer replacer = new Replacer(prm);
-        EntityManager entityManager = new EntityManager(packagePath);
-
         replacer.setPackagePath(packagePath);
-        LinkedHashSet<Defect> defects = entityManager.initialize();
-        defects.addAll(replacer.doReplacement(entityManager));
+
+        LinkedHashSet<Defect> defects = replacer.doReplacement();
 
         Assert.assertEquals(0, defects.size());
         TestUtil.checkIfResultIsAsExpected(packagePath, expectedResultPath);
@@ -134,11 +116,8 @@ public class TestVelocityFilter {
         PropertyResolveManager prm = getPropertyResolveManager(spr);
 
         Replacer replacer = new Replacer(prm);
-        EntityManager entityManager = new EntityManager(packagePath);
-
         replacer.setPackagePath(packagePath);
-        LinkedHashSet<Defect> defects = entityManager.initialize();
-        defects.addAll(replacer.doReplacement(entityManager));
+        LinkedHashSet<Defect> defects = replacer.doReplacement();
 
         Assert.assertEquals(0, defects.size());
         TestUtil.checkIfResultIsAsExpected(packagePath, expectedResultPath);
@@ -159,11 +138,9 @@ public class TestVelocityFilter {
         PropertyResolveManager prm = getPropertyResolveManager(spr);
 
         Replacer replacer = new Replacer(prm);
-        EntityManager entityManager = new EntityManager(packagePath);
-
         replacer.setPackagePath(packagePath);
-        LinkedHashSet<Defect> defects = entityManager.initialize();
-        defects.addAll(replacer.doReplacement(entityManager));
+
+        LinkedHashSet<Defect> defects = replacer.doReplacement();
 
         Assert.assertEquals(0, defects.size());
         TestUtil.checkIfResultIsAsExpected(packagePath, expectedResultPath);
@@ -184,11 +161,8 @@ public class TestVelocityFilter {
         PropertyResolveManager prm = getPropertyResolveManager(spr);
 
         Replacer replacer = new Replacer(prm);
-        EntityManager entityManager = new EntityManager(packagePath);
-
         replacer.setPackagePath(packagePath);
-        LinkedHashSet<Defect> defects = entityManager.initialize();
-        defects.addAll(replacer.doReplacement(entityManager));
+        LinkedHashSet<Defect> defects = replacer.doReplacement();
 
         Assert.assertEquals(0, defects.size());
         TestUtil.checkIfResultIsAsExpected(packagePath, expectedResultPath);

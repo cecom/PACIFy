@@ -47,18 +47,20 @@ import com.geewhiz.pacify.model.PProperty;
 import com.geewhiz.pacify.model.utils.PArchiveResolver;
 import com.geewhiz.pacify.model.utils.PFileResolver;
 import com.geewhiz.pacify.model.utils.PacifyFilesFinder;
-import com.geewhiz.pacify.model.utils.XMLUtils;
-import com.geewhiz.pacify.utils.ArchiveUtils;
+import com.geewhiz.pacify.postprocessor.DefaultPMarkerPostProcessor;
+import com.geewhiz.pacify.postprocessor.PostProcessor;
 
 public class EntityManager {
 
-    private Logger        logger = LogManager.getLogger(EntityManager.class.getName());
+    private Logger        logger        = LogManager.getLogger(EntityManager.class.getName());
 
     private File          startPath;
     private List<PMarker> pMarkers;
 
     private JAXBContext   jaxbContext;
     private Schema        schema;
+
+    private PostProcessor postProcessor = new DefaultPMarkerPostProcessor(this);
 
     public EntityManager(File startPath) {
         this.startPath = startPath;
@@ -146,27 +148,16 @@ public class EntityManager {
         return (PMarker) jaxbUnmarshaller.unmarshal(file);
     }
 
-    public void postProcessPMarker(PMarker pMarker) {
-        ArchiveUtils.replaceFilesInArchives(getPFilesFrom(pMarker));
-        if (pMarker.isSuccessfullyProcessed()) {
-            pMarker.getFile().delete();
-        } else {
-            removeResolvedEntries(pMarker);
-        }
+    public void postProcessPMarker(PMarker pMarker, LinkedHashSet<Defect> pMarkerDefects) {
+        getPostProcessor().doPostProcess(pMarker, pMarkerDefects);
     }
 
-    private void removeResolvedEntries(PMarker pMarker) {
-        XMLUtils xmlUtils = new XMLUtils(pMarker);
+    public PostProcessor getPostProcessor() {
+        return postProcessor;
+    }
 
-        for (PProperty pProperty : getPPropertiesFrom(pMarker)) {
-            if (pProperty.isSuccessfullyProcessed()) {
-                xmlUtils.deleteExistingElement(pProperty.getXPath());
-                continue;
-            }
-        }
-
-        xmlUtils.removeEntriesWithoutChilds();
-        xmlUtils.writeDocument();
+    public void setPostProcessor(PostProcessor postProcessor) {
+        this.postProcessor = postProcessor;
     }
 
 }

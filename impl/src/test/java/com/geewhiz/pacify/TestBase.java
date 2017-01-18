@@ -48,7 +48,6 @@ public abstract class TestBase {
     }
 
     public LinkedHashSet<Defect> createPrepareAndExecutePacify(String testFolder, Map<String, String> propertiesWhichWillBeUsedWhileResolving) {
-
         File testResourceFolder = getTestResourceFolder(testFolder);
         File targetResourceFolder = getTargetResourceFolder(testFolder);
 
@@ -57,17 +56,18 @@ public abstract class TestBase {
         TestUtil.removeOldTestResourcesAndCopyAgain(testResourceFolder, targetResourceFolder);
 
         PropertyResolveManager propertyResolveManager = createPropertyResolveManager(propertiesWhichWillBeUsedWhileResolving);
-        EntityManager entityManager = new EntityManager(packagePath);
-
-        LinkedHashSet<Defect> defects = entityManager.initialize();
-
         Replacer replacer = createReplacer(propertyResolveManager, packagePath);
 
+        LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
+
+        // execute initialize
+        defects.addAll(replacer.getEntityManager().initialize());
+
         // execute validation
-        defects.addAll(replacer.validate(entityManager));
+        defects.addAll(replacer.validate());
 
         // execute replacer
-        defects.addAll(replacer.doReplacement(entityManager));
+        defects.addAll(replacer.doReplacement());
 
         return defects;
     }

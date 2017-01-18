@@ -20,8 +20,6 @@
 
 package com.geewhiz.pacify.checks.impl;
 
-
-
 import java.util.LinkedHashSet;
 
 import com.geewhiz.pacify.checks.PMarkerCheck;
@@ -59,7 +57,7 @@ public class CheckPropertyExists implements PMarkerCheck {
         for (PProperty pProperty : pFile.getPProperties()) {
             try {
                 if (propertyResolveManager.containsProperty(pProperty.getName())) {
-                    propertyResolveManager.getPropertyValue(pProperty);
+                    propertyResolveManager.resolveProperty(pProperty);
                     continue;
                 }
             } catch (CycleDetectRuntimeException ce) {

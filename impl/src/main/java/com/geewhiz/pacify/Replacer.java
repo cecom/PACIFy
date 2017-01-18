@@ -47,6 +47,8 @@ public class Replacer {
     private File                   packagePath;
     private File                   copyDestination;
 
+    private EntityManager          entityManager;
+
     @Inject
     public Replacer(PropertyResolveManager propertyResolveManager) {
         this.propertyResolveManager = propertyResolveManager;
@@ -56,24 +58,20 @@ public class Replacer {
         logger.info("== Executing {} [Version={}]", getClass().getSimpleName(), Utils.getJarVersion());
         logger.info("   [PackagePath={}]", getPackagePath().getAbsolutePath());
 
-        File pathToConfigure = getPathToConfigure();
+        DefectUtils.abortIfDefectExists(getEntityManager().initialize());
 
-        EntityManager entityManager = new EntityManager(pathToConfigure);
-
-        logger.info("== Found [{}] pacify marker files", entityManager.getPMarkerCount());
+        logger.info("== Found [{}] pacify marker files", getEntityManager().getPMarkerCount());
         logger.info("== Validating...");
 
-        LinkedHashSet<Defect> defects = validate(entityManager);
-        DefectUtils.abortIfDefectExists(defects);
+        DefectUtils.abortIfDefectExists(validate());
 
         logger.info("== Replacing...");
-        defects = doReplacement(entityManager);
-        DefectUtils.abortIfDefectExists(defects);
+        DefectUtils.abortIfDefectExists(doReplacement());
 
         logger.info("== Successfully finished");
     }
 
-    private File getPathToConfigure() {
+    private File prepareAndGetPathToConfigure() {
         if (copyDestination == null) {
             return getPackagePath();
         }
@@ -105,6 +103,13 @@ public class Replacer {
         this.copyDestination = copyDestination;
     }
 
+    public EntityManager getEntityManager() {
+        if (entityManager == null) {
+            entityManager = createEntityManager(prepareAndGetPathToConfigure());
+        }
+        return entityManager;
+    }
+
     private File createCopy() throws DefectException {
         try {
             if (getCopyDestination().exists()) {
@@ -126,17 +131,18 @@ public class Replacer {
         }
     }
 
-    public LinkedHashSet<Defect> doReplacement(EntityManager entityManager) {
-        FilterManager filterManager = new FilterManager(entityManager, propertyResolveManager);
+    public LinkedHashSet<Defect> doReplacement() {
+        LinkedHashSet<Defect> defects = getEntityManager().initialize();
 
-        LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
+        FilterManager filterManager = new FilterManager(getEntityManager(), propertyResolveManager);
+
         defects.addAll(filterManager.doFilter());
 
         return defects;
     }
 
-    protected LinkedHashSet<Defect> validate(EntityManager entityManager) {
-        return createValidator().validateInternal(entityManager);
+    protected LinkedHashSet<Defect> validate() {
+        return createValidator().validateInternal(getEntityManager());
     }
 
     protected Validator createValidator() {
@@ -145,5 +151,9 @@ public class Replacer {
         validator.enableMarkerFileChecks();
         validator.enablePropertyResolveChecks();
         return validator;
+    }
+
+    protected EntityManager createEntityManager(File pathToConfigure) {
+        return new EntityManager(pathToConfigure);
     }
 }
