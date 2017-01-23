@@ -36,18 +36,6 @@ import com.geewhiz.pacify.test.TestUtil;
 
 public abstract class TestBase {
 
-    // public LinkedHashSet<Defect> getDefects(PMarkerCheck checker, String testFolder) {
-    // File testStartPath = new File(getTargetResourceFolder(testFolder), "package");
-    //
-    // EntityManager entityManager = new EntityManager(testStartPath);
-    //
-    // LinkedHashSet<Defect> defects = entityManager.initialize();
-    // for (PMarker pMarker : entityManager.getPMarkers()) {
-    // defects.addAll(checker.checkForErrors(entityManager, pMarker));
-    // }
-    // return defects;
-    // }
-
     public LinkedHashSet<Defect> createPrepareAndReplace(String testFolder, PropertyResolveManager propertyResolveManager) {
         return executePacify(testFolder, propertyResolveManager, false);
     }

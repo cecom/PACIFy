@@ -39,29 +39,21 @@ import com.geewhiz.pacify.defect.WrongTokenDefinedDefect;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.utils.FileUtils;
 
-
-
 public class PacifyVelocityFilter implements PacifyFilter {
 
     private static final String BEGIN_TOKEN = "${";
     private static final String END_TOKEN   = "}";
 
-    private PFile               pFile;
-
-    public PacifyVelocityFilter(PFile pFile) {
-        this.pFile = pFile;
-    }
-
     @Override
-    public LinkedHashSet<Defect> filter(Map<String, String> propertyValues, String beginToken, String endToken, File fileToFilter, String encoding) {
+    public LinkedHashSet<Defect> filter(PFile pFile, Map<String, String> propertyValues) {
         LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
 
-        if (!BEGIN_TOKEN.equals(beginToken)) {
+        if (!BEGIN_TOKEN.equals(pFile.getBeginToken())) {
             defects.add(
                     new WrongTokenDefinedDefect(pFile, "If you use the PacifyVelocityFilter class, only \"" + BEGIN_TOKEN + "\" is allowed as start token."));
         }
 
-        if (!END_TOKEN.equals(endToken)) {
+        if (!END_TOKEN.equals(pFile.getEndToken())) {
             defects.add(new WrongTokenDefinedDefect(pFile, "If you use the PacifyVelocityFilter class, only \"" + END_TOKEN + "\" is allowed as end token."));
         }
 
@@ -69,13 +61,14 @@ public class PacifyVelocityFilter implements PacifyFilter {
             return defects;
         }
 
+        File fileToFilter = pFile.getFile();
         File tmpFile = FileUtils.createEmptyFileWithSamePermissions(fileToFilter);
 
-        Template template = getTemplate(fileToFilter, encoding);
+        Template template = getTemplate(fileToFilter, pFile.getEncoding());
         Context context = getContext(propertyValues, fileToFilter);
 
         try {
-            FileWriterWithEncoding fw = new FileWriterWithEncoding(tmpFile, encoding);
+            FileWriterWithEncoding fw = new FileWriterWithEncoding(tmpFile, pFile.getEncoding());
             template.merge(context, fw);
             fw.close();
             if (!fileToFilter.delete()) {
@@ -137,6 +130,18 @@ public class PacifyVelocityFilter implements PacifyFilter {
         }
 
         lastNode.put(split[split.length - 1], propertyValue);
+    }
+
+    @Override
+    public LinkedHashSet<Defect> checkForNotReplacedTokens(PFile pFile) {
+        // TODO: need to implement for velocity
+        return new LinkedHashSet<Defect>();
+    }
+
+    @Override
+    public LinkedHashSet<Defect> checkPlaceHolderExists(PFile pFile) {
+        // TODO: need to implement for velocity
+        return new LinkedHashSet<Defect>();
     }
 
 }

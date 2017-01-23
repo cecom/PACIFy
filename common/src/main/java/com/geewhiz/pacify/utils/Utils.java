@@ -20,8 +20,6 @@
 
 package com.geewhiz.pacify.utils;
 
-
-
 import java.io.IOException;
 import java.net.JarURLConnection;
 import java.net.URL;
@@ -63,7 +61,7 @@ public class Utils {
         String filterClass = pFile.getFilterClass();
 
         try {
-            PacifyFilter filter = (PacifyFilter) Class.forName(filterClass).getConstructor(PFile.class).newInstance(pFile);
+            PacifyFilter filter = (PacifyFilter) Class.forName(filterClass).newInstance();
             return filter;
         } catch (Exception e) {
             logger.debug("Error while instantiate filter class [" + filterClass + "]", e);

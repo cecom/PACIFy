@@ -61,7 +61,6 @@ public class TestUtil {
 
     }
 
-    // todo: alle sollten checkIfResultIsAsExpected(String testFolder) aufrufen
     public static void checkIfResultIsAsExpected(File actual, File expected) {
         checkIfResultIsAsExpected(actual, expected, "UTF-8");
     }
@@ -86,13 +85,15 @@ public class TestUtil {
                 Assert.assertEquals("Both files exists.", expectedFile.exists(), filteredFile.exists());
 
                 if (ArchiveUtils.isArchiveAndIsSupported(expectedFile.getName())) {
-
+                    checkArchiveIsAsExpected(filteredFile, expectedFile);
                 } else {
                     Assert.assertEquals("File [" + filteredFile.getPath() + "] doesnt look like [" + expectedFile.getPath() + "].\n",
                             FileUtils.readFileToString(expectedFile, encoding), FileUtils.readFileToString(filteredFile, encoding));
                 }
 
             } catch (IOException e) {
+                throw new RuntimeException(e);
+            } catch (ArchiveException e) {
                 throw new RuntimeException(e);
             }
         }

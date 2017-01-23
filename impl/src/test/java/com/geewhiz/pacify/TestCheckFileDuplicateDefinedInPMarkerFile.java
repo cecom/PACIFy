@@ -38,7 +38,6 @@ public class TestCheckFileDuplicateDefinedInPMarkerFile extends TestBase {
         LinkedHashSet<Defect> defects = createPrepareAndExecuteValidator(testFolder, createPropertyResolveManager(Collections.<String, String> emptyMap()),
                 new CheckFileDuplicateDefinedInPacifyFile());
 
-        // todo: welcher defect?
         Assert.assertEquals(1, defects.size());
     }
 

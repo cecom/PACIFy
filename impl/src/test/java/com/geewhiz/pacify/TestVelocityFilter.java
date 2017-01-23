@@ -32,6 +32,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.geewhiz.pacify.defect.Defect;
+import com.geewhiz.pacify.defect.WrongTokenDefinedDefect;
 import com.geewhiz.pacify.utils.LoggingUtils;
 
 public class TestVelocityFilter extends TestBase {
@@ -49,18 +50,17 @@ public class TestVelocityFilter extends TestBase {
         propertiesToUseWhileResolving.put("jdbc.host.port", "1234");
     }
 
-    //todo: valdidierung ob platzhalter vorhanden ist, muss in den filter ausgelagert werden.
-    // @Test
-    // public void testWrongToken() throws Exception {
-    // String testFolder = "testVelocityFilter/wrong/wrongToken";
-    //
-    // LinkedHashSet<Defect> defects = createPrepareValidateAndReplace(testFolder, createPropertyResolveManager(propertiesToUseWhileResolving));
-    //
-    // Assert.assertEquals(1, defects.size());
-    // Assert.assertEquals(WrongTokenDefinedDefect.class.getName(), defects.iterator().next().getClass().getName());
-    // }
+    @Test
+    public void testWrongToken() throws Exception {
+        String testFolder = "testVelocityFilter/wrong/wrongToken";
 
-    //todo: valdidierung ob platzhalter vorhanden ist, muss in den filter ausgelagert werden.
+        LinkedHashSet<Defect> defects = createPrepareValidateAndReplace(testFolder, createPropertyResolveManager(propertiesToUseWhileResolving));
+
+        Assert.assertEquals(1, defects.size());
+        Assert.assertEquals(WrongTokenDefinedDefect.class.getName(), defects.iterator().next().getClass().getName());
+    }
+
+    // velocity checks not implemented yet
     // @Test
     // public void testNotReplacedProperty() throws Exception {
     // String testFolder = "testVelocityFilter/wrong/notReplacedProperty";
@@ -110,18 +110,17 @@ public class TestVelocityFilter extends TestBase {
         checkIfResultIsAsExpected(testFolder);
     }
 
-    //todo: valdidierung ob platzhalter vorhanden ist, muss in den filter ausgelagert werden.
-//    @Test
-//    public void testForEach() throws Exception {
-//        String testFolder = "testVelocityFilter/correct/forEachCondition";
-//
-//        Map<String, String> useProperties = new HashMap<String, String>(propertiesToUseWhileResolving);
-//        useProperties.put("a.list", "1,2,3,foo,bar");
-//
-//        LinkedHashSet<Defect> defects = createPrepareValidateAndReplace(testFolder, createPropertyResolveManager(useProperties));
-//
-//        Assert.assertEquals(0, defects.size());
-//
-//        checkIfResultIsAsExpected(testFolder);
-//    }
+    @Test
+    public void testForEach() throws Exception {
+        String testFolder = "testVelocityFilter/correct/forEachCondition";
+
+        Map<String, String> useProperties = new HashMap<String, String>(propertiesToUseWhileResolving);
+        useProperties.put("a.list", "1,2,3,foo,bar");
+
+        LinkedHashSet<Defect> defects = createPrepareValidateAndReplace(testFolder, createPropertyResolveManager(useProperties));
+
+        Assert.assertEquals(0, defects.size());
+
+        checkIfResultIsAsExpected(testFolder);
+    }
 }

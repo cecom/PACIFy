@@ -87,11 +87,7 @@ public class FilterManager {
         Map<String, String> propertyValues = new HashMap<String, String>();
         LinkedHashSet<Defect> defects = fillPropertyValuesFor(propertyValues, pFile);
 
-        String beginToken = pFile.getBeginToken();
-        String endToken = pFile.getEndToken();
-        String encoding = pFile.getEncoding();
-
-        defects.addAll(pacifyFilter.filter(propertyValues, beginToken, endToken, fileToFilter, encoding));
+        defects.addAll(pacifyFilter.filter(pFile, propertyValues));
 
         fileToFilter.setLastModified(System.currentTimeMillis());
 
