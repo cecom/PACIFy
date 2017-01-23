@@ -142,14 +142,17 @@ public class Replacer {
     }
 
     protected LinkedHashSet<Defect> validate() {
-        return createValidator().validateInternal(getEntityManager());
+        return createValidator().validateInternal();
     }
 
     protected Validator createValidator() {
         Validator validator = new Validator(propertyResolveManager);
+
         validator.setPackagePath(packagePath);
         validator.enableMarkerFileChecks();
         validator.enablePropertyResolveChecks();
+        validator.setEntityManager(getEntityManager());
+
         return validator;
     }
 

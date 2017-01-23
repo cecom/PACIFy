@@ -54,7 +54,7 @@ public class TestPreConfigure extends TestBase {
     public void checkForCorrect() {
         String testFolder = "testPreConfigure/correct/default";
 
-        LinkedHashSet<Defect> defects = createPrepareAndExecutePacify(testFolder, propertiesToUseWhileResolving);
+        LinkedHashSet<Defect> defects = createPrepareValidateAndReplace(testFolder, createPropertyResolveManager(propertiesToUseWhileResolving));
 
         Assert.assertEquals(0, defects.size());
 

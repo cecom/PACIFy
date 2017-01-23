@@ -20,10 +20,8 @@
 
 package com.geewhiz.pacify;
 
-
-
-import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 
@@ -37,9 +35,10 @@ import com.geewhiz.pacify.defect.PlaceholderNotDefinedDefect;
 public class TestCheckAllPropertiesReferenced extends TestBase {
     @Test
     public void checkForNotCorrect() {
-        File testStartPath = new File("target/test-classes/checkAllPropertiesReferenced/wrong/package");
+        String testFolder = "checkAllPropertiesReferenced/wrong";
 
-        LinkedHashSet<Defect> result = getDefects(new CheckPlaceholderExistsInTargetFile(), testStartPath);
+        LinkedHashSet<Defect> result = createPrepareAndExecuteValidator(testFolder, createPropertyResolveManager(Collections.<String, String> emptyMap()),
+                new CheckPlaceholderExistsInTargetFile());
         List<Defect> defects = new ArrayList<Defect>(result);
 
         Assert.assertEquals("We should get a defect.", 1, defects.size());
@@ -50,9 +49,10 @@ public class TestCheckAllPropertiesReferenced extends TestBase {
 
     @Test
     public void checkForCorrect() {
-        File testStartPath = new File("target/test-classes/checkAllPropertiesReferenced/correct/package");
+        String testFolder = "checkAllPropertiesReferenced/correct";
 
-        LinkedHashSet<Defect> defects = getDefects(new CheckPlaceholderExistsInTargetFile(), testStartPath);
+        LinkedHashSet<Defect> defects = createPrepareAndExecuteValidator(testFolder, createPropertyResolveManager(Collections.<String, String> emptyMap()),
+                new CheckPlaceholderExistsInTargetFile());
 
         Assert.assertEquals(0, defects.size());
     }

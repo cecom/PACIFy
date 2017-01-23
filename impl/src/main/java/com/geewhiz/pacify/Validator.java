@@ -47,8 +47,6 @@ import com.geewhiz.pacify.utils.DefectUtils;
 import com.geewhiz.pacify.utils.Utils;
 import com.google.inject.Inject;
 
-
-
 public class Validator {
 
     private Logger                 logger        = LogManager.getLogger(Validator.class.getName());
@@ -58,6 +56,8 @@ public class Validator {
     List<PMarkerCheck>             pMarkerChecks = new ArrayList<PMarkerCheck>();
 
     private PropertyResolveManager propertyResolveManager;
+
+    private EntityManager          entityManager;
 
     @Inject
     public Validator(PropertyResolveManager propertyResolveManager) {
@@ -104,37 +104,52 @@ public class Validator {
     }
 
     public void execute() {
-        EntityManager entityManager = new EntityManager(getPackagePath());
-
         logger.info("== Executing Validator [Version={}]", Utils.getJarVersion());
+        logger.info("   [PackagePath={}]", getPackagePath().getAbsolutePath());
 
-        logger.info("== Found [{}] pacify marker files", entityManager.getPMarkerCount());
+        DefectUtils.abortIfDefectExists(getEntityManager().initialize());
+
+        logger.info("== Found [{}] pacify marker files", getEntityManager().getPMarkerCount());
         logger.info("== Validating ...");
 
-        LinkedHashSet<Defect> defects = validateInternal(entityManager);
-        DefectUtils.abortIfDefectExists(defects);
+        DefectUtils.abortIfDefectExists(validateInternal());
 
         logger.info("== Successfully finished");
     }
 
-    public LinkedHashSet<Defect> validateInternal(EntityManager entityManager) {
+    public LinkedHashSet<Defect> validateInternal() {
         LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
 
-        defects.addAll(entityManager.initialize());
+        defects.addAll(getEntityManager().initialize());
 
         for (Check check : checks) {
             logger.debug("     Check [{}]", check.getClass().getName());
             defects.addAll(check.checkForErrors());
         }
 
-        for (PMarker pMarker : entityManager.getPMarkers()) {
+        for (PMarker pMarker : getEntityManager().getPMarkers()) {
             logger.info("   Processing Marker File [{}]", pMarker.getFile().getAbsolutePath());
             for (PMarkerCheck pMarkerCheck : pMarkerChecks) {
                 logger.debug("     Check [{}]", pMarkerCheck.getClass().getName());
-                defects.addAll(pMarkerCheck.checkForErrors(entityManager, pMarker));
+                defects.addAll(pMarkerCheck.checkForErrors(getEntityManager(), pMarker));
             }
         }
         return defects;
+    }
+
+    public void setEntityManager(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
+
+    public EntityManager getEntityManager() {
+        if (entityManager == null) {
+            entityManager = createEntityManager();
+        }
+        return entityManager;
+    }
+
+    protected EntityManager createEntityManager() {
+        return new EntityManager(getPackagePath());
     }
 
 }

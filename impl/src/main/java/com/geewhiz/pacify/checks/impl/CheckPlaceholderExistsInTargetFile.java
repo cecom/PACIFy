@@ -43,7 +43,7 @@ public class CheckPlaceholderExistsInTargetFile implements PMarkerCheck {
         LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
 
         for (PFile pFile : entityManager.getPFilesFrom(pMarker)) {
-            // existents of the file is checked in another checker
+            // existent of the file is checked in another checker
             if (!pFile.fileExists())
                 continue;
 

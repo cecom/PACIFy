@@ -50,7 +50,7 @@ public class BugFixing extends TestBase {
     public void Bug1() {
         String testFolder = "1_Bugfixing/Bug1";
 
-        LinkedHashSet<Defect> defects = createPrepareAndExecutePacify(testFolder, propertiesToUseWhileResolving);
+        LinkedHashSet<Defect> defects = createPrepareValidateAndReplace(testFolder, createPropertyResolveManager(propertiesToUseWhileResolving));
 
         Assert.assertEquals("We shouldnt get any defects.", 0, defects.size());
     }
@@ -59,7 +59,7 @@ public class BugFixing extends TestBase {
     public void Bug2() {
         String testFolder = "1_Bugfixing/Bug2";
 
-        LinkedHashSet<Defect> defects = createPrepareAndExecutePacify(testFolder, propertiesToUseWhileResolving);
+        LinkedHashSet<Defect> defects = createPrepareValidateAndReplace(testFolder, createPropertyResolveManager(propertiesToUseWhileResolving));
 
         Assert.assertEquals("We shouldnt get any defects.", 0, defects.size());
     }

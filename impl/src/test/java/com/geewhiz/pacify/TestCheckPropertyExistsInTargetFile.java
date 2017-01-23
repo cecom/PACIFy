@@ -20,9 +20,7 @@
 
 package com.geewhiz.pacify;
 
-
-
-import java.io.File;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 
 import org.junit.Assert;
@@ -34,36 +32,40 @@ import com.geewhiz.pacify.defect.Defect;
 public class TestCheckPropertyExistsInTargetFile extends TestBase {
     @Test
     public void checkForNotCorrect() {
-        File testStartPath = new File("target/test-classes/checkPropertyExistsInTargetFileTest/wrong/package");
+        String testFolder = "checkPropertyExistsInTargetFileTest/wrong";
 
-        LinkedHashSet<Defect> defects = getDefects(new CheckPlaceholderExistsInTargetFile(), testStartPath);
+        LinkedHashSet<Defect> defects = createPrepareAndExecuteValidator(testFolder, createPropertyResolveManager(Collections.<String, String> emptyMap()),
+                new CheckPlaceholderExistsInTargetFile());
 
         Assert.assertEquals(3, defects.size());
     }
 
     @Test
     public void checkForCorrect() {
-        File testStartPath = new File("target/test-classes/checkPropertyExistsInTargetFileTest/correct/package");
+        String testFolder = "checkPropertyExistsInTargetFileTest/correct";
 
-        LinkedHashSet<Defect> defects = getDefects(new CheckPlaceholderExistsInTargetFile(), testStartPath);
+        LinkedHashSet<Defect> defects = createPrepareAndExecuteValidator(testFolder, createPropertyResolveManager(Collections.<String, String> emptyMap()),
+                new CheckPlaceholderExistsInTargetFile());
 
         Assert.assertEquals(0, defects.size());
     }
 
     @Test
     public void checkForCorrectWithCustomTokens() {
-        File testStartPath = new File("target/test-classes/checkPropertyExistsInTargetFileCustomPlaceholderTest/correct/package");
+        String testFolder = "checkPropertyExistsInTargetFileCustomPlaceholderTest/correct";
 
-        LinkedHashSet<Defect> defects = getDefects(new CheckPlaceholderExistsInTargetFile(), testStartPath);
+        LinkedHashSet<Defect> defects = createPrepareAndExecuteValidator(testFolder, createPropertyResolveManager(Collections.<String, String> emptyMap()),
+                new CheckPlaceholderExistsInTargetFile());
 
         Assert.assertEquals(0, defects.size());
     }
 
     @Test
     public void checkForNotCorrectWithCustomTokens() {
-        File testStartPath = new File("target/test-classes/checkPropertyExistsInTargetFileCustomPlaceholderTest/wrong/package");
+        String testFolder = "checkPropertyExistsInTargetFileCustomPlaceholderTest/wrong";
 
-        LinkedHashSet<Defect> defects = getDefects(new CheckPlaceholderExistsInTargetFile(), testStartPath);
+        LinkedHashSet<Defect> defects = createPrepareAndExecuteValidator(testFolder, createPropertyResolveManager(Collections.<String, String> emptyMap()),
+                new CheckPlaceholderExistsInTargetFile());
 
         Assert.assertEquals(2, defects.size());
     }

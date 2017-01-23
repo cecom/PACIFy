@@ -21,17 +21,11 @@
 package com.geewhiz.pacify;
 
 import java.io.File;
-import java.util.LinkedHashSet;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import com.geewhiz.pacify.ShowUsedProperties.OutputType;
-import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.managers.EntityManager;
 import com.geewhiz.pacify.test.TestUtil;
-
-
 
 public class TestShowUsedProperties {
 
@@ -45,11 +39,6 @@ public class TestShowUsedProperties {
         File packagePath = new File(testResourceFolder, "package");
         File resultFile = new File(targetResourceFolder, "result/output.txt");
         File expectedResultPath = new File(targetResourceFolder, "expectedResult");
-
-        EntityManager entityManager = new EntityManager(packagePath);
-        LinkedHashSet<Defect> defects = entityManager.initialize();
-
-        Assert.assertEquals("Initialization of entitymanager should not have any defect.", 0, defects.size());
 
         ShowUsedProperties showUsedProperties = new ShowUsedProperties();
         showUsedProperties.setPackagePath(packagePath);

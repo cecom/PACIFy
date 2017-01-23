@@ -52,7 +52,7 @@ public class Features extends TestBase {
         Map<String, String> propertiesToUseWhileResolving = new HashMap<String, String>();
         propertiesToUseWhileResolving.put("foobar", "foobarValue");
 
-        LinkedHashSet<Defect> defects = createPrepareAndExecutePacify(testFolder, propertiesToUseWhileResolving);
+        LinkedHashSet<Defect> defects = createPrepareValidateAndReplace(testFolder, createPropertyResolveManager(propertiesToUseWhileResolving));
 
         Assert.assertEquals("We shouldnt get any defects.", 0, defects.size());
         Assert.assertEquals("Time of the readme.txt which is not replaced should be same.",

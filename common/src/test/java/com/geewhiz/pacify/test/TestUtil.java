@@ -20,8 +20,12 @@
 
 package com.geewhiz.pacify.test;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -29,6 +33,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.ArchiveException;
+import org.apache.commons.compress.archivers.ArchiveInputStream;
+import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,6 +46,7 @@ import org.junit.Assert;
 import org.junit.Ignore;
 
 import com.geewhiz.pacify.model.utils.DirFilter;
+import com.geewhiz.pacify.utils.ArchiveUtils;
 
 @Ignore
 public class TestUtil {
@@ -52,7 +61,7 @@ public class TestUtil {
 
     }
 
-    //todo: alle sollten checkIfResultIsAsExpected(String testFolder) aufrufen
+    // todo: alle sollten checkIfResultIsAsExpected(String testFolder) aufrufen
     public static void checkIfResultIsAsExpected(File actual, File expected) {
         checkIfResultIsAsExpected(actual, expected, "UTF-8");
     }
@@ -74,10 +83,14 @@ public class TestUtil {
 
             File filteredFile = new File(actual, relativePath);
             try {
-
                 Assert.assertEquals("Both files exists.", expectedFile.exists(), filteredFile.exists());
-                Assert.assertEquals("File [" + filteredFile.getPath() + "] doesnt look like [" + expectedFile.getPath() + "].\n",
-                        FileUtils.readFileToString(expectedFile, encoding), FileUtils.readFileToString(filteredFile, encoding));
+
+                if (ArchiveUtils.isArchiveAndIsSupported(expectedFile.getName())) {
+
+                } else {
+                    Assert.assertEquals("File [" + filteredFile.getPath() + "] doesnt look like [" + expectedFile.getPath() + "].\n",
+                            FileUtils.readFileToString(expectedFile, encoding), FileUtils.readFileToString(filteredFile, encoding));
+                }
 
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -143,6 +156,124 @@ public class TestUtil {
         LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
         Configuration config = ctx.getConfiguration();
         config.addLoggerAppender((org.apache.logging.log4j.core.Logger) logger, result);
+
+        return result;
+    }
+
+    public static void checkArchiveIsAsExpected(File replacedArchive, File expectedArchive) throws ArchiveException, IOException {
+        archiveDoesNotContainAdditionEntries(replacedArchive, expectedArchive);
+        archiveContainsEntries(replacedArchive, expectedArchive);
+    }
+
+    private static void archiveContainsEntries(File replacedArchive, File expectedArchive) throws ArchiveException, IOException {
+        ArchiveStreamFactory factory = new ArchiveStreamFactory();
+
+        FileInputStream expectedIS = new FileInputStream(expectedArchive);
+        ArchiveInputStream expectedAIS = factory.createArchiveInputStream(new BufferedInputStream(expectedIS));
+        ArchiveEntry expectedEntry = null;
+        while ((expectedEntry = expectedAIS.getNextEntry()) != null) {
+            FileInputStream replacedIS = new FileInputStream(replacedArchive);
+            ArchiveInputStream replacedAIS = factory.createArchiveInputStream(new BufferedInputStream(replacedIS));
+
+            ArchiveEntry replacedEntry = null;
+            boolean entryFound = false;
+            while ((replacedEntry = replacedAIS.getNextEntry()) != null) {
+                Assert.assertNotNull("We expect an entry.", replacedEntry);
+                if (!expectedEntry.getName().equals(replacedEntry.getName())) {
+                    continue;
+                }
+                entryFound = true;
+                if (expectedEntry.isDirectory()) {
+                    Assert.assertTrue("we expect a directory", replacedEntry.isDirectory());
+                    break;
+                }
+
+                if (ArchiveUtils.isArchiveAndIsSupported(expectedEntry.getName())) {
+                    Assert.assertTrue("we expect a archive", ArchiveUtils.isArchiveAndIsSupported(replacedEntry.getName()));
+
+                    File replacedChildArchive = ArchiveUtils.extractFile(replacedArchive, ArchiveUtils.getArchiveType(replacedArchive),
+                            replacedEntry.getName());
+                    File expectedChildArchive = ArchiveUtils.extractFile(expectedArchive, ArchiveUtils.getArchiveType(expectedArchive),
+                            expectedEntry.getName());
+
+                    archiveContainsEntries(replacedChildArchive, expectedChildArchive);
+
+                    replacedChildArchive.delete();
+                    expectedChildArchive.delete();
+
+                    break;
+                }
+
+                ByteArrayOutputStream expectedContent = readContent(expectedAIS);
+                ByteArrayOutputStream replacedContent = readContent(replacedAIS);
+
+                Assert.assertEquals("Content should be same of entry " + expectedEntry.getName(), expectedContent.toString("UTF-8"),
+                        replacedContent.toString("UTF-8"));
+                break;
+            }
+
+            replacedIS.close();
+            Assert.assertTrue("Entry [" + expectedEntry.getName() + "] in the result archive expected.", entryFound);
+        }
+
+        expectedIS.close();
+    }
+
+    private static void archiveDoesNotContainAdditionEntries(File replacedArchive, File expectedArchive) throws ArchiveException, IOException {
+        ArchiveStreamFactory factory = new ArchiveStreamFactory();
+
+        FileInputStream replacedIS = new FileInputStream(replacedArchive);
+        ArchiveInputStream replacedAIS = factory.createArchiveInputStream(new BufferedInputStream(replacedIS));
+        ArchiveEntry replacedEntry = null;
+        while ((replacedEntry = replacedAIS.getNextEntry()) != null) {
+            FileInputStream expectedIS = new FileInputStream(expectedArchive);
+            ArchiveInputStream expectedAIS = factory.createArchiveInputStream(new BufferedInputStream(expectedIS));
+
+            ArchiveEntry expectedEntry = null;
+            boolean entryFound = false;
+            while ((expectedEntry = expectedAIS.getNextEntry()) != null) {
+                Assert.assertNotNull("We expect an entry.", expectedEntry);
+                if (!replacedEntry.getName().equals(expectedEntry.getName())) {
+                    continue;
+                }
+                entryFound = true;
+
+                if (ArchiveUtils.isArchiveAndIsSupported(expectedEntry.getName())) {
+                    Assert.assertTrue("we expect a archive", ArchiveUtils.isArchiveAndIsSupported(replacedEntry.getName()));
+
+                    File replacedChildArchive = ArchiveUtils.extractFile(replacedArchive, ArchiveUtils.getArchiveType(replacedArchive),
+                            replacedEntry.getName());
+                    File expectedChildArchive = ArchiveUtils.extractFile(expectedArchive, ArchiveUtils.getArchiveType(expectedArchive),
+                            expectedEntry.getName());
+
+                    archiveDoesNotContainAdditionEntries(replacedChildArchive, expectedChildArchive);
+
+                    replacedChildArchive.delete();
+                    expectedChildArchive.delete();
+                }
+
+                break;
+            }
+
+            expectedIS.close();
+            Assert.assertTrue("Entry [" + replacedEntry.getName() + "] is not in the expected archive. This file shouldn't exist.", entryFound);
+        }
+
+        replacedIS.close();
+
+    }
+
+    private static ByteArrayOutputStream readContent(ArchiveInputStream ais) throws IOException {
+        byte[] content = new byte[2048];
+        ByteArrayOutputStream result = new ByteArrayOutputStream();
+        BufferedOutputStream bos = new BufferedOutputStream(result);
+
+        int len;
+        while ((len = ais.read(content)) != -1) {
+            bos.write(content, 0, len);
+        }
+        bos.close();
+        content = null;
 
         return result;
     }

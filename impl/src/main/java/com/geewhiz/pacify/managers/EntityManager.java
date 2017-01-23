@@ -62,6 +62,8 @@ public class EntityManager {
 
     private PostProcessor postProcessor = new DefaultPMarkerPostProcessor(this);
 
+    private boolean       initialized    = false;
+
     public EntityManager(File startPath) {
         this.startPath = startPath;
 
@@ -80,8 +82,12 @@ public class EntityManager {
     }
 
     public LinkedHashSet<Defect> initialize() {
-        pMarkers = new ArrayList<PMarker>();
         LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
+        if (initialized) {
+            return defects;
+        }
+
+        pMarkers = new ArrayList<PMarker>();
         for (File markerFile : new PacifyFilesFinder(startPath).getPacifyFiles()) {
             try {
                 PMarker pMarker = unmarshal(markerFile);
@@ -93,6 +99,9 @@ public class EntityManager {
                 logger.debug("Error while parsing file [" + markerFile.getAbsolutePath() + "]", e);
             }
         }
+
+        initialized = true;
+
         return defects;
     }
 

@@ -133,11 +133,6 @@ public class PropertyResolveManager {
         }
 
         return null;
-
-        // todo: warum drin?
-        // if (propertyCycleDetector.isEmpty()) {
-        // }
-        // throw new CycleDetectRuntimeException(property, StringUtils.join(propertyCycleDetector, "->") + "->" + property);
     }
 
     private String replaceTokens(PropertyResolver propertyResolver, PProperty pProperty, List<String> propertyCycleDetector, String fileBeginToken,

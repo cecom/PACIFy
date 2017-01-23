@@ -20,13 +20,9 @@
 
 package com.geewhiz.pacify;
 
-import java.io.File;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -34,35 +30,14 @@ import org.junit.Test;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.NotReplacedPropertyDefect;
 import com.geewhiz.pacify.defect.PropertyNotDefinedInResolverDefect;
-import com.geewhiz.pacify.managers.EntityManager;
-import com.geewhiz.pacify.managers.PropertyResolveManager;
-import com.geewhiz.pacify.property.resolver.fileresolver.FilePropertyResolver;
-import com.geewhiz.pacify.resolver.PropertyResolver;
-import com.geewhiz.pacify.test.TestUtil;
-import com.geewhiz.pacify.utils.FileUtils;
 
-public class TestMissingProperty extends TestBase {
+public class TestMissingProperty extends FileResolverTestBase  {
 
     @Test
     public void checkForNotCorrect() {
-        File testResourceFolder = new File("src/test/resources/testMissingProperty");
-        File targetResourceFolder = new File("target/test-resources/testMissingProperty");
+        String testFolder = "testMissingProperty";
 
-        TestUtil.removeOldTestResourcesAndCopyAgain(testResourceFolder, targetResourceFolder);
-
-        File myTestProperty = new File(targetResourceFolder, "properties/example.properties");
-        URL myTestPropertyURL = FileUtils.getFileUrl(myTestProperty);
-
-        Assert.assertTrue("StartPath [" + targetResourceFolder.getPath() + "] doesn't exist!", targetResourceFolder.exists());
-
-        PropertyResolveManager propertyResolveManager = createPropertyResolveManager(myTestPropertyURL);
-
-        // todo: testbase nutzen vom erstellen
-        Replacer replacer = new Replacer(propertyResolveManager);
-        replacer.setPackagePath(targetResourceFolder);
-
-        LinkedHashSet<Defect> result = replacer.doReplacement();
-
+        LinkedHashSet<Defect> result = createPrepareValidateAndReplace(testFolder, createPropertyResolveManager(testFolder));
         List<Defect> defects = new ArrayList<Defect>(result);
 
         Assert.assertEquals(PropertyNotDefinedInResolverDefect.class, defects.get(0).getClass());
@@ -71,15 +46,7 @@ public class TestMissingProperty extends TestBase {
 
         Assert.assertEquals(NotReplacedPropertyDefect.class, defects.get(1).getClass());
         Assert.assertEquals("foobar5", ((NotReplacedPropertyDefect) defects.get(1)).getPropertyId());
-
     }
 
-    private PropertyResolveManager createPropertyResolveManager(URL myTestPropertyURL) {
-        Set<PropertyResolver> resolverList = new TreeSet<PropertyResolver>();
-        FilePropertyResolver filePropertyResolver = new FilePropertyResolver(myTestPropertyURL);
-        resolverList.add(filePropertyResolver);
-
-        PropertyResolveManager propertyResolveManager = new PropertyResolveManager(resolverList);
-        return propertyResolveManager;
-    }
+    
 }

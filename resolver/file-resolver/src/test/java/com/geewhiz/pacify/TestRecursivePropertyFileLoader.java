@@ -20,8 +20,6 @@
 
 package com.geewhiz.pacify;
 
-
-
 import java.net.URL;
 import java.util.Properties;
 
@@ -76,7 +74,6 @@ public class TestRecursivePropertyFileLoader {
         Assert.assertEquals(childOfChildPropertiesShouldLookLike, filePropertyResolver.getLocalProperties());
         Assert.assertEquals(child1PropertiesShouldLookLike, filePropertyResolver.getParents().get(0).getLocalProperties());
         Assert.assertEquals(child2PropertiesShouldLookLike, filePropertyResolver.getParents().get(1).getLocalProperties());
-        Assert.assertEquals(basePropertiesShouldLookLike, filePropertyResolver.getParents().get(0).getParents()
-                .get(0).getLocalProperties());
+        Assert.assertEquals(basePropertiesShouldLookLike, filePropertyResolver.getParents().get(0).getParents().get(0).getLocalProperties());
     }
 }

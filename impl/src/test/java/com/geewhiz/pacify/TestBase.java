@@ -26,28 +26,37 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import com.geewhiz.pacify.checks.Check;
 import com.geewhiz.pacify.checks.PMarkerCheck;
 import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.managers.EntityManager;
 import com.geewhiz.pacify.managers.PropertyResolveManager;
-import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.property.resolver.HashMapPropertyResolver;
 import com.geewhiz.pacify.resolver.PropertyResolver;
 import com.geewhiz.pacify.test.TestUtil;
 
 public abstract class TestBase {
 
-    public LinkedHashSet<Defect> getDefects(PMarkerCheck checker, File testStartPath) {
-        EntityManager entityManager = new EntityManager(testStartPath);
+    // public LinkedHashSet<Defect> getDefects(PMarkerCheck checker, String testFolder) {
+    // File testStartPath = new File(getTargetResourceFolder(testFolder), "package");
+    //
+    // EntityManager entityManager = new EntityManager(testStartPath);
+    //
+    // LinkedHashSet<Defect> defects = entityManager.initialize();
+    // for (PMarker pMarker : entityManager.getPMarkers()) {
+    // defects.addAll(checker.checkForErrors(entityManager, pMarker));
+    // }
+    // return defects;
+    // }
 
-        LinkedHashSet<Defect> defects = entityManager.initialize();
-        for (PMarker pMarker : entityManager.getPMarkers()) {
-            defects.addAll(checker.checkForErrors(entityManager, pMarker));
-        }
-        return defects;
+    public LinkedHashSet<Defect> createPrepareAndReplace(String testFolder, PropertyResolveManager propertyResolveManager) {
+        return executePacify(testFolder, propertyResolveManager, false);
     }
 
-    public LinkedHashSet<Defect> createPrepareAndExecutePacify(String testFolder, Map<String, String> propertiesWhichWillBeUsedWhileResolving) {
+    public LinkedHashSet<Defect> createPrepareValidateAndReplace(String testFolder, PropertyResolveManager propertyResolveManager) {
+        return executePacify(testFolder, propertyResolveManager, true);
+    }
+
+    private LinkedHashSet<Defect> executePacify(String testFolder, PropertyResolveManager propertyResolveManager, boolean withValidate) {
         File testResourceFolder = getTestResourceFolder(testFolder);
         File targetResourceFolder = getTargetResourceFolder(testFolder);
 
@@ -55,7 +64,6 @@ public abstract class TestBase {
 
         TestUtil.removeOldTestResourcesAndCopyAgain(testResourceFolder, targetResourceFolder);
 
-        PropertyResolveManager propertyResolveManager = createPropertyResolveManager(propertiesWhichWillBeUsedWhileResolving);
         Replacer replacer = createReplacer(propertyResolveManager, packagePath);
 
         LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
@@ -64,12 +72,52 @@ public abstract class TestBase {
         defects.addAll(replacer.getEntityManager().initialize());
 
         // execute validation
-        defects.addAll(replacer.validate());
+        if (withValidate) {
+            defects.addAll(replacer.validate());
+        }
 
         // execute replacer
         defects.addAll(replacer.doReplacement());
 
         return defects;
+    }
+
+    public LinkedHashSet<Defect> createPrepareAndExecuteValidator(String testFolder, PropertyResolveManager propertyResolveManager,
+            PMarkerCheck pMarkerChecktoExecute) {
+        return createPrepareAndExecuteValidator(testFolder, propertyResolveManager, pMarkerChecktoExecute, null);
+    }
+
+    public LinkedHashSet<Defect> createPrepareAndExecuteValidator(String testFolder, PropertyResolveManager propertyResolveManager, Check checktoExecute) {
+        return createPrepareAndExecuteValidator(testFolder, propertyResolveManager, null, checktoExecute);
+    }
+
+    public LinkedHashSet<Defect> createPrepareAndExecuteValidator(String testFolder, PropertyResolveManager propertyResolveManager,
+            PMarkerCheck pMarkerChecktoExecute, Check checkToExecute) {
+        File testResourceFolder = getTestResourceFolder(testFolder);
+        File targetResourceFolder = getTargetResourceFolder(testFolder);
+
+        TestUtil.removeOldTestResourcesAndCopyAgain(testResourceFolder, targetResourceFolder);
+
+        File packagePath = new File(targetResourceFolder, "package");
+
+        Validator validator = createValidator(propertyResolveManager, packagePath);
+        if (checkToExecute == null && pMarkerChecktoExecute == null) {
+            validator.enableMarkerFileChecks();
+            validator.enablePropertyResolveChecks();
+        } else {
+            if (pMarkerChecktoExecute != null) {
+                validator.addPMarkerCheck(pMarkerChecktoExecute);
+            }
+            if (checkToExecute != null) {
+                validator.addCheck(checkToExecute);
+            }
+        }
+
+        return validator.validateInternal();
+    }
+
+    public LinkedHashSet<Defect> createPrepareAndExecuteValidator(String testFolder, PropertyResolveManager propertyResolveManager) {
+        return createPrepareAndExecuteValidator(testFolder, propertyResolveManager, null, null);
     }
 
     public File getTestResourceFolder(String testFolder) {
@@ -89,12 +137,23 @@ public abstract class TestBase {
         return prm;
     }
 
-    public Replacer createReplacer(PropertyResolveManager propertyResolveManager, File packagePath) {
+    protected Replacer createReplacer(PropertyResolveManager propertyResolveManager, File packagePath) {
         Replacer replacer = new Replacer(propertyResolveManager);
 
         replacer.setPackagePath(packagePath);
 
         return replacer;
+    }
+
+    protected Validator createValidator(PropertyResolveManager propertyResolveManager, File packagePath) {
+        Validator validator = new Validator(propertyResolveManager);
+        validator.setPackagePath(packagePath);
+
+        return validator;
+    }
+
+    public void checkIfResultIsAsExpected(String testFolder) {
+        TestUtil.checkIfResultIsAsExpected(testFolder);
     }
 
 }

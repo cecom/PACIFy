@@ -20,58 +20,33 @@
 
 package com.geewhiz.pacify;
 
-
-
-import java.io.File;
-import java.net.URL;
+import java.util.Collections;
 import java.util.LinkedHashSet;
-import java.util.Set;
-import java.util.TreeSet;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.geewhiz.pacify.checks.impl.CheckPropertyExists;
 import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.managers.PropertyResolveManager;
-import com.geewhiz.pacify.property.resolver.fileresolver.FilePropertyResolver;
-import com.geewhiz.pacify.resolver.PropertyResolver;
-import com.geewhiz.pacify.test.TestUtil;
 
-public class TestCheckPropertyExistsInPropertyFile extends TestBase {
+public class TestCheckPropertyExistsInPropertyFile extends FileResolverTestBase {
 
     @Test
     public void checkForNotCorrect() {
-        File testStartPath = new File("target/test-classes/checkPropertyExistsTest/wrong");
-        File file = new File(testStartPath, "checkForMissingProperty.properties");
+        String testFolder = "checkPropertyExistsTest/wrong";
 
-        URL fileUrl = TestUtil.getURLForFile(file);
-        FilePropertyResolver filePropertyResolver = new FilePropertyResolver(fileUrl);
-
-        Set<PropertyResolver> resolverList = new TreeSet<PropertyResolver>();
-        resolverList.add(filePropertyResolver);
-
-        PropertyResolveManager propertyResolveManager = new PropertyResolveManager(resolverList);
-
-        LinkedHashSet<Defect> defects = getDefects(new CheckPropertyExists(propertyResolveManager), testStartPath);
+        LinkedHashSet<Defect> defects = createPrepareAndExecuteValidator(testFolder, createPropertyResolveManager(Collections.<String, String> emptyMap()),
+                new CheckPropertyExists(createPropertyResolveManager(testFolder)));
 
         Assert.assertEquals(2, defects.size());
     }
 
     @Test
     public void checkForCorrect() {
-        File testStartPath = new File("target/test-classes/checkPropertyExistsTest/correct");
-        File file = new File(testStartPath, "checkForAllCorrect.properties");
+        String testFolder = "checkPropertyExistsTest/correct";
 
-        URL fileUrl = TestUtil.getURLForFile(file);
-        FilePropertyResolver filePropertyResolver = new FilePropertyResolver(fileUrl);
-
-        Set<PropertyResolver> resolverList = new TreeSet<PropertyResolver>();
-        resolverList.add(filePropertyResolver);
-
-        PropertyResolveManager propertyResolveManager = new PropertyResolveManager(resolverList);
-
-        LinkedHashSet<Defect> defects = getDefects(new CheckPropertyExists(propertyResolveManager), testStartPath);
+        LinkedHashSet<Defect> defects = createPrepareAndExecuteValidator(testFolder, createPropertyResolveManager(Collections.<String, String> emptyMap()),
+                new CheckPropertyExists(createPropertyResolveManager(testFolder)));
 
         Assert.assertEquals(0, defects.size());
     }

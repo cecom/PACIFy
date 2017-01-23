@@ -37,7 +37,6 @@ public class AdjustPMarkerPostProcessor implements PostProcessor {
         this.entityManager = entityManager;
     }
 
-    // todo: vielleicht defects bestandteil von PMarker machen, als attribut?
     @Override
     public void doPostProcess(PMarker pMarker, LinkedHashSet<Defect> defects) {
         if (defects.isEmpty()) {

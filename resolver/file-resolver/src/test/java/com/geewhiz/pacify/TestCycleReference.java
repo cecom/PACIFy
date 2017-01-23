@@ -20,15 +20,10 @@
 
 package com.geewhiz.pacify;
 
-
-
-import java.io.File;
-import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -36,27 +31,15 @@ import org.junit.Test;
 import com.geewhiz.pacify.checks.impl.CheckPropertyExists;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.PropertyHasCycleDefect;
-import com.geewhiz.pacify.managers.PropertyResolveManager;
-import com.geewhiz.pacify.property.resolver.fileresolver.FilePropertyResolver;
-import com.geewhiz.pacify.resolver.PropertyResolver;
-import com.geewhiz.pacify.test.TestUtil;
 
-public class TestCycleReference extends TestBase {
+public class TestCycleReference extends FileResolverTestBase {
 
     @Test
     public void checkForNotCorrect() {
-        File testStartPath = new File("target/test-classes/cycleReference");
-        File file = new File(testStartPath, "wrongProperties.properties");
+        String testFolder = "cycleReference";
 
-        URL fileUrl = TestUtil.getURLForFile(file);
-        FilePropertyResolver filePropertyResolver = new FilePropertyResolver(fileUrl);
-
-        Set<PropertyResolver> resolverList = new TreeSet<PropertyResolver>();
-        resolverList.add(filePropertyResolver);
-
-        PropertyResolveManager propertyResolveManager = new PropertyResolveManager(resolverList);
-
-        LinkedHashSet<Defect> result = getDefects(new CheckPropertyExists(propertyResolveManager), testStartPath);
+        LinkedHashSet<Defect> result = createPrepareAndExecuteValidator(testFolder, createPropertyResolveManager(Collections.<String, String> emptyMap()),
+                new CheckPropertyExists(createPropertyResolveManager(testFolder)));
 
         List<Defect> defects = new ArrayList<Defect>(result);
 
