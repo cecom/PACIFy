@@ -20,33 +20,32 @@
 
 package com.geewhiz.pacify;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 
+import org.hamcrest.core.IsInstanceOf;
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.defect.NotReplacedPropertyDefect;
 import com.geewhiz.pacify.defect.PropertyNotDefinedInResolverDefect;
 
-public class TestMissingProperty extends FileResolverTestBase  {
+public class TestMissingPropertyInResolver extends FileResolverTestBase {
 
     @Test
     public void checkForNotCorrect() {
-        String testFolder = "testMissingProperty";
+        String testFolder = "testMissingPropertyInResolver";
 
         LinkedHashSet<Defect> result = createPrepareValidateAndReplace(testFolder, createPropertyResolveManager(testFolder));
         List<Defect> defects = new ArrayList<Defect>(result);
 
-        Assert.assertEquals(PropertyNotDefinedInResolverDefect.class, defects.get(0).getClass());
-        Assert.assertEquals(2, defects.size());
-        Assert.assertEquals("foobar5", ((PropertyNotDefinedInResolverDefect) defects.get(0)).getPProperty().getName());
-
-        Assert.assertEquals(NotReplacedPropertyDefect.class, defects.get(1).getClass());
-        Assert.assertEquals("foobar5", ((NotReplacedPropertyDefect) defects.get(1)).getPropertyId());
+        Assert.assertThat(defects, hasSize(1));
+        Assert.assertThat(defects.iterator().next(), IsInstanceOf.instanceOf(PropertyNotDefinedInResolverDefect.class));
+        Assert.assertThat(((PropertyNotDefinedInResolverDefect) defects.iterator().next()).getPProperty().getName(), is("foobar5"));
     }
 
-    
 }

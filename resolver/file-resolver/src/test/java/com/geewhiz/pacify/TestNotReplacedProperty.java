@@ -20,14 +20,19 @@
 
 package com.geewhiz.pacify;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 
+import org.hamcrest.core.IsInstanceOf;
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.geewhiz.pacify.defect.Defect;
+import com.geewhiz.pacify.defect.NotReplacedPropertyDefect;
 
 public class TestNotReplacedProperty extends FileResolverTestBase {
 
@@ -38,7 +43,11 @@ public class TestNotReplacedProperty extends FileResolverTestBase {
         LinkedHashSet<Defect> result = createPrepareValidateAndReplace(testFolder, createPropertyResolveManager(testFolder));
         List<Defect> defects = new ArrayList<Defect>(result);
 
-        Assert.assertEquals(6, defects.size());
+        Assert.assertThat(defects, hasSize(1));
+
+        Assert.assertThat(defects.toArray()[0], IsInstanceOf.instanceOf(NotReplacedPropertyDefect.class));
+
+        Assert.assertThat(((NotReplacedPropertyDefect) defects.iterator().next()).getPropertyId(), is("aReference"));
     }
 
 }
