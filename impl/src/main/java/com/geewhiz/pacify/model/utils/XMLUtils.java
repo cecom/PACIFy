@@ -39,6 +39,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.geewhiz.pacify.defect.DefectRuntimeException;
+import com.geewhiz.pacify.filter.PacifyTokenFilter;
 import com.geewhiz.pacify.model.PArchive;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
@@ -96,11 +97,7 @@ public class XMLUtils {
 
             Node parentNode = getNode(pProperty.getPFile());
 
-            Attr nameAttr = document.createAttribute("Name");
-            nameAttr.setValue(pProperty.getName());
-
-            Element newChild = document.createElement("Property");
-            newChild.setAttributeNode(nameAttr);
+            Element newChild = createNode(pProperty);
 
             parentNode.appendChild(newChild);
         } catch (Exception e) {
@@ -109,7 +106,15 @@ public class XMLUtils {
         }
     }
 
-    //Todo: need a test, that if we add an attribute we dont forget it to add here the default value behavior 
+    private Element createNode(PProperty pProperty) {
+        Attr nameAttr = document.createAttribute("Name");
+        nameAttr.setValue(pProperty.getName());
+
+        Element newChild = document.createElement("Property");
+        newChild.setAttributeNode(nameAttr);
+        return newChild;
+    }
+
     private Node createNode(PFile pFile) throws XPathExpressionException {
         Node parentNode = null;
         if (pFile.getPArchive() == null) {
@@ -126,7 +131,7 @@ public class XMLUtils {
         if (!"UTF-8".equalsIgnoreCase(pFile.getEncoding())) {
             newChild.setAttributeNode(createAttribute("Encoding", pFile.getEncoding()));
         }
-        if (!"com.geewhiz.pacify.filter.PacifyTokenFilter".equalsIgnoreCase(pFile.getFilterClass())) {
+        if (!PacifyTokenFilter.class.getName().equalsIgnoreCase(pFile.getFilterClass())) {
             newChild.setAttributeNode(createAttribute("FilterClass", pFile.getFilterClass()));
         }
         if (pFile.getInternalBeginToken() != null) {
