@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
-import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -351,11 +350,9 @@ public class ArchiveUtils {
         return originalManifestFile;
     }
 
-    //todo: neue matcher methode nutzen
-    private static Boolean matches(String pathName, String regExp) {
+    private static Boolean matches(String pathName, String regEx) {
         Path path = FileSystems.getDefault().getPath(pathName);
-        PathMatcher matcher = FileSystems.getDefault().getPathMatcher("regex:" + regExp);
-        return matcher.matches(path);
+        return FileUtils.matches(path, regEx);
     }
 
     private static Map<PArchive, List<PFile>> getPFilesToReplace(List<PFile> replacePFiles) {
