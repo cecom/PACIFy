@@ -82,7 +82,7 @@ public class TestUtil {
 
             File filteredFile = new File(actual, relativePath);
             try {
-                Assert.assertEquals("Both files exists.", expectedFile.exists(), filteredFile.exists());
+                Assert.assertEquals("File [" + expectedFile.getPath() + "] does not exist.", expectedFile.exists(), filteredFile.exists());
 
                 if (ArchiveUtils.isArchiveAndIsSupported(expectedFile.getName())) {
                     checkArchiveIsAsExpected(filteredFile, expectedFile);

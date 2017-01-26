@@ -18,13 +18,12 @@
  * =========================LICENSE_END==================================
  */
 
-
-
 package com.geewhiz.pacify.model.utils;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,7 +41,7 @@ public class PFileResolver {
         List<PFile> result = new ArrayList<PFile>();
 
         if (pFile.isUseRegExResolution()) {
-            result.addAll(resolveRegExp());
+            result.addAll(resolveRegEx());
         } else {
             if (pFile.getFile() == null) {
                 pFile.setFile(new File(pFile.getPMarker().getFolder(), pFile.getRelativePath()));
@@ -53,7 +52,7 @@ public class PFileResolver {
         return result;
     }
 
-    private List<PFile> resolveRegExp() {
+    private List<PFile> resolveRegEx() {
         List<PFile> result = new ArrayList<PFile>();
 
         PFileFinder finder = new PFileFinder(pFile);
@@ -64,19 +63,17 @@ public class PFileResolver {
             throw new RuntimeException(e);
         }
 
-        List<String> pFiles = finder.getFiles();
-        for (String relativePath : pFiles) {
-            File physicalPath = new File(pFile.getPMarker().getFolder(), relativePath);
-
-            PFile clone = ModelUtils.createPFile(pFile, relativePath, physicalPath);
+        List<Path> pFiles = finder.getFiles();
+        for (Path file : pFiles) {
+            PFile clone = ModelUtils.clonePFile(pFile, file);
             result.add(clone);
         }
-        
+
         // if we can't resolve the regular expression, return the given pfile
         if (result.size() == 0) {
             result.add(pFile);
         }
-        
+
         return result;
     }
 

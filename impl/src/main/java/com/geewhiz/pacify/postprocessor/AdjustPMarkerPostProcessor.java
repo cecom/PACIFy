@@ -75,7 +75,7 @@ public class AdjustPMarkerPostProcessor implements PostProcessor {
 
         for (PProperty pProperty : entityManager.getPPropertiesFrom(pMarker)) {
             if (pProperty.isSuccessfullyProcessed()) {
-                xmlUtils.deleteExistingElement(pProperty.getXPath());
+                removeEntry(xmlUtils, pProperty);
             } else {
                 xmlUtils.addIfItDoesNotExist(pProperty);
             }
@@ -85,6 +85,15 @@ public class AdjustPMarkerPostProcessor implements PostProcessor {
 
         xmlUtils.removeEntriesWithoutChilds();
         xmlUtils.writeDocument();
+    }
+
+    private void removeEntry(XMLUtils xmlUtils, PProperty pProperty) {
+        if (pProperty.getPFile().isClone()) {
+            // we could resolve the regex, so delete the complete entry.
+            xmlUtils.deleteIfExist(pProperty.getPFile().isCloneFrom().getXPath());
+        } else {
+            xmlUtils.deleteIfExist(pProperty.getXPath());
+        }
     }
 
     private void addAllReferences(XMLUtils xmlUtils, PProperty pProperty) {

@@ -150,7 +150,7 @@ public class ArchiveUtils {
 
         Map<String, File> files = extractFilesForRegExp(pArchive.getFile(), pArchive.getType(), pFile.getRelativePath());
         for (String relativePath : files.keySet()) {
-            PFile aClone = ModelUtils.createPFile(pFile, relativePath, files.get(relativePath));
+            PFile aClone = ModelUtils.clonePFile(pFile, relativePath, files.get(relativePath));
             result.add(aClone);
         }
 
@@ -351,6 +351,7 @@ public class ArchiveUtils {
         return originalManifestFile;
     }
 
+    //todo: neue matcher methode nutzen
     private static Boolean matches(String pathName, String regExp) {
         Path path = FileSystems.getDefault().getPath(pathName);
         PathMatcher matcher = FileSystems.getDefault().getPathMatcher("regex:" + regExp);

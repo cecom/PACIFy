@@ -21,7 +21,6 @@
 package com.geewhiz.pacify.model;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.xml.bind.Unmarshaller;
@@ -99,7 +98,7 @@ public abstract class PPropertyBase {
 
     protected abstract String getName();
 
-    protected void setPFile(PFile pFile) {
+    public void setPFile(PFile pFile) {
         this.pFile = pFile;
     }
 

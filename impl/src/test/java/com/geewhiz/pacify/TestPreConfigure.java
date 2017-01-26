@@ -61,6 +61,28 @@ public class TestPreConfigure extends TestBase {
         TestUtil.checkIfResultIsAsExpected(testFolder);
     }
 
+    @Test
+    public void checkDifferentPlaceholder() {
+        String testFolder = "testPreConfigure/correct/differentPlaceholder";
+
+        LinkedHashSet<Defect> defects = createPrepareValidateAndReplace(testFolder, createPropertyResolveManager(propertiesToUseWhileResolving));
+
+        Assert.assertEquals(0, defects.size());
+
+        TestUtil.checkIfResultIsAsExpected(testFolder);
+    }
+
+    @Test
+    public void checkRegex() {
+        String testFolder = "testPreConfigure/correct/usingRegEx";
+
+        LinkedHashSet<Defect> defects = createPrepareValidateAndReplace(testFolder, createPropertyResolveManager(propertiesToUseWhileResolving));
+
+        Assert.assertEquals(0, defects.size());
+
+        TestUtil.checkIfResultIsAsExpected(testFolder);
+    }
+
     @Override
     public Replacer createReplacer(PropertyResolveManager propertyResolveManager, File packagePath) {
         PreConfigure preconfigure = new PreConfigure(propertyResolveManager);

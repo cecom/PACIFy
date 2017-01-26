@@ -25,6 +25,7 @@ import java.io.File;
 import javax.xml.bind.Unmarshaller;
 
 import org.jvnet.jaxb2_commons.lang.CopyStrategy;
+import org.jvnet.jaxb2_commons.lang.CopyTo;
 import org.jvnet.jaxb2_commons.lang.EqualsStrategy;
 import org.jvnet.jaxb2_commons.lang.HashCodeStrategy;
 import org.jvnet.jaxb2_commons.lang.ToStringStrategy;
@@ -32,7 +33,7 @@ import org.jvnet.jaxb2_commons.locator.ObjectLocator;
 
 import com.geewhiz.pacify.defect.DefectRuntimeException;
 
-public abstract class PFileBase {
+public abstract class PFileBase implements Cloneable, CopyTo {
 
     private PMarker  pMarker;
 

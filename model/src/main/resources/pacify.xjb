@@ -3,9 +3,12 @@
     jaxb:version="2.1">
     >
     <jaxb:bindings schemaLocation="pacify.xsd" node="/xsd:schema">
+        
         <jaxb:globalBindings>
             <xjc:simple />
         </jaxb:globalBindings>
+        
+        
         <jaxb:bindings node="xsd:complexType[@name='PMarker']">
             <inheritance:extends>PMarkerBase</inheritance:extends>
             <jaxb:class name="PMarker" />
