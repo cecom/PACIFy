@@ -54,20 +54,23 @@ public abstract class TestBase {
 
         Replacer replacer = createReplacer(propertyResolveManager, packagePath);
 
-        LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
-
         // execute initialize
-        defects.addAll(replacer.getEntityManager().initialize());
+        LinkedHashSet<Defect> defects = null;
+        defects = replacer.getEntityManager().initialize();
+        if (!defects.isEmpty()) {
+            return defects;
+        }
 
         // execute validation
         if (withValidate) {
-            defects.addAll(replacer.validate());
+            defects = replacer.validate();
+            if (!defects.isEmpty()) {
+                return defects;
+            }
         }
 
         // execute replacer
-        defects.addAll(replacer.doReplacement());
-
-        return defects;
+        return replacer.doReplacement();
     }
 
     public LinkedHashSet<Defect> createPrepareAndExecuteValidator(String testFolder, PropertyResolveManager propertyResolveManager,

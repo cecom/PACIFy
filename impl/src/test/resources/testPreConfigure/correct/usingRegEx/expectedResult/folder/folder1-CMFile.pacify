@@ -3,13 +3,13 @@
     <File RelativePath="someFolderConf.conf">
         <Property Name="someReference"/>
     </File>
-    <File RelativePath="subfolder/someSubFolderConf1.conf">
+    <File BeginToken="@" Encoding="ISO-8859-1" EndToken="@" RelativePath="a/a1.conf">
         <Property Name="someReference"/>
     </File>
-    <File RelativePath="subfolder/someSubFolderConf2.conf">
+    <File BeginToken="@" Encoding="ISO-8859-1" EndToken="@" RelativePath="a/a2.conf">
         <Property Name="someReference"/>
     </File>
-    <File RelativePath="subfolder/someSubFolderConf3.conf">
+    <File BeginToken="@" Encoding="ISO-8859-1" EndToken="@" RelativePath="a/a3.conf">
         <Property Name="someReference"/>
     </File>
 </Pacify>

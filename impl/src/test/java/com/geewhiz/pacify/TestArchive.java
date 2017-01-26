@@ -34,6 +34,7 @@ import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hamcrest.collection.IsEmptyCollection;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -105,8 +106,8 @@ public class TestArchive extends TestBase {
 
         LinkedHashSet<Defect> defects = createPrepareValidateAndReplace(testFolder, createPropertyResolveManager(propertiesToUseWhileResolving));
 
-        Assert.assertEquals("We shouldnt get any defects.", 0, defects.size());
-
+        Assert.assertThat(defects, IsEmptyCollection.emptyCollectionOf(Defect.class));
+        
         checkIfResultIsAsExpected(testFolder);
     }
 

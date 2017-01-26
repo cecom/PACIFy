@@ -3,7 +3,7 @@
     <File RelativePath="someFolderConf.conf">
         <Property Name="foo" />
     </File>
-    <File RelativePath="subfolder/someSubFolderConf.*.conf" UseRegExResolution="true">
+    <File RelativePath="a/a.*.conf" UseRegExResolution="true" BeginToken="@" EndToken="@" Encoding="ISO-8859-1">
         <Property Name="foo" />
     </File>
 </Pacify>

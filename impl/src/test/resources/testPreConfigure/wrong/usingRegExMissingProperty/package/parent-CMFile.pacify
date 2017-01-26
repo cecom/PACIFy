@@ -1,11 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0"?>
 <Pacify xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../../../../../model/src/main/resources/pacify.xsd">
-    <File RelativePath="anotherFolderConf.conf">
-        <Property Name="foobar1"/>
+    <File RelativePath="parent.conf">
         <Property Name="foo" />
     </File>
-    <File RelativePath="b/.*.conf" UseRegExResolution="true">
-        <Property Name="foobar1"/>
+    <File RelativePath="a/a.*.conf" UseRegExResolution="true" BeginToken="@" EndToken="@" Encoding="ISO-8859-1">
         <Property Name="foo" />
     </File>
 </Pacify>

@@ -20,6 +20,9 @@
 
 package com.geewhiz.pacify;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -28,11 +31,14 @@ import java.util.Map;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hamcrest.collection.IsEmptyCollection;
+import org.hamcrest.core.IsInstanceOf;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.geewhiz.pacify.defect.Defect;
+import com.geewhiz.pacify.defect.NoPlaceholderInTargetFileDefect;
 import com.geewhiz.pacify.managers.PropertyResolveManager;
 import com.geewhiz.pacify.test.TestUtil;
 import com.geewhiz.pacify.utils.LoggingUtils;
@@ -78,9 +84,53 @@ public class TestPreConfigure extends TestBase {
 
         LinkedHashSet<Defect> defects = createPrepareValidateAndReplace(testFolder, createPropertyResolveManager(propertiesToUseWhileResolving));
 
-        Assert.assertEquals(0, defects.size());
+        Assert.assertThat(defects, IsEmptyCollection.emptyCollectionOf(Defect.class));
 
         TestUtil.checkIfResultIsAsExpected(testFolder);
+    }
+
+    @Test
+    public void checkArchiveWithRegEx() {
+        String testFolder = "testPreConfigure/correct/archiveWithRegEx";
+
+        LinkedHashSet<Defect> defects = createPrepareValidateAndReplace(testFolder, createPropertyResolveManager(propertiesToUseWhileResolving));
+
+        Assert.assertThat(defects, IsEmptyCollection.emptyCollectionOf(Defect.class));
+
+        TestUtil.checkIfResultIsAsExpected(testFolder);
+    }
+
+    @Test
+    public void checkMissingProperty() {
+        String testFolder = "testPreConfigure/wrong/usingRegExMissingProperty";
+
+        LinkedHashSet<Defect> defects = createPrepareValidateAndReplace(testFolder, createPropertyResolveManager(propertiesToUseWhileResolving));
+
+        Assert.assertThat(defects, hasSize(1));
+        Assert.assertThat(defects.iterator().next(), IsInstanceOf.instanceOf(NoPlaceholderInTargetFileDefect.class));
+        Assert.assertThat(((NoPlaceholderInTargetFileDefect) defects.iterator().next()).getPFile().getRelativePath(), is("a/a3.conf"));
+        Assert.assertThat(((NoPlaceholderInTargetFileDefect) defects.iterator().next()).getPProperty().getName(), is("foo"));
+    }
+
+    @Test
+    public void checkAllPropertiesMissing() {
+        String testFolder = "testPreConfigure/wrong/usingRegExAllPropertiesMissing";
+
+        LinkedHashSet<Defect> defects = createPrepareValidateAndReplace(testFolder, createPropertyResolveManager(propertiesToUseWhileResolving));
+
+        Assert.assertThat(defects, hasSize(3));
+
+        Assert.assertThat(defects.toArray()[0], IsInstanceOf.instanceOf(NoPlaceholderInTargetFileDefect.class));
+        Assert.assertThat(defects.toArray()[1], IsInstanceOf.instanceOf(NoPlaceholderInTargetFileDefect.class));
+        Assert.assertThat(defects.toArray()[2], IsInstanceOf.instanceOf(NoPlaceholderInTargetFileDefect.class));
+
+        Assert.assertThat(((NoPlaceholderInTargetFileDefect) defects.toArray()[0]).getPFile().getRelativePath(), is("a/a1.conf"));
+        Assert.assertThat(((NoPlaceholderInTargetFileDefect) defects.toArray()[1]).getPFile().getRelativePath(), is("a/a2.conf"));
+        Assert.assertThat(((NoPlaceholderInTargetFileDefect) defects.toArray()[2]).getPFile().getRelativePath(), is("a/a3.conf"));
+
+        Assert.assertThat(((NoPlaceholderInTargetFileDefect) defects.toArray()[0]).getPProperty().getName(), is("foo"));
+        Assert.assertThat(((NoPlaceholderInTargetFileDefect) defects.toArray()[1]).getPProperty().getName(), is("foo"));
+        Assert.assertThat(((NoPlaceholderInTargetFileDefect) defects.toArray()[2]).getPProperty().getName(), is("foo"));
     }
 
     @Override
