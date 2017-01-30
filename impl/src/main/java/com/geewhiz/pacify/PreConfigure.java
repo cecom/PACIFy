@@ -22,6 +22,11 @@ package com.geewhiz.pacify;
 import java.io.File;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.TreeSet;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.geewhiz.pacify.checks.PMarkerCheck;
 import com.geewhiz.pacify.checks.impl.CheckPropertyExists;
@@ -34,6 +39,8 @@ import com.geewhiz.pacify.postprocessor.AdjustPMarkerPostProcessor;
 import com.google.inject.Inject;
 
 public class PreConfigure extends Replacer {
+
+    private Logger logger = LogManager.getLogger(PreConfigure.class.getName());
 
     @Inject
     public PreConfigure(PropertyResolveManager propertyResolveManager) {
@@ -60,15 +67,24 @@ public class PreConfigure extends Replacer {
     public LinkedHashSet<Defect> doReplacement() {
         LinkedHashSet<Defect> defects = super.doReplacement();
 
+        Set<String> notResolvedProperties = new TreeSet<String>();
+
         Iterator<Defect> defectIter = defects.iterator();
         while (defectIter.hasNext()) {
             Defect defect = defectIter.next();
             if (defect instanceof NotReplacedPropertyDefect) {
+                notResolvedProperties.add(((NotReplacedPropertyDefect) defect).getPropertyId());
                 defectIter.remove();
             }
             if (defect instanceof PropertyNotDefinedInResolverDefect) {
+                notResolvedProperties.add(((PropertyNotDefinedInResolverDefect) defect).getPProperty().getName());
                 defectIter.remove();
             }
+        }
+
+        logger.info("== Properties which are not resolved [{}] ...", notResolvedProperties.size());
+        for (String propertyId : notResolvedProperties) {
+            logger.info("   {}", propertyId);
         }
 
         return defects;

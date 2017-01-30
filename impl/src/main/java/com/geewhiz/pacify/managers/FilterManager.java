@@ -65,7 +65,7 @@ public class FilterManager {
     private LinkedHashSet<Defect> filterPMarker(PMarker pMarker) {
         LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
 
-        logger.info("   Processing Marker File [{}],", pMarker.getFile().getAbsolutePath());
+        logger.info("   Processing Marker File [{}]", pMarker.getFile().getAbsolutePath());
 
         for (PFile pFile : entityManager.getPFilesFrom(pMarker)) {
             defects.addAll(filterPFile(pFile));
@@ -87,11 +87,13 @@ public class FilterManager {
         Map<String, String> propertyValues = new HashMap<String, String>();
         LinkedHashSet<Defect> defects = fillPropertyValuesFor(propertyValues, pFile);
 
+        int notResolvedPlaceholderCount = pFile.getPProperties().size() - defects.size();
+
         defects.addAll(pacifyFilter.filter(pFile, propertyValues));
 
         fileToFilter.setLastModified(System.currentTimeMillis());
 
-        logger.info("          [{}] placeholders replaced.", pFile.getPProperties().size());
+        logger.info("          [{}] placeholders replaced.", notResolvedPlaceholderCount);
 
         return defects;
     }
