@@ -20,19 +20,17 @@
 
 package com.geewhiz.pacify.commandline;
 
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FilenameUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.geewhiz.pacify.test.ListAppender;
 import com.geewhiz.pacify.test.RegexMatcher;
 import com.geewhiz.pacify.test.TestUtil;
 
@@ -40,63 +38,53 @@ public class TestPreConfigure {
 
     @Test
     public void testPreConfigure() throws IOException {
-        PrintStream oldStdOut = System.out;
+        File testResourceFolder = new File("src/test/resources/testPreConfigure");
+        File targetResourceFolder = new File("target/test-resources/testPreConfigure");
 
-        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(outContent));
+        TestUtil.removeOldTestResourcesAndCopyAgain(testResourceFolder, targetResourceFolder);
 
-        try {
-            File testResourceFolder = new File("src/test/resources/testPreConfigure");
-            File targetResourceFolder = new File("target/test-resources/testPreConfigure");
+        File myTestProperty = new File(targetResourceFolder, "properties/myTest.properties");
+        File myPackagePath = new File(targetResourceFolder, "package");
+        File myExpectedResultPath = new File(targetResourceFolder, "expectedResult");
 
-            TestUtil.removeOldTestResourcesAndCopyAgain(testResourceFolder, targetResourceFolder);
+        ListAppender listAppender = TestUtil.addListAppenderToLogger();
 
-            File myTestProperty = new File(targetResourceFolder, "properties/myTest.properties");
-            File myPackagePath = new File(targetResourceFolder, "package");
-            File myExpectedResultPath = new File(targetResourceFolder, "expectedResult");
+        PacifyViaCommandline pacifyViaCommandline = new PacifyViaCommandline();
 
-            PacifyViaCommandline pacifyViaCommandline = new PacifyViaCommandline();
+        int result = pacifyViaCommandline.mainInternal(new String[] {
+                "--info",
+                "preConfigure",
+                "--resolvers=FileResolver",
+                "--packagePath=" + myPackagePath.getAbsolutePath(),
+                "-RFileResolver.file=" + myTestProperty.getAbsolutePath() });
 
-            int result = pacifyViaCommandline.mainInternal(new String[] {
-                    "--info",
-                    "preConfigure",
-                    "--resolvers=FileResolver",
-                    "--packagePath=" + myPackagePath.getAbsolutePath(),
-                    "-RFileResolver.file=" + myTestProperty.getAbsolutePath() });
+        Assert.assertEquals("Configuration returned with errors.", 0, result);
+        TestUtil.checkIfResultIsAsExpected(myPackagePath, myExpectedResultPath);
 
-            Assert.assertEquals("Configuration returned with errors.", 0, result);
-            TestUtil.checkIfResultIsAsExpected(myPackagePath, myExpectedResultPath);
-
-        } finally {
-            System.setOut(oldStdOut);
-        }
-
-        outContent.close();
-
-        String[] output = outContent.toString().replace("\r", "").split("\n");
+        String[] output = listAppender.getLogMessages().toArray(new String[0]);
         String[] expect = {
-                "== Executing PreConfigure [Version=Not a Jar]",
-                "commandline/target/test-resources/testPreConfigure/package]",
-                "== Found [3] pacify marker files",
+                ".*== Executing PreConfigure \\[Version=.*",
+                ".*commandline/target/test-resources/testPreConfigure/package\\]",
+                "== Found \\[3\\] pacify marker files",
                 "== Validating...",
-                "commandline/target/test-resources/testPreConfigure/package/parent-CMFile.pacify]",
-                "commandline/target/test-resources/testPreConfigure/package/folder/folder1-CMFile.pacify]",
-                "commandline/target/test-resources/testPreConfigure/package/folder/folder2-CMFile.pacify]",
+                ".*commandline/target/test-resources/testPreConfigure/package/parent-CMFile.pacify\\]",
+                ".*commandline/target/test-resources/testPreConfigure/package/folder/folder1-CMFile.pacify\\]",
+                ".*commandline/target/test-resources/testPreConfigure/package/folder/folder2-CMFile.pacify\\]",
                 "== Replacing...",
-                "commandline/target/test-resources/testPreConfigure/package/parent-CMFile.pacify]",
-                "Customize File [someParentConf.conf]",
-                "[2] placeholders replaced.",
-                "commandline/target/test-resources/testPreConfigure/package/folder/folder1-CMFile.pacify]",
-                "Customize File [someFolderConf.conf]",
-                "[1] placeholders replaced.",
-                "Customize File [subfolder/someSubFolderConf.conf]",
-                "[0] placeholders replaced.",
-                "commandline/target/test-resources/testPreConfigure/package/folder/folder2-CMFile.pacify]",
-                "Customize File [anotherFolderConf.conf]",
-                "[1] placeholders replaced.",
-                "== Properties which are not resolved [2] ...",
-                "foo",
-                "foobar3",
+                ".*commandline/target/test-resources/testPreConfigure/package/parent-CMFile.pacify\\]",
+                "      Customize File \\[someParentConf.conf\\]",
+                "          \\[2\\] placeholders replaced.",
+                ".*commandline/target/test-resources/testPreConfigure/package/folder/folder1-CMFile.pacify\\]",
+                "      Customize File \\[someFolderConf.conf\\]",
+                "          \\[1\\] placeholders replaced.",
+                "      Customize File \\[subfolder/someSubFolderConf.conf\\]",
+                "          \\[0\\] placeholders replaced.",
+                ".*commandline/target/test-resources/testPreConfigure/package/folder/folder2-CMFile.pacify\\]",
+                "      Customize File \\[anotherFolderConf.conf\\]",
+                "          \\[1\\] placeholders replaced.",
+                "== Properties which are not resolved \\[2\\] ...",
+                "   foo",
+                "   foobar3",
                 "== Successfully finished"
         };
 
@@ -104,7 +92,7 @@ public class TestPreConfigure {
 
         for (int i = 0; i < output.length; i++) {
             String outputLine = FilenameUtils.separatorsToUnix(output[i]);
-            String expectedLine = ".*" + Pattern.quote(expect[i]);
+            String expectedLine = expect[i];
             Assert.assertThat(outputLine, RegexMatcher.matchesRegex(expectedLine));
         }
     }
