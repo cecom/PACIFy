@@ -20,8 +20,6 @@
 
 package com.geewhiz.pacify;
 
-
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -39,6 +37,7 @@ import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.ResolverDefect;
 import com.geewhiz.pacify.exceptions.ResolverRuntimeException;
 import com.geewhiz.pacify.managers.PropertyResolveManager;
+import com.geewhiz.pacify.model.PProperty;
 import com.geewhiz.pacify.utils.DefectUtils;
 import com.geewhiz.pacify.utils.Utils;
 import com.google.inject.Inject;
@@ -96,8 +95,7 @@ public class CreatePropertyFile {
             throw new RuntimeException(e);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
-        }
-        finally {
+        } finally {
             if (writer != null) {
                 writer.close();
             }
@@ -131,7 +129,12 @@ public class CreatePropertyFile {
                 protectedPrefix = "*";
             }
             try {
-                String line = protectedPrefix + propertyKey + "=" + propertyResolveManager.getPropertyValue(propertyKey);
+
+                PProperty pProperty = createPPropertyFor(propertyKey);
+
+                propertyResolveManager.resolveProperty(pProperty);
+
+                String line = protectedPrefix + propertyKey + "=" + pProperty.getValue();
                 result.add(line);
             } catch (ResolverRuntimeException re) {
                 defects.add(new ResolverDefect(re.getResolver(), re.getMessage()));
@@ -182,6 +185,22 @@ public class CreatePropertyFile {
 
     public String getOutputPrefix() {
         return outputPrefix;
+    }
+
+    private PProperty createPPropertyFor(String propertyKey) {
+        PProperty pProperty = new PProperty() {
+            @Override
+            public String getBeginToken() {
+                return "%{";
+            }
+
+            @Override
+            public String getEndToken() {
+                return "}";
+            }
+        };
+        pProperty.setName(propertyKey);
+        return pProperty;
     }
 
 }

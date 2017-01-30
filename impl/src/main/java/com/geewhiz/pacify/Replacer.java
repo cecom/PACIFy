@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,8 +19,6 @@
  */
 
 package com.geewhiz.pacify;
-
-
 
 import java.io.File;
 import java.io.IOException;
@@ -49,33 +47,31 @@ public class Replacer {
     private File                   packagePath;
     private File                   copyDestination;
 
+    private EntityManager          entityManager;
+
     @Inject
     public Replacer(PropertyResolveManager propertyResolveManager) {
         this.propertyResolveManager = propertyResolveManager;
     }
 
     public void execute() {
-        logger.info("== Executing Replacer [Version={}]", Utils.getJarVersion());
+        logger.info("== Executing {} [Version={}]", getClass().getSimpleName(), Utils.getJarVersion());
         logger.info("   [PackagePath={}]", getPackagePath().getAbsolutePath());
 
-        File pathToConfigure = getPathToConfigure();
+        DefectUtils.abortIfDefectExists(getEntityManager().initialize());
 
-        EntityManager entityManager = new EntityManager(pathToConfigure);
-
-        logger.info("== Found [{}] pacify marker files", entityManager.getPMarkerCount());
+        logger.info("== Found [{}] pacify marker files", getEntityManager().getPMarkerCount());
         logger.info("== Validating...");
 
-        LinkedHashSet<Defect> defects = createValidator().validateInternal(entityManager);
-        DefectUtils.abortIfDefectExists(defects);
+        DefectUtils.abortIfDefectExists(validate());
 
         logger.info("== Replacing...");
-        defects = doReplacement(entityManager);
-        DefectUtils.abortIfDefectExists(defects);
+        DefectUtils.abortIfDefectExists(doReplacement());
 
         logger.info("== Successfully finished");
     }
 
-    private File getPathToConfigure() {
+    private File prepareAndGetPathToConfigure() {
         if (copyDestination == null) {
             return getPackagePath();
         }
@@ -107,6 +103,13 @@ public class Replacer {
         this.copyDestination = copyDestination;
     }
 
+    public EntityManager getEntityManager() {
+        if (entityManager == null) {
+            entityManager = createEntityManager(prepareAndGetPathToConfigure());
+        }
+        return entityManager;
+    }
+
     private File createCopy() throws DefectException {
         try {
             if (getCopyDestination().exists()) {
@@ -128,20 +131,32 @@ public class Replacer {
         }
     }
 
-    public LinkedHashSet<Defect> doReplacement(EntityManager entityManager) {
-        FilterManager filterManager = new FilterManager(entityManager, propertyResolveManager);
+    public LinkedHashSet<Defect> doReplacement() {
+        LinkedHashSet<Defect> defects = getEntityManager().initialize();
 
-        LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
+        FilterManager filterManager = new FilterManager(getEntityManager(), propertyResolveManager);
+
         defects.addAll(filterManager.doFilter());
 
         return defects;
     }
 
-    private Validator createValidator() {
+    protected LinkedHashSet<Defect> validate() {
+        return createValidator().validateInternal();
+    }
+
+    protected Validator createValidator() {
         Validator validator = new Validator(propertyResolveManager);
+
         validator.setPackagePath(packagePath);
         validator.enableMarkerFileChecks();
         validator.enablePropertyResolveChecks();
+        validator.setEntityManager(getEntityManager());
+
         return validator;
+    }
+
+    protected EntityManager createEntityManager(File pathToConfigure) {
+        return new EntityManager(pathToConfigure);
     }
 }

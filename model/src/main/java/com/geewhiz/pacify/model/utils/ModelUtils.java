@@ -21,18 +21,33 @@
 package com.geewhiz.pacify.model.utils;
 
 import java.io.File;
+import java.nio.file.Path;
+
+import org.apache.commons.io.FilenameUtils;
 
 import com.geewhiz.pacify.model.PFile;
+import com.geewhiz.pacify.model.PProperty;
 
 public class ModelUtils {
 
-    public static PFile createPFile(PFile cloneFrom, String relativePath, File physicalPath) {
+    public static PFile clonePFile(PFile cloneFrom, Path file) {
+        String relativePath = FilenameUtils.separatorsToUnix(cloneFrom.getPMarker().getFolder().toPath().relativize(file).toString());
+        return clonePFile(cloneFrom, relativePath, file.toFile());
+    }
+
+    public static PFile clonePFile(PFile cloneFrom, String relativePath, File physicalPath) {
         PFile aClone = (PFile) cloneFrom.clone();
 
         aClone.setFile(physicalPath);
         aClone.setUseRegExResolution(false);
         aClone.setRelativePath(relativePath);
+        aClone.setIsCloneFrom(cloneFrom);
+
+        for (PProperty pProperty : aClone.getPProperties()) {
+            pProperty.setPFile(aClone);
+        }
 
         return aClone;
     }
+
 }

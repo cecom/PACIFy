@@ -20,16 +20,18 @@
 
 package com.geewhiz.pacify.filter;
 
-import java.io.File;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
 import com.geewhiz.pacify.defect.Defect;
-
-
+import com.geewhiz.pacify.model.PFile;
 
 public interface PacifyFilter {
 
-    LinkedHashSet<Defect> filter(Map<String, String> propertyValues, String beginToken, String endToken, File fileToFilter, String encoding);
+    LinkedHashSet<Defect> filter(PFile pFile, Map<String, String> propertyValues);
+
+    LinkedHashSet<Defect> checkForNotReplacedTokens(PFile pFile);
+
+    LinkedHashSet<Defect> checkPlaceHolderExists(PFile pFile);
 
 }

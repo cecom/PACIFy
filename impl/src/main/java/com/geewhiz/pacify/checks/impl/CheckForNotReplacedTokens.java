@@ -20,22 +20,16 @@
 
 package com.geewhiz.pacify.checks.impl;
 
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import com.geewhiz.pacify.checks.PMarkerCheck;
 import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.defect.NotReplacedPropertyDefect;
+import com.geewhiz.pacify.defect.DefectException;
+import com.geewhiz.pacify.filter.PacifyFilter;
 import com.geewhiz.pacify.managers.EntityManager;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
-import com.geewhiz.pacify.utils.FileUtils;
-import com.geewhiz.pacify.utils.RegExpUtils;
-
-
+import com.geewhiz.pacify.utils.Utils;
 
 public class CheckForNotReplacedTokens implements PMarkerCheck {
 
@@ -44,31 +38,23 @@ public class CheckForNotReplacedTokens implements PMarkerCheck {
         LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
 
         for (PFile pFile : entityManager.getPFilesFrom(pMarker)) {
-            String fileContent = FileUtils.getFileInOneString(pFile.getFile(), pFile.getEncoding());
-            checkContent(defects, pFile, fileContent);
+            if (pFile.getFile() == null || !pFile.getFile().exists())
+                continue;
+            PacifyFilter filter = getFilterForPFile(pFile);
+            if (filter == null)
+                continue;
+            defects.addAll(filter.checkForNotReplacedTokens(pFile));
         }
 
         return defects;
     }
 
-    private void checkContent(LinkedHashSet<Defect> defects, PFile pFile, String fileContent) {
-        for (String property : getNotReplacedProperties(fileContent, pFile.getBeginToken(), pFile.getEndToken())) {
-            Defect defect = new NotReplacedPropertyDefect(pFile, property);
-            defects.add(defect);
+    private PacifyFilter getFilterForPFile(PFile pFile) {
+        try {
+            return Utils.getPacifyFilter(pFile);
+        } catch (DefectException e) {
+            // is checked before, so we dont need to check this.
+            return null;
         }
-    }
-
-    private List<String> getNotReplacedProperties(String fileContent, String beginToken, String endToken) {
-        List<String> result = new ArrayList<String>();
-
-        Pattern pattern = RegExpUtils.getDefaultPattern(beginToken, endToken);
-        Matcher matcher = pattern.matcher(fileContent);
-
-        while (matcher.find()) {
-            String propertyId = matcher.group(1);
-            result.add(propertyId);
-        }
-
-        return result;
     }
 }

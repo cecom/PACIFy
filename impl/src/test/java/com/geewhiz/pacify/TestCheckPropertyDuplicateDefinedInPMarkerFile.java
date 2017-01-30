@@ -20,9 +20,7 @@
 
 package com.geewhiz.pacify;
 
-
-
-import java.io.File;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 
 import org.junit.Assert;
@@ -35,18 +33,20 @@ public class TestCheckPropertyDuplicateDefinedInPMarkerFile extends TestBase {
 
     @Test
     public void checkForNotCorrect() {
-        File testStartPath = new File("target/test-classes/checkPropertyDuplicateDefinedInPMarkerFile/wrong/package");
+        String testFolder = "checkPropertyDuplicateDefinedInPMarkerFile/wrong";
 
-        LinkedHashSet<Defect> defects = getDefects(new CheckPropertyDuplicateDefinedInPacifyFile(), testStartPath);
+        LinkedHashSet<Defect> defects = createPrepareAndExecuteValidator(testFolder, createPropertyResolveManager(Collections.<String, String> emptyMap()),
+                new CheckPropertyDuplicateDefinedInPacifyFile());
 
         Assert.assertEquals(1, defects.size());
     }
 
     @Test
     public void checkForCorrect() {
-        File testStartPath = new File("target/test-classes/checkPropertyDuplicateDefinedInPMarkerFile/correct/package");
+        String testFolder = "checkPropertyDuplicateDefinedInPMarkerFile/correct";
 
-        LinkedHashSet<Defect> defects = getDefects(new CheckPropertyDuplicateDefinedInPacifyFile(), testStartPath);
+        LinkedHashSet<Defect> defects = createPrepareAndExecuteValidator(testFolder, createPropertyResolveManager(Collections.<String, String> emptyMap()),
+                new CheckPropertyDuplicateDefinedInPacifyFile());
 
         Assert.assertEquals(0, defects.size());
     }

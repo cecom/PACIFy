@@ -20,8 +20,6 @@
 
 package com.geewhiz.pacify.utils;
 
-
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -30,12 +28,15 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.Charsets;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 
 public class FileUtils {
@@ -102,6 +103,19 @@ public class FileUtils {
         } finally {
             IOUtils.closeQuietly(is);
         }
+    }
+
+    /**
+     * 
+     * @param relativePath
+     * @param regEx
+     *            file separator should be unix file separator
+     * @return
+     */
+    public static Boolean matches(Path relativePath, String regEx) {
+        // we need to convert it, otherwise we have to mess around with backslash quoting and regex
+        String unixFileformat = FilenameUtils.separatorsToUnix(relativePath.toString());
+        return Pattern.matches(regEx, unixFileformat);
     }
 
 }

@@ -20,9 +20,12 @@
 
 package com.geewhiz.pacify;
 
-
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasSize;
 
 import java.io.File;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -32,8 +35,11 @@ import org.junit.Test;
 
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.managers.EntityManager;
+import com.geewhiz.pacify.model.PArchive;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
+import com.geewhiz.pacify.model.PProperty;
+import com.geewhiz.pacify.model.utils.XMLUtils;
 
 public class TestXml {
 
@@ -76,6 +82,60 @@ public class TestXml {
         Assert.assertEquals(1, defects.size());
         Assert.assertEquals("com.geewhiz.pacify.defect.XMLValidationDefect", defects.get(0).getClass().getName());
 
+    }
+
+    @Test
+    public void testPacifyStructure() {
+        String[] expectedMethodTypes = new String[] { "PFile", "PArchive", "PProperty" };
+
+        List<String> result = new ArrayList<String>();
+        for (Method method : XMLUtils.class.getDeclaredMethods()) {
+            if (!method.getName().equals("createNode")) {
+                continue;
+            }
+            Assert.assertEquals(1, method.getParameterTypes().length);
+            result.add(method.getParameterTypes()[0].getSimpleName());
+        }
+
+        Assert.assertThat("If you change the structure don't forget to add the default behavior to " + XMLUtils.class.getName(), result,
+                containsInAnyOrder(expectedMethodTypes));
+    }
+
+    @Test
+    public void testPFileStructure() {
+        String[] expectedFields = new String[] { "pProperties", "relativePath", "useRegExResolution", "encoding", "filterClass", "internalBeginToken",
+                "internalEndToken" };
+
+        List<String> result = new ArrayList<String>();
+        for (Field field : PFile.class.getDeclaredFields()) {
+            result.add(field.getName());
+        }
+        Assert.assertThat("If you change the structure don't forget to add the default behavior to " + XMLUtils.class.getName(), result,
+                containsInAnyOrder(expectedFields));
+    }
+
+    @Test
+    public void testPArchiveStructure() {
+        String[] expectedFields = new String[] { "filesAndArchives", "relativePath", "internalBeginToken", "internalEndToken" };
+
+        List<String> result = new ArrayList<String>();
+        for (Field field : PArchive.class.getDeclaredFields()) {
+            result.add(field.getName());
+        }
+        Assert.assertThat("If you change the structure don't forget to add the default behavior to " + XMLUtils.class.getName(), result,
+                containsInAnyOrder(expectedFields));
+    }
+
+    @Test
+    public void testPPropertyStructure() {
+        String[] expectedFields = new String[] { "name", "convertBackslashToSlash" };
+
+        List<String> result = new ArrayList<String>();
+        for (Field field : PProperty.class.getDeclaredFields()) {
+            result.add(field.getName());
+        }
+        Assert.assertThat("If you change the structure don't forget to add the default behavior to " + XMLUtils.class.getName(), result,
+                containsInAnyOrder(expectedFields));
     }
 
 }

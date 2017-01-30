@@ -20,10 +20,8 @@
 
 package com.geewhiz.pacify;
 
-
-
-import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 
@@ -33,26 +31,16 @@ import org.junit.Test;
 import com.geewhiz.pacify.checks.impl.CheckCorrectPacifyFilter;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.FilterNotFoundDefect;
-import com.geewhiz.pacify.managers.EntityManager;
-import com.geewhiz.pacify.model.PMarker;
 
-public class TestWrongFilter {
+public class TestWrongFilter extends TestBase {
 
     @Test
     public void test() throws Exception {
-        File source = new File("target/test-classes/testWrongFilter/package");
+        String testFolder = "testWrongFilter";
 
-        EntityManager entityManager = new EntityManager(source);
-        entityManager.initialize();
+        LinkedHashSet<Defect> result = createPrepareAndExecuteValidator(testFolder, createPropertyResolveManager(Collections.<String, String> emptyMap()),
+                new CheckCorrectPacifyFilter());
 
-        List<PMarker> pMarkers = entityManager.getPMarkers();
-
-        Assert.assertEquals(1, pMarkers.size());
-
-        CheckCorrectPacifyFilter check = new CheckCorrectPacifyFilter();
-        LinkedHashSet<Defect> result = check.checkForErrors(entityManager, pMarkers.get(0));
-        
-        
         List<Defect> defects = new ArrayList<Defect>(result);
 
         Assert.assertEquals(2, defects.size());

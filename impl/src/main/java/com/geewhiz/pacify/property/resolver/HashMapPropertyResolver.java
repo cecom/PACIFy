@@ -29,12 +29,21 @@ import java.util.Set;
 
 import com.geewhiz.pacify.defect.Defect;
 
-
-
 public class HashMapPropertyResolver extends BasePropertyResolver {
 
     Map<String, String> properties          = new HashMap<String, String>();
     List<String>        protectedProperties = new ArrayList<String>();
+
+    public HashMapPropertyResolver() {
+    }
+
+    public HashMapPropertyResolver(String key, String value) {
+        addProperty(key, value);
+    }
+
+    public HashMapPropertyResolver(Map<String, String> properties) {
+        addAllProperties(properties);
+    }
 
     public void addProperty(String key, String value) {
         if (key.startsWith("*")) {
@@ -42,6 +51,12 @@ public class HashMapPropertyResolver extends BasePropertyResolver {
             protectedProperties.add(key);
         }
         properties.put(key, value);
+    }
+
+    public void addAllProperties(Map<String, String> properties) {
+        for (String key : properties.keySet()) {
+            addProperty(key, properties.get(key));
+        }
     }
 
     @Override

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Pacify xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../../../../../model/src/main/resources/pacify.xsd">
+    <File BeginToken="@" EndToken="@" RelativePath="anotherFolderConf.conf">
+        <Property Name="bar"/>
+        <Property Name="someReference"/>
+    </File>
+</Pacify>

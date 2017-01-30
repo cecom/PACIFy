@@ -20,32 +20,25 @@
 
 package com.geewhiz.pacify;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.Map;
 import java.util.jar.JarInputStream;
 
-import javax.xml.bind.JAXBException;
-
-import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
-import org.apache.commons.compress.archivers.ArchiveInputStream;
-import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hamcrest.collection.IsEmptyCollection;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
-import com.geewhiz.pacify.checks.impl.CheckCorrectArchiveType;
 import com.geewhiz.pacify.defect.ArchiveDuplicateDefinedInPMarkerDefect;
 import com.geewhiz.pacify.defect.ArchiveTypeNotImplementedDefect;
 import com.geewhiz.pacify.defect.Defect;
@@ -55,105 +48,84 @@ import com.geewhiz.pacify.defect.NoPlaceholderInTargetFileDefect;
 import com.geewhiz.pacify.defect.NotReplacedPropertyDefect;
 import com.geewhiz.pacify.defect.PlaceholderNotDefinedDefect;
 import com.geewhiz.pacify.defect.PropertyDuplicateDefinedInPMarkerDefect;
-import com.geewhiz.pacify.managers.EntityManager;
-import com.geewhiz.pacify.managers.PropertyResolveManager;
-import com.geewhiz.pacify.model.PMarker;
-import com.geewhiz.pacify.property.resolver.HashMapPropertyResolver;
-import com.geewhiz.pacify.resolver.PropertyResolver;
-import com.geewhiz.pacify.test.TestUtil;
-import com.geewhiz.pacify.utils.ArchiveUtils;
+import com.geewhiz.pacify.defect.PropertyNotDefinedInResolverDefect;
 import com.geewhiz.pacify.utils.LoggingUtils;
 
+public class TestArchive extends TestBase {
 
+    Map<String, String> propertiesToUseWhileResolving = new HashMap<String, String>();
+    Logger              logger                        = LogManager.getLogger(TestArchive.class.getName());
 
-public class TestArchive {
+    @Before
+    public void before() {
+        LoggingUtils.setLogLevel(logger, Level.INFO);
+
+        propertiesToUseWhileResolving.put("foobar1", "foobar1Value");
+        propertiesToUseWhileResolving.put("foobar2", "foobar2Value");
+    }
 
     @Test
     public void checkJar() throws ArchiveException, IOException {
-        Logger logger = LogManager.getLogger(TestArchive.class.getName());
-        LoggingUtils.setLogLevel(logger, Level.INFO);
+        String testFolder = "testArchive/correct/jar";
 
-        File testResourceFolder = new File("src/test/resources/testArchive/correct/jar");
-        File targetResourceFolder = new File("target/test-resources/testArchive/correct/jar");
+        File targetResourceFolder = new File("target/test-resources/", testFolder);
 
-        LinkedHashSet<Defect> defects = createPrepareAndExecutePacify(testResourceFolder, targetResourceFolder);
+        LinkedHashSet<Defect> defects = createPrepareValidateAndReplace(testFolder, createPropertyResolveManager(propertiesToUseWhileResolving));
 
         Assert.assertEquals("We shouldnt get any defects.", 0, defects.size());
 
         File expectedArchive = new File(targetResourceFolder, "expectedResult/archive.jar");
-        File outputArchive = new File(targetResourceFolder, "package/archive.jar");
+        File resultArchive = new File(targetResourceFolder, "package/archive.jar");
 
-        JarInputStream in = new JarInputStream(new FileInputStream(new File(testResourceFolder, "package/archive.jar")));
-        JarInputStream out = new JarInputStream(new FileInputStream(outputArchive));
+        JarInputStream expected = new JarInputStream(new FileInputStream(expectedArchive));
+        JarInputStream result = new JarInputStream(new FileInputStream(resultArchive));
 
-        Assert.assertNotNull("SRC jar should contain the manifest as first entry", in.getManifest());
-        Assert.assertNotNull("RESULT jar should contain the manifest as first entry", out.getManifest());
+        Assert.assertNotNull("SRC jar should contain the manifest as first entry", expected.getManifest());
+        Assert.assertNotNull("RESULT jar should contain the manifest as first entry", result.getManifest());
 
-        in.close();
-        out.close();
+        expected.close();
+        result.close();
 
-        checkResultIsAsExpected(outputArchive, expectedArchive);
-
-        Assert.assertArrayEquals("There should be no additional File", expectedArchive.getParentFile().list(), outputArchive.getParentFile().list());
+        checkIfResultIsAsExpected(testFolder);
     }
 
     @Test
-    public void checkJarInEar() throws ArchiveException, IOException {
-        Logger logger = LogManager.getLogger(TestArchive.class.getName());
-        LoggingUtils.setLogLevel(logger, Level.INFO);
+    public void checkJarInEar() {
+        String testFolder = "testArchive/correct/jarInEar";
 
-        File testResourceFolder = new File("src/test/resources/testArchive/correct/jarInEar");
-        File targetResourceFolder = new File("target/test-resources/testArchive/correct/jarInEar");
-
-        LinkedHashSet<Defect> defects = createPrepareAndExecutePacify(testResourceFolder, targetResourceFolder);
+        LinkedHashSet<Defect> defects = createPrepareValidateAndReplace(testFolder, createPropertyResolveManager(propertiesToUseWhileResolving));
 
         Assert.assertEquals("We shouldnt get any defects.", 0, defects.size());
 
-        File expectedArchive = new File(targetResourceFolder, "expectedResult/some.ear");
-        File outputArchive = new File(targetResourceFolder, "package/some.ear");
-
-        checkResultIsAsExpected(outputArchive, expectedArchive);
-
-        Assert.assertArrayEquals("There should be no additional File", expectedArchive.getParentFile().list(), outputArchive.getParentFile().list());
+        checkIfResultIsAsExpected(testFolder);
     }
 
     @Test
-    public void checkJarInEarWithRegExp() throws ArchiveException, IOException {
-        Logger logger = LogManager.getLogger(TestArchive.class.getName());
-        LoggingUtils.setLogLevel(logger, Level.INFO);
+    public void checkJarInEarWithRegExp() {
+        String testFolder = "testArchive/correct/jarInEarWithRegExp";
 
-        File testResourceFolder = new File("src/test/resources/testArchive/correct/jarInEarWithRegExp");
-        File targetResourceFolder = new File("target/test-resources/testArchive/correct/jarInEarWithRegExp");
+        LinkedHashSet<Defect> defects = createPrepareValidateAndReplace(testFolder, createPropertyResolveManager(propertiesToUseWhileResolving));
 
-        LinkedHashSet<Defect> defects = createPrepareAndExecutePacify(testResourceFolder, targetResourceFolder);
-
-        Assert.assertEquals("We shouldnt get any defects.", 0, defects.size());
-
-        File expectedArchive = new File(targetResourceFolder, "expectedResult/some.ear");
-        File outputArchive = new File(targetResourceFolder, "package/some.ear");
-
-        checkResultIsAsExpected(outputArchive, expectedArchive);
-
-        Assert.assertArrayEquals("There should be no additional File", expectedArchive.getParentFile().list(), outputArchive.getParentFile().list());
+        Assert.assertThat(defects, IsEmptyCollection.emptyCollectionOf(Defect.class));
+        
+        checkIfResultIsAsExpected(testFolder);
     }
 
     @Test
     public void checkJarWhereTheSourceIsntAJarPerDefinition() throws ArchiveException, IOException {
-        Logger logger = LogManager.getLogger(TestArchive.class.getName());
         LoggingUtils.setLogLevel(logger, Level.ERROR);
 
-        File testResourceFolder = new File("src/test/resources/testArchive/correct/jarWhereSourceIsntAJarPerDefinition");
-        File targetResourceFolder = new File("target/test-resources/testArchive/correct/jarWhereSourceIsntAJarPerDefinition");
+        String testFolder = "testArchive/correct/jarWhereSourceIsntAJarPerDefinition";
 
-        LinkedHashSet<Defect> defects = createPrepareAndExecutePacify(testResourceFolder, targetResourceFolder);
+        File testResourceFolder = new File("src/test/resources/", testFolder);
+        File targetResourceFolder = new File("target/test-resources/", testFolder);
+
+        LinkedHashSet<Defect> defects = createPrepareValidateAndReplace(testFolder, createPropertyResolveManager(propertiesToUseWhileResolving));
 
         Assert.assertEquals("We shouldnt get any defects.", 0, defects.size());
 
-        File expectedArchive = new File(targetResourceFolder, "expectedResult/archive.jar");
-        File outputArchive = new File(targetResourceFolder, "package/archive.jar");
-
         JarInputStream in = new JarInputStream(new FileInputStream(new File(testResourceFolder, "package/archive.jar")));
-        JarInputStream out = new JarInputStream(new FileInputStream(outputArchive));
+        JarInputStream out = new JarInputStream(new FileInputStream(new File(targetResourceFolder, "package/archive.jar")));
 
         Assert.assertNull("SRC jar should be a jar which is packed via zip, so the first entry isn't the manifest.", in.getManifest());
         Assert.assertNotNull("RESULT jar should contain the manifest as first entry", out.getManifest());
@@ -161,72 +133,47 @@ public class TestArchive {
         in.close();
         out.close();
 
-        checkResultIsAsExpected(outputArchive, expectedArchive);
-
-        Assert.assertArrayEquals("There should be no additional File", expectedArchive.getParentFile().list(), outputArchive.getParentFile().list());
+        checkIfResultIsAsExpected(testFolder);
     }
 
     @Test
-    public void checkTar() throws ArchiveException, IOException {
-        File testResourceFolder = new File("src/test/resources/testArchive/correct/tar");
-        File targetResourceFolder = new File("target/test-resources/testArchive/correct/tar");
+    public void checkTar() {
+        String testFolder = "testArchive/correct/tar";
 
-        LinkedHashSet<Defect> defects = createPrepareAndExecutePacify(testResourceFolder, targetResourceFolder);
+        LinkedHashSet<Defect> defects = createPrepareValidateAndReplace(testFolder, createPropertyResolveManager(propertiesToUseWhileResolving));
 
         Assert.assertEquals("We shouldnt get any defects.", 0, defects.size());
 
-        File expectedArchive = new File(targetResourceFolder, "expectedResult/archive.tar");
-        File outputArchive = new File(targetResourceFolder, "package/archive.tar");
-
-        checkResultIsAsExpected(outputArchive, expectedArchive);
-        Assert.assertArrayEquals("There should be no additional File", expectedArchive.getParentFile().list(), outputArchive.getParentFile().list());
+        checkIfResultIsAsExpected(testFolder);
     }
 
     @Test
-    public void checkZip() throws ArchiveException, IOException {
-        File testResourceFolder = new File("src/test/resources/testArchive/correct/zip");
-        File targetResourceFolder = new File("target/test-resources/testArchive/correct/zip");
+    public void checkZip() {
+        String testFolder = "testArchive/correct/zip";
 
-        LinkedHashSet<Defect> defects = createPrepareAndExecutePacify(testResourceFolder, targetResourceFolder);
+        LinkedHashSet<Defect> defects = createPrepareValidateAndReplace(testFolder, createPropertyResolveManager(propertiesToUseWhileResolving));
 
         Assert.assertEquals("We shouldnt get any defects.", 0, defects.size());
 
-        File expectedArchive = new File(targetResourceFolder, "expectedResult/archive.zip");
-        File outputArchive = new File(targetResourceFolder, "package/archive.zip");
-
-        checkResultIsAsExpected(outputArchive, expectedArchive);
-        Assert.assertArrayEquals("There should be no additional File", expectedArchive.getParentFile().list(), outputArchive.getParentFile().list());
+        checkIfResultIsAsExpected(testFolder);
     }
 
     @Test
-    public void checkBigZip() throws ArchiveException, IOException {
-        File testResourceFolder = new File("src/test/resources/testArchive/correct/bigZip");
-        File targetResourceFolder = new File("target/test-resources/testArchive/correct/bigZip");
+    public void checkBigZip() {
+        String testFolder = "testArchive/correct/bigZip";
 
-        LinkedHashSet<Defect> defects = createPrepareAndExecutePacify(testResourceFolder, targetResourceFolder);
+        LinkedHashSet<Defect> defects = createPrepareValidateAndReplace(testFolder, createPropertyResolveManager(propertiesToUseWhileResolving));
 
         Assert.assertEquals("We shouldnt get any defects.", 0, defects.size());
 
-        File expectedArchive = new File(targetResourceFolder, "expectedResult/archive.zip");
-        File outputArchive = new File(targetResourceFolder, "package/archive.zip");
-
-        checkResultIsAsExpected(outputArchive, expectedArchive);
-        Assert.assertArrayEquals("There should be no additional File", expectedArchive.getParentFile().list(), outputArchive.getParentFile().list());
+        checkIfResultIsAsExpected(testFolder);
     }
 
     @Test
-    public void checkUnkownArchiveType() throws JAXBException {
-        File packagePath = new File("target/test-classes/testArchive/wrong/unkownArchiveType/package");
+    public void checkUnkownArchiveType() {
+        String testFolder = "testArchive/wrong/unkownArchiveType";
 
-        LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
-        EntityManager entityManager = createEntityManager(packagePath, defects);
-
-        List<PMarker> pMarkers = entityManager.getPMarkers();
-
-        Assert.assertEquals(1, pMarkers.size());
-
-        CheckCorrectArchiveType checker = new CheckCorrectArchiveType();
-        defects.addAll(checker.checkForErrors(entityManager, pMarkers.get(0)));
+        LinkedHashSet<Defect> defects = createPrepareValidateAndReplace(testFolder, createPropertyResolveManager(propertiesToUseWhileResolving));
 
         Assert.assertEquals("We should get a defect.", 1, defects.size());
         Assert.assertEquals("We expect ArchiveTypeNotImplementedDefect", ArchiveTypeNotImplementedDefect.class, defects.iterator().next().getClass());
@@ -234,9 +181,9 @@ public class TestArchive {
 
     @Test
     public void checkDuplicateArchiveEntry() {
-        File packagePath = new File("target/test-classes/testArchive/wrong/duplicateEntry/package");
+        String testFolder = "testArchive/wrong/duplicateEntry";
 
-        LinkedHashSet<Defect> defects = createPrepareAndExecuteValidator(packagePath);
+        LinkedHashSet<Defect> defects = createPrepareAndExecuteValidator(testFolder, createPropertyResolveManager(propertiesToUseWhileResolving));
 
         Assert.assertEquals("We should get a defect.", 1, defects.size());
         Assert.assertEquals("We expect ArchiveTypeNotImplementedDefect", ArchiveDuplicateDefinedInPMarkerDefect.class, defects.iterator().next().getClass());
@@ -244,11 +191,9 @@ public class TestArchive {
 
     @Test
     public void checkNotReplacedProperty() {
-        File testResourceFolder = new File("target/test-classes/testArchive/wrong/notReplacedProperty");
-        File targetResourceFolder = new File("target/test-resources/testArchive/wrong/notReplacedProperty");
+        String testFolder = "testArchive/wrong/notReplacedProperty";
 
-        LinkedHashSet<Defect> result = createPrepareAndExecutePacify(testResourceFolder, targetResourceFolder);
-
+        LinkedHashSet<Defect> result = createPrepareAndReplace(testFolder, createPropertyResolveManager(propertiesToUseWhileResolving));
         List<Defect> defects = new ArrayList<Defect>(result);
 
         Assert.assertEquals("We should get a defect.", 2, defects.size());
@@ -262,10 +207,9 @@ public class TestArchive {
 
     @Test
     public void checkTargetFileDoesNotExist() {
-        File packagePath = new File("target/test-classes/testArchive/wrong/targetFileDoesNotExist/package");
+        String testFolder = "testArchive/wrong/targetFileDoesNotExist";
 
-        LinkedHashSet<Defect> result = createPrepareAndExecuteValidator(packagePath);
-
+        LinkedHashSet<Defect> result = createPrepareAndExecuteValidator(testFolder, createPropertyResolveManager(propertiesToUseWhileResolving));
         List<Defect> defects = new ArrayList<Defect>(result);
 
         Assert.assertEquals("We should get a defect.", 1, defects.size());
@@ -274,24 +218,22 @@ public class TestArchive {
 
     @Test
     public void checkPlaceholderDoesNotExist() {
-        File packagePath = new File("target/test-classes/testArchive/wrong/placeholderDoesNotExist/package");
+        String testFolder = "testArchive/wrong/placeholderDoesNotExist";
 
-        LinkedHashSet<Defect> result = createPrepareAndExecuteValidator(packagePath);
-
+        LinkedHashSet<Defect> result = createPrepareAndExecuteValidator(testFolder, createPropertyResolveManager(propertiesToUseWhileResolving));
         List<Defect> defects = new ArrayList<Defect>(result);
 
-        Assert.assertEquals("We should get a defect.", 2, defects.size());
+        Assert.assertEquals("We should get a defect.", 3, defects.size());
         Assert.assertEquals("We expect NoPlaceholderInTargetFileDefect", NoPlaceholderInTargetFileDefect.class, defects.get(0).getClass());
         Assert.assertEquals("We expect PlaceholderNotDefinedDefect.", PlaceholderNotDefinedDefect.class, defects.get(1).getClass());
-        Assert.assertEquals("We expect missingProperty", "missingProperty", ((NoPlaceholderInTargetFileDefect) defects.get(0)).getPProperty().getName());
+        Assert.assertEquals("We expect missingProperty", PropertyNotDefinedInResolverDefect.class, defects.get(2).getClass());
     }
 
     @Test
     public void checkDuplicatePropertyEntry() {
-        File packagePath = new File("target/test-classes/testArchive/wrong/duplicatePropertyEntry/package");
+        String testFolder = "testArchive/wrong/duplicatePropertyEntry";
 
-        LinkedHashSet<Defect> result = createPrepareAndExecuteValidator(packagePath);
-
+        LinkedHashSet<Defect> result = createPrepareAndExecuteValidator(testFolder, createPropertyResolveManager(propertiesToUseWhileResolving));
         List<Defect> defects = new ArrayList<Defect>(result);
 
         Assert.assertEquals("We should get a defect.", 2, defects.size());
@@ -302,10 +244,9 @@ public class TestArchive {
 
     @Test
     public void checkWrongPacifyFilter() {
-        File packagePath = new File("target/test-classes/testArchive/wrong/wrongPacifyFilter/package");
+        String testFolder = "testArchive/wrong/wrongPacifyFilter";
 
-        LinkedHashSet<Defect> result = createPrepareAndExecuteValidator(packagePath);
-
+        LinkedHashSet<Defect> result = createPrepareAndExecuteValidator(testFolder, createPropertyResolveManager(propertiesToUseWhileResolving));
         List<Defect> defects = new ArrayList<Defect>(result);
 
         Assert.assertEquals("We should get a defect.", 2, defects.size());
@@ -314,171 +255,4 @@ public class TestArchive {
         Assert.assertEquals("We expect missing.filter.class", "missing.filter.class", ((FilterNotFoundDefect) defects.get(0)).getPFile().getFilterClass());
     }
 
-    private LinkedHashSet<Defect> createPrepareAndExecuteValidator(File packagePath) {
-        HashMapPropertyResolver hpr = new HashMapPropertyResolver();
-        PropertyResolveManager prm = getPropertyResolveManager(hpr);
-
-        LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
-
-        EntityManager entityManager = createEntityManager(packagePath, defects);
-
-        Validator validator = new Validator(prm);
-        validator.enableMarkerFileChecks();
-        validator.setPackagePath(packagePath);
-        defects.addAll(validator.validateInternal(entityManager));
-
-        return defects;
-    }
-
-    private EntityManager createEntityManager(File packagePath, LinkedHashSet<Defect> defects) {
-        EntityManager entityManager = new EntityManager(packagePath);
-        defects.addAll(entityManager.initialize());
-        return entityManager;
-    }
-
-    private LinkedHashSet<Defect> createPrepareAndExecutePacify(File testResourceFolder, File targetResourceFolder) {
-        TestUtil.removeOldTestResourcesAndCopyAgain(testResourceFolder, targetResourceFolder);
-
-        HashMapPropertyResolver hpr = new HashMapPropertyResolver();
-        PropertyResolveManager prm = getPropertyResolveManager(hpr);
-        LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
-
-        File packagePath = new File(targetResourceFolder, "package");
-
-        EntityManager entityManager = createEntityManager(packagePath, defects);
-
-        Replacer replacer = new Replacer(prm);
-        replacer.setPackagePath(packagePath);
-
-        defects.addAll(replacer.doReplacement(entityManager));
-        return defects;
-    }
-
-    private PropertyResolveManager getPropertyResolveManager(HashMapPropertyResolver hpr) {
-        hpr.addProperty("foobar1", "foobar1Value");
-        hpr.addProperty("foobar2", "foobar2Value");
-
-        Set<PropertyResolver> propertyResolverList = new TreeSet<PropertyResolver>();
-        propertyResolverList.add(hpr);
-        PropertyResolveManager prm = new PropertyResolveManager(propertyResolverList);
-        return prm;
-    }
-
-    private void checkResultIsAsExpected(File replacedArchive, File expectedArchive) throws ArchiveException, IOException {
-        archiveDoesNotContainAdditionEntries(replacedArchive, expectedArchive);
-        archiveContainsEntries(replacedArchive, expectedArchive);
-    }
-
-    private void archiveContainsEntries(File replacedArchive, File expectedArchive) throws ArchiveException, IOException {
-        ArchiveStreamFactory factory = new ArchiveStreamFactory();
-
-        FileInputStream expectedIS = new FileInputStream(expectedArchive);
-        ArchiveInputStream expectedAIS = factory.createArchiveInputStream(new BufferedInputStream(expectedIS));
-        ArchiveEntry expectedEntry = null;
-        while ((expectedEntry = expectedAIS.getNextEntry()) != null) {
-            FileInputStream replacedIS = new FileInputStream(replacedArchive);
-            ArchiveInputStream replacedAIS = factory.createArchiveInputStream(new BufferedInputStream(replacedIS));
-
-            ArchiveEntry replacedEntry = null;
-            boolean entryFound = false;
-            while ((replacedEntry = replacedAIS.getNextEntry()) != null) {
-                Assert.assertNotNull("We expect an entry.", replacedEntry);
-                if (!expectedEntry.getName().equals(replacedEntry.getName())) {
-                    continue;
-                }
-                entryFound = true;
-                if (expectedEntry.isDirectory()) {
-                    Assert.assertTrue("we expect a directory", replacedEntry.isDirectory());
-                    break;
-                }
-
-                if (ArchiveUtils.isArchiveAndIsSupported(expectedEntry.getName())) {
-                    Assert.assertTrue("we expect a archive", ArchiveUtils.isArchiveAndIsSupported(replacedEntry.getName()));
-
-                    File replacedChildArchive = ArchiveUtils.extractFile(replacedArchive, ArchiveUtils.getArchiveType(replacedArchive),
-                            replacedEntry.getName());
-                    File expectedChildArchive = ArchiveUtils.extractFile(expectedArchive, ArchiveUtils.getArchiveType(expectedArchive),
-                            expectedEntry.getName());
-
-                    archiveContainsEntries(replacedChildArchive, expectedChildArchive);
-
-                    replacedChildArchive.delete();
-                    expectedChildArchive.delete();
-
-                    break;
-                }
-
-                ByteArrayOutputStream expectedContent = readContent(expectedAIS);
-                ByteArrayOutputStream replacedContent = readContent(replacedAIS);
-
-                Assert.assertEquals("Content should be same of entry " + expectedEntry.getName(), expectedContent.toString("UTF-8"),
-                        replacedContent.toString("UTF-8"));
-                break;
-            }
-
-            replacedIS.close();
-            Assert.assertTrue("Entry [" + expectedEntry.getName() + "] in the result archive expected.", entryFound);
-        }
-
-        expectedIS.close();
-    }
-
-    private void archiveDoesNotContainAdditionEntries(File replacedArchive, File expectedArchive) throws ArchiveException, IOException {
-        ArchiveStreamFactory factory = new ArchiveStreamFactory();
-
-        FileInputStream replacedIS = new FileInputStream(replacedArchive);
-        ArchiveInputStream replacedAIS = factory.createArchiveInputStream(new BufferedInputStream(replacedIS));
-        ArchiveEntry replacedEntry = null;
-        while ((replacedEntry = replacedAIS.getNextEntry()) != null) {
-            FileInputStream expectedIS = new FileInputStream(expectedArchive);
-            ArchiveInputStream expectedAIS = factory.createArchiveInputStream(new BufferedInputStream(expectedIS));
-
-            ArchiveEntry expectedEntry = null;
-            boolean entryFound = false;
-            while ((expectedEntry = expectedAIS.getNextEntry()) != null) {
-                Assert.assertNotNull("We expect an entry.", expectedEntry);
-                if (!replacedEntry.getName().equals(expectedEntry.getName())) {
-                    continue;
-                }
-                entryFound = true;
-
-                if (ArchiveUtils.isArchiveAndIsSupported(expectedEntry.getName())) {
-                    Assert.assertTrue("we expect a archive", ArchiveUtils.isArchiveAndIsSupported(replacedEntry.getName()));
-
-                    File replacedChildArchive = ArchiveUtils.extractFile(replacedArchive, ArchiveUtils.getArchiveType(replacedArchive),
-                            replacedEntry.getName());
-                    File expectedChildArchive = ArchiveUtils.extractFile(expectedArchive, ArchiveUtils.getArchiveType(expectedArchive),
-                            expectedEntry.getName());
-
-                    archiveDoesNotContainAdditionEntries(replacedChildArchive, expectedChildArchive);
-
-                    replacedChildArchive.delete();
-                    expectedChildArchive.delete();
-                }
-
-                break;
-            }
-
-            expectedIS.close();
-            Assert.assertTrue("Entry [" + replacedEntry.getName() + "] is not in the expected archive. This file shouldn't exist.", entryFound);
-        }
-
-        replacedIS.close();
-
-    }
-
-    private ByteArrayOutputStream readContent(ArchiveInputStream ais) throws IOException {
-        byte[] content = new byte[2048];
-        ByteArrayOutputStream result = new ByteArrayOutputStream();
-        BufferedOutputStream bos = new BufferedOutputStream(result);
-
-        int len;
-        while ((len = ais.read(content)) != -1) {
-            bos.write(content, 0, len);
-        }
-        bos.close();
-        content = null;
-
-        return result;
-    }
 }

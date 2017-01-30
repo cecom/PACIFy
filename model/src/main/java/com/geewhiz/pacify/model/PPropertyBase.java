@@ -20,6 +20,9 @@
 
 package com.geewhiz.pacify.model;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.xml.bind.Unmarshaller;
 
 import org.jvnet.jaxb2_commons.lang.CopyStrategy;
@@ -30,18 +33,89 @@ import org.jvnet.jaxb2_commons.locator.ObjectLocator;
 
 import com.geewhiz.pacify.defect.DefectRuntimeException;
 
-
-
 public abstract class PPropertyBase {
 
-    private PFile pFile;
+    private PFile          pFile;
+
+    /*
+     * this is true, if the property was already resolved
+     */
+    private boolean        isResolved = false;
+
+    /*
+     * the resolved value
+     */
+    private String         value;
+
+    /*
+     * if the property has a reference, here the list of all references which are used
+     */
+    private Set<PProperty> referencedProperties;
+
+    /*
+     * this is true, if something bad has occurred
+     */
+    private Boolean        successfullyProcessed;
 
     public PFile getPFile() {
         return pFile;
     }
 
-    protected PFile setPFile(PFile pFile) {
-        return pFile;
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    public void setIsResolved(Boolean isResolved) {
+        this.isResolved = isResolved;
+    }
+
+    public boolean isResolved() {
+        return isResolved;
+    }
+
+    public Set<PProperty> getReferencedProperties() {
+        if (referencedProperties == null) {
+            referencedProperties = new HashSet<PProperty>();
+        }
+        return referencedProperties;
+    }
+
+    public void addAReference(PProperty reference) {
+        getReferencedProperties().add(reference);
+    }
+
+    public String getXPath() {
+        StringBuffer result = new StringBuffer();
+        result.append(pFile.getXPath());
+        result.append("/Property[@Name='").append(getName()).append("']");
+
+        return result.toString();
+    }
+
+    protected abstract String getName();
+
+    public void setPFile(PFile pFile) {
+        this.pFile = pFile;
+    }
+
+    public void setSuccessfullyProcessed(Boolean state) {
+        this.successfullyProcessed = state;
+    }
+
+    public Boolean isSuccessfullyProcessed() {
+        return successfullyProcessed != null && successfullyProcessed;
+    }
+
+    public String getBeginToken() {
+        return getPFile().getBeginToken();
+    }
+
+    public String getEndToken() {
+        return getPFile().getEndToken();
     }
 
     public void afterUnmarshal(Unmarshaller unmarshaller, Object parent) {

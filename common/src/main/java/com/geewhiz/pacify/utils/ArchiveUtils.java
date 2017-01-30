@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
-import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -150,7 +149,7 @@ public class ArchiveUtils {
 
         Map<String, File> files = extractFilesForRegExp(pArchive.getFile(), pArchive.getType(), pFile.getRelativePath());
         for (String relativePath : files.keySet()) {
-            PFile aClone = ModelUtils.createPFile(pFile, relativePath, files.get(relativePath));
+            PFile aClone = ModelUtils.clonePFile(pFile, relativePath, files.get(relativePath));
             result.add(aClone);
         }
 
@@ -351,10 +350,9 @@ public class ArchiveUtils {
         return originalManifestFile;
     }
 
-    private static Boolean matches(String pathName, String regExp) {
+    private static Boolean matches(String pathName, String regEx) {
         Path path = FileSystems.getDefault().getPath(pathName);
-        PathMatcher matcher = FileSystems.getDefault().getPathMatcher("regex:" + regExp);
-        return matcher.matches(path);
+        return FileUtils.matches(path, regEx);
     }
 
     private static Map<PArchive, List<PFile>> getPFilesToReplace(List<PFile> replacePFiles) {

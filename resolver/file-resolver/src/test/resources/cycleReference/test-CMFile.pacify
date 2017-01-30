@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-<Pacify xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="..\..\..\..\..\..\model\src\main\resources\pacify.xsd">
-    <File RelativePath="testConf.txt">
-        <Property Name="foobar1"/>
-        <Property Name="foobar2"/>
-        <Property Name="foobar3"/>
-    </File>
-</Pacify>

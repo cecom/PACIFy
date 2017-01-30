@@ -20,8 +20,6 @@
 
 package com.geewhiz.pacify.managers;
 
-
-
 import java.io.File;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -34,7 +32,6 @@ import com.geewhiz.pacify.checks.impl.CheckForNotReplacedTokens;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.DefectException;
 import com.geewhiz.pacify.defect.PropertyNotDefinedInResolverDefect;
-import com.geewhiz.pacify.exceptions.PropertyNotFoundRuntimeException;
 import com.geewhiz.pacify.filter.PacifyFilter;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PMarker;
@@ -54,24 +51,29 @@ public class FilterManager {
     }
 
     public LinkedHashSet<Defect> doFilter() {
-        LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
+        LinkedHashSet<Defect> allDefects = new LinkedHashSet<Defect>();
 
         for (PMarker pMarker : entityManager.getPMarkers()) {
-            logger.info("   Processing Marker File [{}],", pMarker.getFile().getAbsolutePath());
-
-            for (PFile pFile : entityManager.getPFilesFrom(pMarker)) {
-                defects.addAll(filterPFile(pFile));
-            }
-
-            CheckForNotReplacedTokens checker = new CheckForNotReplacedTokens();
-            defects.addAll(checker.checkForErrors(entityManager, pMarker));
-
-            if (defects.isEmpty()) {
-                pMarker.getFile().delete();
-                entityManager.postProcessPMarker(pMarker);
-            }
+            LinkedHashSet<Defect> pMarkerDefects = filterPMarker(pMarker);
+            allDefects.addAll(pMarkerDefects);
+            entityManager.postProcessPMarker(pMarker, pMarkerDefects);
         }
-        
+
+        return allDefects;
+    }
+
+    private LinkedHashSet<Defect> filterPMarker(PMarker pMarker) {
+        LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
+
+        logger.info("   Processing Marker File [{}]", pMarker.getFile().getAbsolutePath());
+
+        for (PFile pFile : entityManager.getPFilesFrom(pMarker)) {
+            defects.addAll(filterPFile(pFile));
+        }
+
+        CheckForNotReplacedTokens checker = new CheckForNotReplacedTokens();
+        defects.addAll(checker.checkForErrors(entityManager, pMarker));
+
         return defects;
     }
 
@@ -85,15 +87,13 @@ public class FilterManager {
         Map<String, String> propertyValues = new HashMap<String, String>();
         LinkedHashSet<Defect> defects = fillPropertyValuesFor(propertyValues, pFile);
 
-        String beginToken = pFile.getBeginToken();
-        String endToken = pFile.getEndToken();
-        String encoding = pFile.getEncoding();
+        int notResolvedPlaceholderCount = pFile.getPProperties().size() - defects.size();
 
-        defects.addAll(pacifyFilter.filter(propertyValues, beginToken, endToken, fileToFilter, encoding));
+        defects.addAll(pacifyFilter.filter(pFile, propertyValues));
 
         fileToFilter.setLastModified(System.currentTimeMillis());
 
-        logger.info("          [{}] placeholders replaced.", pFile.getPProperties().size());
+        logger.info("          [{}] placeholders replaced.", notResolvedPlaceholderCount);
 
         return defects;
     }
@@ -102,16 +102,13 @@ public class FilterManager {
         LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
 
         for (PProperty pProperty : pFile.getPProperties()) {
-            String propertyName = pProperty.getName();
-            String propertyValue = null;
-            try {
-                propertyValue = propertyResolveManager.getPropertyValue(pProperty);
-            } catch (PropertyNotFoundRuntimeException e) {
-                Defect defect = new PropertyNotDefinedInResolverDefect(pProperty, propertyResolveManager.toString());
-                defects.add(defect);
-                continue;
+            propertyResolveManager.resolveProperty(pProperty);
+
+            if (pProperty.isResolved()) {
+                propertyValues.put(pProperty.getName(), pProperty.getValue());
+            } else {
+                defects.add(new PropertyNotDefinedInResolverDefect(pProperty, propertyResolveManager.toString()));
             }
-            propertyValues.put(propertyName, propertyValue);
         }
 
         return defects;

@@ -20,9 +20,7 @@
 
 package com.geewhiz.pacify;
 
-
-
-import java.io.File;
+import java.util.LinkedHashSet;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
@@ -30,35 +28,26 @@ import java.util.TreeSet;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.managers.PropertyResolveManager;
 import com.geewhiz.pacify.property.resolver.cmdresolver.CmdPropertyResolver;
 import com.geewhiz.pacify.resolver.PropertyResolver;
 import com.geewhiz.pacify.test.TestUtil;
 
-public class TestCmdResolver {
+public class TestCmdResolver extends TestBase {
 
     @Test
     public void testAll() {
-        File testResourceFolder = new File("src/test/resources/TestCmdResolver");
-        File targetResourceFolder = new File("target/test-resources/TestCmdResolver");
+        String testFolder = "TestCmdResolver";
 
-        TestUtil.removeOldTestResourcesAndCopyAgain(testResourceFolder, targetResourceFolder);
+        LinkedHashSet<Defect> defects = createPrepareValidateAndReplace(testFolder, createPropertyResolveManager());
 
-        File myPackagePath = new File(targetResourceFolder, "package");
-        File myExpectedResult = new File(targetResourceFolder, "expectedResult");
+        Assert.assertEquals("We shouldnt get any defects.", 0, defects.size());
 
-        Assert.assertTrue("TestBasePath [" + targetResourceFolder.getPath() + "] doesn't exist!", targetResourceFolder.exists());
-
-        PropertyResolveManager propertyResolveManager = getPropertyResolveManager();
-
-        Replacer replacer = new Replacer(propertyResolveManager);
-        replacer.setPackagePath(myPackagePath);
-        replacer.execute();
-
-        TestUtil.checkIfResultIsAsExpected(myPackagePath, myExpectedResult);
+        TestUtil.checkIfResultIsAsExpected(testFolder);
     }
 
-    private PropertyResolveManager getPropertyResolveManager() {
+    private PropertyResolveManager createPropertyResolveManager() {
         Properties properties = new Properties();
         properties.put("foobar3", "%{foobar1}:%{foobar2}");
         properties.put("foobar2", "6299äÖ9");

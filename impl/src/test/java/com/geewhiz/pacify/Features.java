@@ -20,10 +20,12 @@
 
 package com.geewhiz.pacify;
 
+import static org.hamcrest.Matchers.greaterThan;
+
 import java.io.File;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.Map;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -33,16 +35,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.managers.EntityManager;
-import com.geewhiz.pacify.managers.PropertyResolveManager;
-import com.geewhiz.pacify.property.resolver.HashMapPropertyResolver;
-import com.geewhiz.pacify.resolver.PropertyResolver;
-import com.geewhiz.pacify.test.TestUtil;
 import com.geewhiz.pacify.utils.LoggingUtils;
-
-import static org.hamcrest.Matchers.*;
-
-
 
 public class Features extends TestBase {
 
@@ -54,63 +47,20 @@ public class Features extends TestBase {
 
     @Test
     public void ModifyDateFeature() {
-        File testResourceFolder = new File("src/test/resources/2_Features/ModifyDate");
-        File targetResourceFolder = new File("target/test-resources/2_Features/ModifyDate");
+        String testFolder = "2_Features/ModifyDate";
 
-        LinkedHashSet<Defect> defects = createPrepareAndExecute(testResourceFolder, targetResourceFolder);
+        Map<String, String> propertiesToUseWhileResolving = new HashMap<String, String>();
+        propertiesToUseWhileResolving.put("foobar", "foobarValue");
+
+        LinkedHashSet<Defect> defects = createPrepareValidateAndReplace(testFolder, createPropertyResolveManager(propertiesToUseWhileResolving));
 
         Assert.assertEquals("We shouldnt get any defects.", 0, defects.size());
         Assert.assertEquals("Time of the readme.txt which is not replaced should be same.",
-                (new File(targetResourceFolder, "package/readme.txt")).lastModified(), (new File(testResourceFolder, "package/readme.txt")).lastModified());
+                (new File(getTargetResourceFolder(testFolder), "package/readme.txt")).lastModified(),
+                (new File(getTestResourceFolder(testFolder), "package/readme.txt")).lastModified());
 
-        Assert.assertThat("Timestamp", (new File(targetResourceFolder, "package/conf.txt")).lastModified(),
-                greaterThan((new File(testResourceFolder, "package/conf.txt")).lastModified()));
+        Assert.assertThat("Timestamp", (new File(getTargetResourceFolder(testFolder), "package/conf.txt")).lastModified(),
+                greaterThan((new File(getTestResourceFolder(testFolder), "package/conf.txt")).lastModified()));
     }
 
-    private LinkedHashSet<Defect> createPrepareAndExecute(File testResourceFolder, File targetResourceFolder) {
-        File packagePath = new File(targetResourceFolder, "package");
-
-        TestUtil.removeOldTestResourcesAndCopyAgain(testResourceFolder, targetResourceFolder);
-
-        PropertyResolveManager propertyResolveManager = createPropertyResolveManager();
-        EntityManager entityManager = new EntityManager(packagePath);
-
-        LinkedHashSet<Defect> defects = entityManager.initialize();
-
-        // execute validation
-        defects.addAll(createValidator(propertyResolveManager, packagePath).validateInternal(entityManager));
-
-        // execute replacer
-        defects.addAll(createReplacer(propertyResolveManager, packagePath).doReplacement(entityManager));
-
-        return defects;
-    }
-
-    private PropertyResolveManager createPropertyResolveManager() {
-        HashMapPropertyResolver hpr = new HashMapPropertyResolver();
-        hpr.addProperty("foobar", "foobarValue");
-
-        Set<PropertyResolver> propertyResolverList = new TreeSet<PropertyResolver>();
-        propertyResolverList.add(hpr);
-        PropertyResolveManager prm = new PropertyResolveManager(propertyResolverList);
-        return prm;
-    }
-
-    private Replacer createReplacer(PropertyResolveManager propertyResolveManager, File packagePath) {
-        Replacer replacer = new Replacer(propertyResolveManager);
-
-        replacer.setPackagePath(packagePath);
-
-        return replacer;
-    }
-
-    private Validator createValidator(PropertyResolveManager propertyResolveManager, File packagePath) {
-        Validator validator = new Validator(propertyResolveManager);
-
-        validator.setPackagePath(packagePath);
-        validator.enableMarkerFileChecks();
-        validator.enablePropertyResolveChecks();
-
-        return validator;
-    }
 }

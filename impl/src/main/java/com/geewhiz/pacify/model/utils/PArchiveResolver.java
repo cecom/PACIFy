@@ -41,6 +41,11 @@ public class PArchiveResolver {
     public List<PFile> resolve() {
         List<PFile> result = new ArrayList<PFile>();
 
+        if (!ArchiveUtils.isArchiveAndIsSupported(pArchive.getRelativePath())) {
+            // this is checked via an validator.
+            return result;
+        }
+
         pArchive.setType(ArchiveUtils.getArchiveType(pArchive));
 
         if (pArchive.getFile() == null) {

@@ -22,10 +22,9 @@ package com.geewhiz.pacify;
 
 import static org.hamcrest.CoreMatchers.startsWith;
 
-
-
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 
@@ -36,6 +35,7 @@ import org.apache.logging.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.geewhiz.pacify.checks.impl.CheckTargetFileExist;
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.FileDoesNotExistDefect;
 import com.geewhiz.pacify.managers.EntityManager;
@@ -47,36 +47,40 @@ public class TestCheckTargetFileExist extends TestBase {
 
     @Test
     public void checkPFileForCorrect() {
-        File testStartPath = new File("target/test-classes/checkTargetFileExistTest/correct/file/package");
+        String testFolder = "checkTargetFileExistTest/correct/file";
 
-        LinkedHashSet<Defect> defects = getDefects(new com.geewhiz.pacify.checks.impl.CheckTargetFileExist(), testStartPath);
+        LinkedHashSet<Defect> defects = createPrepareAndExecuteValidator(testFolder, createPropertyResolveManager(Collections.<String, String> emptyMap()),
+                new CheckTargetFileExist());
 
         Assert.assertEquals(0, defects.size());
     }
 
     @Test
     public void checkPFileForNotCorrect() {
-        File testStartPath = new File("target/test-classes/checkTargetFileExistTest/wrong/file/package");
+        String testFolder = "checkTargetFileExistTest/wrong/file";
 
-        LinkedHashSet<Defect> defects = getDefects(new com.geewhiz.pacify.checks.impl.CheckTargetFileExist(), testStartPath);
+        LinkedHashSet<Defect> defects = createPrepareAndExecuteValidator(testFolder, createPropertyResolveManager(Collections.<String, String> emptyMap()),
+                new CheckTargetFileExist());
 
         Assert.assertEquals(1, defects.size());
     }
 
     @Test
     public void checkArchiveCorrect() {
-        File testStartPath = new File("target/test-classes/checkTargetFileExistTest/correct/archive/package");
+        String testFolder = "checkTargetFileExistTest/correct/archive";
 
-        LinkedHashSet<Defect> defects = getDefects(new com.geewhiz.pacify.checks.impl.CheckTargetFileExist(), testStartPath);
+        LinkedHashSet<Defect> defects = createPrepareAndExecuteValidator(testFolder, createPropertyResolveManager(Collections.<String, String> emptyMap()),
+                new CheckTargetFileExist());
 
         Assert.assertEquals(0, defects.size());
     }
 
     @Test
     public void checkArchiveForNotCorrect() {
-        File testStartPath = new File("target/test-classes/checkTargetFileExistTest/wrong/archive/package");
+        String testFolder = "checkTargetFileExistTest/wrong/archive";
 
-        LinkedHashSet<Defect> defects = getDefects(new com.geewhiz.pacify.checks.impl.CheckTargetFileExist(), testStartPath);
+        LinkedHashSet<Defect> defects = createPrepareAndExecuteValidator(testFolder, createPropertyResolveManager(Collections.<String, String> emptyMap()),
+                new CheckTargetFileExist());
 
         Assert.assertEquals(1, defects.size());
     }
@@ -105,7 +109,6 @@ public class TestCheckTargetFileExist extends TestBase {
         Assert.assertEquals("foobar1", pFiles.get(0).getPProperties().get(0).getName());
         Assert.assertEquals("foobar1", pFiles.get(1).getPProperties().get(0).getName());
         Assert.assertEquals("foobar1", pFiles.get(2).getPProperties().get(0).getName());
-
     }
 
     @Test
@@ -137,9 +140,10 @@ public class TestCheckTargetFileExist extends TestBase {
 
     @Test
     public void checkRegExForNotCorrectPFile() {
-        File testStartPath = new File("target/test-classes/checkTargetFileExistTest/wrong/regExFile/package");
+        String testFolder = "checkTargetFileExistTest/wrong/regExFile";
 
-        LinkedHashSet<Defect> defects = getDefects(new com.geewhiz.pacify.checks.impl.CheckTargetFileExist(), testStartPath);
+        LinkedHashSet<Defect> defects = createPrepareAndExecuteValidator(testFolder, createPropertyResolveManager(Collections.<String, String> emptyMap()),
+                new CheckTargetFileExist());
 
         Assert.assertEquals(1, defects.size());
     }
@@ -149,9 +153,10 @@ public class TestCheckTargetFileExist extends TestBase {
         Logger logger = LogManager.getLogger(TestArchive.class.getName());
         LoggingUtils.setLogLevel(logger, Level.INFO);
 
-        File testStartPath = new File("target/test-classes/checkTargetFileExistTest/wrong/regExArchive/package");
+        String testFolder = "checkTargetFileExistTest/wrong/regExArchive";
 
-        LinkedHashSet<Defect> defects = getDefects(new com.geewhiz.pacify.checks.impl.CheckTargetFileExist(), testStartPath);
+        LinkedHashSet<Defect> defects = createPrepareAndExecuteValidator(testFolder, createPropertyResolveManager(Collections.<String, String> emptyMap()),
+                new CheckTargetFileExist());
 
         Assert.assertEquals("We should get a defect.", 1, defects.size());
         Assert.assertEquals("We expect FileDoesNotExistDefect", FileDoesNotExistDefect.class, defects.iterator().next().getClass());

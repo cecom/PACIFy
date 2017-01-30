@@ -35,12 +35,14 @@ import com.geewhiz.pacify.defect.DefectRuntimeException;
 public abstract class PArchiveBase {
 
     private PMarker  pMarker;
+
     private PArchive pParentArchive;
 
     /**
      * The physical representation. if this entry is an archive in an archive.
      */
     private File     file;
+
     private String   archiveType;
 
     public PMarker getPMarker() {
@@ -91,6 +93,18 @@ public abstract class PArchiveBase {
 
     public String getEndToken() {
         return getInternalEndToken() != null ? getInternalEndToken() : getPMarker().getEndToken();
+    }
+
+    public String getXPath() {
+        StringBuffer result = new StringBuffer();
+        if (getParentArchive() != null) {
+            result.append(getParentArchive().getXPath());
+        } else {
+            result.append(getPMarker().getXPath());
+        }
+        result.append("/Archive[@RelativePath='").append(getRelativePath()).append("']");
+
+        return result.toString();
     }
 
     public abstract String getInternalEndToken();

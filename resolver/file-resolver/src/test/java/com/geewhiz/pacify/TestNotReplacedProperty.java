@@ -20,57 +20,34 @@
 
 package com.geewhiz.pacify;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 
-
-import java.io.File;
-import java.net.URL;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.List;
 
+import org.hamcrest.core.IsInstanceOf;
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.managers.EntityManager;
-import com.geewhiz.pacify.managers.PropertyResolveManager;
-import com.geewhiz.pacify.property.resolver.fileresolver.FilePropertyResolver;
-import com.geewhiz.pacify.resolver.PropertyResolver;
-import com.geewhiz.pacify.test.TestUtil;
-import com.geewhiz.pacify.utils.FileUtils;
+import com.geewhiz.pacify.defect.NotReplacedPropertyDefect;
 
-public class TestNotReplacedProperty extends TestBase {
+public class TestNotReplacedProperty extends FileResolverTestBase {
 
     @Test
     public void checkForNotCorrect() {
-        File testResourceFolder = new File("src/test/resources/notReplacedPropertyTest");
-        File targetResourceFolder = new File("target/test-resources/notReplacedPropertyTest");
+        String testFolder = "notReplacedPropertyTest";
 
-        TestUtil.removeOldTestResourcesAndCopyAgain(testResourceFolder, targetResourceFolder);
+        LinkedHashSet<Defect> result = createPrepareValidateAndReplace(testFolder, createPropertyResolveManager(testFolder));
+        List<Defect> defects = new ArrayList<Defect>(result);
 
-        File myTestProperty = new File(targetResourceFolder, "properties/myProperties.properties");
-        URL myTestPropertyURL = FileUtils.getFileUrl(myTestProperty);
+        Assert.assertThat(defects, hasSize(1));
 
-        Assert.assertTrue("StartPath [" + targetResourceFolder.getPath() + "] doesn't exist!", targetResourceFolder.exists());
+        Assert.assertThat(defects.toArray()[0], IsInstanceOf.instanceOf(NotReplacedPropertyDefect.class));
 
-        PropertyResolveManager propertyResolveManager = createPropertyResolveManager(myTestPropertyURL);
-
-        Replacer replacer = new Replacer(propertyResolveManager);
-
-        EntityManager entityManager = new EntityManager(targetResourceFolder);
-        entityManager.initialize();
-
-        LinkedHashSet<Defect> defects = replacer.doReplacement(entityManager);
-
-        Assert.assertEquals(3, defects.size());
+        Assert.assertThat(((NotReplacedPropertyDefect) defects.iterator().next()).getPropertyId(), is("aReference"));
     }
 
-    private PropertyResolveManager createPropertyResolveManager(URL myTestPropertyURL) {
-        Set<PropertyResolver> resolverList = new TreeSet<PropertyResolver>();
-        FilePropertyResolver filePropertyResolver = new FilePropertyResolver(myTestPropertyURL);
-        resolverList.add(filePropertyResolver);
-
-        PropertyResolveManager propertyResolveManager = new PropertyResolveManager(resolverList);
-        return propertyResolveManager;
-    }
 }
