@@ -99,6 +99,23 @@ public class TestPreConfigure extends TestBase {
 
         TestUtil.checkIfResultIsAsExpected(testFolder);
     }
+    
+    @Test
+    public void checkArchiveWithRegEx2() {
+        String testFolder = "testPreConfigure/correct/archiveWithRegEx2";
+
+        Map<String, String> properties = new HashMap<String, String>();
+        properties.put("foo", "fooValue/%{wohooo}");
+        properties.put("foobar1", "foobar1Value/%{foo}");
+        properties.put("foobar2", "foobar2Value/%{foo}");
+        
+        LinkedHashSet<Defect> defects = createPrepareValidateAndReplace(testFolder, createPropertyResolveManager(properties));
+
+        Assert.assertThat(defects, IsEmptyCollection.emptyCollectionOf(Defect.class));
+
+        TestUtil.checkIfResultIsAsExpected(testFolder);
+    }    
+   
 
     @Test
     public void checkMissingProperty() {

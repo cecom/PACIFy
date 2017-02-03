@@ -151,15 +151,16 @@ public class PropertyResolveManager {
 
             String value = resolvePropertyWithCycleDetect(pReference, propertyCycleDetector, fileBeginToken, fileEndToken);
             if (value != null) {
+                pReference.setIsResolved(true);
                 filterSet.addFilter(reference, value);
                 continue;
             }
+            pReference.setIsResolved(false);
 
             if (!fileBeginToken.equals(filterSet.getBeginToken()) || !fileEndToken.equals(filterSet.getEndToken())) {
                 value = fileBeginToken + reference + fileEndToken;
                 filterSet.addFilter(reference, value);
             }
-
         }
 
         String valueWithToken = propertyResolver.getPropertyValue(pProperty.getName());

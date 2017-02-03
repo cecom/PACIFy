@@ -98,8 +98,11 @@ public class AdjustPMarkerPostProcessor implements PostProcessor {
 
     private void addAllReferences(XMLUtils xmlUtils, PProperty pProperty) {
         for (PProperty reference : pProperty.getReferencedProperties()) {
-            xmlUtils.addIfItDoesNotExist(reference);
             addAllReferences(xmlUtils, reference);
+
+            if (!reference.isResolved()) {
+                xmlUtils.addIfItDoesNotExist(reference);
+            }
         }
     }
 
