@@ -13,9 +13,11 @@
             <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
         </license>
     </licenses>
+
     <inceptionYear>2011</inceptionYear>
+
     <organization>
-        <name>Sven Oppermann</name>
+        <name>gee-whiz.de</name>
     </organization>
 
     <developers>
@@ -47,7 +49,6 @@
         <module>model</module>
         <module>commandline</module>
         <module>impl</module>
-        <!-- module>pacify-maven-plugin</module -->
         <module>resolver</module>
         <module>assembly</module>
     </modules>
@@ -68,27 +69,6 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
                 <version>3.4</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.maven</groupId>
-                <artifactId>maven-plugin-api</artifactId>
-                <version>3.2.5</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.maven</groupId>
-                <artifactId>maven-artifact</artifactId>
-                <version>3.2.5</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.maven</groupId>
-                <artifactId>maven-project</artifactId>
-                <version>3.0-alpha-2</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.maven.plugin-testing</groupId>
-                <artifactId>maven-plugin-testing-harness</artifactId>
-                <version>2.0</version>
-                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.jvnet.jaxb2_commons</groupId>

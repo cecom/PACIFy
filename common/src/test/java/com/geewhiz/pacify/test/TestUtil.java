@@ -67,7 +67,7 @@ public class TestUtil {
 
     public static void checkIfResultIsAsExpected(File actual, File expected, String encoding) {
         if (!actual.isDirectory()) {
-            throw new IllegalArgumentException("checkFoler [" + actual.getAbsolutePath() + "] not a folder");
+            throw new IllegalArgumentException("actualFolder [" + actual.getAbsolutePath() + "] not a folder");
         }
 
         if (!expected.isDirectory()) {

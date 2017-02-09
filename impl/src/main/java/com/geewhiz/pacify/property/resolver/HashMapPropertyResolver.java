@@ -34,6 +34,9 @@ public class HashMapPropertyResolver extends BasePropertyResolver {
     Map<String, String> properties          = new HashMap<String, String>();
     List<String>        protectedProperties = new ArrayList<String>();
 
+    private String      beginToken          = "%{";
+    private String      endToken            = "}";
+
     public HashMapPropertyResolver() {
     }
 
@@ -81,7 +84,7 @@ public class HashMapPropertyResolver extends BasePropertyResolver {
 
     @Override
     public String getPropertyResolverDescription() {
-        return HashMapPropertyResolver.class.getSimpleName();
+        return this.getClass().getSimpleName();
     }
 
     @Override
@@ -91,17 +94,25 @@ public class HashMapPropertyResolver extends BasePropertyResolver {
 
     @Override
     public String getBeginToken() {
-        return "%{";
+        return beginToken;
     }
 
     @Override
     public String getEndToken() {
-        return "}";
+        return endToken;
     }
 
     @Override
     public boolean isProtectedProperty(String key) {
         return protectedProperties.contains(key);
+    }
+
+    public void setBeginToken(String beginToken) {
+        this.beginToken = beginToken;
+    }
+
+    public void setEndToken(String endToken) {
+        this.endToken = endToken;
     }
 
 }
