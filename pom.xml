@@ -41,6 +41,7 @@
         <org.jvnet.jaxb2_commons_jaxb2-basics-annotate_version>1.0.1</org.jvnet.jaxb2_commons_jaxb2-basics-annotate_version>
         <com.google.inject_version>3.0</com.google.inject_version>
         <log4j_version>2.5</log4j_version>
+        <junit_version>4.12</junit_version>
     </properties>
 
     <modules>
@@ -118,7 +119,7 @@
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
-                <version>4.12</version>
+                <version>${junit_version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>

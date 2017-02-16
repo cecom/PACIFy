@@ -1,0 +1,3 @@
+- import funktionalität von marker files (archiven)
+- regular expression bei import
+- regular expression bei archiv
