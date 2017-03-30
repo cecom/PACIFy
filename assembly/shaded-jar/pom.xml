@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.geewhiz.pacify</groupId>
         <artifactId>pacify.assembly</artifactId>
-        <version>develop</version>
+        <version>1.4.0</version>
     </parent>
     <artifactId>pacify.assembly.shaded-jar</artifactId>
     <name>com.geewhiz.pacify.assembly.shaded-jar</name>
