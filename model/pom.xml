@@ -40,6 +40,7 @@
                         <arg>-XtoString</arg>
                         <arg>-Xannotate</arg>
                         <arg>-Xcopyable</arg>
+                        <arg>-Xinject-code</arg>
                     </args>
                 </configuration>
                 <executions>

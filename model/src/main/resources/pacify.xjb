@@ -1,7 +1,7 @@
 <jaxb:bindings xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
-    xmlns:inheritance="http://jaxb2-commons.dev.java.net/basic/inheritance" xmlns:annox="http://annox.dev.java.net" jaxb:extensionBindingPrefixes="inheritance xjc annox"
+    xmlns:inheritance="http://jaxb2-commons.dev.java.net/basic/inheritance" xmlns:annox="http://annox.dev.java.net" jaxb:extensionBindingPrefixes="inheritance xjc annox" xmlns:ci="http://jaxb.dev.java.net/plugin/code-injector"
     jaxb:version="2.1">
-    >
+   
     <jaxb:bindings schemaLocation="pacify.xsd" node="/xsd:schema">
         
         <jaxb:globalBindings>
@@ -30,7 +30,16 @@
 
         <jaxb:bindings node="xsd:complexType[@name='PFile']">
             <inheritance:extends>PFileBase</inheritance:extends>
+            <inheritance:implements><![CDATA[java.lang.Comparable<PFile>]]></inheritance:implements>
+            <ci:code>  
+	            <![CDATA[         
+					public int compareTo(PFile other) {
+					    return getRelativePath().compareTo(other.getRelativePath());
+					}
+				]]>
+            </ci:code>
         </jaxb:bindings>
+        
         <jaxb:bindings node="xsd:complexType[@name='PFile']/*/xsd:element[@name='Property']">
             <jaxb:property name="PProperties" />
         </jaxb:bindings>
