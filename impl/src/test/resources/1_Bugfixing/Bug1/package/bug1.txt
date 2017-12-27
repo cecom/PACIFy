@@ -1,0 +1,3 @@
+config1=http://%{foobar}/index.html
+config2=foobar
+config3=AValueWithA }

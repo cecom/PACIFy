@@ -1,3 +1,23 @@
+/*-
+ * ========================LICENSE_START=================================
+ * com.geewhiz.pacify.commandline
+ * %%
+ * Copyright (C) 2011 - 2017 Sven Oppermann
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * =========================LICENSE_END==================================
+ */
+
 package com.geewhiz.pacify.commandline;
 
 import java.util.LinkedHashSet;
@@ -10,43 +30,26 @@ import org.apache.logging.log4j.Logger;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 import com.geewhiz.pacify.CreatePropertyFile;
+import com.geewhiz.pacify.PreConfigure;
 import com.geewhiz.pacify.Replacer;
 import com.geewhiz.pacify.ShowUsedProperties;
 import com.geewhiz.pacify.Validator;
 import com.geewhiz.pacify.commandline.commands.BasePropertyResolverCommand;
 import com.geewhiz.pacify.commandline.commands.CreatePropertyFileCommand;
 import com.geewhiz.pacify.commandline.commands.MainCommand;
+import com.geewhiz.pacify.commandline.commands.PreConfigureCommand;
 import com.geewhiz.pacify.commandline.commands.ReplacerCommand;
 import com.geewhiz.pacify.commandline.commands.ShowUsedPropertiesCommand;
 import com.geewhiz.pacify.commandline.commands.ValidateCommand;
 import com.geewhiz.pacify.commandline.commands.ValidateMarkerFilesCommand;
 import com.geewhiz.pacify.defect.Defect;
-import com.geewhiz.pacify.exceptions.DefectRuntimeException;
+import com.geewhiz.pacify.defect.DefectRuntimeException;
 import com.geewhiz.pacify.resolver.PropertyResolverModule;
 import com.geewhiz.pacify.utils.DefectUtils;
 import com.geewhiz.pacify.utils.LoggingUtils;
 import com.geewhiz.pacify.utils.Utils;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements. See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership. The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
 
 public class PacifyViaCommandline {
 
@@ -60,7 +63,14 @@ public class PacifyViaCommandline {
 
     private Logger logger = LogManager.getLogger(PacifyViaCommandline.class.getName());
 
-    protected int mainInternal(String[] args) {
+    /**
+     * without system.exit(). If you call it from your java app.
+     * 
+     * @param args
+     *            commandline params.
+     * @return
+     */
+    public int mainInternal(String[] args) {
         int resultValue = execute(args);
         logger.debug("Exiting with exit code " + resultValue);
         return resultValue;
@@ -73,6 +83,7 @@ public class PacifyViaCommandline {
         ValidateCommand validateCommand = new ValidateCommand();
         ValidateMarkerFilesCommand validateMarkerFilesCommand = new ValidateMarkerFilesCommand();
         ShowUsedPropertiesCommand showUsedPropertiesCommand = new ShowUsedPropertiesCommand();
+        PreConfigureCommand preConfigureCommand = new PreConfigureCommand();
 
         JCommander jc = new JCommander(mainCommand);
         jc.addCommand("replace", replacerCommand);
@@ -80,6 +91,7 @@ public class PacifyViaCommandline {
         jc.addCommand("validate", validateCommand);
         jc.addCommand("validateMarkerFiles", validateMarkerFilesCommand);
         jc.addCommand("showUsedProperties", showUsedPropertiesCommand);
+        jc.addCommand("preConfigure", preConfigureCommand);
 
         try {
             jc.parse(args);
@@ -107,6 +119,8 @@ public class PacifyViaCommandline {
                 return executeValidateMarkerFiles(validateMarkerFilesCommand);
             } else if ("showUsedProperties".equals(jc.getParsedCommand())) {
                 return executeShowUsedProperties(showUsedPropertiesCommand);
+            } else if ("preConfigure".equals(jc.getParsedCommand())) {
+                return executePreConfigure(preConfigureCommand);
             } else {
                 jc.usage();
                 if (mainCommand.isHelp()) {
@@ -165,6 +179,16 @@ public class PacifyViaCommandline {
         ShowUsedProperties showUsedProperties = new ShowUsedProperties();
         showUsedPropertiesCommand.configure(showUsedProperties);
         showUsedProperties.execute();
+
+        return 0;
+    }
+
+    private int executePreConfigure(PreConfigureCommand preConfigureCommand) {
+        Injector injector = getInjector(preConfigureCommand);
+
+        PreConfigure preConfigure = injector.getInstance(PreConfigure.class);
+        preConfigureCommand.configure(preConfigure);
+        preConfigure.execute();
 
         return 0;
     }

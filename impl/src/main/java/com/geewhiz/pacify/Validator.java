@@ -1,3 +1,23 @@
+/*-
+ * ========================LICENSE_START=================================
+ * com.geewhiz.pacify.impl
+ * %%
+ * Copyright (C) 2011 - 2017 Sven Oppermann
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * =========================LICENSE_END==================================
+ */
+
 package com.geewhiz.pacify;
 
 import java.io.File;
@@ -27,25 +47,6 @@ import com.geewhiz.pacify.utils.DefectUtils;
 import com.geewhiz.pacify.utils.Utils;
 import com.google.inject.Inject;
 
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements. See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership. The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
-
 public class Validator {
 
     private Logger                 logger        = LogManager.getLogger(Validator.class.getName());
@@ -55,6 +56,8 @@ public class Validator {
     List<PMarkerCheck>             pMarkerChecks = new ArrayList<PMarkerCheck>();
 
     private PropertyResolveManager propertyResolveManager;
+
+    private EntityManager          entityManager;
 
     @Inject
     public Validator(PropertyResolveManager propertyResolveManager) {
@@ -101,37 +104,52 @@ public class Validator {
     }
 
     public void execute() {
-        EntityManager entityManager = new EntityManager(getPackagePath());
-
         logger.info("== Executing Validator [Version={}]", Utils.getJarVersion());
+        logger.info("   [PackagePath={}]", getPackagePath().getAbsolutePath());
 
-        logger.info("== Found [{}] pacify marker files", entityManager.getPMarkerCount());
+        DefectUtils.abortIfDefectExists(getEntityManager().initialize());
+
+        logger.info("== Found [{}] pacify marker files", getEntityManager().getPMarkerCount());
         logger.info("== Validating ...");
 
-        LinkedHashSet<Defect> defects = validateInternal(entityManager);
-        DefectUtils.abortIfDefectExists(defects);
+        DefectUtils.abortIfDefectExists(validateInternal());
 
         logger.info("== Successfully finished");
     }
 
-    public LinkedHashSet<Defect> validateInternal(EntityManager entityManager) {
+    public LinkedHashSet<Defect> validateInternal() {
         LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
 
-        defects.addAll(entityManager.initialize());
+        defects.addAll(getEntityManager().initialize());
 
         for (Check check : checks) {
             logger.debug("     Check [{}]", check.getClass().getName());
             defects.addAll(check.checkForErrors());
         }
 
-        for (PMarker pMarker : entityManager.getPMarkers()) {
+        for (PMarker pMarker : getEntityManager().getPMarkers()) {
             logger.info("   Processing Marker File [{}]", pMarker.getFile().getAbsolutePath());
             for (PMarkerCheck pMarkerCheck : pMarkerChecks) {
                 logger.debug("     Check [{}]", pMarkerCheck.getClass().getName());
-                defects.addAll(pMarkerCheck.checkForErrors(pMarker));
+                defects.addAll(pMarkerCheck.checkForErrors(getEntityManager(), pMarker));
             }
         }
         return defects;
+    }
+
+    public void setEntityManager(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
+
+    public EntityManager getEntityManager() {
+        if (entityManager == null) {
+            entityManager = createEntityManager();
+        }
+        return entityManager;
+    }
+
+    protected EntityManager createEntityManager() {
+        return new EntityManager(getPackagePath());
     }
 
 }

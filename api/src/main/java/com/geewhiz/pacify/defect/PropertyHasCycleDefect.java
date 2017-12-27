@@ -1,26 +1,28 @@
-package com.geewhiz.pacify.defect;
-
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements. See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership. The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
+/*-
+ * ========================LICENSE_START=================================
+ * com.geewhiz.pacify.api
+ * %%
+ * Copyright (C) 2011 - 2017 Sven Oppermann
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  * 
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * =========================LICENSE_END==================================
  */
 
-import com.geewhiz.pacify.model.PArchive;
+package com.geewhiz.pacify.defect;
+
+import com.geewhiz.pacify.defect.DefectException;
 import com.geewhiz.pacify.model.PMarker;
+import com.geewhiz.pacify.model.PProperty;
 
 public class PropertyHasCycleDefect extends DefectException {
 
@@ -35,16 +37,15 @@ public class PropertyHasCycleDefect extends DefectException {
         this.cycle = cycle;
     }
 
-    public PropertyHasCycleDefect(PMarker pMarker, PArchive pArchive, String property, String cycle) {
-        super(pMarker, pArchive);
+    public PropertyHasCycleDefect(PProperty pProperty, String property, String cycle) {
+        super(pProperty);
         this.property = property;
         this.cycle = cycle;
     }
 
     @Override
     public String getDefectMessage() {
-        return super.getDefectMessage() +
-                String.format("\n\t[Property=%s]\n\t[cycle=%s]", getProperty(), getCycle());
+        return super.getDefectMessage() + String.format("\n\t[Property=%s]\n\t[cycle=%s]", getProperty(), getCycle());
     }
 
     public String getCycle() {

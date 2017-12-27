@@ -1,23 +1,24 @@
-package com.geewhiz.pacify.utils;
-
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements. See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership. The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
+/*-
+ * ========================LICENSE_START=================================
+ * com.geewhiz.pacify.common
+ * %%
+ * Copyright (C) 2011 - 2017 Sven Oppermann
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  * 
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * =========================LICENSE_END==================================
  */
+
+package com.geewhiz.pacify.utils;
 
 import java.io.IOException;
 import java.net.JarURLConnection;
@@ -31,9 +32,7 @@ import org.apache.logging.log4j.Logger;
 import com.geewhiz.pacify.defect.DefectException;
 import com.geewhiz.pacify.defect.FilterNotFoundDefect;
 import com.geewhiz.pacify.filter.PacifyFilter;
-import com.geewhiz.pacify.model.PArchive;
 import com.geewhiz.pacify.model.PFile;
-import com.geewhiz.pacify.model.PMarker;
 
 public class Utils {
 
@@ -58,20 +57,15 @@ public class Utils {
         return attr.getValue("Implementation-Version");
     }
 
-    public static PacifyFilter getPacifyFilter(PMarker pMarker, PFile pFile) throws DefectException {
-        return getPacifyFilter(pMarker, null, pFile);
-    }
-
-    public static PacifyFilter getPacifyFilter(PMarker pMarker, PArchive pArchive, PFile pFile) throws DefectException {
+    public static PacifyFilter getPacifyFilter(PFile pFile) throws DefectException {
         String filterClass = pFile.getFilterClass();
 
         try {
-            PacifyFilter filter = (PacifyFilter) Class.forName(filterClass).getConstructor(PMarker.class, PArchive.class, PFile.class)
-                    .newInstance(pMarker, pArchive, pFile);
+            PacifyFilter filter = (PacifyFilter) Class.forName(filterClass).newInstance();
             return filter;
         } catch (Exception e) {
             logger.debug("Error while instantiate filter class [" + filterClass + "]", e);
-            throw new FilterNotFoundDefect(pMarker, pArchive, pFile);
+            throw new FilterNotFoundDefect(pFile);
         }
 
     }

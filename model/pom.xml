@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.geewhiz.pacify</groupId>
         <artifactId>pacify</artifactId>
-        <version>1.3.0</version>
+        <version>1.4.0</version>
     </parent>
     <artifactId>pacify.model</artifactId>
     <name>com.geewhiz.pacify.model</name>
@@ -18,6 +18,10 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-compress</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
         </dependency>
     </dependencies>
 
@@ -35,6 +39,8 @@
                         <arg>-XhashCode</arg>
                         <arg>-XtoString</arg>
                         <arg>-Xannotate</arg>
+                        <arg>-Xcopyable</arg>
+                        <arg>-Xinject-code</arg>
                     </args>
                 </configuration>
                 <executions>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Pacify xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="..\..\..\..\..\..\..\..\model\src\main\resources\pacify.xsd">
+    <Archive RelativePath="some.ear">
+        <Archive RelativePath="archive1.jar">
+            <File RelativePath="archive1_conf1.txt">
+                <Property Name="wohooo"/>
+            </File>
+            <File RelativePath="subfolder/archive1_conf2.txt">
+                <Property Name="wohooo"/>
+            </File>
+        </Archive>
+        <Archive RelativePath="subfolder/archive2.jar">
+            <File RelativePath="archive2_conf1.txt">
+                <Property Name="wohooo"/>
+            </File>
+            <File RelativePath="subfolder/archive2_conf2.txt">
+                <Property Name="wohooo"/>
+            </File>
+        </Archive>
+    </Archive>
+</Pacify>

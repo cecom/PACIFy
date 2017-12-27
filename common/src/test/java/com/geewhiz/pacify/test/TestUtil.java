@@ -1,26 +1,31 @@
-package com.geewhiz.pacify.test;
-
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements. See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership. The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
+/*-
+ * ========================LICENSE_START=================================
+ * com.geewhiz.pacify.common
+ * %%
+ * Copyright (C) 2011 - 2017 Sven Oppermann
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  * 
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * =========================LICENSE_END==================================
  */
 
+package com.geewhiz.pacify.test;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -28,10 +33,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-
+import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.ArchiveException;
+import org.apache.commons.compress.archivers.ArchiveInputStream;
+import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -40,12 +45,21 @@ import org.apache.logging.log4j.core.config.Configuration;
 import org.junit.Assert;
 import org.junit.Ignore;
 
-import com.geewhiz.pacify.model.ObjectFactory;
-import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.model.utils.DirFilter;
+import com.geewhiz.pacify.utils.ArchiveUtils;
 
 @Ignore
 public class TestUtil {
+
+    public static void checkIfResultIsAsExpected(String testFolder) {
+        File targetResourceFolder = new File("target/test-resources/", testFolder);
+
+        File actual = new File(targetResourceFolder, "package");
+        File expected = new File(targetResourceFolder, "expectedResult");
+
+        checkIfResultIsAsExpected(actual, expected);
+
+    }
 
     public static void checkIfResultIsAsExpected(File actual, File expected) {
         checkIfResultIsAsExpected(actual, expected, "UTF-8");
@@ -53,7 +67,7 @@ public class TestUtil {
 
     public static void checkIfResultIsAsExpected(File actual, File expected, String encoding) {
         if (!actual.isDirectory()) {
-            throw new IllegalArgumentException("checkFoler [" + actual.getAbsolutePath() + "] not a folder");
+            throw new IllegalArgumentException("actualFolder [" + actual.getAbsolutePath() + "] not a folder");
         }
 
         if (!expected.isDirectory()) {
@@ -68,12 +82,18 @@ public class TestUtil {
 
             File filteredFile = new File(actual, relativePath);
             try {
+                Assert.assertEquals("File [" + expectedFile.getPath() + "] does not exist.", expectedFile.exists(), filteredFile.exists());
 
-                Assert.assertEquals("Both files exists.", expectedFile.exists(), filteredFile.exists());
-                Assert.assertEquals("File [" + filteredFile.getPath() + "] doesnt look like [" + expectedFile.getPath() + "].\n",
-                        FileUtils.readFileToString(expectedFile, encoding), FileUtils.readFileToString(filteredFile, encoding));
+                if (ArchiveUtils.isArchiveAndIsSupported(expectedFile.getName())) {
+                    checkArchiveIsAsExpected(filteredFile, expectedFile);
+                } else {
+                    Assert.assertEquals("File [" + filteredFile.getPath() + "] doesnt look like [" + expectedFile.getPath() + "].\n",
+                            FileUtils.readFileToString(expectedFile, encoding), FileUtils.readFileToString(filteredFile, encoding));
+                }
 
             } catch (IOException e) {
+                throw new RuntimeException(e);
+            } catch (ArchiveException e) {
                 throw new RuntimeException(e);
             }
         }
@@ -85,7 +105,7 @@ public class TestUtil {
             String relativePath = actualFile.getPath().substring(index);
 
             File expectedFile = new File(expected, relativePath);
-            Assert.assertEquals("Both files exists.", expectedFile.exists(), actualFile.exists());
+            Assert.assertEquals("There is a file which is not expected [" + actualFile.getPath() + "].", expectedFile.exists(), actualFile.exists());
         }
 
     }
@@ -121,7 +141,7 @@ public class TestUtil {
         }
 
         try {
-            FileUtils.copyDirectory(fromFolder, toFolder);
+            FileUtils.copyDirectory(fromFolder, toFolder, true);
         } catch (IOException e) {
             throw new RuntimeException("error while copy test-resources", e);
         }
@@ -141,12 +161,122 @@ public class TestUtil {
         return result;
     }
 
-    public static PMarker readPMarker(File file) throws JAXBException {
-        JAXBContext jaxbContext = JAXBContext.newInstance(ObjectFactory.class);
-        Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-        PMarker pMarker = (PMarker) jaxbUnmarshaller.unmarshal(file);
-        pMarker.setFile(file);
-
-        return pMarker;
+    public static void checkArchiveIsAsExpected(File replacedArchive, File expectedArchive) throws ArchiveException, IOException {
+        archiveDoesNotContainAdditionEntries(replacedArchive, expectedArchive);
+        archiveContainsEntries(replacedArchive, expectedArchive);
     }
+
+    private static void archiveContainsEntries(File replacedArchive, File expectedArchive) throws ArchiveException, IOException {
+        ArchiveStreamFactory factory = new ArchiveStreamFactory();
+
+        FileInputStream expectedIS = new FileInputStream(expectedArchive);
+        ArchiveInputStream expectedAIS = factory.createArchiveInputStream(new BufferedInputStream(expectedIS));
+        ArchiveEntry expectedEntry = null;
+        while ((expectedEntry = expectedAIS.getNextEntry()) != null) {
+            FileInputStream replacedIS = new FileInputStream(replacedArchive);
+            ArchiveInputStream replacedAIS = factory.createArchiveInputStream(new BufferedInputStream(replacedIS));
+
+            ArchiveEntry replacedEntry = null;
+            boolean entryFound = false;
+            while ((replacedEntry = replacedAIS.getNextEntry()) != null) {
+                Assert.assertNotNull("We expect an entry.", replacedEntry);
+                if (!expectedEntry.getName().equals(replacedEntry.getName())) {
+                    continue;
+                }
+                entryFound = true;
+                if (expectedEntry.isDirectory()) {
+                    Assert.assertTrue("we expect a directory", replacedEntry.isDirectory());
+                    break;
+                }
+
+                if (ArchiveUtils.isArchiveAndIsSupported(expectedEntry.getName())) {
+                    Assert.assertTrue("we expect a archive", ArchiveUtils.isArchiveAndIsSupported(replacedEntry.getName()));
+
+                    File replacedChildArchive = ArchiveUtils.extractFile(replacedArchive, ArchiveUtils.getArchiveType(replacedArchive),
+                            replacedEntry.getName());
+                    File expectedChildArchive = ArchiveUtils.extractFile(expectedArchive, ArchiveUtils.getArchiveType(expectedArchive),
+                            expectedEntry.getName());
+
+                    archiveContainsEntries(replacedChildArchive, expectedChildArchive);
+
+                    replacedChildArchive.delete();
+                    expectedChildArchive.delete();
+
+                    break;
+                }
+
+                ByteArrayOutputStream expectedContent = readContent(expectedAIS);
+                ByteArrayOutputStream replacedContent = readContent(replacedAIS);
+
+                Assert.assertEquals("Content should be same of entry " + expectedEntry.getName(), expectedContent.toString("UTF-8"),
+                        replacedContent.toString("UTF-8"));
+                break;
+            }
+
+            replacedIS.close();
+            Assert.assertTrue("Entry [" + expectedEntry.getName() + "] in the result archive expected.", entryFound);
+        }
+
+        expectedIS.close();
+    }
+
+    private static void archiveDoesNotContainAdditionEntries(File replacedArchive, File expectedArchive) throws ArchiveException, IOException {
+        ArchiveStreamFactory factory = new ArchiveStreamFactory();
+
+        FileInputStream replacedIS = new FileInputStream(replacedArchive);
+        ArchiveInputStream replacedAIS = factory.createArchiveInputStream(new BufferedInputStream(replacedIS));
+        ArchiveEntry replacedEntry = null;
+        while ((replacedEntry = replacedAIS.getNextEntry()) != null) {
+            FileInputStream expectedIS = new FileInputStream(expectedArchive);
+            ArchiveInputStream expectedAIS = factory.createArchiveInputStream(new BufferedInputStream(expectedIS));
+
+            ArchiveEntry expectedEntry = null;
+            boolean entryFound = false;
+            while ((expectedEntry = expectedAIS.getNextEntry()) != null) {
+                Assert.assertNotNull("We expect an entry.", expectedEntry);
+                if (!replacedEntry.getName().equals(expectedEntry.getName())) {
+                    continue;
+                }
+                entryFound = true;
+
+                if (ArchiveUtils.isArchiveAndIsSupported(expectedEntry.getName())) {
+                    Assert.assertTrue("we expect a archive", ArchiveUtils.isArchiveAndIsSupported(replacedEntry.getName()));
+
+                    File replacedChildArchive = ArchiveUtils.extractFile(replacedArchive, ArchiveUtils.getArchiveType(replacedArchive),
+                            replacedEntry.getName());
+                    File expectedChildArchive = ArchiveUtils.extractFile(expectedArchive, ArchiveUtils.getArchiveType(expectedArchive),
+                            expectedEntry.getName());
+
+                    archiveDoesNotContainAdditionEntries(replacedChildArchive, expectedChildArchive);
+
+                    replacedChildArchive.delete();
+                    expectedChildArchive.delete();
+                }
+
+                break;
+            }
+
+            expectedIS.close();
+            Assert.assertTrue("Entry [" + replacedEntry.getName() + "] is not in the expected archive. This file shouldn't exist.", entryFound);
+        }
+
+        replacedIS.close();
+
+    }
+
+    private static ByteArrayOutputStream readContent(ArchiveInputStream ais) throws IOException {
+        byte[] content = new byte[2048];
+        ByteArrayOutputStream result = new ByteArrayOutputStream();
+        BufferedOutputStream bos = new BufferedOutputStream(result);
+
+        int len;
+        while ((len = ais.read(content)) != -1) {
+            bos.write(content, 0, len);
+        }
+        bos.close();
+        content = null;
+
+        return result;
+    }
+
 }

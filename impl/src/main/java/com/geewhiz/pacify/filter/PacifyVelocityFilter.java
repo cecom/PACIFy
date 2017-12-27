@@ -1,3 +1,23 @@
+/*-
+ * ========================LICENSE_START=================================
+ * com.geewhiz.pacify.impl
+ * %%
+ * Copyright (C) 2011 - 2017 Sven Oppermann
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * =========================LICENSE_END==================================
+ */
+
 package com.geewhiz.pacify.filter;
 
 import java.io.File;
@@ -16,78 +36,46 @@ import org.apache.velocity.context.Context;
 
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.WrongTokenDefinedDefect;
-import com.geewhiz.pacify.model.PArchive;
 import com.geewhiz.pacify.model.PFile;
-import com.geewhiz.pacify.model.PMarker;
 import com.geewhiz.pacify.utils.FileUtils;
-
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements. See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership. The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
 
 public class PacifyVelocityFilter implements PacifyFilter {
 
     private static final String BEGIN_TOKEN = "${";
     private static final String END_TOKEN   = "}";
 
-    private PMarker             pMarker;
-    private PArchive            pArchive;
-    private PFile               pFile;
-
-    public PacifyVelocityFilter(PMarker pMarker, PArchive pArchive, PFile pFile) {
-        this.pMarker = pMarker;
-        this.pArchive = pArchive;
-        this.pFile = pFile;
-    }
-
     @Override
-    public LinkedHashSet<Defect> filter(Map<String, String> propertyValues, String beginToken, String endToken, File fileToFilter, String encoding) {
+    public LinkedHashSet<Defect> filter(PFile pFile, Map<String, String> propertyValues) {
         LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
 
-        if (!BEGIN_TOKEN.equals(beginToken)) {
-            defects.add(new WrongTokenDefinedDefect(pMarker, pArchive, pFile,
-                    "If you use the PacifyVelocityFilter class, only \"" + BEGIN_TOKEN + "\" is allowed as start token."));
+        if (!BEGIN_TOKEN.equals(pFile.getBeginToken())) {
+            defects.add(
+                    new WrongTokenDefinedDefect(pFile, "If you use the PacifyVelocityFilter class, only \"" + BEGIN_TOKEN + "\" is allowed as start token."));
         }
 
-        if (!END_TOKEN.equals(pMarker.getEndTokenFor(pFile))) {
-            defects.add(new WrongTokenDefinedDefect(pMarker, pArchive, pFile,
-                    "If you use the PacifyVelocityFilter class, only \"" + END_TOKEN + "\" is allowed as end token."));
+        if (!END_TOKEN.equals(pFile.getEndToken())) {
+            defects.add(new WrongTokenDefinedDefect(pFile, "If you use the PacifyVelocityFilter class, only \"" + END_TOKEN + "\" is allowed as end token."));
         }
 
         if (!defects.isEmpty()) {
             return defects;
         }
 
-        File tmpFile = FileUtils.createTempFile(fileToFilter.getParentFile(), fileToFilter.getName());
+        File fileToFilter = pFile.getFile();
+        File tmpFile = FileUtils.createEmptyFileWithSamePermissions(fileToFilter);
 
-        Template template = getTemplate(fileToFilter, encoding);
+        Template template = getTemplate(fileToFilter, pFile.getEncoding());
         Context context = getContext(propertyValues, fileToFilter);
 
         try {
-            FileWriterWithEncoding fw = new FileWriterWithEncoding(tmpFile, encoding);
+            FileWriterWithEncoding fw = new FileWriterWithEncoding(tmpFile, pFile.getEncoding());
             template.merge(context, fw);
             fw.close();
             if (!fileToFilter.delete()) {
                 throw new RuntimeException("Couldn't delete file [" + fileToFilter.getPath() + "]... Aborting!");
             }
             if (!tmpFile.renameTo(fileToFilter)) {
-                throw new RuntimeException("Couldn't rename filtered file from [" + tmpFile.getPath() + "] to ["
-                        + fileToFilter.getPath() + "]... Aborting!");
+                throw new RuntimeException("Couldn't rename filtered file from [" + tmpFile.getPath() + "] to [" + fileToFilter.getPath() + "]... Aborting!");
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -142,6 +130,18 @@ public class PacifyVelocityFilter implements PacifyFilter {
         }
 
         lastNode.put(split[split.length - 1], propertyValue);
+    }
+
+    @Override
+    public LinkedHashSet<Defect> checkForNotReplacedTokens(PFile pFile) {
+        // TODO: need to implement for velocity
+        return new LinkedHashSet<Defect>();
+    }
+
+    @Override
+    public LinkedHashSet<Defect> checkPlaceHolderExists(PFile pFile) {
+        // TODO: need to implement for velocity
+        return new LinkedHashSet<Defect>();
     }
 
 }

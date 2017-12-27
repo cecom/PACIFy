@@ -1,3 +1,23 @@
+/*-
+ * ========================LICENSE_START=================================
+ * com.geewhiz.pacify.impl
+ * %%
+ * Copyright (C) 2011 - 2017 Sven Oppermann
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * =========================LICENSE_END==================================
+ */
+
 package com.geewhiz.pacify.managers;
 
 import java.util.ArrayList;
@@ -15,29 +35,9 @@ import org.apache.tools.ant.types.FilterSet;
 
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.exceptions.CycleDetectRuntimeException;
-import com.geewhiz.pacify.exceptions.PropertyNotFoundRuntimeException;
 import com.geewhiz.pacify.model.PProperty;
 import com.geewhiz.pacify.resolver.PropertyResolver;
 import com.google.inject.Inject;
-
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements. See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership. The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
 
 public class PropertyResolveManager {
 
@@ -74,29 +74,31 @@ public class PropertyResolveManager {
         return propertyKeys;
     }
 
-    public String getPropertyValue(PProperty pProperty) {
-        return getPropertyValue(pProperty.getName(), pProperty.isConvertBackslashToSlash());
-    }
-
-    public String getPropertyValue(String propertyKey) {
-        return getPropertyValue(propertyKey, false);
-    }
-
-    public String getPropertyValue(String propertyKey, boolean convertBackslashToSlash) {
-        String value = getPropertyValue(propertyKey, new ArrayList<String>());
-        boolean isProtected = isProtectedProperty(propertyKey);
-
-        if (!convertBackslashToSlash) {
-            logger.debug("             Resolved property [{}] to value [{}]", propertyKey, isProtected ? "**********" : value);
-            return value;
+    public void resolveProperty(PProperty pProperty) {
+        if (pProperty.isResolved()) {
+            return;
         }
 
-        String convertedString = value.replace('\\', '/');
-        logger.debug("             Resolved property [{}] with original value [{}] to [{}] (backslash convertion)", propertyKey, isProtected ? "**********"
-                : value,
-                isProtected ? "**********" : convertedString);
+        String value = resolvePropertyWithCycleDetect(pProperty, new ArrayList<String>(), pProperty.getBeginToken(), pProperty.getEndToken());
 
-        return convertedString;
+        if (value == null) {
+            logger.debug("value for [{}] could not be resolved.", pProperty.getName());
+            return;
+        }
+
+        pProperty.setValue(value);
+        pProperty.setIsResolved(true);
+
+        boolean isProtected = isProtectedProperty(pProperty.getName());
+
+        if (!pProperty.isConvertBackslashToSlash()) {
+            logger.debug("             Resolved property [{}] to value [{}]", pProperty.getName(), isProtected ? "**********" : pProperty.getValue());
+        } else {
+            String convertedString = pProperty.getValue().replace('\\', '/');
+            logger.debug("             Resolved property [{}] with original value [{}] to [{}] (backslash convertion)", pProperty.getName(),
+                    isProtected ? "**********" : pProperty.getValue(), isProtected ? "**********" : convertedString);
+            pProperty.setValue(convertedString);
+        }
     }
 
     public boolean isProtectedProperty(String property) {
@@ -115,42 +117,60 @@ public class PropertyResolveManager {
             return isProtected;
         }
 
-        throw new RuntimeException("We should never reach this.");
+        return false;
     }
 
-    private String getPropertyValue(String property, List<String> propertyCycleDetector) {
+    private String resolvePropertyWithCycleDetect(PProperty pProperty, List<String> propertyCycleDetector, String fileBeginToken, String fileEndToken) {
         for (PropertyResolver propertyResolver : propertyResolverList) {
-            if (!propertyResolver.containsProperty(property)) {
+            if (!propertyResolver.containsProperty(pProperty.getName())) {
                 continue;
             }
 
-            if (propertyResolver.propertyUsesToken(property)) {
-                return replaceTokens(propertyResolver, property, propertyCycleDetector);
+            if (propertyResolver.propertyUsesToken(pProperty.getName())) {
+                return replaceTokens(propertyResolver, pProperty, propertyCycleDetector, fileBeginToken, fileEndToken);
             }
-            return propertyResolver.getPropertyValue(property);
+            return propertyResolver.getPropertyValue(pProperty.getName());
         }
 
-        if (propertyCycleDetector.isEmpty()) {
-            throw new PropertyNotFoundRuntimeException(property);
-        }
-        throw new CycleDetectRuntimeException(property, StringUtils.join(propertyCycleDetector, "->") + "->" + property);
+        return null;
     }
 
-    private String replaceTokens(PropertyResolver propertyResolver, String property, List<String> propertyCycleDetector) {
-        if (propertyCycleDetector.contains(property)) {
-            String message = StringUtils.join(propertyCycleDetector, "->") + "->" + property;
-            throw new CycleDetectRuntimeException(property, message);
+    private String replaceTokens(PropertyResolver propertyResolver, PProperty pProperty, List<String> propertyCycleDetector, String fileBeginToken,
+            String fileEndToken) {
+        if (propertyCycleDetector.contains(pProperty.getName())) {
+            String message = StringUtils.join(propertyCycleDetector, "->") + "->" + pProperty.getName();
+            throw new CycleDetectRuntimeException(pProperty.getName(), message);
         }
 
-        propertyCycleDetector.add(property);
+        propertyCycleDetector.add(pProperty.getName());
 
         FilterSet filterSet = propertyResolver.createFilterSet();
-        for (String reference : propertyResolver.getReferencedProperties(property)) {
-            filterSet.addFilter(reference, getPropertyValue(reference, propertyCycleDetector));
+        for (String reference : propertyResolver.getReferencedProperties(pProperty.getName())) {
+            PProperty pReference = createReference(pProperty, reference);
+            pProperty.addAReference(pReference);
+
+            String value = resolvePropertyWithCycleDetect(pReference, propertyCycleDetector, fileBeginToken, fileEndToken);
+            if (value != null) {
+                pReference.setIsResolved(true);
+                filterSet.addFilter(reference, value);
+                continue;
+            }
+            pReference.setIsResolved(false);
+
+            if (!fileBeginToken.equals(filterSet.getBeginToken()) || !fileEndToken.equals(filterSet.getEndToken())) {
+                value = fileBeginToken + reference + fileEndToken;
+                filterSet.addFilter(reference, value);
+            }
         }
 
-        String valueWithToken = propertyResolver.getPropertyValue(property);
+        String valueWithToken = propertyResolver.getPropertyValue(pProperty.getName());
         return filterSet.replaceTokens(valueWithToken);
+    }
+
+    private PProperty createReference(PProperty pProperty, String referenceName) {
+        PProperty reference = (PProperty) pProperty.clone();
+        reference.setName(referenceName);
+        return reference;
     }
 
     public boolean containsProperty(String name) {
@@ -169,4 +189,5 @@ public class PropertyResolveManager {
         }
         return result;
     }
+
 };
