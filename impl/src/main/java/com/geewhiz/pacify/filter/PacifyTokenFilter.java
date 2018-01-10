@@ -34,7 +34,6 @@ import java.util.regex.Pattern;
 
 import org.apache.tools.ant.types.FilterSet;
 import org.apache.tools.ant.types.FilterSetCollection;
-import org.apache.tools.ant.util.FileUtils;
 
 import com.geewhiz.pacify.defect.Defect;
 import com.geewhiz.pacify.defect.NoPlaceholderInTargetFileDefect;
@@ -42,164 +41,169 @@ import com.geewhiz.pacify.defect.NotReplacedPropertyDefect;
 import com.geewhiz.pacify.defect.PlaceholderNotDefinedDefect;
 import com.geewhiz.pacify.model.PFile;
 import com.geewhiz.pacify.model.PProperty;
+import com.geewhiz.pacify.utils.FileUtils;
 import com.geewhiz.pacify.utils.RegExpUtils;
 
 public class PacifyTokenFilter implements PacifyFilter {
 
-    @Override
-    public LinkedHashSet<Defect> filter(PFile pFile, Map<String, String> propertyValues) {
-        FilterSetCollection filterSetCollection = getFilterSetCollection(propertyValues, pFile.getBeginToken(), pFile.getEndToken());
+	@Override
+	public LinkedHashSet<Defect> filter(PFile pFile, Map<String, String> propertyValues) {
+		FilterSetCollection filterSetCollection = getFilterSetCollection(propertyValues, pFile.getBeginToken(), pFile.getEndToken());
 
-        try {
-            File fileToFilter = pFile.getFile();
-            File tmpFile = com.geewhiz.pacify.utils.FileUtils.createEmptyFileWithSamePermissions(fileToFilter);
+		try {
+			File fileToFilter = pFile.getFile();
+			File tmpFile = FileUtils.createEmptyFileWithSamePermissions(fileToFilter);
 
-            FileUtils.getFileUtils().copyFile(fileToFilter, tmpFile, filterSetCollection, true, true, pFile.getEncoding());
-            if (!fileToFilter.delete()) {
-                throw new RuntimeException("Couldn't delete file [" + fileToFilter.getPath() + "]... Aborting!");
-            }
-            if (!tmpFile.renameTo(fileToFilter)) {
-                throw new RuntimeException("Couldn't rename filtered file from [" + tmpFile.getPath() + "] to [" + fileToFilter.getPath() + "]... Aborting!");
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+			org.apache.tools.ant.util.FileUtils.getFileUtils().copyFile(fileToFilter, tmpFile, filterSetCollection, true, true, pFile.getEncoding());
 
-        return new LinkedHashSet<Defect>();
-    }
+			FileUtils.setPosixPermissions(FileUtils.getPosixPermissions(fileToFilter), tmpFile);
 
-    private FilterSetCollection getFilterSetCollection(Map<String, String> propertyValues, String beginToken, String endToken) {
-        FilterSet filterSet = getFilterSet(propertyValues, beginToken, endToken);
+			if (!fileToFilter.delete()) {
+				throw new RuntimeException("Couldn't delete file [" + fileToFilter.getPath() + "]... Aborting!");
+			}
+			if (!tmpFile.renameTo(fileToFilter)) {
+				throw new RuntimeException("Couldn't rename filtered file from [" + tmpFile.getPath() + "] to [" + fileToFilter.getPath() + "]... Aborting!");
+			}
 
-        FilterSetCollection executionFilters = new FilterSetCollection();
-        executionFilters.addFilterSet(filterSet);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 
-        return executionFilters;
-    }
+		return new LinkedHashSet<Defect>();
+	}
 
-    private FilterSet getFilterSet(Map<String, String> propertyValues, String beginToken, String endToken) {
-        FilterSet filterSet = new FilterSet();
+	private FilterSetCollection getFilterSetCollection(Map<String, String> propertyValues, String beginToken, String endToken) {
+		FilterSet filterSet = getFilterSet(propertyValues, beginToken, endToken);
 
-        filterSet.setBeginToken(beginToken);
-        filterSet.setEndToken(endToken);
+		FilterSetCollection executionFilters = new FilterSetCollection();
+		executionFilters.addFilterSet(filterSet);
 
-        for (Entry<String, String> entry : propertyValues.entrySet()) {
-            filterSet.addFilter(entry.getKey(), entry.getValue());
-        }
-        return filterSet;
-    }
+		return executionFilters;
+	}
 
-    @Override
-    public LinkedHashSet<Defect> checkForNotReplacedTokens(PFile pFile) {
-        LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
+	private FilterSet getFilterSet(Map<String, String> propertyValues, String beginToken, String endToken) {
+		FilterSet filterSet = new FilterSet();
 
-        String fileContent = com.geewhiz.pacify.utils.FileUtils.getFileInOneString(pFile.getFile(), pFile.getEncoding());
-        if (fileContent == null) {
-            return defects;
-        }
+		filterSet.setBeginToken(beginToken);
+		filterSet.setEndToken(endToken);
 
-        for (String property : getNotReplacedProperties(fileContent, pFile.getBeginToken(), pFile.getEndToken())) {
-            Defect defect = new NotReplacedPropertyDefect(pFile, property);
-            defects.add(defect);
-        }
-        return defects;
-    }
+		for (Entry<String, String> entry : propertyValues.entrySet()) {
+			filterSet.addFilter(entry.getKey(), entry.getValue());
+		}
+		return filterSet;
+	}
 
-    private List<String> getNotReplacedProperties(String fileContent, String beginToken, String endToken) {
-        List<String> result = new ArrayList<String>();
+	@Override
+	public LinkedHashSet<Defect> checkForNotReplacedTokens(PFile pFile) {
+		LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
 
-        Pattern pattern = RegExpUtils.getDefaultPattern(beginToken, endToken);
-        Matcher matcher = pattern.matcher(fileContent);
+		String fileContent = com.geewhiz.pacify.utils.FileUtils.getFileInOneString(pFile.getFile(), pFile.getEncoding());
+		if (fileContent == null) {
+			return defects;
+		}
 
-        while (matcher.find()) {
-            String propertyId = matcher.group(1);
-            result.add(propertyId);
-        }
+		for (String property : getNotReplacedProperties(fileContent, pFile.getBeginToken(), pFile.getEndToken())) {
+			Defect defect = new NotReplacedPropertyDefect(pFile, property);
+			defects.add(defect);
+		}
+		return defects;
+	}
 
-        return result;
-    }
+	private List<String> getNotReplacedProperties(String fileContent, String beginToken, String endToken) {
+		List<String> result = new ArrayList<String>();
 
-    @Override
-    public LinkedHashSet<Defect> checkPlaceHolderExists(PFile pFile) {
-        LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
+		Pattern pattern = RegExpUtils.getDefaultPattern(beginToken, endToken);
+		Matcher matcher = pattern.matcher(fileContent);
 
-        String fileContent = com.geewhiz.pacify.utils.FileUtils.getFileInOneString(pFile.getFile(), pFile.getEncoding());
-        if (fileContent == null) {
-            return defects;
-        }
+		while (matcher.find()) {
+			String propertyId = matcher.group(1);
+			result.add(propertyId);
+		}
 
-        checkAllPropertiesExistsInTargetFile(defects, pFile, fileContent);
-        checkForNotReferencedProperties(defects, pFile, fileContent);
+		return result;
+	}
 
-        return defects;
-    }
+	@Override
+	public LinkedHashSet<Defect> checkPlaceHolderExists(PFile pFile) {
+		LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
 
-    private void checkForNotReferencedProperties(LinkedHashSet<Defect> defects, PFile pFile, String fileContent) {
-        Set<String> notReferencedPlaceHolders = getNotReferencedPlaceHolders(fileContent, pFile);
+		String fileContent = com.geewhiz.pacify.utils.FileUtils.getFileInOneString(pFile.getFile(), pFile.getEncoding());
+		if (fileContent == null) {
+			return defects;
+		}
 
-        for (String notReferencedPlaceHolder : notReferencedPlaceHolders) {
-            Defect defect = new PlaceholderNotDefinedDefect(pFile, notReferencedPlaceHolder);
-            defects.add(defect);
-        }
-    }
+		checkAllPropertiesExistsInTargetFile(defects, pFile, fileContent);
+		checkForNotReferencedProperties(defects, pFile, fileContent);
 
-    private void checkAllPropertiesExistsInTargetFile(LinkedHashSet<Defect> defects, PFile pFile, String fileContent) {
-        for (PProperty pProperty : pFile.getPProperties()) {
-            boolean exists = doesPropertyExistInFile(fileContent, pProperty);
-            if (exists) {
-                continue;
-            }
-            Defect defect = new NoPlaceholderInTargetFileDefect(pProperty);
-            defects.add(defect);
-        }
-    }
+		return defects;
+	}
 
-    private Set<String> getNotReferencedPlaceHolders(String fileContent, PFile pFile) {
-        Set<String> notReferencedPlaceHolder = new TreeSet<String>();
+	private void checkForNotReferencedProperties(LinkedHashSet<Defect> defects, PFile pFile, String fileContent) {
+		Set<String> notReferencedPlaceHolders = getNotReferencedPlaceHolders(fileContent, pFile);
 
-        // are all properties referenced from the marker file?
-        Set<String> placeHolders = getAllPlaceHolders(fileContent, pFile);
-        for (String placeHolder : placeHolders) {
-            boolean foundInMarkerFile = false;
+		for (String notReferencedPlaceHolder : notReferencedPlaceHolders) {
+			Defect defect = new PlaceholderNotDefinedDefect(pFile, notReferencedPlaceHolder);
+			defects.add(defect);
+		}
+	}
 
-            for (PProperty pProperty : pFile.getPProperties()) {
-                if (placeHolder.equals(pProperty.getName())) {
-                    foundInMarkerFile = true;
-                    break;
-                }
-            }
+	private void checkAllPropertiesExistsInTargetFile(LinkedHashSet<Defect> defects, PFile pFile, String fileContent) {
+		for (PProperty pProperty : pFile.getPProperties()) {
+			boolean exists = doesPropertyExistInFile(fileContent, pProperty);
+			if (exists) {
+				continue;
+			}
+			Defect defect = new NoPlaceholderInTargetFileDefect(pProperty);
+			defects.add(defect);
+		}
+	}
 
-            if (!foundInMarkerFile) {
-                notReferencedPlaceHolder.add(placeHolder);
-            }
-        }
-        return notReferencedPlaceHolder;
-    }
+	private Set<String> getNotReferencedPlaceHolders(String fileContent, PFile pFile) {
+		Set<String> notReferencedPlaceHolder = new TreeSet<String>();
 
-    private Set<String> getAllPlaceHolders(String fileContent, PFile pFile) {
-        Pattern pattern = RegExpUtils.getDefaultPattern(pFile.getBeginToken(), pFile.getEndToken());
-        Matcher matcher = getPlaceHolderMatcher(fileContent, pattern);
+		// are all properties referenced from the marker file?
+		Set<String> placeHolders = getAllPlaceHolders(fileContent, pFile);
+		for (String placeHolder : placeHolders) {
+			boolean foundInMarkerFile = false;
 
-        Set<String> result = new TreeSet<String>();
+			for (PProperty pProperty : pFile.getPProperties()) {
+				if (placeHolder.equals(pProperty.getName())) {
+					foundInMarkerFile = true;
+					break;
+				}
+			}
 
-        while (matcher.find()) {
-            String placeHolder = matcher.group(1);
-            result.add(placeHolder);
-        }
+			if (!foundInMarkerFile) {
+				notReferencedPlaceHolder.add(placeHolder);
+			}
+		}
+		return notReferencedPlaceHolder;
+	}
 
-        return result;
-    }
+	private Set<String> getAllPlaceHolders(String fileContent, PFile pFile) {
+		Pattern pattern = RegExpUtils.getDefaultPattern(pFile.getBeginToken(), pFile.getEndToken());
+		Matcher matcher = getPlaceHolderMatcher(fileContent, pattern);
 
-    private boolean doesPropertyExistInFile(String fileContent, PProperty pProperty) {
-        String beginToken = pProperty.getPFile().getBeginToken();
-        String endToken = pProperty.getPFile().getEndToken();
+		Set<String> result = new TreeSet<String>();
 
-        Pattern pattern = RegExpUtils.getPatternFor(beginToken, endToken, Pattern.quote(pProperty.getName()));
-        return getPlaceHolderMatcher(fileContent, pattern).find();
-    }
+		while (matcher.find()) {
+			String placeHolder = matcher.group(1);
+			result.add(placeHolder);
+		}
 
-    private Matcher getPlaceHolderMatcher(String fileContent, Pattern pattern) {
-        Matcher matcher = pattern.matcher(fileContent);
-        return matcher;
-    }
+		return result;
+	}
+
+	private boolean doesPropertyExistInFile(String fileContent, PProperty pProperty) {
+		String beginToken = pProperty.getPFile().getBeginToken();
+		String endToken = pProperty.getPFile().getEndToken();
+
+		Pattern pattern = RegExpUtils.getPatternFor(beginToken, endToken, Pattern.quote(pProperty.getName()));
+		return getPlaceHolderMatcher(fileContent, pattern).find();
+	}
+
+	private Matcher getPlaceHolderMatcher(String fileContent, Pattern pattern) {
+		Matcher matcher = pattern.matcher(fileContent);
+		return matcher;
+	}
 }
