@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -36,127 +35,133 @@ import com.geewhiz.pacify.managers.EntityManager;
 import com.geewhiz.pacify.managers.FilterManager;
 import com.geewhiz.pacify.managers.PropertyResolveManager;
 import com.geewhiz.pacify.utils.DefectUtils;
+import com.geewhiz.pacify.utils.FileUtils;
 import com.geewhiz.pacify.utils.Utils;
 import com.google.inject.Inject;
 
 public class Replacer {
 
-    private Logger                 logger = LogManager.getLogger(Replacer.class.getName());
+	private Logger logger = LogManager.getLogger(Replacer.class.getName());
 
-    private PropertyResolveManager propertyResolveManager;
-    private File                   packagePath;
-    private File                   copyDestination;
+	private PropertyResolveManager propertyResolveManager;
+	private File packagePath;
+	private File copyDestination;
 
-    private EntityManager          entityManager;
+	private EntityManager entityManager;
 
-    @Inject
-    public Replacer(PropertyResolveManager propertyResolveManager) {
-        this.propertyResolveManager = propertyResolveManager;
-    }
+	@Inject
+	public Replacer(PropertyResolveManager propertyResolveManager) {
+		this.propertyResolveManager = propertyResolveManager;
+	}
 
-    public void execute() {
-        logger.info("== Executing {} [Version={}]", getClass().getSimpleName(), Utils.getJarVersion());
-        logger.info("   [PackagePath={}]", getPackagePath().getAbsolutePath());
+	public void execute() {
+		logger.info("== Executing {} [Version={}]", getClass().getSimpleName(), Utils.getJarVersion());
+		logger.info("   [PackagePath={}]", getPackagePath().getAbsolutePath());
 
-        DefectUtils.abortIfDefectExists(getEntityManager().initialize());
+		DefectUtils.abortIfDefectExists(getEntityManager().initialize());
 
-        logger.info("== Found [{}] pacify marker files", getEntityManager().getPMarkerCount());
-        logger.info("== Validating...");
+		logger.info("== Found [{}] pacify marker files", getEntityManager().getPMarkerCount());
+		logger.info("== Validating...");
 
-        DefectUtils.abortIfDefectExists(validate());
+		DefectUtils.abortIfDefectExists(validate());
 
-        logger.info("== Replacing...");
-        DefectUtils.abortIfDefectExists(doReplacement());
+		logger.info("== Replacing...");
+		DefectUtils.abortIfDefectExists(doReplacement());
 
-        logger.info("== Successfully finished");
-    }
+		logger.info("== Successfully finished");
+	}
 
-    private File prepareAndGetPathToConfigure() {
-        if (copyDestination == null) {
-            return getPackagePath();
-        }
+	private File prepareAndGetPathToConfigure() {
+		if (copyDestination == null) {
+			return getPackagePath();
+		}
 
-        File result = null;
-        logger.info("   [Destination={}]", getCopyDestination().getAbsolutePath());
-        try {
-            result = createCopy();
-        } catch (DefectException e) {
-            DefectUtils.abortIfDefectExists(new LinkedHashSet<Defect>(Arrays.asList(e)));
-        }
+		File result = null;
+		logger.info("   [Destination={}]", getCopyDestination().getAbsolutePath());
+		try {
+			result = createCopy();
+		} catch (DefectException e) {
+			DefectUtils.abortIfDefectExists(new LinkedHashSet<Defect>(Arrays.asList(e)));
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    public File getPackagePath() {
-        return packagePath;
-    }
+	public File getPackagePath() {
+		return packagePath;
+	}
 
-    public void setPackagePath(File packagePath) {
-        this.packagePath = packagePath;
-    }
+	public void setPackagePath(File packagePath) {
+		this.packagePath = packagePath;
+	}
 
-    public File getCopyDestination() {
-        return copyDestination;
-    }
+	public File getCopyDestination() {
+		return copyDestination;
+	}
 
-    public void setCopyDestination(File copyDestination) {
-        this.copyDestination = copyDestination;
-    }
+	public void setCopyDestination(File copyDestination) {
+		this.copyDestination = copyDestination;
+	}
 
-    public EntityManager getEntityManager() {
-        if (entityManager == null) {
-            entityManager = createEntityManager(prepareAndGetPathToConfigure());
-        }
-        return entityManager;
-    }
+	public EntityManager getEntityManager() {
+		if (entityManager == null) {
+			entityManager = createEntityManager(prepareAndGetPathToConfigure());
+		}
+		return entityManager;
+	}
 
-    private File createCopy() throws DefectException {
-        try {
-            if (getCopyDestination().exists()) {
-                if (!getCopyDestination().isDirectory()) {
-                    throw new DefectMessage("Destination directory [" + getCopyDestination().getAbsolutePath() + "] is not a directory.");
-                }
-                if (getCopyDestination().list().length > 0) {
-                    throw new DefectMessage("Destination directory [" + getCopyDestination().getAbsolutePath() + "] is not empty.");
-                }
-                if (!getCopyDestination().canWrite()) {
-                    throw new DefectMessage("Destination directory [" + getCopyDestination().getAbsolutePath() + "] is not writable.");
-                }
-            }
-            FileUtils.copyDirectory(getPackagePath(), getCopyDestination());
-            return getCopyDestination();
-        } catch (IOException e) {
-            logger.debug(e);
-            throw new DefectMessage("Error while copy [" + getPackagePath().getAbsolutePath() + "] to [" + getCopyDestination().getAbsolutePath() + "].");
-        }
-    }
+	private File createCopy() throws DefectException {
+		try {
+			if (getCopyDestination().exists()) {
+				if (!getCopyDestination().isDirectory()) {
+					throw new DefectMessage("Destination directory [" + getCopyDestination().getAbsolutePath()
+							+ "] is not a directory.");
+				}
+				if (getCopyDestination().list().length > 0) {
+					throw new DefectMessage(
+							"Destination directory [" + getCopyDestination().getAbsolutePath() + "] is not empty.");
+				}
+				if (!getCopyDestination().canWrite()) {
+					throw new DefectMessage(
+							"Destination directory [" + getCopyDestination().getAbsolutePath() + "] is not writable.");
+				}
+			}
 
-    public LinkedHashSet<Defect> doReplacement() {
-        LinkedHashSet<Defect> defects = getEntityManager().initialize();
+			FileUtils.copyDirectory(getPackagePath(), getCopyDestination());
+			return getCopyDestination();
+		} catch (IOException e) {
+			logger.debug(e);
+			throw new DefectMessage("Error while copy [" + getPackagePath().getAbsolutePath() + "] to ["
+					+ getCopyDestination().getAbsolutePath() + "].");
+		}
+	}
 
-        FilterManager filterManager = new FilterManager(getEntityManager(), propertyResolveManager);
+	public LinkedHashSet<Defect> doReplacement() {
+		LinkedHashSet<Defect> defects = getEntityManager().initialize();
 
-        defects.addAll(filterManager.doFilter());
+		FilterManager filterManager = new FilterManager(getEntityManager(), propertyResolveManager);
 
-        return defects;
-    }
+		defects.addAll(filterManager.doFilter());
 
-    protected LinkedHashSet<Defect> validate() {
-        return createValidator().validateInternal();
-    }
+		return defects;
+	}
 
-    protected Validator createValidator() {
-        Validator validator = new Validator(propertyResolveManager);
+	protected LinkedHashSet<Defect> validate() {
+		return createValidator().validateInternal();
+	}
 
-        validator.setPackagePath(packagePath);
-        validator.enableMarkerFileChecks();
-        validator.enablePropertyResolveChecks();
-        validator.setEntityManager(getEntityManager());
+	protected Validator createValidator() {
+		Validator validator = new Validator(propertyResolveManager);
 
-        return validator;
-    }
+		validator.setPackagePath(packagePath);
+		validator.enableMarkerFileChecks();
+		validator.enablePropertyResolveChecks();
+		validator.setEntityManager(getEntityManager());
 
-    protected EntityManager createEntityManager(File pathToConfigure) {
-        return new EntityManager(pathToConfigure);
-    }
+		return validator;
+	}
+
+	protected EntityManager createEntityManager(File pathToConfigure) {
+		return new EntityManager(pathToConfigure);
+	}
 }
