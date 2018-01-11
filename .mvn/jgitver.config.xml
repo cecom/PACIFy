@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration xmlns="http://jgitver.github.io/maven/configuration/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jgitver.github.io/maven/configuration/1.0.0 https://jgitver.github.io/maven/configuration/jgitver-configuration-v1_0_0.xsd">
+    <mavenLike>false</mavenLike>
+    <!-- wenn nicht auf einem Tag dann wird der Patch Level um 1 erhöht -->
+    <autoIncrementPatch>true</autoIncrementPatch>
+    <!-- wenn nicht auf einem Tag dann wird angegeben, wie weit man weg ist bis zum letzten Tag -->
+    <useCommitDistance>true</useCommitDistance>
+    <!-- sollte der Workspace verändert sein, gibt es einen DIRTY Flag -->
+    <useDirty>true</useDirty>
+    <!-- es wird noch der SHA1 mit im Build aufgenommen -->
+    <useGitCommitId>true</useGitCommitId>
+    <!-- nur 8 Zeichen des SHA1 -->
+    <gitCommitIdLength>8</gitCommitIdLength>
+    <!-- diese Branches werden nicht separat am Tag namen angehogen. -->
+    <!-- 0.0.2-13-67bad713-dirty vs 0.0.2-13-67bad713-feature_35-dirty -->
+    <nonQualifierBranches>master,develop</nonQualifierBranches>
+    
+    <!-- HINWEIS -->
+    <!-- Um die Version zu berechnen, wird der letzte Tag herangezogen. Dieser Tag muss der https://semver.org/ entsprechen.  -->
+    <!-- Sprich MAJOR.MINOR.PATCH. Standardmäßig darf ein TAG also 1.1.0 bzw. v1.1.0 heißen. -->
+    <!-- Andere TAGs werden nicht in die Berechnung einbezogen! -->
+    <!-- Via <regexVersionTag> kann man sein eigenes Layout definieren via RegEx Gruppen. Es muss aber immernoch der https://semver.org/ entsprechen. -->
+    <!-- z.B. <regexVersionTag>r([0-9]+)m([0-9]+)p([0-9]+)</regexVersionTag> für r10m1p2 und ergibt dann also 10.1.2 -->
+    
+</configuration>
