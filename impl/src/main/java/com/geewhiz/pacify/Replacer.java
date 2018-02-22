@@ -125,8 +125,10 @@ public class Replacer {
 					throw new DefectMessage(
 							"Destination directory [" + getCopyDestination().getAbsolutePath() + "] is not writable.");
 				}
+			} else {
+				getCopyDestination().mkdirs();
 			}
-
+			
 			FileUtils.copyDirectory(getPackagePath(), getCopyDestination());
 			return getCopyDestination();
 		} catch (IOException e) {
