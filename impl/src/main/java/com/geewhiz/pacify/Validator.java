@@ -49,107 +49,110 @@ import com.google.inject.Inject;
 
 public class Validator {
 
-    private Logger                 logger        = LogManager.getLogger(Validator.class.getName());
+	private Logger logger = LogManager.getLogger(Validator.class.getName());
 
-    File                           packagePath;
-    List<Check>                    checks        = new ArrayList<Check>();
-    List<PMarkerCheck>             pMarkerChecks = new ArrayList<PMarkerCheck>();
+	File packagePath;
+	List<Check> checks = new ArrayList<Check>();
+	List<PMarkerCheck> pMarkerChecks = new ArrayList<PMarkerCheck>();
 
-    private PropertyResolveManager propertyResolveManager;
+	private PropertyResolveManager propertyResolveManager;
 
-    private EntityManager          entityManager;
+	private EntityManager entityManager;
 
-    @Inject
-    public Validator(PropertyResolveManager propertyResolveManager) {
-        this.propertyResolveManager = propertyResolveManager;
-    }
+	public Validator() {
+	}
 
-    public void enablePropertyResolveChecks() {
-        addCheck(new CheckPropertyDuplicateInPropertyFile(propertyResolveManager));
-        addPMarkerCheck(new CheckPropertyExists(propertyResolveManager));
-    }
+	@Inject
+	public Validator(PropertyResolveManager propertyResolveManager) {
+		this.propertyResolveManager = propertyResolveManager;
+	}
 
-    public void enableMarkerFileChecks() {
-        addPMarkerCheck(new CheckArchiveDuplicateDefinedInPacifyFile());
-        addPMarkerCheck(new CheckCorrectArchiveType());
-        addPMarkerCheck(new CheckFileDuplicateDefinedInPacifyFile());
-        addPMarkerCheck(new CheckPropertyDuplicateDefinedInPacifyFile());
-        addPMarkerCheck(new CheckCorrectPacifyFilter());
-        addPMarkerCheck(new CheckTargetFileExist());
-        addPMarkerCheck(new CheckPlaceholderExistsInTargetFile());
-    }
+	public void enablePropertyResolveChecks() {
+		addCheck(new CheckPropertyDuplicateInPropertyFile(propertyResolveManager));
+		addPMarkerCheck(new CheckPropertyExists(propertyResolveManager));
+	}
 
-    public void addCheck(Check check) {
-        checks.add(check);
-    }
+	public void enableMarkerFileChecks() {
+		addPMarkerCheck(new CheckArchiveDuplicateDefinedInPacifyFile());
+		addPMarkerCheck(new CheckCorrectArchiveType());
+		addPMarkerCheck(new CheckFileDuplicateDefinedInPacifyFile());
+		addPMarkerCheck(new CheckPropertyDuplicateDefinedInPacifyFile());
+		addPMarkerCheck(new CheckCorrectPacifyFilter());
+		addPMarkerCheck(new CheckTargetFileExist());
+		addPMarkerCheck(new CheckPlaceholderExistsInTargetFile());
+	}
 
-    public void addPMarkerCheck(PMarkerCheck check) {
-        pMarkerChecks.add(check);
-    }
+	public void addCheck(Check check) {
+		checks.add(check);
+	}
 
-    public List<Check> getChecks() {
-        return checks;
-    }
+	public void addPMarkerCheck(PMarkerCheck check) {
+		pMarkerChecks.add(check);
+	}
 
-    public List<PMarkerCheck> getPMarkerChecks() {
-        return pMarkerChecks;
-    }
+	public List<Check> getChecks() {
+		return checks;
+	}
 
-    public File getPackagePath() {
-        return packagePath;
-    }
+	public List<PMarkerCheck> getPMarkerChecks() {
+		return pMarkerChecks;
+	}
 
-    public void setPackagePath(File packagePath) {
-        this.packagePath = packagePath;
-    }
+	public File getPackagePath() {
+		return packagePath;
+	}
 
-    public void execute() {
-        logger.info("== Executing Validator [Version={}]", Utils.getJarVersion());
-        logger.info("   [PackagePath={}]", getPackagePath().getAbsolutePath());
+	public void setPackagePath(File packagePath) {
+		this.packagePath = packagePath;
+	}
 
-        DefectUtils.abortIfDefectExists(getEntityManager().initialize());
+	public void execute() {
+		logger.info("== Executing Validator [Version={}]", Utils.getJarVersion());
+		logger.info("   [PackagePath={}]", getPackagePath().getAbsolutePath());
 
-        logger.info("== Found [{}] pacify marker files", getEntityManager().getPMarkerCount());
-        logger.info("== Validating ...");
+		DefectUtils.abortIfDefectExists(getEntityManager().initialize());
 
-        DefectUtils.abortIfDefectExists(validateInternal());
+		logger.info("== Found [{}] pacify marker files", getEntityManager().getPMarkerCount());
+		logger.info("== Validating ...");
 
-        logger.info("== Successfully finished");
-    }
+		DefectUtils.abortIfDefectExists(validateInternal());
 
-    public LinkedHashSet<Defect> validateInternal() {
-        LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
+		logger.info("== Successfully finished");
+	}
 
-        defects.addAll(getEntityManager().initialize());
+	public LinkedHashSet<Defect> validateInternal() {
+		LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
 
-        for (Check check : checks) {
-            logger.debug("     Check [{}]", check.getClass().getName());
-            defects.addAll(check.checkForErrors());
-        }
+		defects.addAll(getEntityManager().initialize());
 
-        for (PMarker pMarker : getEntityManager().getPMarkers()) {
-            logger.info("   Processing Marker File [{}]", pMarker.getFile().getAbsolutePath());
-            for (PMarkerCheck pMarkerCheck : pMarkerChecks) {
-                logger.debug("     Check [{}]", pMarkerCheck.getClass().getName());
-                defects.addAll(pMarkerCheck.checkForErrors(getEntityManager(), pMarker));
-            }
-        }
-        return defects;
-    }
+		for (Check check : checks) {
+			logger.debug("     Check [{}]", check.getClass().getName());
+			defects.addAll(check.checkForErrors());
+		}
 
-    public void setEntityManager(EntityManager entityManager) {
-        this.entityManager = entityManager;
-    }
+		for (PMarker pMarker : getEntityManager().getPMarkers()) {
+			logger.info("   Processing Marker File [{}]", pMarker.getFile().getAbsolutePath());
+			for (PMarkerCheck pMarkerCheck : pMarkerChecks) {
+				logger.debug("     Check [{}]", pMarkerCheck.getClass().getName());
+				defects.addAll(pMarkerCheck.checkForErrors(getEntityManager(), pMarker));
+			}
+		}
+		return defects;
+	}
 
-    public EntityManager getEntityManager() {
-        if (entityManager == null) {
-            entityManager = createEntityManager();
-        }
-        return entityManager;
-    }
+	public void setEntityManager(EntityManager entityManager) {
+		this.entityManager = entityManager;
+	}
 
-    protected EntityManager createEntityManager() {
-        return new EntityManager(getPackagePath());
-    }
+	public EntityManager getEntityManager() {
+		if (entityManager == null) {
+			entityManager = createEntityManager();
+		}
+		return entityManager;
+	}
+
+	protected EntityManager createEntityManager() {
+		return new EntityManager(getPackagePath());
+	}
 
 }

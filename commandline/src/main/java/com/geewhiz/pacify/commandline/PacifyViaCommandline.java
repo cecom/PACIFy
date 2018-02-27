@@ -53,157 +53,157 @@ import com.google.inject.Injector;
 
 public class PacifyViaCommandline {
 
-    public static void main(String... args) {
-        System.err.println("PACIFy Version: " + Utils.getJarVersion());
+	public static void main(String... args) {
+		System.err.println("PACIFy Version: " + Utils.getJarVersion());
 
-        int resultValue = new PacifyViaCommandline().mainInternal(args);
+		int resultValue = new PacifyViaCommandline().mainInternal(args);
 
-        System.exit(resultValue);
-    }
+		System.exit(resultValue);
+	}
 
-    private Logger logger = LogManager.getLogger(PacifyViaCommandline.class.getName());
+	private Logger logger = LogManager.getLogger(PacifyViaCommandline.class.getName());
 
-    /**
-     * without system.exit(). If you call it from your java app.
-     * 
-     * @param args
-     *            commandline params.
-     * @return
-     */
-    public int mainInternal(String[] args) {
-        int resultValue = execute(args);
-        logger.debug("Exiting with exit code " + resultValue);
-        return resultValue;
-    }
+	/**
+	 * without system.exit(). If you call it from your java app.
+	 * 
+	 * @param args
+	 *            commandline params.
+	 * @return
+	 */
+	public int mainInternal(String[] args) {
+		int resultValue = execute(args);
+		logger.debug("Exiting with exit code " + resultValue);
+		return resultValue;
+	}
 
-    private int execute(String[] args) {
-        MainCommand mainCommand = new MainCommand();
-        ReplacerCommand replacerCommand = new ReplacerCommand();
-        CreatePropertyFileCommand createPropertyFileCommand = new CreatePropertyFileCommand();
-        ValidateCommand validateCommand = new ValidateCommand();
-        ValidateMarkerFilesCommand validateMarkerFilesCommand = new ValidateMarkerFilesCommand();
-        ShowUsedPropertiesCommand showUsedPropertiesCommand = new ShowUsedPropertiesCommand();
-        PreConfigureCommand preConfigureCommand = new PreConfigureCommand();
+	private int execute(String[] args) {
+		MainCommand mainCommand = new MainCommand();
+		ReplacerCommand replacerCommand = new ReplacerCommand();
+		CreatePropertyFileCommand createPropertyFileCommand = new CreatePropertyFileCommand();
+		ValidateCommand validateCommand = new ValidateCommand();
+		ValidateMarkerFilesCommand validateMarkerFilesCommand = new ValidateMarkerFilesCommand();
+		ShowUsedPropertiesCommand showUsedPropertiesCommand = new ShowUsedPropertiesCommand();
+		PreConfigureCommand preConfigureCommand = new PreConfigureCommand();
 
-        JCommander jc = new JCommander(mainCommand);
-        jc.addCommand("replace", replacerCommand);
-        jc.addCommand("createPropertyFile", createPropertyFileCommand);
-        jc.addCommand("validate", validateCommand);
-        jc.addCommand("validateMarkerFiles", validateMarkerFilesCommand);
-        jc.addCommand("showUsedProperties", showUsedPropertiesCommand);
-        jc.addCommand("preConfigure", preConfigureCommand);
+		JCommander jc = new JCommander(mainCommand);
+		jc.addCommand("replace", replacerCommand);
+		jc.addCommand("createPropertyFile", createPropertyFileCommand);
+		jc.addCommand("validate", validateCommand);
+		jc.addCommand("validateMarkerFiles", validateMarkerFilesCommand);
+		jc.addCommand("showUsedProperties", showUsedPropertiesCommand);
+		jc.addCommand("preConfigure", preConfigureCommand);
 
-        try {
-            jc.parse(args);
-        } catch (ParameterException e) {
-            System.err.println(e.getMessage());
-            return 1;
-        }
+		try {
+			jc.parse(args);
+		} catch (ParameterException e) {
+			System.err.println(e.getMessage());
+			return 1;
+		}
 
-        if (mainCommand.isDebug()) {
-            LoggingUtils.setLogLevel(logger, Level.DEBUG);
-        } else if (mainCommand.isInfo()) {
-            LoggingUtils.setLogLevel(logger, Level.INFO);
-        } else {
-            LoggingUtils.setLogLevel(logger, Level.ERROR);
-        }
+		if (mainCommand.isDebug()) {
+			LoggingUtils.setLogLevel(logger, Level.DEBUG);
+		} else if (mainCommand.isInfo()) {
+			LoggingUtils.setLogLevel(logger, Level.INFO);
+		} else {
+			LoggingUtils.setLogLevel(logger, Level.ERROR);
+		}
 
-        try {
-            if ("replace".equals(jc.getParsedCommand())) {
-                return executeReplacer(replacerCommand);
-            } else if ("createPropertyFile".equals(jc.getParsedCommand())) {
-                return executeCreatePropertyFile(createPropertyFileCommand);
-            } else if ("validate".equals(jc.getParsedCommand())) {
-                return executeValidate(validateCommand);
-            } else if ("validateMarkerFiles".equals(jc.getParsedCommand())) {
-                return executeValidateMarkerFiles(validateMarkerFilesCommand);
-            } else if ("showUsedProperties".equals(jc.getParsedCommand())) {
-                return executeShowUsedProperties(showUsedPropertiesCommand);
-            } else if ("preConfigure".equals(jc.getParsedCommand())) {
-                return executePreConfigure(preConfigureCommand);
-            } else {
-                jc.usage();
-                if (mainCommand.isHelp()) {
-                    return 0;
-                }
-            }
-        } catch (DefectRuntimeException de) {
-            logger.debug("We got a DefectException.", de);
-            return 1;
-        } catch (Exception e) {
-            logger.error("We got an Exception.", e);
-            return 1;
-        }
-        return 1;
-    }
+		try {
+			if ("replace".equals(jc.getParsedCommand())) {
+				return executeReplacer(replacerCommand);
+			} else if ("createPropertyFile".equals(jc.getParsedCommand())) {
+				return executeCreatePropertyFile(createPropertyFileCommand);
+			} else if ("validate".equals(jc.getParsedCommand())) {
+				return executeValidate(validateCommand);
+			} else if ("validateMarkerFiles".equals(jc.getParsedCommand())) {
+				return executeValidateMarkerFiles(validateMarkerFilesCommand);
+			} else if ("showUsedProperties".equals(jc.getParsedCommand())) {
+				return executeShowUsedProperties(showUsedPropertiesCommand);
+			} else if ("preConfigure".equals(jc.getParsedCommand())) {
+				return executePreConfigure(preConfigureCommand);
+			} else {
+				jc.usage();
+				if (mainCommand.isHelp()) {
+					return 0;
+				}
+			}
+		} catch (DefectRuntimeException de) {
+			logger.debug("We got a DefectException.", de);
+			return 1;
+		} catch (Exception e) {
+			logger.error("We got an Exception.", e);
+			return 1;
+		}
+		return 1;
+	}
 
-    private int executeValidateMarkerFiles(ValidateMarkerFilesCommand validateMarkerFilesCommand) {
-        Validator validator = new Validator(null);
-        validateMarkerFilesCommand.configure(validator);
-        validator.execute();
+	private int executeValidateMarkerFiles(ValidateMarkerFilesCommand validateMarkerFilesCommand) {
+		Validator validator = new Validator();
+		validateMarkerFilesCommand.configure(validator);
+		validator.execute();
 
-        return 0;
-    }
+		return 0;
+	}
 
-    private int executeValidate(ValidateCommand validateCommand) {
-        Injector injector = getInjector(validateCommand);
+	private int executeValidate(ValidateCommand validateCommand) {
+		Injector injector = getInjector(validateCommand);
 
-        Validator validator = injector.getInstance(Validator.class);
-        validateCommand.configure(validator);
-        validator.execute();
+		Validator validator = injector.getInstance(Validator.class);
+		validateCommand.configure(validator);
+		validator.execute();
 
-        return 0;
-    }
+		return 0;
+	}
 
-    private int executeCreatePropertyFile(CreatePropertyFileCommand createPropertyFileCommand) {
-        Injector injector = getInjector(createPropertyFileCommand);
+	private int executeCreatePropertyFile(CreatePropertyFileCommand createPropertyFileCommand) {
+		Injector injector = getInjector(createPropertyFileCommand);
 
-        CreatePropertyFile createPropertyFile = injector.getInstance(CreatePropertyFile.class);
-        createPropertyFileCommand.configure(createPropertyFile);
-        createPropertyFile.write();
+		CreatePropertyFile createPropertyFile = injector.getInstance(CreatePropertyFile.class);
+		createPropertyFileCommand.configure(createPropertyFile);
+		createPropertyFile.write();
 
-        return 0;
-    }
+		return 0;
+	}
 
-    private int executeReplacer(ReplacerCommand replacerCommand) {
-        Injector injector = getInjector(replacerCommand);
+	private int executeReplacer(ReplacerCommand replacerCommand) {
+		Injector injector = getInjector(replacerCommand);
 
-        Replacer replacer = injector.getInstance(Replacer.class);
-        replacerCommand.configure(replacer);
-        replacer.execute();
+		Replacer replacer = injector.getInstance(Replacer.class);
+		replacerCommand.configure(replacer);
+		replacer.execute();
 
-        return 0;
-    }
+		return 0;
+	}
 
-    private int executeShowUsedProperties(ShowUsedPropertiesCommand showUsedPropertiesCommand) {
-        ShowUsedProperties showUsedProperties = new ShowUsedProperties();
-        showUsedPropertiesCommand.configure(showUsedProperties);
-        showUsedProperties.execute();
+	private int executeShowUsedProperties(ShowUsedPropertiesCommand showUsedPropertiesCommand) {
+		ShowUsedProperties showUsedProperties = new ShowUsedProperties();
+		showUsedPropertiesCommand.configure(showUsedProperties);
+		showUsedProperties.execute();
 
-        return 0;
-    }
+		return 0;
+	}
 
-    private int executePreConfigure(PreConfigureCommand preConfigureCommand) {
-        Injector injector = getInjector(preConfigureCommand);
+	private int executePreConfigure(PreConfigureCommand preConfigureCommand) {
+		Injector injector = getInjector(preConfigureCommand);
 
-        PreConfigure preConfigure = injector.getInstance(PreConfigure.class);
-        preConfigureCommand.configure(preConfigure);
-        preConfigure.execute();
+		PreConfigure preConfigure = injector.getInstance(PreConfigure.class);
+		preConfigureCommand.configure(preConfigure);
+		preConfigure.execute();
 
-        return 0;
-    }
+		return 0;
+	}
 
-    private Injector getInjector(BasePropertyResolverCommand command) {
-        List<PropertyResolverModule> propertyResolverModules = command.getPropertyResolverModules();
+	private Injector getInjector(BasePropertyResolverCommand command) {
+		List<PropertyResolverModule> propertyResolverModules = command.getPropertyResolverModules();
 
-        LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
-        for (PropertyResolverModule propertyResolverModule : propertyResolverModules) {
-            defects.addAll(propertyResolverModule.getDefects());
-        }
+		LinkedHashSet<Defect> defects = new LinkedHashSet<Defect>();
+		for (PropertyResolverModule propertyResolverModule : propertyResolverModules) {
+			defects.addAll(propertyResolverModule.getDefects());
+		}
 
-        DefectUtils.abortIfDefectExists(defects);
+		DefectUtils.abortIfDefectExists(defects);
 
-        Injector injector = Guice.createInjector(propertyResolverModules);
-        return injector;
-    }
+		Injector injector = Guice.createInjector(propertyResolverModules);
+		return injector;
+	}
 }

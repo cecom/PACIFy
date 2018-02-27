@@ -93,7 +93,7 @@ public class FileUtils {
 		if (!IS_POSIX) {
 			return;
 		}
-		
+
 		try {
 			Files.setPosixFilePermissions(Paths.get(forFile.toURI()), permissions);
 		} catch (IOException e) {
@@ -140,9 +140,9 @@ public class FileUtils {
 
 	public static void copyDirectory(File sourceDir, File targetDir) throws IOException {
 		if (sourceDir.isDirectory()) {
-			copyDirectoryRecursively(sourceDir, targetDir);
+			copyDirectoryRecursively(sourceDir.getAbsoluteFile(), targetDir.getAbsoluteFile());
 		} else {
-			Files.copy(sourceDir.toPath(), targetDir.toPath(), java.nio.file.StandardCopyOption.COPY_ATTRIBUTES);
+			Files.copy(sourceDir.getAbsoluteFile().toPath(), targetDir.getAbsoluteFile().toPath(), java.nio.file.StandardCopyOption.COPY_ATTRIBUTES);
 		}
 	}
 
