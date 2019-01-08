@@ -78,9 +78,7 @@ public class FileUtils {
 
 	public static File createEmptyFileWithSamePermissions(File forFile, String filePrefix) {
 		try {
-			File folder = forFile.getParentFile();
-
-			File tmp = File.createTempFile(filePrefix, ".tmp", folder);
+			File tmp = File.createTempFile(filePrefix, ".tmp");
 			setPosixPermissions(getPosixPermissions(forFile), tmp);
 			return tmp;
 
