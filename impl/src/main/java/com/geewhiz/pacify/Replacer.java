@@ -112,6 +112,11 @@ public class Replacer {
 
 	private File createCopy() throws DefectException {
 		try {
+			if(getCopyDestination().getCanonicalPath().startsWith(getPackagePath().getCanonicalPath() + File.separator)) {
+				throw new DefectMessage("Destination directory [" + getCopyDestination().getCanonicalPath()
+						+ "] is a subdirectory of the path which you selected to be replaced [" + getPackagePath().getCanonicalPath() + "].");
+			}
+			
 			if (getCopyDestination().exists()) {
 				if (!getCopyDestination().isDirectory()) {
 					throw new DefectMessage("Destination directory [" + getCopyDestination().getAbsolutePath()
