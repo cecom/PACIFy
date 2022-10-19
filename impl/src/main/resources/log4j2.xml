@@ -3,14 +3,9 @@
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout>
-                <ScriptPatternSelector defaultPattern="%highlight{%-5p | %d{dd.MM.yyyy HH:mm:ss,SSS} %r | %m%n}" noConsoleNoAnsi="true">
-                    <Script name="selector" language="javascript"><![CDATA[
-                       substitutor.replace("${main:pacifyLogLevel}"); 
-                    ]]>
-                    </Script>
-                    <!-- INFO and DEBUG are using the defaultPattern -->
-                    <PatternMatch key="ERROR" pattern="%-5p %m%n" />
-                </ScriptPatternSelector>
+	            <LevelPatternSelector defaultPattern="%highlight{%-5p | %d{dd.MM.yyyy HH:mm:ss,SSS} %r | %m%n}" noConsoleNoAnsi="true">
+	               <PatternMatch key="ERROR" pattern="%-5p %m%n" />
+	            </LevelPatternSelector>
             </PatternLayout>
         </Console>
     </Appenders>

@@ -24,16 +24,16 @@ import java.io.File;
 
 import javax.xml.bind.Unmarshaller;
 
-import org.jvnet.jaxb2_commons.lang.CopyStrategy;
-import org.jvnet.jaxb2_commons.lang.CopyTo;
-import org.jvnet.jaxb2_commons.lang.EqualsStrategy;
-import org.jvnet.jaxb2_commons.lang.HashCodeStrategy;
-import org.jvnet.jaxb2_commons.lang.ToStringStrategy;
+import org.jvnet.jaxb2_commons.lang.CopyStrategy2;
+import org.jvnet.jaxb2_commons.lang.CopyTo2;
+import org.jvnet.jaxb2_commons.lang.EqualsStrategy2;
+import org.jvnet.jaxb2_commons.lang.HashCodeStrategy2;
+import org.jvnet.jaxb2_commons.lang.ToStringStrategy2;
 import org.jvnet.jaxb2_commons.locator.ObjectLocator;
 
 import com.geewhiz.pacify.defect.DefectRuntimeException;
 
-public abstract class PFileBase implements Cloneable, CopyTo {
+public abstract class PFileBase implements Cloneable, CopyTo2 {
 
     private PMarker  pMarker;
 
@@ -124,22 +124,22 @@ public abstract class PFileBase implements Cloneable, CopyTo {
 
     public abstract String getRelativePath();
 
-    public int hashCode(ObjectLocator locator, HashCodeStrategy strategy) {
+    public int hashCode(ObjectLocator locator, HashCodeStrategy2 strategy) {
         // we don't have any attribute in this class so not needed
         return 1;
     }
 
-    public boolean equals(ObjectLocator thisLocator, ObjectLocator thatLocator, Object object, EqualsStrategy strategy) {
+    public boolean equals(ObjectLocator thisLocator, ObjectLocator thatLocator, Object object, EqualsStrategy2 strategy) {
         // we don't have any attribute in this class so not needed
         return true;
     }
 
-    public StringBuilder appendFields(ObjectLocator locator, StringBuilder buffer, ToStringStrategy strategy) {
+    public StringBuilder appendFields(ObjectLocator locator, StringBuilder buffer, ToStringStrategy2 strategy) {
         // we don't have any attribute in this class so not needed
         return buffer;
     }
 
-    public Object copyTo(ObjectLocator locator, Object draftCopy, CopyStrategy strategy) {
+    public Object copyTo(ObjectLocator locator, Object draftCopy, CopyStrategy2 strategy) {
         if (draftCopy instanceof PFile) {
             ((PFile) draftCopy).setPMarker(pMarker);
             ((PFile) draftCopy).setPArchive(pArchive);

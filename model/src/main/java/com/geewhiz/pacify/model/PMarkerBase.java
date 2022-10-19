@@ -24,10 +24,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jvnet.jaxb2_commons.lang.CopyStrategy;
-import org.jvnet.jaxb2_commons.lang.EqualsStrategy;
-import org.jvnet.jaxb2_commons.lang.HashCodeStrategy;
-import org.jvnet.jaxb2_commons.lang.ToStringStrategy;
+import org.jvnet.jaxb2_commons.lang.CopyStrategy2;
+import org.jvnet.jaxb2_commons.lang.EqualsStrategy2;
+import org.jvnet.jaxb2_commons.lang.HashCodeStrategy2;
+import org.jvnet.jaxb2_commons.lang.ToStringStrategy2;
 import org.jvnet.jaxb2_commons.locator.ObjectLocator;
 
 public abstract class PMarkerBase {
@@ -72,22 +72,22 @@ public abstract class PMarkerBase {
 
     public abstract List<Object> getFilesAndArchives();
 
-    public boolean equals(ObjectLocator thisLocator, ObjectLocator thatLocator, Object object, EqualsStrategy strategy) {
+    public boolean equals(ObjectLocator thisLocator, ObjectLocator thatLocator, Object object, EqualsStrategy2 strategy) {
         return file.equals(((PMarker) object).getFile());
     }
 
-    public int hashCode(ObjectLocator locator, HashCodeStrategy strategy) {
+    public int hashCode(ObjectLocator locator, HashCodeStrategy2 strategy) {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((file == null) ? 0 : file.hashCode());
         return result;
     }
 
-    public StringBuilder appendFields(ObjectLocator locator, StringBuilder buffer, ToStringStrategy strategy) {
-        return strategy.appendField(locator, this, "file", buffer, file);
+    public StringBuilder appendFields(ObjectLocator locator, StringBuilder buffer, ToStringStrategy2 strategy) {
+		return strategy.appendField(locator, this, "file", buffer, file, file != null);
     }
 
-    public Object copyTo(ObjectLocator locator, Object draftCopy, CopyStrategy strategy) {
+    public Object copyTo(ObjectLocator locator, Object draftCopy, CopyStrategy2 strategy) {
         if (draftCopy instanceof PMarker) {
             ((PMarker) draftCopy).setFile(file);
         }
